@@ -1,4 +1,6 @@
 @associationsId=cmov70woz0000qyfbz7usbd5u
+@meetingId=c93c3433-bbdd-49b2-96c9-23372c7375bc
+@userId=126c111f-dbd3-4a07-8dc6-5998f9a0c62a
 
 # ----------------- ADMIN ------------------
 
@@ -16,8 +18,8 @@ Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "slug": "mfsc",
-  "name": "sDelhi Cricket Association",
+  "slug": "mpsc",
+  "name": "Delhi Cricket Association",
   "state": "Delhi",
   "country": "IN",
   "contactEmail": "contact@delhicricket.org",
@@ -65,7 +67,7 @@ Authorization: Bearer {{TOKEN}}
   "title":"123"
 }
 
-# ----------------- MEETINGS ------------------
+### ----------------- MEETINGS ------------------
 
 ###
 # @name List meetings
@@ -83,7 +85,24 @@ Authorization: Bearer {{TOKEN}}
   "title": "Executive Committee Meeting",
   "type": "EC_MEETING",
   "scheduledAt": "2026-06-15T10:00:00Z",
-  "venue": "Conference Room A"
+  "venue": "Conference Room A",
+  "agendaItems": [
+    {
+      "order": 1,
+      "title": "Approval of Previous Minutes",
+      "description": "Review and approve the minutes from the last EC meeting"
+    },
+    {
+      "order": 2,
+      "title": "Financial Report Q1",
+      "description": "Presentation of quarterly financial statements"
+    },
+    {
+      "order": 3,
+      "title": "Member Applications",
+      "description": "Review new membership applications for approval"
+    }
+  ]
 }
 
 ###

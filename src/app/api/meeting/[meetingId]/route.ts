@@ -88,15 +88,14 @@ export const DELETE = withAssociation(
       );
     }
 
-    await deleteMeeting({
+    const deletedMeeting = await deleteMeeting({
       meetingId: params.meetingId,
       associationId: association.id,
     });
 
     return SuccessResponse({
-      data: { success: true },
+      data: deletedMeeting,
       message: "Meeting deleted successfully",
     });
   },
 );
-

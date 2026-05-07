@@ -1,10 +1,5 @@
 import { z } from "zod";
-import {
-  MeetingType,
-  MeetingStatus,
-  AttendeeRole,
-  RsvpStatus,
-} from "@prisma/client";
+import { MeetingType, MeetingStatus } from "@prisma/client";
 import { CreateAgendaItemSchema } from "./agenda-items";
 
 export const CreateMeetingSchema = z.object({
@@ -12,7 +7,7 @@ export const CreateMeetingSchema = z.object({
     .string({ message: "Title is required" })
     .min(3, "Title must be at least 3 characters"),
   type: z.enum(MeetingType, { message: "Meeting type is required" }),
-  scheduledAt: z.date({ message: "Scheduled date is required" }),
+  scheduledAt: z.coerce.date({ message: "Scheduled date is required" }),
   venue: z
     .string({ message: "Venue must be a string" })
     .max(500, "Venue cannot exceed 500 characters")
@@ -38,36 +33,6 @@ export const UpdateMeetingSchema = z.object({
     .optional(),
 });
 
-export const AssignAttendeeSchema = z.object({
-  userId: z.uuid("Invalid user ID format"),
-  attendeeRole: z
-    .enum(AttendeeRole, { message: "Invalid attendee role" })
-    .default(AttendeeRole.OPTIONAL),
-});
-
-export const BulkAssignAttendeesSchema = z.object({
-  userIds: z
-    .array(z.uuid("Invalid user ID format"), {
-      message: "User IDs must be an array of valid UUIDs",
-    })
-    .min(1, "At least one user ID is required")
-    .max(200, "Cannot assign more than 200 users at once"),
-  attendeeRole: z
-    .enum(AttendeeRole, { message: "Invalid attendee role" })
-    .default(AttendeeRole.OPTIONAL),
-});
-
-export const UpdateAttendeeSchema = z.object({
-  attendeeRole: z
-    .enum(AttendeeRole, { message: "Invalid attendee role" })
-    .optional(),
-  rsvpStatus: z.enum(RsvpStatus, { message: "Invalid RSVP status" }).optional(),
-  rsvpNote: z
-    .string({ message: "RSVP note must be a string" })
-    .max(500, "RSVP note cannot exceed 500 characters")
-    .optional(),
-});
-
 export const MeetingQuerySchema = z.object({
   type: z.enum(MeetingType, { message: "Invalid meeting type" }).optional(),
   status: z
@@ -88,9 +53,4 @@ export const MeetingQuerySchema = z.object({
 
 export type CreateMeetingInput = z.infer<typeof CreateMeetingSchema>;
 export type UpdateMeetingInput = z.infer<typeof UpdateMeetingSchema>;
-export type AssignAttendeeInput = z.infer<typeof AssignAttendeeSchema>;
-export type BulkAssignAttendeesInput = z.infer<
-  typeof BulkAssignAttendeesSchema
->;
-export type UpdateAttendeeInput = z.infer<typeof UpdateAttendeeSchema>;
 export type MeetingQueryInput = z.infer<typeof MeetingQuerySchema>;

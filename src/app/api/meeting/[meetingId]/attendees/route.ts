@@ -8,18 +8,23 @@ import {
   assignAttendee,
   bulkAssignAttendees,
 } from "@feature/meetings/services";
+
 import {
   AssignAttendeeSchema,
   BulkAssignAttendeesSchema,
   MeetingQuerySchema,
-} from "@feature/meetings/validators/meetings";
+} from "@feature/meetings/validators";
 import { z } from "zod";
 import { NextRequest } from "next/server";
 
-const HIGH_ROLE_USERS: UserRole[] = [UserRole.SUPER_ADMIN, UserRole.PRESIDENT, UserRole.SECRETARY];
+const HIGH_ROLE_USERS: UserRole[] = [
+  UserRole.SUPER_ADMIN,
+  UserRole.PRESIDENT,
+  UserRole.SECRETARY,
+];
 
 const MeetingParamsSchema = z.object({
-  meetingId: z.string().uuid("Invalid meeting ID"),
+  meetingId: z.uuid("Invalid meeting ID"),
 });
 
 export const GET = withAssociation(
@@ -29,7 +34,10 @@ export const GET = withAssociation(
       throw new ForbiddenError("Invalid meeting ID");
     }
 
-    const user = await withRole(request as unknown as NextRequest, UserRole.MEMBER);
+    const user = await withRole(
+      request as unknown as NextRequest,
+      UserRole.MEMBER,
+    );
 
     const meeting = await findUniqueMeeting({
       meetingId: params.meetingId,
@@ -62,10 +70,15 @@ export const POST = withAssociation(
       throw new ForbiddenError("Invalid request body");
     }
 
-    const user = await withRole(request as unknown as NextRequest, UserRole.SECRETARY);
+    const user = await withRole(
+      request as unknown as NextRequest,
+      UserRole.SECRETARY,
+    );
 
     if (!HIGH_ROLE_USERS.includes(user.role)) {
-      throw new ForbiddenError("Only secretary, president, or super admin can assign attendees");
+      throw new ForbiddenError(
+        "Only secretary, president, or super admin can assign attendees",
+      );
     }
 
     const attendee = await assignAttendee({
@@ -89,10 +102,15 @@ export const PUT = withAssociation(
       throw new ForbiddenError("Invalid request body");
     }
 
-    const user = await withRole(request as unknown as NextRequest, UserRole.SECRETARY);
+    const user = await withRole(
+      request as unknown as NextRequest,
+      UserRole.SECRETARY,
+    );
 
     if (!HIGH_ROLE_USERS.includes(user.role)) {
-      throw new ForbiddenError("Only secretary, president, or super admin can bulk assign attendees");
+      throw new ForbiddenError(
+        "Only secretary, president, or super admin can bulk assign attendees",
+      );
     }
 
     const result = await bulkAssignAttendees({
@@ -108,3 +126,4 @@ export const PUT = withAssociation(
     });
   },
 );
+
