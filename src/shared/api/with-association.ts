@@ -34,6 +34,7 @@ export function withAssociation<
     schemas,
     async (request, context, validated) => {
       const userId = request.headers.get("x-user-id");
+
       if (!userId) {
         throw new UnauthorizedError("Unauthorized");
       }
