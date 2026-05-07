@@ -5,43 +5,85 @@ import {
   AttendeeRole,
   RsvpStatus,
 } from "@prisma/client";
+import { CreateAgendaItemSchema } from "./agenda-items";
 
 export const CreateMeetingSchema = z.object({
-  title: z.string().min(3, "Title must be at least 3 characters"),
-  type: z.nativeEnum(MeetingType),
-  scheduledAt: z.string().datetime({ message: "Invalid scheduled date" }),
-  venue: z.string().max(500).optional(),
+  title: z
+    .string({ message: "Title is required" })
+    .min(3, "Title must be at least 3 characters"),
+  type: z.enum(MeetingType, { message: "Meeting type is required" }),
+  scheduledAt: z.date({ message: "Scheduled date is required" }),
+  venue: z
+    .string({ message: "Venue must be a string" })
+    .max(500, "Venue cannot exceed 500 characters")
+    .optional(),
+  agendaItems: z
+    .array(CreateAgendaItemSchema)
+    .min(1, "At least one agenda item is required"),
 });
 
 export const UpdateMeetingSchema = z.object({
-  title: z.string().min(3).optional(),
-  type: z.enum(MeetingType).optional(),
-  scheduledAt: z.string().datetime().optional(),
-  venue: z.string().max(500).optional(),
-  status: z.nativeEnum(MeetingStatus).optional(),
+  title: z
+    .string({ message: "Title must be a string" })
+    .min(3, "Title must be at least 3 characters")
+    .optional(),
+  type: z.enum(MeetingType, { message: "Invalid meeting type" }).optional(),
+  scheduledAt: z.date({ message: "Invalid scheduled date" }).optional(),
+  venue: z
+    .string({ message: "Venue must be a string" })
+    .max(500, "Venue cannot exceed 500 characters")
+    .optional(),
+  status: z
+    .enum(MeetingStatus, { message: "Invalid meeting status" })
+    .optional(),
 });
 
 export const AssignAttendeeSchema = z.object({
-  userId: z.string().uuid("Invalid user ID"),
-  attendeeRole: z.nativeEnum(AttendeeRole).default(AttendeeRole.OPTIONAL),
+  userId: z.uuid("Invalid user ID format"),
+  attendeeRole: z
+    .enum(AttendeeRole, { message: "Invalid attendee role" })
+    .default(AttendeeRole.OPTIONAL),
 });
 
 export const BulkAssignAttendeesSchema = z.object({
-  userIds: z.array(z.string().uuid("Invalid user ID")).min(1).max(200),
-  attendeeRole: z.nativeEnum(AttendeeRole).default(AttendeeRole.OPTIONAL),
+  userIds: z
+    .array(z.uuid("Invalid user ID format"), {
+      message: "User IDs must be an array of valid UUIDs",
+    })
+    .min(1, "At least one user ID is required")
+    .max(200, "Cannot assign more than 200 users at once"),
+  attendeeRole: z
+    .enum(AttendeeRole, { message: "Invalid attendee role" })
+    .default(AttendeeRole.OPTIONAL),
 });
 
 export const UpdateAttendeeSchema = z.object({
-  attendeeRole: z.nativeEnum(AttendeeRole).optional(),
-  rsvpStatus: z.nativeEnum(RsvpStatus).optional(),
-  rsvpNote: z.string().max(500).optional(),
+  attendeeRole: z
+    .enum(AttendeeRole, { message: "Invalid attendee role" })
+    .optional(),
+  rsvpStatus: z.enum(RsvpStatus, { message: "Invalid RSVP status" }).optional(),
+  rsvpNote: z
+    .string({ message: "RSVP note must be a string" })
+    .max(500, "RSVP note cannot exceed 500 characters")
+    .optional(),
 });
 
 export const MeetingQuerySchema = z.object({
-  type: z.nativeEnum(MeetingType).optional(),
-  status: z.nativeEnum(MeetingStatus).optional(),
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(20),
+  type: z.enum(MeetingType, { message: "Invalid meeting type" }).optional(),
+  status: z
+    .enum(MeetingStatus, { message: "Invalid meeting status" })
+    .optional(),
+  page: z.coerce
+    .number({ message: "Page must be a number" })
+    .int({ message: "Page must be an integer" })
+    .positive({ message: "Page must be a positive number" })
+    .default(1),
+  limit: z.coerce
+    .number({ message: "Limit must be a number" })
+    .int({ message: "Limit must be an integer" })
+    .min(1, "Limit must be at least 1")
+    .max(100, "Limit cannot exceed 100")
+    .default(20),
 });
 
 export type CreateMeetingInput = z.infer<typeof CreateMeetingSchema>;
@@ -52,4 +94,3 @@ export type BulkAssignAttendeesInput = z.infer<
 >;
 export type UpdateAttendeeInput = z.infer<typeof UpdateAttendeeSchema>;
 export type MeetingQueryInput = z.infer<typeof MeetingQuerySchema>;
-
