@@ -1,5 +1,4 @@
-import { headers } from "next/headers";
-import { ForbiddenError } from "@src/shared/errors";
+import { ForbiddenError, UnauthorizedError } from "@src/shared/errors";
 import { withValidation, RouteContext } from "./with-validation";
 import { prisma } from "../lib/prisma";
 
@@ -9,8 +8,13 @@ export interface AssociationDetails {
   name: string;
 }
 
+export interface WithAssociationOptions {
+  slugParam?: string;
+}
+
 /**
  * Wraps withValidation to inject association context as the first argument.
+ * Validates that the user's association matches the URL slug if provided.
  */
 export function withAssociation<
   TBody = never,
@@ -24,14 +28,14 @@ export function withAssociation<
     request: Request,
     context: RouteContext<TParams>,
   ) => Promise<Response>,
+  options?: WithAssociationOptions,
 ) {
-  // We utilize your existing withValidation logic for the heavy lifting
   return withValidation<TBody, TQuery, TParams>(
     schemas,
     async (request, context, validated) => {
       const userId = request.headers.get("x-user-id");
       if (!userId) {
-        throw new ForbiddenError("Unauthorized");
+        throw new UnauthorizedError("Unauthorized");
       }
 
       const user = await prisma.user.findUnique({
@@ -39,24 +43,27 @@ export function withAssociation<
         include: { association: true },
       });
 
-      // middleware.ts should populate these headers for every authenticated request
-      const associationId = user?.associationId || user?.association.id;
-      const associationSlug = user?.association.slug;
-      const associationName = user?.association.name;
+      if (!user || !user.association) {
+        throw new ForbiddenError("User association not found");
+      }
 
-      // Security Gate: Ensure the middleware did its job
-      if (!associationId) {
-        throw new ForbiddenError("Missing Association Context");
+      if (options?.slugParam) {
+        const params = (await context.params) as TParams;
+        const urlSlug = params[options.slugParam];
+
+        if (urlSlug && user.association.slug !== urlSlug) {
+          throw new ForbiddenError("Access denied: Invalid association");
+        }
       }
 
       const association: AssociationDetails = {
-        id: associationId,
-        slug: associationSlug ?? "unknown",
-        name: associationName ?? "Association",
+        id: user.association.id,
+        slug: user.association.slug,
+        name: user.association.name,
       };
 
-      // Execute your handler with the association details first
       return handler(association, validated, request, context);
     },
   );
 }
+
