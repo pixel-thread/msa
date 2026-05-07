@@ -1,6 +1,6 @@
 import { ZodError } from "zod";
 
-import { env } from "~/env";
+import { env } from "@src/env";
 import { AppError } from "./classes/base";
 import { ValidationError } from "./classes/http-errors";
 

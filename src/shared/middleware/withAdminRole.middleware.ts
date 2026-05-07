@@ -1,8 +1,8 @@
 import type { NextResponse } from "next/server";
 import { clerkMiddleware } from "@clerk/nextjs/server";
 
-import { normalizeUnknownError } from "~/shared/errors";
-import { AppErrorResponse, getTraceId } from "~/shared/utils";
+import { normalizeUnknownError } from "@src/shared/errors";
+import { AppErrorResponse, getTraceId } from "@src/shared/utils";
 import type { MiddlewareFn } from "./chain";
 import { handleUnauthorized } from "./handle-unauthorized";
 import { isAdminRoute, isPublicRoute } from "./route-matchers";

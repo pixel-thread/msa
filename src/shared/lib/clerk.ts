@@ -1,6 +1,6 @@
 import { createClerkClient } from "@clerk/nextjs/server";
 
-import { env } from "~/env";
+import { env } from "@src/env";
 
 export const clerk = createClerkClient({
   secretKey: env.CLERK_SECRET_KEY,
