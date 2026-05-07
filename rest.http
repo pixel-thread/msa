@@ -53,3 +53,105 @@ Content-Type: application/json
 GET http://localhost:3000/api/admin/associations/{{associationsId}}
 Content-Type: application/json
 
+
+### 
+# @name get unique associations
+POST http://localhost:3000/api/admin
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{ 
+
+  "title":"123"
+}
+
+# ----------------- MEETINGS ------------------
+
+###
+# @name List meetings
+GET http://localhost:3000/api/meeting
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Create meeting
+POST http://localhost:3000/api/meeting
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "title": "Executive Committee Meeting",
+  "type": "EC_MEETING",
+  "scheduledAt": "2026-06-15T10:00:00Z",
+  "venue": "Conference Room A"
+}
+
+###
+# @name Get meeting details
+GET http://localhost:3000/api/meeting/{{meetingId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Update meeting
+PATCH http://localhost:3000/api/meeting/{{meetingId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "title": "Updated Meeting Title",
+  "venue": "New Venue"
+}
+
+###
+# @name Delete meeting
+DELETE http://localhost:3000/api/meeting/{{meetingId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+### ----------------- MEETING ATTENDEES ------------------
+
+###
+# @name List meeting attendees
+GET http://localhost:3000/api/meeting/{{meetingId}}/attendees
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Assign single attendee
+POST http://localhost:3000/api/meeting/{{meetingId}}/attendees
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "userId": "{{userId}}",
+  "attendeeRole": "OPTIONAL"
+}
+
+###
+# @name Bulk assign attendees
+PUT http://localhost:3000/api/meeting/{{meetingId}}/attendees
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "userIds": ["uuid-1", "uuid-2", "uuid-3"],
+  "attendeeRole": "REQUIRED"
+}
+
+###
+# @name Update attendee RSVP
+PATCH http://localhost:3000/api/meeting/{{meetingId}}/attendees/{{userId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "rsvpStatus": "ACCEPTED",
+  "rsvpNote": "I will attend"
+}
+
+###
+# @name Remove attendee
+DELETE http://localhost:3000/api/meeting/{{meetingId}}/attendees/{{userId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}

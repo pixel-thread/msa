@@ -27,7 +27,7 @@
       "@sharedType/*":["./src/shared/types/*"],
       "@errors/*":["./src/shared/errors/*"],
       "@config/*":["./src/shared/config/*"],
-      "@feature/*":["./src/feature/*"]
+      "@feature/*":["./src/features/*"]
     }
   },
   "include": [
