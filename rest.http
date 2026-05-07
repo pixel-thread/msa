@@ -1,5 +1,4 @@
 @associationsId=cmov70woz0000qyfbz7usbd5u
-@token=eyJhbGciOiJSUzI1NiIsImNhdCI6ImNsX0I3ZDRQRDExMUFBQSIsImtpZCI6Imluc18zRE5oekMzSGpIU2hvdk9hYkxacHRnWFpZZnkiLCJ0eXAiOiJKV1QifQ.eyJhenAiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJleHAiOjE3NzgxNDY0NDQsImZ2YSI6WzExLC0xXSwiaWF0IjoxNzc4MTQ2Mzg0LCJpc3MiOiJodHRwczovL21pZ2h0eS1waG9lbml4LTQwLmNsZXJrLmFjY291bnRzLmRldiIsImp0aSI6IjBjZjhhZWYxNmU4OGMwYTU0YWU4IiwibmJmIjoxNzc4MTQ2Mzc0LCJwdWJsaWNfbWV0YWRhdGEiOnt9LCJzaWQiOiJzZXNzXzNET0dUVGFFMU01NmRZeFJCTEtJTVdtYlJGNSIsInN0cyI6ImFjdGl2ZSIsInN1YiI6InVzZXJfM0RPR1RQem5KY0VvWUgxN2d2bmhxVXY2SmtrIiwidiI6Mn0.D9pCj9khwfZKRX6UI_s9aFZJeDnV4Rbw2MoCdWnQrWtmg6Uu4aFeYQs_cMFZ1i7LaODYL-e53J6VykkLWMNq7tUWxtYJ8q-Ks2QFIwvlwH6Ql9LAdSHwSrEf1qAES6NZuiDiba62iMTG_teGkVcezlAtGgTTYMDvZYHcMm4BlBkZR_oQnnhS5iX7pTpHSMsqnWm8EyvPicXrTdzwl-dn1NZ4BBsGsF2z4ZPf-tzadBU_2qAzEjuCDl0VAJ0lMST1SeNhOcZLmO9g1lvULGdOddQss67C8rmKWaXRep0xmv92KbA_MU8tq4aaNytzlLfsVF6kTrCFbIzrE1yY01DcCw
 
 # ----------------- ADMIN ------------------
 
@@ -7,14 +6,14 @@
 # @name Get associations
 GET http://localhost:3000/api/admin/associations
 Content-Type: application/json
-Authorization: Bearer {{token}}
+Authorization: Bearer {{TOKEN}}
 
 ### 
 
 # @name create associations
 POST http://localhost:3000/api/admin/associations
 Content-Type: application/json
-Authorization: Bearer {{token}}
+Authorization: Bearer {{TOKEN}}
 
 {
   "slug": "mfsc",

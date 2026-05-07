@@ -10,7 +10,7 @@ import type { CreateAssociationInput } from "@src/features/associations/validato
 import { withRole } from "@src/shared/api/with-role";
 
 export const GET = withValidation({}, async (req) => {
-  await withRole(req, "ADMIN");
+  await withRole(req, "SUPER_ADMIN");
   const associations = await findManyAssociation({
     orderBy: { createdAt: "desc" },
     where: { status: "ACTIVE" },
@@ -51,4 +51,3 @@ export const POST = withValidation(
     );
   },
 );
-

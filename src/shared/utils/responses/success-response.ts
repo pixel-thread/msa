@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import type { ResponseMeta, SuccessEnvelope } from "~/shared/types";
+import type { ResponseMeta, SuccessEnvelope } from "@src/shared/types";
 
 export function SuccessResponse<T>(
   { data, meta, message }: { data: T; meta?: ResponseMeta; message?: string },
@@ -12,6 +12,7 @@ export function SuccessResponse<T>(
       data,
       meta,
       message,
+      timestamp: new Date().toISOString(),
     },
     { status },
   );

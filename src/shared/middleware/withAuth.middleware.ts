@@ -33,7 +33,7 @@ export const withAuth: MiddlewareFn = (req, next, event) => {
 
             userId = payload.sub;
           } catch {
-            throw new UnauthorizedError("Invalid mobile session token.");
+            throw new UnauthorizedError("Invalid session token.");
           }
         }
       } else {

@@ -1,5 +1,8 @@
 import { withValidation } from "@src/shared/api";
-import { CreateAssociationSchema } from "@src/shared/lib/validations";
+import {
+  CreateAssociationInput,
+  CreateAssociationSchema,
+} from "@src/shared/lib/validations";
 import { findUniqueAssociation } from "@src/features/associations/services/findUniqueAssociation";
 import { findFirstAssociation } from "@src/features/associations/services/findFirstAssociation";
 import { updateAssociation } from "@src/features/associations/services/updateAssociation";
@@ -57,7 +60,7 @@ export const PUT = withValidation(
 
     const updated = await updateAssociation({
       where: { id: params?.id as string },
-      data: body,
+      data: body as CreateAssociationInput,
     });
 
     return SuccessResponse<Association>(
@@ -66,4 +69,3 @@ export const PUT = withValidation(
     );
   },
 );
-

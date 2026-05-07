@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import type { ErrorEnvelope } from "~/shared/types";
+import type { ErrorEnvelope } from "@src/shared/types";
 
 interface ErrorResponseOptions {
   message: string;
@@ -28,6 +28,7 @@ export function ErrorResponse({
         details,
         traceId: finalTraceId,
       },
+      timestamp: new Date().toISOString(),
     },
     {
       status,

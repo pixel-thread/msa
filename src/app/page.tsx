@@ -3,8 +3,9 @@ import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
 
 export default async function Home() {
-  const { isAuthenticated } = await auth();
-
+  const { isAuthenticated, getToken } = await auth();
+  const token = await getToken({ template: "jwt" });
+  console.log("token", token);
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 text-gray-900">
       <header className="fixed top-0 w-full p-6 flex justify-between items-center max-w-7xl mx-auto">

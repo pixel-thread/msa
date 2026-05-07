@@ -1,4 +1,4 @@
-import type { AppError } from "~/shared/errors";
+import type { AppError } from "@src/shared/errors";
 import { ErrorResponse } from "./error-response";
 
 export function AppErrorResponse(error: AppError, traceId: string) {
