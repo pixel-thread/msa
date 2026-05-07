@@ -5,7 +5,7 @@ import { XIcon } from "@phosphor-icons/react";
 import { Dialog as DialogPrimitive } from "radix-ui";
 
 import { Button } from "~/shared/components/ui/button";
-import { cn } from "~/shared/lib/utils";
+import { cn } from "@src/shared/lib/utils";
 
 function Dialog({
   ...props

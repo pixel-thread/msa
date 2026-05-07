@@ -3,7 +3,7 @@ import { CaretDownIcon } from "@phosphor-icons/react";
 import { cva } from "class-variance-authority";
 import { NavigationMenu as NavigationMenuPrimitive } from "radix-ui";
 
-import { cn } from "~/shared/lib/utils";
+import { cn } from "@src/shared/lib/utils";
 
 function NavigationMenu({
   className,
