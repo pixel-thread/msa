@@ -8,7 +8,7 @@ export const ADMIN_ROUTES = ["/api/admin(.*)", "/admin(.*)"] as const;
  */
 export const PUBLIC_ROUTES = [
   "/",
-  "/menu(.*)",
+  "/docs(.*)",
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/forbidden",
@@ -20,6 +20,7 @@ export const PUBLIC_ROUTES = [
 export const API_PUBLIC_ROUTES = [
   "/api/health(.*)",
   "/api/webhooks/clerk(.*)",
+  "/api/docs(.*)",
 ] as const;
 
 /**
