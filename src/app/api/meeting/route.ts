@@ -67,6 +67,7 @@ export const POST = withAssociation(
         type: body.type,
         scheduledAt: new Date(body.scheduledAt),
         venue: body.venue,
+        agendaItems: body.agendaItems,
       },
     });
 
