@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 
-import { ForbiddenError, UnauthorizedError } from "~/shared/errors";
-import type { UserRole } from "~/shared/types";
+import { ForbiddenError, UnauthorizedError } from "@src/shared/errors";
+import type { UserRole } from "@src/shared/types";
 
 export interface AuthSession {
   userId: string;

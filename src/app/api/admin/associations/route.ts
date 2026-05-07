@@ -1,41 +1,54 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@lib/prisma";
-import { Prisma } from "@prisma/client";
 import { withValidation } from "@src/shared/api";
 import { CreateAssociationSchema } from "@src/shared/lib/validations";
 import { createAssociation } from "@src/features/associations/services/createAssociation";
-import { withAuth } from "@src/shared/middleware";
+import { findManyAssociation } from "@src/features/associations/services/findManyAssociation";
+import { findFirstAssociation } from "@src/features/associations/services/findFirstAssociation";
+import { SuccessResponse } from "@src/shared/utils";
+import type { Association } from "@prisma/client";
+import { ConflictError } from "@src/shared/errors";
+import type { CreateAssociationInput } from "@src/features/associations/validators/associations";
+import { withRole } from "@src/shared/api/with-role";
 
-type SessionClaims = { org_role?: string; metadata?: { role?: string } };
+export const GET = withValidation({}, async (req) => {
+  await withRole(req, "ADMIN");
+  const associations = await findManyAssociation({
+    orderBy: { createdAt: "desc" },
+    where: { status: "ACTIVE" },
+  });
 
-export async function GET() {
-  try {
-    const associations = await prisma.association.findMany({
-      orderBy: { createdAt: "desc" },
-    });
-
-    return NextResponse.json(associations);
-  } catch (error) {
-    console.error("Fetch associations error:", error);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 },
-    );
-  }
-}
+  return SuccessResponse<Association[]>({ data: associations });
+});
 
 export const POST = withValidation(
   { body: CreateAssociationSchema },
-  async (req, ctx, body) => {
-    const userId = req.headers.get("x-user-id");
-    // check for user and his role
-    const association = await createAssociation({
-      data: body,
+  async (req, _ctx, { body }) => {
+    await withRole(req, "SUPER_ADMIN");
+
+    const existing = await findFirstAssociation({
+      where: {
+        OR: [
+          { slug: body?.slug, status: "ACTIVE" },
+          { name: body?.name, status: "ACTIVE" },
+        ],
+      },
+      take: 1,
     });
 
-    return NextResponse.json(
-      { data: association, message: "Association created successfully" },
-      { status: 201 },
+    if (existing) {
+      throw new ConflictError("Association Already Exists");
+    }
+
+    const association = await createAssociation({
+      data: body as CreateAssociationInput,
+    });
+
+    return SuccessResponse<Association>(
+      {
+        data: association,
+        message: "Association created successfully",
+      },
+      201,
     );
   },
 );
+

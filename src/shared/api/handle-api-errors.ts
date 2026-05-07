@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 
-import { AppError, normalizeUnknownError } from "~/shared/errors";
-import { AppErrorResponse, getTraceId } from "~/shared/utils";
+import { AppError, normalizeUnknownError } from "@src/shared/errors";
+import { AppErrorResponse, getTraceId } from "@src/shared/utils";
 
 type RouteHandler<TContext> = (
   request: NextRequest,

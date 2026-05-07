@@ -1,9 +1,14 @@
 import { NextRequest } from "next/server";
-import type { Role } from "@prisma/client";
+import type { UserRole as Role } from "@prisma/client";
 
-import { ROLE_HIERARCHY } from "~/shared/constants/roles";
 import { ForbiddenError, UnauthorizedError } from "../errors";
 import { prisma } from "../lib/prisma";
+
+const ROLE_HIERARCHY: Record<Role, number> = {
+  SUPER_ADMIN: 0,
+  ADMIN: 1,
+  USER: 2,
+};
 
 export async function withRole(req: NextRequest, role: Role) {
   const userId = req.headers.get("x-user-id");

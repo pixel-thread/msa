@@ -22,6 +22,13 @@ enum UserRole {
   @@map("user_role")
 }
 
+enum Status{ 
+  DELETED
+  ACTIVE
+  INACTIVE
+  @@map("status")
+}
+
 enum UserStatus {
   ACTIVE
   INACTIVE
@@ -138,7 +145,7 @@ enum AuditAction {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Association {
-  id             String   @id @default(cuid())
+  id             String   @id @default(uuid())
   slug           String   @unique            // "mfsa" | "mpsa"
   name           String   @unique
   description    String?
@@ -154,6 +161,7 @@ model Association {
   isActive       Boolean  @default(true)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  status            Status  @default(ACTIVE)
 
   users             User[]
   subscriptionPlans SubscriptionPlan[]
@@ -175,7 +183,7 @@ model Association {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model User {
-  id                   String        @id @default(cuid())
+  id                   String        @id @default(uuid())
   clerkId              String        @unique
   associationId        String                         // ★ Every user belongs to one association
   email                String
@@ -226,7 +234,7 @@ model User {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model ConsentReceipt {
-  id            String         @id @default(cuid())
+  id            String         @id @default(uuid())
   associationId String                               // ★
   userId        String
   purpose       ConsentPurpose
@@ -251,7 +259,7 @@ model ConsentReceipt {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model DsarTicket {
-  id               String          @id @default(cuid())
+  id               String          @id @default(uuid())
   associationId    String                               // ★
   ticketNumber     String          @unique
   userId           String
@@ -280,7 +288,7 @@ model DsarTicket {
 }
 
 model DsarResponse {
-  id             String     @id @default(cuid())
+  id             String     @id @default(uuid())
   dsarTicketId   String
   responseType   String
   storageKey     String?
@@ -298,7 +306,7 @@ model DsarResponse {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model SubscriptionPlan {
-  id            String        @id @default(cuid())
+  id            String        @id @default(uuid())
   associationId String                               // ★
   name          String
   description   String?
@@ -320,7 +328,7 @@ model SubscriptionPlan {
 }
 
 model Subscription {
-  id           String           @id @default(cuid())
+  id           String           @id @default(uuid())
   userId       String           @unique              // One active subscription per user
   planId       String
   status       String           @default("ACTIVE")
@@ -346,7 +354,7 @@ model Subscription {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Payment {
-  id             String        @id @default(cuid())
+  id             String        @id @default(uuid())
   associationId  String                               // ★
   userId         String
   subscriptionId String?
@@ -377,7 +385,7 @@ model Payment {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Account {
-  id            String       @id @default(cuid())
+  id            String       @id @default(uuid())
   associationId String                               // ★
   code          String
   name          String
@@ -397,7 +405,7 @@ model Account {
 }
 
 model LedgerEntry {
-  id              String         @id @default(cuid())
+  id              String         @id @default(uuid())
   referenceNumber String         @unique
   description     String
   transactionDate DateTime       @default(now())
@@ -421,7 +429,7 @@ model LedgerEntry {
 }
 
 model LedgerLine {
-  id              String      @id @default(cuid())
+  id              String      @id @default(uuid())
   entryId         String
   debitAccountId  String?
   creditAccountId String?
@@ -440,7 +448,7 @@ model LedgerLine {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Meeting {
-  id             String          @id @default(cuid())
+  id             String          @id @default(uuid())
   associationId  String                               // ★
   title          String
   type           MeetingType
@@ -468,7 +476,7 @@ model Meeting {
 
 // ★ Meeting assignment join table
 model MeetingAttendee {
-  id           String       @id @default(cuid())
+  id           String       @id @default(uuid())
   meetingId    String
   userId       String
   attendeeRole AttendeeRole @default(OPTIONAL)
@@ -490,7 +498,7 @@ model MeetingAttendee {
 }
 
 model AgendaItem {
-  id          String   @id @default(cuid())
+  id          String   @id @default(uuid())
   meetingId   String
   order       Int
   title       String
@@ -504,7 +512,7 @@ model AgendaItem {
 }
 
 model MeetingMinutes {
-  id          String   @id @default(cuid())
+  id          String   @id @default(uuid())
   meetingId   String
   agendaPoint String
   decision    String
@@ -520,7 +528,7 @@ model MeetingMinutes {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model TrainingModule {
-  id               String              @id @default(cuid())
+  id               String              @id @default(uuid())
   associationId    String                               // ★
   title            String
   description      String?
@@ -541,7 +549,7 @@ model TrainingModule {
 }
 
 model TrainingCompletion {
-  id             String         @id @default(cuid())
+  id             String         @id @default(uuid())
   userId         String
   moduleId       String
   scorePercent   Decimal?       @db.Decimal(5, 2)
@@ -560,7 +568,7 @@ model TrainingCompletion {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model AuditLog {
-  id            String      @id @default(cuid())
+  id            String      @id @default(uuid())
   associationId String                               // ★
   actorId       String?
   action        AuditAction

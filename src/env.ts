@@ -18,10 +18,8 @@ export const env = createEnv({
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().startsWith("pk_"),
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string().default("/sign-in"),
     NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string().default("/sign-up"),
-    NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: z
-      .string()
-      .default("/member/dashboard"),
-    NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: z.string().default("/onboarding"),
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: z.string().default("/"),
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: z.string().default("/"),
     NEXT_PUBLIC_APP_URL: z.url(),
     NEXT_PUBLIC_ASSOCIATION_SLUG: z.string().min(2).max(10), // Set per-app build
     NEXT_PUBLIC_API_BASE_URL: z.url(),
