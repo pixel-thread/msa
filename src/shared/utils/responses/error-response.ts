@@ -1,0 +1,39 @@
+import { NextResponse } from "next/server";
+
+import type { ErrorEnvelope } from "~/shared/types";
+
+interface ErrorResponseOptions {
+  message: string;
+  status: number;
+  code: string;
+  traceId?: string;
+  details?: unknown;
+}
+
+export function ErrorResponse({
+  message,
+  status,
+  code,
+  traceId,
+  details,
+}: ErrorResponseOptions): NextResponse<ErrorEnvelope> {
+  const finalTraceId = traceId ?? crypto.randomUUID();
+
+  return NextResponse.json(
+    {
+      success: false,
+      error: {
+        code,
+        message,
+        details,
+        traceId: finalTraceId,
+      },
+    },
+    {
+      status,
+      headers: {
+        "x-trace-id": finalTraceId,
+      },
+    },
+  );
+}

@@ -1,0 +1,32 @@
+import type { MiddlewareFn } from "./chain";
+
+export const withSecurityHeaders: MiddlewareFn = async (req, next, _event) => {
+  const response = await next(req);
+
+  const headers = response.headers;
+
+  headers.set("X-DNS-Prefetch-Control", "on");
+  headers.set(
+    "Strict-Transport-Security",
+    "max-age=63072000; includeSubDomains; preload",
+  );
+  headers.set("X-Frame-Options", "DENY");
+  headers.set("X-Content-Type-Options", "nosniff");
+  headers.set("Referrer-Policy", "origin-when-cross-origin");
+  headers.set("X-Permitted-Cross-Domain-Policies", "none");
+
+  // CSP
+  const csp = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.com https://*.clerk.com",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "img-src 'self' data: https://*.clerk.com https://*.public.blob.vercel-storage.com",
+    "font-src 'self' https://fonts.gstatic.com",
+    "connect-src 'self' https://clerk.com https://*.clerk.com wss://ws-*.pusher.com",
+    "frame-ancestors 'none'",
+  ].join("; ");
+
+  headers.set("Content-Security-Policy", csp);
+
+  return response;
+};

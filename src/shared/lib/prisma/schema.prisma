@@ -1,0 +1,586 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  extensions = [pgcrypto, pg_trgm]
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  SUPER_ADMIN
+  PRESIDENT
+  SECRETARY
+  FINANCE
+  DPO
+  MEMBER
+  @@map("user_role")
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  ANONYMIZED
+  @@map("user_status")
+}
+
+enum ConsentPurpose {
+  PAYMENTS
+  COMMUNICATIONS
+  MEETINGS
+  ANALYTICS
+  MARKETING
+  @@map("consent_purpose")
+}
+
+enum ConsentStatus {
+  GRANTED
+  WITHDRAWN
+  @@map("consent_status")
+}
+
+enum DsarRequestType {
+  ACCESS
+  CORRECTION
+  DELETION
+  PORTABILITY
+  @@map("dsar_request_type")
+}
+
+enum DsarStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  REJECTED
+  @@map("dsar_status")
+}
+
+enum PaymentType {
+  SUBSCRIPTION
+  DONATION
+  EVENT_FEE
+  BANK_INTEREST
+  FAMILY_CONTRIBUTION
+  @@map("payment_type")
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+  WAIVED
+  @@map("payment_status")
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  @@map("approval_status")
+}
+
+enum MeetingType {
+  EC_MEETING
+  GENERAL_MEETING
+  @@map("meeting_type")
+}
+
+enum MeetingStatus {
+  SCHEDULED
+  NOTICE_ISSUED
+  COMPLETED
+  CANCELLED
+  @@map("meeting_status")
+}
+
+enum AttendeeRole {
+  REQUIRED    // Must attend
+  OPTIONAL    // Invited; attendance is optional
+  OBSERVER    // View-only participant
+  @@map("attendee_role")
+}
+
+enum RsvpStatus {
+  PENDING     // Invited, not yet responded
+  ACCEPTED
+  DECLINED
+  @@map("rsvp_status")
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  CONSENT_GRANT
+  CONSENT_REVOKE
+  DSAR_SUBMIT
+  DSAR_RESPOND
+  PAYMENT_RECORD
+  SUBSCRIPTION_CHANGE
+  ANONYMIZE
+  ROLE_CHANGE
+  MEETING_ASSIGN
+  MEETING_RSVP
+  @@map("audit_action")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ASSOCIATION  (root tenant)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Association {
+  id             String   @id @default(cuid())
+  slug           String   @unique            // "mfsa" | "mpsa"
+  name           String   @unique
+  description    String?
+  logo           String?
+  country        String   @default("IN")
+  state          String?
+  timezone       String   @default("Asia/Kolkata")
+  currencyCode   String   @default("INR")
+  primaryColor   String?  @default("#1f2937")
+  secondaryColor String?  @default("#3b82f6")
+  contactEmail   String?
+  contactPhone   String?
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  users             User[]
+  subscriptionPlans SubscriptionPlan[]
+  payments          Payment[]
+  dsarTickets       DsarTicket[]
+  consentReceipts   ConsentReceipt[]
+  accounts          Account[]
+  meetings          Meeting[]
+  trainingModules   TrainingModule[]
+  auditLogs         AuditLog[]
+
+  @@index([slug])
+  @@index([isActive])
+  @@map("associations")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// USERS
+// ─────────────────────────────────────────────────────────────────────────────
+
+model User {
+  id                   String        @id @default(cuid())
+  clerkId              String        @unique
+  associationId        String                         // ★ Every user belongs to one association
+  email                String
+  name                 String
+  mobile               String?                        // Encrypted (AES-256-GCM)
+  designation          String?                        // Encrypted (AES-256-GCM)
+  role                 UserRole      @default(MEMBER)
+  status               UserStatus    @default(ACTIVE)
+  dateOfJoiningGovt    DateTime?
+  dateOfJoiningMfsa    DateTime?
+  membershipNumber     String?
+  overallConsentStatus ConsentStatus @default(GRANTED)
+  dataRetentionUntil   DateTime      @default(dbgenerated("(NOW() + INTERVAL '7 years')"))
+  failedLoginAttempts  Int           @default(0)
+  lockedUntil          DateTime?
+  deletedAt            DateTime?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  association          Association   @relation(fields: [associationId], references: [id], onDelete: Cascade)
+
+  subscription         Subscription?
+  payments             Payment[]
+  dsarTickets          DsarTicket[]          @relation("MemberTickets")
+  assignedDsarTickets  DsarTicket[]          @relation("AssignedTickets")
+  consentReceipts      ConsentReceipt[]
+  auditLogs            AuditLog[]            @relation("ActorLogs")
+  ledgerEntries        LedgerEntry[]         @relation("CreatedEntries")
+  approvedEntries      LedgerEntry[]         @relation("ApprovedEntries")
+  trainingCompletions  TrainingCompletion[]
+  meetingsCreated      Meeting[]             @relation("CreatedMeetings")
+  meetingAttendances   MeetingAttendee[]     // ★ Meetings this user is assigned to
+
+  // Email is unique within one association; same person can join MFSA and MPSA separately
+  @@unique([associationId, email])
+  @@unique([associationId, clerkId])
+  @@unique([associationId, membershipNumber])
+  @@index([associationId])
+  @@index([email])
+  @@index([role])
+  @@index([status])
+  @@index([dataRetentionUntil])
+  @@map("users")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CONSENT
+// ─────────────────────────────────────────────────────────────────────────────
+
+model ConsentReceipt {
+  id            String         @id @default(cuid())
+  associationId String                               // ★
+  userId        String
+  purpose       ConsentPurpose
+  status        ConsentStatus
+  ipAddress     String?
+  userAgent     String?
+  channel       String         @default("web")
+  metadata      Json?
+  createdAt     DateTime       @default(now())       // Immutable — each change is a new row
+
+  association   Association    @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([associationId])
+  @@index([userId, purpose])
+  @@index([createdAt])
+  @@map("consent_receipts")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DSAR
+// ─────────────────────────────────────────────────────────────────────────────
+
+model DsarTicket {
+  id               String          @id @default(cuid())
+  associationId    String                               // ★
+  ticketNumber     String          @unique
+  userId           String
+  requestType      DsarRequestType
+  requestedData    String[]
+  description      String?
+  status           DsarStatus      @default(PENDING)
+  assignedToId     String?
+  responseDeadline DateTime        @default(dbgenerated("(NOW() + INTERVAL '21 days')"))
+  rejectedReason   String?
+  completedAt      DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  association      Association     @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  member           User            @relation("MemberTickets",   fields: [userId],       references: [id], onDelete: Cascade)
+  assignedTo       User?           @relation("AssignedTickets", fields: [assignedToId], references: [id])
+  responses        DsarResponse[]
+
+  @@unique([associationId, ticketNumber])
+  @@index([associationId])
+  @@index([userId])
+  @@index([status])
+  @@index([responseDeadline])
+  @@map("dsar_tickets")
+}
+
+model DsarResponse {
+  id             String     @id @default(cuid())
+  dsarTicketId   String
+  responseType   String
+  storageKey     String?
+  deliveryMethod String     @default("secure_download")
+  notes          String?
+  deliveredAt    DateTime?
+  createdAt      DateTime   @default(now())
+
+  ticket         DsarTicket @relation(fields: [dsarTicketId], references: [id], onDelete: Cascade)
+  @@map("dsar_responses")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SUBSCRIPTIONS
+// ─────────────────────────────────────────────────────────────────────────────
+
+model SubscriptionPlan {
+  id            String        @id @default(cuid())
+  associationId String                               // ★
+  name          String
+  description   String?
+  amount        Decimal       @db.Decimal(10, 2)
+  currency      String        @default("INR")
+  billingCycle  String        @default("YEARLY")
+  features      Json
+  isActive      Boolean       @default(true)
+  effectiveFrom DateTime      @default(now())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  association   Association   @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  subscriptions Subscription[]
+
+  @@unique([associationId, name])
+  @@index([associationId])
+  @@map("subscription_plans")
+}
+
+model Subscription {
+  id           String           @id @default(cuid())
+  userId       String           @unique              // One active subscription per user
+  planId       String
+  status       String           @default("ACTIVE")
+  startDate    DateTime         @default(now())
+  endDate      DateTime
+  waivedAt     DateTime?
+  waivedReason String?
+  waivedBy     String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan         SubscriptionPlan @relation(fields: [planId], references: [id])
+  payments     Payment[]
+
+  @@index([status])
+  @@index([endDate])
+  @@map("subscriptions")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PAYMENTS
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Payment {
+  id             String        @id @default(cuid())
+  associationId  String                               // ★
+  userId         String
+  subscriptionId String?
+  amount         Decimal       @db.Decimal(10, 2)
+  currency       String        @default("INR")
+  type           PaymentType
+  status         PaymentStatus @default(PENDING)
+  receiptNumber  String?
+  notes          String?
+  paymentDate    DateTime      @default(now())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  association    Association   @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+  ledgerEntries  LedgerEntry[]
+
+  @@unique([associationId, receiptNumber])
+  @@index([associationId])
+  @@index([userId])
+  @@index([status])
+  @@map("payments")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FINANCIAL LEDGER
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Account {
+  id            String       @id @default(cuid())
+  associationId String                               // ★
+  code          String
+  name          String
+  type          String
+  description   String?
+  isActive      Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+
+  association   Association  @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  debitLines    LedgerLine[] @relation("DebitAccount")
+  creditLines   LedgerLine[] @relation("CreditAccount")
+
+  @@unique([associationId, code])
+  @@unique([associationId, name])
+  @@index([associationId])
+  @@map("accounts")
+}
+
+model LedgerEntry {
+  id              String         @id @default(cuid())
+  referenceNumber String         @unique
+  description     String
+  transactionDate DateTime       @default(now())
+  paymentId       String?
+  category        String?
+  approvalStatus  ApprovalStatus @default(PENDING)
+  createdById     String
+  approvedById    String?
+  approvedAt      DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  createdBy       User           @relation("CreatedEntries",  fields: [createdById],  references: [id])
+  approvedBy      User?          @relation("ApprovedEntries", fields: [approvedById], references: [id])
+  payment         Payment?       @relation(fields: [paymentId], references: [id])
+  lines           LedgerLine[]
+
+  @@index([approvalStatus])
+  @@index([transactionDate])
+  @@map("ledger_entries")
+}
+
+model LedgerLine {
+  id              String      @id @default(cuid())
+  entryId         String
+  debitAccountId  String?
+  creditAccountId String?
+  amount          Decimal     @db.Decimal(12, 2)
+  narration       String?
+
+  entry           LedgerEntry @relation(fields: [entryId],          references: [id], onDelete: Cascade)
+  debitAccount    Account?    @relation("DebitAccount",  fields: [debitAccountId],  references: [id])
+  creditAccount   Account?    @relation("CreditAccount", fields: [creditAccountId], references: [id])
+
+  @@map("ledger_lines")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MEETINGS & GOVERNANCE
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Meeting {
+  id             String          @id @default(cuid())
+  associationId  String                               // ★
+  title          String
+  type           MeetingType
+  status         MeetingStatus   @default(SCHEDULED)
+  scheduledAt    DateTime
+  venue          String?
+  noticeIssuedAt DateTime?
+  createdById    String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  association    Association     @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  createdBy      User            @relation("CreatedMeetings", fields: [createdById], references: [id])
+
+  attendees      MeetingAttendee[]   // ★ All assigned members
+  agendaItems    AgendaItem[]
+  minutes        MeetingMinutes[]
+
+  @@index([associationId])
+  @@index([type])
+  @@index([status])
+  @@index([scheduledAt])
+  @@map("meetings")
+}
+
+// ★ Meeting assignment join table
+model MeetingAttendee {
+  id           String       @id @default(cuid())
+  meetingId    String
+  userId       String
+  attendeeRole AttendeeRole @default(OPTIONAL)
+  rsvpStatus   RsvpStatus   @default(PENDING)
+  rsvpNote     String?                           // Decline reason, etc.
+  rsvpAt       DateTime?                         // Timestamp of RSVP
+  notifiedAt   DateTime?                         // When meeting notice was sent to them
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  meeting      Meeting      @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId],   references: [id], onDelete: Cascade)
+
+  @@unique([meetingId, userId])    // One row per member per meeting
+  @@index([meetingId])
+  @@index([userId])
+  @@index([rsvpStatus])
+  @@map("meeting_attendees")
+}
+
+model AgendaItem {
+  id          String   @id @default(cuid())
+  meetingId   String
+  order       Int
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+
+  meeting     Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@index([meetingId])
+  @@map("agenda_items")
+}
+
+model MeetingMinutes {
+  id          String   @id @default(cuid())
+  meetingId   String
+  agendaPoint String
+  decision    String
+  actionItems Json?    // [{ assigneeId, task, dueDate }]
+  recordedAt  DateTime @default(now())
+
+  meeting     Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  @@map("meeting_minutes")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TRAINING
+// ─────────────────────────────────────────────────────────────────────────────
+
+model TrainingModule {
+  id               String              @id @default(cuid())
+  associationId    String                               // ★
+  title            String
+  description      String?
+  content          String
+  durationMinutes  Int?
+  requiredForRoles UserRole[]          @default([MEMBER])
+  version          Int                 @default(1)
+  isActive         Boolean             @default(true)
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  association      Association         @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  completions      TrainingCompletion[]
+
+  @@unique([associationId, title])
+  @@index([associationId])
+  @@map("training_modules")
+}
+
+model TrainingCompletion {
+  id             String         @id @default(cuid())
+  userId         String
+  moduleId       String
+  scorePercent   Decimal?       @db.Decimal(5, 2)
+  certificateUrl String?
+  completedAt    DateTime       @default(now())
+
+  user           User           @relation(fields: [userId],   references: [id], onDelete: Cascade)
+  module         TrainingModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, moduleId])
+  @@map("training_completions")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AUDIT LOG  (append-only — no updatedAt)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id            String      @id @default(cuid())
+  associationId String                               // ★
+  actorId       String?
+  action        AuditAction
+  resourceType  String
+  resourceId    String?
+  oldValues     Json?
+  newValues     Json?
+  ipAddress     String?
+  userAgent     String?
+  traceId       String?
+  createdAt     DateTime    @default(now())
+
+  association   Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  actor         User?       @relation("ActorLogs", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([associationId])
+  @@index([actorId])
+  @@index([action])
+  @@index([resourceType, resourceId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
