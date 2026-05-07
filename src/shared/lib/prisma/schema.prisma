@@ -312,7 +312,7 @@ model SubscriptionPlan {
   description   String?
   amount        Decimal       @db.Decimal(10, 2)
   currency      String        @default("INR")
-  billingCycle  String        @default("YEARLY")
+  billingCycle  String        @default("MONTHLY")
   features      Json
   isActive      Boolean       @default(true)
   effectiveFrom DateTime      @default(now())

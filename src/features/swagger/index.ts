@@ -2,6 +2,7 @@ import { healthPath } from "./paths/health";
 import { meetingPaths } from "./paths/meeting";
 import { attendeePaths } from "./paths/attendee";
 import { adminPaths } from "./paths/admin";
+import { subscriptionPaths } from "./paths/subscription";
 
 export const openApiSpec = {
   openapi: "3.0.0",
@@ -36,6 +37,7 @@ export const openApiSpec = {
     ...meetingPaths,
     ...attendeePaths,
     ...adminPaths,
+    ...subscriptionPaths,
   },
 };
 
@@ -43,3 +45,4 @@ export { healthPath } from "./paths/health";
 export { meetingPaths } from "./paths/meeting";
 export { attendeePaths } from "./paths/attendee";
 export { adminPaths } from "./paths/admin";
+export { subscriptionPaths } from "./paths/subscription";

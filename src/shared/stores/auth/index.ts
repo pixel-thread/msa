@@ -1,10 +1,10 @@
 "use client";
 
-import type { Role } from "@prisma/client";
+import type { UserRole as Role } from "@prisma/client";
 import { create } from "zustand";
 
-import { ROLE_HIERARCHY } from "~/shared/constants/roles";
-import http from "~/shared/utils/http";
+import { ROLE_HIERARCHY } from "@src/shared/constants/roles";
+import http from "@src/shared/utils/http";
 
 export interface AuthUser {
   id: string;
@@ -15,7 +15,7 @@ export interface AuthUser {
   phone: string | null;
 }
 
-interface AuthState {
+export interface AuthState {
   isHydrated: boolean;
   isSignedIn: boolean;
   user: AuthUser | null;
@@ -56,7 +56,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true });
 
     try {
-      const res = await http.get<AuthUser>("/auth/me");
+      const res = await http.get<AuthUser>("/me");
 
       if (!res.success || !res.data) {
         set({ user: null, isSignedIn: false });
@@ -76,7 +76,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   isAdmin: () => {
     const { user } = get();
-    return user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
+    return user?.role === "SUPER_ADMIN";
   },
 
   isSuperAdmin: () => {
