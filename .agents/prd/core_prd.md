@@ -242,10 +242,20 @@ app/
 
 ### 3.1 Authentication & Identity
 
-| Route                 | Method | Purpose                                                         | Roles                            |
-| --------------------- | ------ | --------------------------------------------------------------- | -------------------------------- |
-| `/api/auth/me`        | GET    | Current user profile + role + association                       | All authenticated                |
-| `/api/webhooks/clerk` | POST   | Clerk webhooks: `user.created`, `user.updated`, `session.ended` | Public — SVIX signature verified |
+| Route                      | Method | Purpose                                          | Roles                    |
+| -------------------------- | ------ | ------------------------------------------------ | ------------------------ |
+| `/api/auth/sign-up`        | POST   | Register new user with email/password            | Public                   |
+| `/api/auth/sign-in`        | POST   | Authenticate with email/password + MFA support    | Public                   |
+| `/api/auth/sign-in/verify`  | POST   | Verify MFA code and issue tokens                | Public                   |
+| `/api/auth/refresh`        | POST   | Refresh access token using refresh token        | Authenticated            |
+| `/api/auth/logout`         | POST   | Invalidate refresh token and clear cookies     | Authenticated            |
+| `/api/auth/me`             | GET    | Current user profile + role + association       | All authenticated        |
+| `/api/auth/forgot-password`| POST   | Request password reset email                   | Public                   |
+| `/api/auth/reset-password` | POST   | Reset password with token                      | Public                   |
+| `/api/auth/change-password`| POST   | Change password (authenticated)                | Authenticated            |
+| `/api/auth/mfa/setup`     | POST   | Start MFA setup (requires password)           | Authenticated            |
+| `/api/auth/mfa/verify`     | POST   | Verify and enable MFA                         | Authenticated            |
+| `/api/auth/mfa/disable`   | POST   | Disable MFA (requires password)               | Authenticated            |
 
 ### 3.2 Associations (Super Admin)
 
@@ -385,38 +395,33 @@ app/
 ```typescript
 // middleware.ts — root of project
 import { NextResponse, type NextRequest } from "next/server";
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { verifyAccessToken } from "@src/shared/lib/jwt";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. ROUTE CLASSIFICATION
 // ─────────────────────────────────────────────────────────────────────────────
 
-const isPublicRoute = createRouteMatcher([
+const PUBLIC_ROUTES = [
   "/",
-  "/sign-in(.*)",
-  "/sign-up(.*)",
-  "/api/webhooks/clerk",
+  "/sign-in",
+  "/sign-up",
+  "/forgot-password",
+  "/reset-password",
+  "/api/auth/sign-up",
+  "/api/auth/sign-in",
+  "/api/auth/forgot-password",
+  "/api/auth/reset-password",
   "/api/health",
-]);
+  "/api/docs",
+];
 
-const isAdminRoute = createRouteMatcher([
-  "/(admin)(.*)",
-  "/api/members(.*)",
-  "/api/meetings(.*)",
-  "/api/training/completions(.*)",
-]);
-
-const isFinanceRoute = createRouteMatcher([
-  "/(finance)(.*)",
-  "/api/ledger(.*)",
-  "/api/payments(.*)",
-]);
-
-const isDpoRoute = createRouteMatcher([
-  "/(dpo)(.*)",
-  "/api/dsar(.*)",
+function isPublicRoute(pathname: string): boolean {
+  return PUBLIC_ROUTES.some(route => 
+    pathname === route || pathname.startsWith(route + "/")
+  );
+}
   "/api/consent/all(.*)",
   "/api/consent/report(.*)",
   "/api/compliance(.*)",
@@ -479,12 +484,12 @@ function applySecurityHeaders(res: NextResponse): NextResponse {
     "Content-Security-Policy",
     [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.clerk.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: blob: https://*.clerk.com",
-      "connect-src 'self' https://*.clerk.com wss://*.clerk.com",
-      "frame-src https://*.clerk.com",
+      "img-src 'self' data: blob:",
+      "connect-src 'self'",
+      "frame-src 'none'",
       "frame-ancestors 'none'",
       "upgrade-insecure-requests",
     ].join("; "),
@@ -538,75 +543,85 @@ function hasMinRole(userRole: string, required: string): boolean {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 6. MAIN MIDDLEWARE
+// 6. MAIN MIDDLEWARE (JWT-based)
 // ─────────────────────────────────────────────────────────────────────────────
 
-export default clerkMiddleware(async (auth, req: NextRequest) => {
-  const { pathname } = req.nextUrl;
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
 
   // A. Public routes
-  if (isPublicRoute(req)) {
-    const res = NextResponse.next();
-    res.headers.set("x-trace-id", crypto.randomUUID());
-    return applySecurityHeaders(res);
+  if (isPublicRoute(pathname)) {
+    return NextResponse.next();
   }
 
-  // B. Rate limiting — keyed by association:ip to prevent cross-tenant exhaustion
-  const ip =
-    req.ip ??
-    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    "unknown";
-
-  const assocSlug = resolveAssociationSlug(req);
-  const isAuthPath =
-    pathname.startsWith("/sign-in") || pathname === "/api/auth/me";
-
-  const limiter = isAuthPath ? getAuthLimiter() : getGlobalLimiter();
-  const identifier = isAuthPath
-    ? `${assocSlug}:${ip}:${req.headers.get("x-email") ?? "nomail"}`
-    : `${assocSlug}:${ip}`;
+  // B. Rate limiting
+  const ip = request.ip ?? request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const limiter = pathname.startsWith("/api/auth/") ? getAuthLimiter() : getGlobalLimiter();
+  const identifier = `${ip}:${pathname}`;
 
   const { success, limit, remaining, reset } = await limiter.limit(identifier);
 
   if (!success) {
-    const retryAfter = Math.ceil((reset - Date.now()) / 1000);
-    return applySecurityHeaders(
-      NextResponse.json(
-        { error: "Too many requests", code: "RATE_LIMITED", retryAfter },
-        {
-          status: 429,
-          headers: {
-            "Retry-After": String(retryAfter),
-            "X-RateLimit-Limit": String(limit),
-            "X-RateLimit-Remaining": "0",
-            "X-RateLimit-Reset": new Date(reset).toISOString(),
-          },
-        },
-      ),
+    return NextResponse.json(
+      { error: "Too many requests", code: "RATE_LIMITED" },
+      { status: 429 }
     );
   }
 
-  // C. Authentication
-  const { userId, sessionClaims } = await auth();
+  // C. JWT Authentication
+  const accessToken = request.cookies.get("access_token")?.value;
 
-  if (!userId) {
+  if (!accessToken) {
     if (pathname.startsWith("/api/")) {
-      return applySecurityHeaders(
-        NextResponse.json(
-          { error: "Authentication required", code: "UNAUTHORIZED" },
-          { status: 401 },
-        ),
+      return NextResponse.json(
+        { error: "Authentication required", code: "UNAUTHORIZED" },
+        { status: 401 }
       );
     }
-    const signInUrl = new URL("/sign-in", req.url);
-    signInUrl.searchParams.set("redirect_url", pathname);
+    const signInUrl = new URL("/sign-in", request.url);
+    signInUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(signInUrl);
   }
 
-  // D. Role-based access control
-  const role = extractRole(sessionClaims as SessionClaims);
+  try {
+    const payload = await verifyAccessToken(accessToken);
+    request.headers.set("x-user-id", payload.sub);
+    request.headers.set("x-user-email", payload.email);
+    request.headers.set("x-user-role", payload.role);
+  } catch {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json(
+        { error: "Invalid or expired token", code: "UNAUTHORIZED" },
+        { status: 401 }
+      );
+    }
+    const signInUrl = new URL("/sign-in", request.url);
+    return NextResponse.redirect(signInUrl);
+  }
 
-  const roleGuards: Array<[ReturnType<typeof createRouteMatcher>, string]> = [
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|public/).*)"],
+};
+```
+
+---
+
+### 4.2 JWT Authentication Flow
+
+The application uses custom JWT-based authentication with the following flow:
+
+1. **Sign Up** (`/api/auth/sign-up`): Creates user with bcrypt-hashed password, issues access + refresh tokens
+2. **Sign In** (`/api/auth/sign-in`): Validates credentials, optionally requires MFA verification
+3. **Token Refresh** (`/api/auth/refresh`): Rotates refresh tokens, issues new access token
+4. **MFA** (`/api/auth/mfa/*`): Email-based 6-digit OTP verification
+
+#### Token Configuration
+- **Access Token**: 15 minutes expiry (short-lived for security)
+- **Refresh Token**: 7 days expiry with rotation (new token issued on each use)
+- **MFA OTP**: 6 digits, 5 minutes expiry, max 3 attempts
     [isSuperAdminRoute, "super_admin"],
     [isDpoRoute, "dpo"],
     [isFinanceRoute, "finance"],
@@ -839,7 +854,6 @@ model Association {
 
 model User {
   id                   String        @id @default(cuid())
-  clerkId              String        @unique
   associationId        String                         // ★ Every user belongs to one association
   email                String
   name                 String
@@ -854,9 +868,16 @@ model User {
   dataRetentionUntil   DateTime      @default(dbgenerated("(NOW() + INTERVAL '7 years')"))
   failedLoginAttempts  Int           @default(0)
   lockedUntil          DateTime?
+  password             String?                        // bcrypt hashed
+  passwordResetToken   String?
+  passwordResetExpires DateTime?
+  mfaEnabled           Boolean       @default(false)
   deletedAt            DateTime?
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
+
+  refreshTokens        RefreshToken[]
+  verificationCodes    VerificationCode[]
 
   association          Association   @relation(fields: [associationId], references: [id], onDelete: Cascade)
 
@@ -874,14 +895,49 @@ model User {
 
   // Email is unique within one association; same person can join MFSA and MPSA separately
   @@unique([associationId, email])
-  @@unique([associationId, clerkId])
   @@unique([associationId, membershipNumber])
+  @@index([passwordResetToken])
   @@index([associationId])
   @@index([email])
   @@index([role])
   @@index([status])
   @@index([dataRetentionUntil])
   @@map("users")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AUTH TOKENS
+// ─────────────────────────────────────────────────────────────────────────────
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  userId    String
+  token     String    @unique                        // Hashed
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model VerificationCode {
+  id        String    @id @default(cuid())
+  userId    String
+  code      String                                  // Hashed
+  type      String                                  // "LOGIN_MFA" | "SETUP_MFA" | "PASSWORD_RESET"
+  expiresAt DateTime
+  usedAt    DateTime?
+  attempts  Int        @default(0)
+  createdAt DateTime  @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("verification_codes")
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

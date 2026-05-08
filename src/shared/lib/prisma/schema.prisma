@@ -165,12 +165,7 @@ model Association {
 
   users             User[]
   subscriptionPlans SubscriptionPlan[]
-  payments          Payment[]
-  dsarTickets       DsarTicket[]
-  consentReceipts   ConsentReceipt[]
-  accounts          Account[]
   meetings          Meeting[]
-  trainingModules   TrainingModule[]
   auditLogs         AuditLog[]
 
   @@index([slug])
@@ -184,7 +179,6 @@ model Association {
 
 model User {
   id                   String        @id @default(uuid())
-  clerkId              String        @unique
   associationId        String                         // ★ Every user belongs to one association
   email                String
   name                 String
@@ -200,6 +194,10 @@ model User {
   failedLoginAttempts  Int           @default(0)
   lockedUntil          DateTime?
   imageUrl             String?
+  password             String?
+  passwordResetToken   String?
+  passwordResetExpires DateTime?
+  mfaEnabled           Boolean       @default(false)
   deletedAt            DateTime?
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
@@ -207,100 +205,24 @@ model User {
   association          Association   @relation(fields: [associationId], references: [id], onDelete: Cascade)
 
   subscription         Subscription?
-  payments             Payment[]
-  dsarTickets          DsarTicket[]          @relation("MemberTickets")
-  assignedDsarTickets  DsarTicket[]          @relation("AssignedTickets")
-  consentReceipts      ConsentReceipt[]
   auditLogs            AuditLog[]            @relation("ActorLogs")
-  ledgerEntries        LedgerEntry[]         @relation("CreatedEntries")
-  approvedEntries      LedgerEntry[]         @relation("ApprovedEntries")
-  trainingCompletions  TrainingCompletion[]
   meetingsCreated      Meeting[]             @relation("CreatedMeetings")
   meetingAttendances   MeetingAttendee[]     // ★ Meetings this user is assigned to
+  refreshTokens        RefreshToken[]
+  verificationCodes    VerificationCode[]
 
-  // Email is unique within one association; same person can join MFSA and MPSA separately
-  // @@unique([associationId, email])
-  // @@unique([associationId, clerkId])
+  @@unique([associationId, email])
   @@unique([associationId, membershipNumber])
   @@index([associationId])
   @@index([email])
   @@index([role])
   @@index([status])
   @@index([dataRetentionUntil])
+  @@index([passwordResetToken])
   @@map("users")
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// CONSENT
-// ─────────────────────────────────────────────────────────────────────────────
 
-model ConsentReceipt {
-  id            String         @id @default(uuid())
-  associationId String                               // ★
-  userId        String
-  purpose       ConsentPurpose
-  status        ConsentStatus
-  ipAddress     String?
-  userAgent     String?
-  channel       String         @default("web")
-  metadata      Json?
-  createdAt     DateTime       @default(now())       // Immutable — each change is a new row
-
-  association   Association    @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([associationId])
-  @@index([userId, purpose])
-  @@index([createdAt])
-  @@map("consent_receipts")
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// DSAR
-// ─────────────────────────────────────────────────────────────────────────────
-
-model DsarTicket {
-  id               String          @id @default(uuid())
-  associationId    String                               // ★
-  ticketNumber     String          @unique
-  userId           String
-  requestType      DsarRequestType
-  requestedData    String[]
-  description      String?
-  status           DsarStatus      @default(PENDING)
-  assignedToId     String?
-  responseDeadline DateTime        @default(dbgenerated("(NOW() + INTERVAL '21 days')"))
-  rejectedReason   String?
-  completedAt      DateTime?
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-
-  association      Association     @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  member           User            @relation("MemberTickets",   fields: [userId],       references: [id], onDelete: Cascade)
-  assignedTo       User?           @relation("AssignedTickets", fields: [assignedToId], references: [id])
-  responses        DsarResponse[]
-
-  @@unique([associationId, ticketNumber])
-  @@index([associationId])
-  @@index([userId])
-  @@index([status])
-  @@index([responseDeadline])
-  @@map("dsar_tickets")
-}
-
-model DsarResponse {
-  id             String     @id @default(uuid())
-  dsarTicketId   String
-  responseType   String
-  storageKey     String?
-  deliveryMethod String     @default("secure_download")
-  notes          String?
-  deliveredAt    DateTime?
-  createdAt      DateTime   @default(now())
-
-  ticket         DsarTicket @relation(fields: [dsarTicketId], references: [id], onDelete: Cascade)
-  @@map("dsar_responses")
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SUBSCRIPTIONS
@@ -343,106 +265,16 @@ model Subscription {
 
   user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   plan         SubscriptionPlan @relation(fields: [planId], references: [id])
-  payments     Payment[]
 
   @@index([status])
   @@index([endDate])
   @@map("subscriptions")
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PAYMENTS
-// ─────────────────────────────────────────────────────────────────────────────
 
-model Payment {
-  id             String        @id @default(uuid())
-  associationId  String                               // ★
-  userId         String
-  subscriptionId String?
-  amount         Decimal       @db.Decimal(10, 2)
-  currency       String        @default("INR")
-  type           PaymentType
-  status         PaymentStatus @default(PENDING)
-  receiptNumber  String?
-  notes          String?
-  paymentDate    DateTime      @default(now())
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
 
-  association    Association   @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
-  ledgerEntries  LedgerEntry[]
 
-  @@unique([associationId, receiptNumber])
-  @@index([associationId])
-  @@index([userId])
-  @@index([status])
-  @@map("payments")
-}
 
-// ─────────────────────────────────────────────────────────────────────────────
-// FINANCIAL LEDGER
-// ─────────────────────────────────────────────────────────────────────────────
-
-model Account {
-  id            String       @id @default(uuid())
-  associationId String                               // ★
-  code          String
-  name          String
-  type          String
-  description   String?
-  isActive      Boolean      @default(true)
-  createdAt     DateTime     @default(now())
-
-  association   Association  @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  debitLines    LedgerLine[] @relation("DebitAccount")
-  creditLines   LedgerLine[] @relation("CreditAccount")
-
-  @@unique([associationId, code])
-  @@unique([associationId, name])
-  @@index([associationId])
-  @@map("accounts")
-}
-
-model LedgerEntry {
-  id              String         @id @default(uuid())
-  referenceNumber String         @unique
-  description     String
-  transactionDate DateTime       @default(now())
-  paymentId       String?
-  category        String?
-  approvalStatus  ApprovalStatus @default(PENDING)
-  createdById     String
-  approvedById    String?
-  approvedAt      DateTime?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-
-  createdBy       User           @relation("CreatedEntries",  fields: [createdById],  references: [id])
-  approvedBy      User?          @relation("ApprovedEntries", fields: [approvedById], references: [id])
-  payment         Payment?       @relation(fields: [paymentId], references: [id])
-  lines           LedgerLine[]
-
-  @@index([approvalStatus])
-  @@index([transactionDate])
-  @@map("ledger_entries")
-}
-
-model LedgerLine {
-  id              String      @id @default(uuid())
-  entryId         String
-  debitAccountId  String?
-  creditAccountId String?
-  amount          Decimal     @db.Decimal(12, 2)
-  narration       String?
-
-  entry           LedgerEntry @relation(fields: [entryId],          references: [id], onDelete: Cascade)
-  debitAccount    Account?    @relation("DebitAccount",  fields: [debitAccountId],  references: [id])
-  creditAccount   Account?    @relation("CreditAccount", fields: [creditAccountId], references: [id])
-
-  @@map("ledger_lines")
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MEETINGS & GOVERNANCE
@@ -524,45 +356,7 @@ model MeetingMinutes {
   @@map("meeting_minutes")
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TRAINING
-// ─────────────────────────────────────────────────────────────────────────────
 
-model TrainingModule {
-  id               String              @id @default(uuid())
-  associationId    String                               // ★
-  title            String
-  description      String?
-  content          String
-  durationMinutes  Int?
-  requiredForRoles UserRole[]          @default([MEMBER])
-  version          Int                 @default(1)
-  isActive         Boolean             @default(true)
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @updatedAt
-
-  association      Association         @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  completions      TrainingCompletion[]
-
-  @@unique([associationId, title])
-  @@index([associationId])
-  @@map("training_modules")
-}
-
-model TrainingCompletion {
-  id             String         @id @default(uuid())
-  userId         String
-  moduleId       String
-  scorePercent   Decimal?       @db.Decimal(5, 2)
-  certificateUrl String?
-  completedAt    DateTime       @default(now())
-
-  user           User           @relation(fields: [userId],   references: [id], onDelete: Cascade)
-  module         TrainingModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, moduleId])
-  @@map("training_completions")
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // AUDIT LOG  (append-only — no updatedAt)
@@ -591,5 +385,40 @@ model AuditLog {
   @@index([resourceType, resourceId])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AUTH TOKENS
+// ─────────────────────────────────────────────────────────────────────────────
+
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String
+  token     String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model VerificationCode {
+  id        String    @id @default(uuid())
+  userId    String
+  code      String
+  type      String
+  expiresAt DateTime
+  usedAt    DateTime?
+  attempts  Int        @default(0)
+  createdAt DateTime  @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("verification_codes")
 }
 

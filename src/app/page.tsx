@@ -1,12 +1,25 @@
 "use client";
 
-import { useAuth } from "@clerk/nextjs";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
-export default function Home() {
-  const { isLoaded, isSignedIn } = useAuth();
+import { useAuthStore } from "@src/shared/stores/auth";
 
-  if (!isLoaded) {
+export default function Home() {
+  const { isHydrated, isSignedIn, fetchUser } = useAuthStore();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && isHydrated) {
+      fetchUser();
+    }
+  }, [mounted, isHydrated, fetchUser]);
+
+  if (!mounted || !isHydrated) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />

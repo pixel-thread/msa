@@ -1,18 +1,14 @@
-import { auth } from "@clerk/nextjs/server";
-
+import { requireAuth } from "@src/shared/api/auth";
 import { SuccessResponse, ErrorResponse } from "@src/shared/utils/responses";
 import { makePayment } from "@feature/subscription/services";
 import { prisma } from "@src/shared/lib/prisma";
 
 export async function POST(request: Request) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return ErrorResponse("Authentication required", 401);
-    }
+    const { userId } = await requireAuth();
 
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { id: userId },
     });
 
     if (!user) {

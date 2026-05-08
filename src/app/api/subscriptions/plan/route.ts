@@ -1,5 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
-
+import { requireAuth } from "@src/shared/api/auth";
 import { prisma } from "@src/shared/lib/prisma";
 import { withAssociation } from "@src/shared/api/with-association";
 import { SuccessResponse, ErrorResponse } from "@src/shared/utils/responses";
@@ -10,7 +9,7 @@ import { CreatePlanSchema } from "@feature/subscription/validators/subscription"
 const ADMIN_ROLES = ["SECRETARY", "PRESIDENT", "SUPER_ADMIN"];
 
 export const GET = withAssociation(
-  { query: null as any },
+  {},
   async (association) => {
     const plan = await getPlanByAssociation(association);
 
@@ -27,16 +26,9 @@ export const POST = withAssociation(
     body: CreatePlanSchema,
   },
   async (association, { body }) => {
-    const { userId } = await auth();
-    if (!userId) {
-      return ErrorResponse("Authentication required", 401);
-    }
+    const { userId, role } = await requireAuth();
 
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
-    });
-
-    if (!user || !ADMIN_ROLES.includes(user.role)) {
+    if (!ADMIN_ROLES.includes(role)) {
       throw new ForbiddenError("Only admins can set membership plan");
     }
 

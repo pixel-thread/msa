@@ -11,6 +11,8 @@ export const PUBLIC_ROUTES = [
   "/docs(.*)",
   "/sign-in(.*)",
   "/sign-up(.*)",
+  "/forgot-password(.*)",
+  "/reset-password(.*)",
   "/forbidden",
 ] as const;
 
@@ -19,11 +21,14 @@ export const PUBLIC_ROUTES = [
  */
 export const API_PUBLIC_ROUTES = [
   "/api/health(.*)",
-  "/api/webhooks/clerk(.*)",
   "/api/docs(.*)",
+  "/api/auth/sign-up(.*)",
+  "/api/auth/sign-in(.*)",
+  "/api/auth/forgot-password(.*)",
+  "/api/auth/reset-password(.*)",
 ] as const;
 
 /**
  * Private routes that require an authenticated user.
  */
-export const AUTH_ROUTES = [] as const;
+export const AUTH_ROUTES = ["/dashboard(.*)", "/settings(.*)", "/profile(.*)"] as const;

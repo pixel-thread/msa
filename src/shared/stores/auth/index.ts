@@ -8,11 +8,11 @@ import http from "@src/shared/utils/http";
 
 export interface AuthUser {
   id: string;
-  clerkId: string;
   email: string;
   name: string | null;
   role: Role;
-  phone: string | null;
+  mfaEnabled: boolean;
+  associationId: string;
 }
 
 export interface AuthState {
@@ -27,6 +27,10 @@ export interface AuthState {
   setLoading: (isLoading: boolean) => void;
   clearUser: () => void;
   fetchUser: () => Promise<void>;
+  signIn: (email: string, password: string) => Promise<{ mfaRequired?: boolean; tempToken?: string }>;
+  signUp: (email: string, password: string, name: string, associationId?: string) => Promise<void>;
+  signOut: () => Promise<void>;
+  verifyMfa: (code: string) => Promise<void>;
   isAdmin: () => boolean;
   isSuperAdmin: () => boolean;
   hasRole: (role: Role) => boolean;
@@ -56,7 +60,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true });
 
     try {
-      const res = await http.get<AuthUser>("/me");
+      const res = await http.get<AuthUser>("/auth/me");
 
       if (!res.success || !res.data) {
         set({ user: null, isSignedIn: false });
@@ -69,6 +73,100 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
     } catch {
       set({ user: null, isSignedIn: false });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  signIn: async (email, password) => {
+    set({ isLoading: true });
+
+    try {
+      const res = await http.post<{ user: AuthUser; mfaRequired?: boolean; tempToken?: string }>("/auth/sign-in", {
+        email,
+        password,
+      });
+
+      if (!res.success) {
+        throw new Error(res.message);
+      }
+
+      if (res.data?.mfaRequired) {
+        set({ isLoading: false });
+        return { mfaRequired: true, tempToken: res.data.tempToken };
+      }
+
+      set({
+        user: res.data?.user || null,
+        isSignedIn: true,
+      });
+
+      set({ isLoading: false });
+      return {};
+    } catch (error) {
+      set({ isLoading: false });
+      throw error;
+    }
+  },
+
+  signUp: async (email, password, name, associationId) => {
+    set({ isLoading: true });
+
+    try {
+      const res = await http.post<{ user: AuthUser }>("/auth/sign-up", {
+        email,
+        password,
+        name,
+        associationId,
+      });
+
+      if (!res.success) {
+        throw new Error(res.message);
+      }
+
+      set({
+        user: res.data?.user || null,
+        isSignedIn: true,
+      });
+    } catch (error) {
+      set({ isLoading: false });
+      throw error;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  signOut: async () => {
+    try {
+      await http.post("/auth/logout");
+    } catch {
+    } finally {
+      set({
+        user: null,
+        isSignedIn: false,
+      });
+    }
+  },
+
+  verifyMfa: async (code) => {
+    set({ isLoading: true });
+
+    try {
+      const res = await http.post<{ user: AuthUser }>("/auth/sign-in/verify", {
+        code,
+      });
+
+      if (!res.success) {
+        throw new Error(res.message);
+      }
+
+      set({
+        user: res.data?.user || null,
+        isSignedIn: true,
+      });
+    } catch (error) {
+      set({ isLoading: false });
+      throw error;
     } finally {
       set({ isLoading: false });
     }

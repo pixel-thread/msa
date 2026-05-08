@@ -1,26 +1,25 @@
 "use client";
 
-import { useAuth } from "@clerk/nextjs";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-import { useAuthStore } from "@store/auth/index";
+import { useAuthStore } from "@src/shared/stores/auth";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { isLoaded, isSignedIn } = useAuth();
+  const { fetchUser, setHydrated, isHydrated } = useAuthStore();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const store = useAuthStore.getState();
-    store.setHydrated();
+    setMounted(true);
+    setHydrated();
+  }, [setHydrated]);
 
-    if (isLoaded) {
-      store.setSignedIn(!!isSignedIn);
-      if (isSignedIn && !store.user) {
-        store.fetchUser();
-      }
+  useEffect(() => {
+    if (mounted && isHydrated) {
+      fetchUser();
     }
-  }, [isLoaded, isSignedIn]);
+  }, [mounted, isHydrated, fetchUser]);
 
-  if (!isLoaded) {
+  if (!mounted) {
     return null;
   }
 

@@ -9,7 +9,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@clerk/nextjs": "^7.3.2",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
@@ -23,8 +22,10 @@
     "@t3-oss/env-nextjs": "^0.13.11",
     "@tanstack/react-query": "^5.100.9",
     "@tanstack/react-table": "^8.21.3",
+    "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "jose": "^6.0.0",
     "lucide-react": "^1.14.0",
     "next": "16.2.5",
     "next-swagger-doc": "^0.4.1",

@@ -2,7 +2,7 @@ import { prisma } from "@src/shared/lib/prisma";
 
 export async function getMySubscription(userId: string) {
   const user = await prisma.user.findUnique({
-    where: { clerkId: userId },
+    where: { id: userId },
     include: { association: true },
   });
 
