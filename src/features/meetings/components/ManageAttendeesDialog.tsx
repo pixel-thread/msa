@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { Users, X, Check, X as XIcon, Clock } from "@phosphor-icons/react";
+import { Check, Clock, Users, X as XIcon } from "@phosphor-icons/react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
   Dialog,
@@ -20,7 +21,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@src/shared/components/ui/select";
-import type { Meeting, Member, Attendee, AddAttendeeForm } from "../types";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@src/shared/components/ui/form";
+import { cn } from "@src/shared/lib/utils";
+import type { Meeting, Member, Attendee } from "../types";
+import {
+  AssignAttendeeSchema,
+  type AssignAttendeeInput,
+} from "../validators";
 
 interface ManageAttendeesDialogProps {
   open: boolean;
@@ -28,9 +42,7 @@ interface ManageAttendeesDialogProps {
   meeting: Meeting | null;
   members: Member[];
   attendees: Attendee[];
-  attendeeForm: AddAttendeeForm;
-  onAttendeeFormChange: (form: AddAttendeeForm) => void;
-  onAddAttendee: (e: React.FormEvent) => void;
+  onAddAttendee: (data: AssignAttendeeInput) => void;
   onRemoveAttendee: (userId: string) => void;
   isAdding: boolean;
   isRemoving: boolean;
@@ -70,7 +82,12 @@ function RsvpStatusBadge({ status }: { status: string | undefined }) {
 
   return (
     <div
-      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border ${config.bg} ${config.border} ${config.text} text-xs font-medium`}
+      className={cn(
+        "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium",
+        config.bg,
+        config.border,
+        config.text,
+      )}
     >
       {config.icon}
       <span>{config.label}</span>
@@ -96,8 +113,8 @@ function AttendeeCard({
       .slice(0, 2);
   };
 
-  const getRoleColor = (status: string) => {
-    switch (status) {
+  const getRoleColor = (role: string) => {
+    switch (role) {
       case "REQUIRED":
         return "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300";
       case "OPTIONAL":
@@ -128,9 +145,12 @@ function AttendeeCard({
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
           <span
-            className={`text-xs px-2.5 py-1 rounded-full font-medium ${getRoleColor(attendee.status)}`}
+            className={cn(
+              "text-xs px-2.5 py-1 rounded-full font-medium",
+              getRoleColor(attendee.attendeeRole),
+            )}
           >
-            {attendee.status}
+            {attendee.attendeeRole}
           </span>
         </div>
         <RsvpStatusBadge status={attendee.rsvpStatus} />
@@ -141,7 +161,7 @@ function AttendeeCard({
           disabled={isRemoving}
           className="opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
         >
-          <X className="h-4 w-4" />
+          <XIcon className="h-4 w-4" />
         </Button>
       </div>
     </div>
@@ -154,20 +174,18 @@ export function ManageAttendeesDialog({
   meeting,
   members,
   attendees,
-  attendeeForm,
-  onAttendeeFormChange,
   onAddAttendee,
   onRemoveAttendee,
   isAdding,
   isRemoving,
 }: ManageAttendeesDialogProps) {
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const filteredMembers = members.filter(
-    (m) =>
-      m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      m.email.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const form = useForm<AssignAttendeeInput>({
+    resolver: zodResolver(AssignAttendeeSchema),
+    defaultValues: {
+      userId: "",
+      attendeeRole: "OPTIONAL",
+    },
+  });
 
   const stats = {
     total: attendees.length,
@@ -178,9 +196,14 @@ export function ManageAttendeesDialog({
     ).length,
   };
 
+  const onSubmit = (data: AssignAttendeeInput) => {
+    onAddAttendee(data);
+    form.reset({ userId: "", attendeeRole: "OPTIONAL" });
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="overflow-hidden w-[800px] flex flex-col p-0">
+      <DialogContent className="overflow-hidden w-[800px] flex flex-col p-0 max-h-[90vh]">
         <DialogHeader className="px-6 pt-6 pb-4 border-b bg-muted/30">
           <div className="flex items-center justify-between">
             <div>
@@ -213,78 +236,92 @@ export function ManageAttendeesDialog({
         </DialogHeader>
 
         <div className="flex-1 overflow-auto p-6 space-y-6">
-          <form
-            onSubmit={onAddAttendee}
-            className="flex gap-3 p-4 rounded-xl border border-border/60 bg-muted/20"
-          >
-            <div className="flex-1 space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground">
-                Select Member
-              </label>
-              <Select
-                value={attendeeForm.userId}
-                defaultValue="OPTIONAL"
-                onValueChange={(value) =>
-                  onAttendeeFormChange({ ...attendeeForm, userId: value })
-                }
-              >
-                <SelectTrigger className="h-10">
-                  <SelectValue placeholder="Search and select a member..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {filteredMembers.map((member) => (
-                    <SelectItem key={member.id} value={member.id}>
-                      <div className="flex items-center gap-2">
-                        <span>{member.name}</span>
-                        <span className="text-xs text-muted-foreground">
-                          ({member.email})
-                        </span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground">
-                Role
-              </label>
-              <Select
-                value={attendeeForm.attendeeRole}
-                onValueChange={(value) =>
-                  onAttendeeFormChange({ ...attendeeForm, attendeeRole: value })
-                }
-              >
-                <SelectTrigger className="w-36 h-10">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="REQUIRED">Required</SelectItem>
-                  <SelectItem value="OPTIONAL">Optional</SelectItem>
-                  <SelectItem value="OBSERVER">Observer</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-end">
-              <Button
-                type="submit"
-                disabled={!attendeeForm.userId || isAdding}
-                className="h-10"
-              >
-                {isAdding ? (
-                  <>
-                    <span className="animate-spin mr-2">⟳</span>
-                    Adding...
-                  </>
-                ) : (
-                  <>
-                    <Users className="h-4 w-4 mr-2" />
-                    Add Attendee
-                  </>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex flex-col w-full gap-4 p-4 rounded-xl border border-border/60 bg-muted/20"
+            >
+              <FormField
+                control={form.control}
+                name="userId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-medium">
+                      Select Member
+                    </FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Search and select a member..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {members.map((member) => (
+                            <SelectItem key={member.id} value={member.id}>
+                              <div className="flex items-center gap-2">
+                                <span>{member.name}</span>
+                                <span className="text-xs text-muted-foreground">
+                                  ({member.email})
+                                </span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </Button>
-            </div>
-          </form>
+              />
+
+              <FormField
+                control={form.control}
+                name="attendeeRole"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-medium">Role</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="REQUIRED">Required</SelectItem>
+                          <SelectItem value="OPTIONAL">Optional</SelectItem>
+                          <SelectItem value="OBSERVER">Observer</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex justify-end">
+                <Button
+                  type="submit"
+                  disabled={!form.watch("userId") || isAdding}
+                >
+                  {isAdding ? (
+                    <>
+                      <span className="animate-spin mr-2">⟳</span>
+                      Adding...
+                    </>
+                  ) : (
+                    <>
+                      <Users className="h-4 w-4 mr-2" />
+                      Add Attendee
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
+          </Form>
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -326,17 +363,4 @@ export function ManageAttendeesDialog({
       </DialogContent>
     </Dialog>
   );
-}
-
-export function useAttendeeForm() {
-  const [form, setForm] = useState<AddAttendeeForm>({
-    userId: "",
-    attendeeRole: "ATTENDEE",
-  });
-
-  const resetForm = () => {
-    setForm({ userId: "", attendeeRole: "ATTENDEE" });
-  };
-
-  return { form, setForm, resetForm };
 }

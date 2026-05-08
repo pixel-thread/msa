@@ -35,7 +35,7 @@ export const PATCH = withAssociation(
 
     const isAdmin = HIGH_ROLE_USERS.includes(user.role);
 
-    const userId = isAdmin ? body.userId : request.headers.get("x-user-id");
+    const userId = request.headers.get("x-user-id");
 
     const isSelfUpdate = !!userId;
 

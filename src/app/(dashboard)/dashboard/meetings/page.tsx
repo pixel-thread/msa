@@ -3,24 +3,11 @@
 import { useState } from "react";
 import { useAuthStore } from "@src/shared/stores/auth";
 
-import {
-  useMeetings,
-  useMeetingAttendees,
-  useMembers,
-  useRsvp,
-} from "@feature/meetings/hooks";
+import { useMeetings, useMeetingAttendees, useMembers, useRsvp } from "@feature/meetings/hooks";
 import { RsvpDialog } from "@feature/meetings/components/RsvpDialog";
-import {
-  MeetingsTable,
-  CreateMeetingDialog,
-} from "@feature/meetings/components";
-import { ManageAttendeesDialog } from "@feature/meetings/components";
-import {
-  isHighRoleUser,
-  type Meeting,
-  type CreateMeetingForm,
-  type AddAttendeeForm,
-} from "@feature/meetings/types";
+import { MeetingsTable, CreateMeetingDialog, ManageAttendeesDialog } from "@feature/meetings/components";
+import { isHighRoleUser, type Meeting } from "@feature/meetings/types";
+import type { AssignAttendeeInput } from "@feature/meetings/validators";
 
 export default function MeetingsPage() {
   const { user } = useAuthStore();
@@ -30,52 +17,19 @@ export default function MeetingsPage() {
   const [attendeesDialogOpen, setAttendeesDialogOpen] = useState(false);
   const [selectedMeeting, setSelectedMeeting] = useState<Meeting | null>(null);
 
-  const [createForm, setCreateForm] = useState<CreateMeetingForm>({
-    title: "",
-    type: "GENERAL_MEETING",
-    scheduledAt: "",
-    venue: "",
-    agendaItems: "",
-  });
-  const [attendeeForm, setAttendeeForm] = useState<AddAttendeeForm>({
-    userId: "",
-    attendeeRole: "ATTENDEE",
-  });
-
-  const { createMeeting, isCreating } = useMeetings();
-
   const { members } = useMembers();
-
   const { setRsvpDialogOpen } = useRsvp();
 
   const { attendees, addAttendee, removeAttendee, isAdding, isRemoving } =
     useMeetingAttendees(selectedMeeting?.id || null);
 
-  const handleCreateMeeting = (e: React.FormEvent) => {
-    e.preventDefault();
-    createMeeting(createForm, {
-      onSuccess: () => {
-        setCreateDialogOpen(false);
-        setCreateForm({
-          title: "",
-          type: "GENERAL_MEETING",
-          scheduledAt: "",
-          venue: "",
-          agendaItems: "",
-        });
-      },
-    });
-  };
-
-  const handleAddAttendee = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAddAttendee = (data: AssignAttendeeInput) => {
     if (!selectedMeeting) return;
     addAttendee({
       meetingId: selectedMeeting.id,
-      userId: attendeeForm.userId,
-      attendeeRole: attendeeForm.attendeeRole,
+      userId: data.userId,
+      attendeeRole: data.attendeeRole,
     });
-    setAttendeeForm({ userId: "", attendeeRole: "ATTENDEE" });
   };
 
   const handleOpenAttendees = (meeting: Meeting) => {
@@ -110,8 +64,6 @@ export default function MeetingsPage() {
           meeting={selectedMeeting}
           members={members || []}
           attendees={attendees}
-          attendeeForm={attendeeForm}
-          onAttendeeFormChange={setAttendeeForm}
           onAddAttendee={handleAddAttendee}
           onRemoveAttendee={(userId) => {
             if (selectedMeeting && confirm("Remove this attendee?")) {

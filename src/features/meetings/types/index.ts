@@ -30,8 +30,8 @@ export interface Attendee {
     name: string;
     email: string;
   };
-  status: string;
   rsvpStatus?: string;
+  attendeeRole: string;
 }
 
 export interface AddAttendeeForm {
@@ -55,4 +55,3 @@ export type HighRoleUser = (typeof HIGH_ROLE_USERS)[number];
 export function isHighRoleUser(role: string): role is HighRoleUser {
   return HIGH_ROLE_USERS.includes(role as HighRoleUser);
 }
-

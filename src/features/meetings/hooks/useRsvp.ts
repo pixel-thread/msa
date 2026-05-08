@@ -23,6 +23,7 @@ export function useRsvp() {
     }: {
       meetingId: string;
       formData: RsvpForm;
+      userId?: string;
     }) =>
       http.patch(`/meetings/${meetingId}/rsvp`, {
         rsvpStatus: formData.status,
