@@ -15,3 +15,33 @@ export const CreateAgendaItemSchema = z.object({
 });
 
 export type CreateAgendaItemInput = z.infer<typeof CreateAgendaItemSchema>;
+
+export const UpdateAgendaItemSchema = CreateAgendaItemSchema.partial();
+export type UpdateAgendaItemInput = z.infer<typeof UpdateAgendaItemSchema>;
+
+export const AgendaOperationSchema = z.object({
+  operations: z.array(z.discriminatedUnion("type", [
+    z.object({ 
+      type: z.literal("CREATE"), 
+      data: CreateAgendaItemSchema 
+    }),
+    z.object({ 
+      type: z.literal("UPDATE"), 
+      id: z.string().uuid("Invalid ID format"), 
+      data: UpdateAgendaItemSchema 
+    }),
+    z.object({ 
+      type: z.literal("DELETE"), 
+      id: z.string().uuid("Invalid ID format") 
+    }),
+    z.object({ 
+      type: z.literal("REORDER"), 
+      mappings: z.array(z.object({ 
+        id: z.string().uuid("Invalid ID format"), 
+        order: z.number().int().positive() 
+      })) 
+    })
+  ]))
+});
+
+export type AgendaOperationInput = z.infer<typeof AgendaOperationSchema>;
