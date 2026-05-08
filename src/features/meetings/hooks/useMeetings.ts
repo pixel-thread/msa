@@ -22,16 +22,26 @@ export function useMeetings(options: UseMeetingsOptions = {}) {
   });
 
   const createMeetingMutation = useMutation({
-    mutationFn: async (formData: CreateMeetingForm) =>
-      http.post("/meetings", {
+    mutationFn: async (formData: CreateMeetingForm) => {
+      const agendaItems = formData.agendaItems
+        ? formData.agendaItems
+            .split("\n")
+            .filter(Boolean)
+            .map((title, index) => ({
+              order: index + 1,
+              title: title.trim(),
+              description: undefined,
+            }))
+        : undefined;
+
+      return http.post("/meetings", {
         title: formData.title,
         type: formData.type,
         scheduledAt: formData.scheduledAt,
         venue: formData.venue || undefined,
-        agendaItems: formData.agendaItems
-          ? formData.agendaItems.split("\n").filter(Boolean)
-          : undefined,
-      }),
+        agendaItems,
+      });
+    },
     onSuccess: (data) => {
       if (data.success) {
         queryClient.invalidateQueries({ queryKey: ["meetings"] });
@@ -77,8 +87,8 @@ export function useMeetingAttendees(meetingId: string | null) {
     queryKey: ["meeting-attendees", meetingId],
     enabled: !!meetingId,
     queryFn: async () =>
-      http.get<{ data: Attendee[] }>(`/meetings/${meetingId}/attendees`),
-    select: (data) => data,
+      http.get<Attendee[]>(`/meetings/${meetingId}/attendees`),
+    select: (data) => data.data,
   });
 
   const addAttendeeMutation = useMutation({
@@ -134,7 +144,7 @@ export function useMeetingAttendees(meetingId: string | null) {
   });
 
   return {
-    attendees: data?.data ?? [],
+    attendees: data ?? [],
     isLoading,
     refetch,
     addAttendee: addAttendeeMutation.mutate,
@@ -156,4 +166,3 @@ export function useMembers() {
     isLoading,
   };
 }
-

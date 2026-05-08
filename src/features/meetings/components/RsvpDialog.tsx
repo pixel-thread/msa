@@ -11,28 +11,18 @@ import {
 import { Button } from "@src/shared/components/ui/button";
 import { Textarea } from "@src/shared/components/ui/textarea";
 import { XIcon as X } from "@phosphor-icons/react";
+import { useRsvp } from "../hooks";
 
 interface RsvpDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  status: "ACCEPTED" | "DECLINED";
-  note: string;
-  onNoteChange: (note: string) => void;
-  onConfirm: () => void;
-  onCancel: () => void;
-  isPending: boolean;
 }
 
-export function RsvpDialog({
-  open,
-  onOpenChange,
-  status,
-  note,
-  onNoteChange,
-  onConfirm,
-  onCancel,
-  isPending,
-}: RsvpDialogProps) {
+export function RsvpDialog({ open, onOpenChange }: RsvpDialogProps) {
+  const { rsvpForm, setRsvpForm, closeRsvpDialog, submitRsvp, isPending } =
+    useRsvp();
+  const note = rsvpForm.note;
+  const status = rsvpForm.status;
   const isDecline = status === "DECLINED";
 
   return (
@@ -58,7 +48,7 @@ export function RsvpDialog({
               <Textarea
                 placeholder="Please provide your reason for declining..."
                 value={note}
-                onChange={(e) => onNoteChange(e.target.value)}
+                onChange={(e) => setRsvpForm(e?.target.value as any)}
                 className="min-h-[100px]"
                 required
               />
@@ -67,13 +57,17 @@ export function RsvpDialog({
         )}
 
         <DialogFooter className="gap-2">
-          <Button variant="outline" onClick={onCancel} disabled={isPending}>
+          <Button
+            variant="outline"
+            onClick={closeRsvpDialog}
+            disabled={isPending}
+          >
             Cancel
           </Button>
           <Button
             variant={isDecline ? "destructive" : "default"}
-            onClick={onConfirm}
-            disabled={(isDecline && !note.trim()) || isPending}
+            onClick={submitRsvp}
+            disabled={(isDecline && !note?.trim()) || isPending}
           >
             {isDecline ? "Submit Decline" : "Confirm Attendance"}
           </Button>
@@ -120,4 +114,3 @@ export function RsvpButtons({
     </div>
   );
 }
-

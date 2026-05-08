@@ -2,7 +2,7 @@ import { withAssociation } from "@src/shared/api/with-association";
 import { withRole } from "@src/shared/api/with-role";
 import { SuccessResponse } from "@src/shared/utils/responses";
 import { ForbiddenError } from "@src/shared/errors";
-import { AttendeeRole, UserRole } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 import { updateAttendee, removeAttendee } from "@feature/meetings/services";
 import { UpdateAttendeeSchema } from "@feature/meetings/validators/attendee";
 import { z } from "zod";
@@ -15,8 +15,8 @@ const HIGH_ROLE_USERS: UserRole[] = [
 ];
 
 const AttendeeParamsSchema = z.object({
-  meetingId: z.string().uuid("Invalid meeting ID"),
-  userId: z.string().uuid("Invalid user ID"),
+  meetingId: z.uuid("Invalid meeting ID"),
+  userId: z.uuid("Invalid user ID"),
 });
 
 export const PATCH = withAssociation(
@@ -85,4 +85,3 @@ export const DELETE = withAssociation(
     });
   },
 );
-

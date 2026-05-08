@@ -60,18 +60,10 @@ export default function MeetingsPage() {
     closeRsvpDialog,
     submitRsvp,
     isPending: isRsvpPending,
-    accept,
-    decline,
   } = useRsvp();
 
   const { attendees, addAttendee, removeAttendee, isAdding, isRemoving } =
     useMeetingAttendees(selectedMeeting?.id || null);
-
-  const handleDeleteMeeting = (meeting: Meeting) => {
-    if (confirm(`Are you sure you want to delete "${meeting.title}"?`)) {
-      deleteMeeting(meeting.id);
-    }
-  };
 
   const handleCreateMeeting = (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,17 +119,7 @@ export default function MeetingsPage() {
         )}
       </div>
 
-      <MeetingsTable
-        meetings={meetings}
-        isHighRole={isHighRole}
-        onDeleteMeeting={handleDeleteMeeting}
-        isDeleting={isDeleting}
-        onOpenAttendees={handleOpenAttendees}
-        onRsvpAccept={accept}
-        onRsvpDecline={decline}
-        isRsvpPending={isRsvpPending}
-        isLoading={isLoading}
-      />
+      <MeetingsTable onOpenAttendees={handleOpenAttendees} />
 
       {isHighRole && (
         <ManageAttendeesDialog
@@ -159,17 +141,7 @@ export default function MeetingsPage() {
         />
       )}
 
-      <RsvpDialog
-        open={rsvpDialogOpen}
-        onOpenChange={setRsvpDialogOpen}
-        status={rsvpForm.status}
-        note={rsvpForm.note || ""}
-        onNoteChange={(note) => setRsvpForm({ ...rsvpForm, note })}
-        onConfirm={submitRsvp}
-        onCancel={closeRsvpDialog}
-        isPending={isRsvpPending}
-      />
+      <RsvpDialog open={rsvpDialogOpen} onOpenChange={setRsvpDialogOpen} />
     </div>
   );
 }
-

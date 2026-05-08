@@ -160,7 +160,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Update attendee RSVP
-PATCH http://localhost:3000/api/meeting/{{meetingId}}/attendees/{{userId}}
+PATCH http://localhost:3000/api/meeting/{{meetingId}}/rsvp
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -171,6 +171,6 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Remove attendee
-DELETE http://localhost:3000/api/meeting/{{meetingId}}/attendees/{{userId}}
+DELETE http://localhost:3000/api/meeting/{{meetingId}}/rsvp
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}

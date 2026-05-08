@@ -1,6 +1,9 @@
 "use client";
 
-import { Calendar, Trash } from "@phosphor-icons/react";
+import {
+  CalendarIcon as Calendar,
+  TrashIcon as Trash,
+} from "@phosphor-icons/react";
 
 import {
   Card,
@@ -19,32 +22,20 @@ import {
   TableRow,
 } from "@src/shared/components/ui/table";
 import { Button } from "@src/shared/components/ui/button";
-import type { Meeting } from "../types";
-import type { HighRoleUser } from "../types";
+import { isHighRoleUser, type Meeting } from "../types";
+import { useMeetings, useRsvp } from "../hooks";
+import { useAuthStore } from "@src/shared/stores/auth";
 
 interface MeetingsTableProps {
-  meetings: Meeting[];
-  isHighRole: boolean;
-  onDeleteMeeting: (meeting: Meeting) => void;
-  isDeleting: boolean;
   onOpenAttendees: (meeting: Meeting) => void;
-  onRsvpAccept: (meetingId: string) => void;
-  onRsvpDecline: (meetingId: string) => void;
-  isRsvpPending?: boolean;
-  isLoading?: boolean;
 }
 
-export function MeetingsTable({
-  meetings,
-  isHighRole,
-  onDeleteMeeting,
-  isDeleting,
-  onOpenAttendees,
-  onRsvpAccept,
-  onRsvpDecline,
-  isRsvpPending,
-  isLoading,
-}: MeetingsTableProps) {
+export function MeetingsTable({ onOpenAttendees }: MeetingsTableProps) {
+  const { user } = useAuthStore();
+  const isHighRole = user ? isHighRoleUser(user.role) : false;
+  const { meetings, deleteMeeting, isDeleting } = useMeetings();
+  const { accept, setRsvpDialogOpen, isPending: isRsvpPending } = useRsvp();
+
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString("en-IN", {
       day: "numeric",
@@ -56,7 +47,10 @@ export function MeetingsTable({
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+    const variants: Record<
+      string,
+      "default" | "secondary" | "destructive" | "outline"
+    > = {
       SCHEDULED: "outline",
       NOTICE_ISSUED: "default",
       COMPLETED: "default",
@@ -64,16 +58,6 @@ export function MeetingsTable({
     };
     return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
   };
-
-  if (isLoading) {
-    return (
-      <Card>
-        <CardContent className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <Card>
@@ -137,7 +121,7 @@ export function MeetingsTable({
                           <Button
                             size="xs"
                             variant="outline"
-                            onClick={() => onRsvpAccept(meeting.id)}
+                            onClick={() => accept(meeting.id)}
                             disabled={isRsvpPending}
                             className="gap-1"
                           >
@@ -146,7 +130,7 @@ export function MeetingsTable({
                           <Button
                             size="xs"
                             variant="ghost"
-                            onClick={() => onRsvpDecline(meeting.id)}
+                            onClick={() => setRsvpDialogOpen(true)}
                             disabled={isRsvpPending}
                             className="text-destructive hover:text-destructive"
                           >
@@ -167,7 +151,7 @@ export function MeetingsTable({
                           <Button
                             size="xs"
                             variant="ghost"
-                            onClick={() => onDeleteMeeting(meeting)}
+                            onClick={() => deleteMeeting(meeting.id)}
                             disabled={isDeleting}
                             className="text-destructive hover:text-destructive"
                             title="Delete Meeting"
