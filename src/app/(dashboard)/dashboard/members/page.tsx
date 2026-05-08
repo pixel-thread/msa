@@ -1,11 +1,24 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Users } from "@phosphor-icons/react";
+import { UserIcon as Users } from "@phosphor-icons/react";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@src/shared/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@src/shared/components/ui/card";
 import { Badge } from "@src/shared/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@src/shared/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@src/shared/components/ui/table";
 import { Avatar, AvatarFallback } from "@src/shared/components/ui/avatar";
 import http from "@src/shared/utils/http";
 
@@ -20,16 +33,11 @@ interface Member {
 }
 
 export default function MembersPage() {
-  const { data, isLoading } = useQuery<{ members: Member[] }>({
+  const { data: members = [], isLoading } = useQuery({
     queryKey: ["members"],
-    queryFn: async () => {
-      const res = await http.get<{ members: Member[] }>("/members?limit=50");
-      if (!res.success || !res.data) throw new Error("Failed to fetch members");
-      return res.data;
-    },
+    queryFn: async () => http.get<Member[]>("/members?limit=50"),
+    select: (d) => d.data,
   });
-
-  const members = data?.members ?? [];
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString("en-IN", {
@@ -49,7 +57,10 @@ export default function MembersPage() {
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+    const variants: Record<
+      string,
+      "default" | "secondary" | "destructive" | "outline"
+    > = {
       ACTIVE: "default",
       INACTIVE: "secondary",
       SUSPENDED: "destructive",
@@ -80,7 +91,7 @@ export default function MembersPage() {
             <div>
               <CardTitle className="text-base">All Members</CardTitle>
               <CardDescription className="text-sm">
-                Total of {members.length} members in your association
+                Total of {members?.length} members in your association
               </CardDescription>
             </div>
             <div className="h-9 w-9 rounded-lg bg-indigo-500/10 flex items-center justify-center">
@@ -89,7 +100,7 @@ export default function MembersPage() {
           </div>
         </CardHeader>
         <CardContent className="px-5 pb-5">
-          {members.length === 0 ? (
+          {members?.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Users className="h-10 w-10 text-muted-foreground mb-3" />
               <p className="text-sm text-muted-foreground">No members found</p>
@@ -106,7 +117,7 @@ export default function MembersPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {members.map((member) => (
+                {members?.map((member) => (
                   <TableRow key={member.id} className="border-muted/30">
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-3">
@@ -116,7 +127,9 @@ export default function MembersPage() {
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
-                          <span className="text-sm font-medium">{member.name}</span>
+                          <span className="text-sm font-medium">
+                            {member.name}
+                          </span>
                           {member.membershipNumber && (
                             <span className="text-xs text-muted-foreground">
                               {member.membershipNumber}
@@ -125,7 +138,9 @@ export default function MembersPage() {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-muted-foreground text-sm">{member.email}</TableCell>
+                    <TableCell className="text-muted-foreground text-sm">
+                      {member.email}
+                    </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="text-xs">
                         {member.role}
@@ -145,3 +160,4 @@ export default function MembersPage() {
     </div>
   );
 }
+
