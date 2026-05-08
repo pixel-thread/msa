@@ -21,6 +21,7 @@ import {
 } from "@src/shared/components/ui/table";
 import { Avatar, AvatarFallback } from "@src/shared/components/ui/avatar";
 import http from "@src/shared/utils/http";
+import { formatDate } from "@src/shared/utils";
 
 interface Member {
   id: string;
@@ -38,14 +39,6 @@ export default function MembersPage() {
     queryFn: async () => http.get<Member[]>("/members?limit=50"),
     select: (d) => d.data,
   });
-
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString("en-IN", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-  };
 
   const getInitials = (name: string) => {
     return name
@@ -160,4 +153,3 @@ export default function MembersPage() {
     </div>
   );
 }
-

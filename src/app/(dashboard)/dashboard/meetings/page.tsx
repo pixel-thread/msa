@@ -3,9 +3,17 @@
 import { useState } from "react";
 import { useAuthStore } from "@src/shared/stores/auth";
 
-import { useMeetings, useMeetingAttendees, useMembers, useRsvp } from "@feature/meetings/hooks";
+import {
+  useMeetingAttendees,
+  useMembers,
+  useRsvp,
+} from "@feature/meetings/hooks";
 import { RsvpDialog } from "@feature/meetings/components/RsvpDialog";
-import { MeetingsTable, CreateMeetingDialog, ManageAttendeesDialog } from "@feature/meetings/components";
+import {
+  MeetingsTable,
+  CreateMeetingDialog,
+  ManageAttendeesDialog,
+} from "@feature/meetings/components";
 import { isHighRoleUser, type Meeting } from "@feature/meetings/types";
 import type { AssignAttendeeInput } from "@feature/meetings/validators";
 
@@ -55,7 +63,7 @@ export default function MeetingsPage() {
         )}
       </div>
 
-      <MeetingsTable onOpenAttendees={handleOpenAttendees} />
+      <MeetingsTable />
 
       {isHighRole && (
         <ManageAttendeesDialog

@@ -32,3 +32,15 @@ export const slugify = (value: string) =>
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+
+const formatter = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+  hour: "numeric",
+  minute: "numeric",
+  second: "numeric",
+});
+
+export const formatDate = (date: string | Date) =>
+  formatter.format(new Date(date));
