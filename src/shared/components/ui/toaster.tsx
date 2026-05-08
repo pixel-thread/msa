@@ -2,7 +2,7 @@
 
 import { Toaster as Sonner, toast, type ToasterProps } from "sonner";
 
-import { useTheme } from "~/shared/providers/theme-provider";
+import { useTheme } from "@src/shared/providers/theme-provider";
 
 export const Toaster = ({ ...props }: ToasterProps) => {
   const { themeMode } = useTheme();

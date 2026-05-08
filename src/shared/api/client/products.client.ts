@@ -1,5 +1,5 @@
 import type { ProductQueryInput } from "~/features/products/validators";
-import type { ApiProduct, ProductCollection } from "~/shared/types";
+import type { ApiProduct, ProductCollection } from "@src/shared/types";
 import type { ApiClient } from "./client.js";
 
 export function createProductsClient(client: ApiClient) {

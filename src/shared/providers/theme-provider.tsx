@@ -4,13 +4,13 @@ import * as React from "react";
 import { DesktopIcon, MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import * as z from "zod";
 
-import { Button } from "~/shared/components/ui/button";
+import { Button } from "@src/shared/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "~/shared/components/ui/dropdown-menu";
+} from "@src/shared/components/ui/dropdown-menu";
 
 const ThemeModeSchema = z.enum(["light", "dark", "auto"]);
 

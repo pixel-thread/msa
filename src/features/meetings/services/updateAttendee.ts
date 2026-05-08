@@ -43,16 +43,16 @@ export async function updateAttendee({
   }
 
   const updateData: any = {};
-  
+
   if (isAdminUpdate && data.attendeeRole) {
     updateData.attendeeRole = data.attendeeRole;
   }
-  
+
   if (data.rsvpStatus) {
     updateData.rsvpStatus = data.rsvpStatus;
     updateData.rsvpAt = new Date();
   }
-  
+
   if (data.rsvpNote !== undefined) {
     updateData.rsvpNote = data.rsvpNote;
   }
@@ -72,3 +72,4 @@ export async function updateAttendee({
     },
   });
 }
+

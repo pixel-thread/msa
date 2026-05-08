@@ -24,7 +24,7 @@ const HIGH_ROLE_USERS: UserRole[] = [
 ];
 
 const MeetingParamsSchema = z.object({
-  meetingId: z.uuid("Invalid meeting ID"),
+  meetingId: z.string("Invalid meeting ID"),
 });
 
 export const GET = withAssociation(
@@ -126,4 +126,3 @@ export const PUT = withAssociation(
     });
   },
 );
-

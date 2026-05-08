@@ -77,7 +77,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Create meeting
-POST http://localhost:3000/api/meeting
+POST http://localhost:3000/api/meetings
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 

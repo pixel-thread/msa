@@ -29,12 +29,22 @@ export const GET = withAssociation(
       throw new ForbiddenError("Invalid meeting ID");
     }
 
-    await withRole(request as NextRequest, UserRole.MEMBER);
+    const user = await withRole(request as NextRequest, UserRole.MEMBER);
+    const userId = request.headers.get("x-user-id")!;
 
     const meeting = await findUniqueMeeting({
       meetingId: params.meetingId,
       associationId: association.id,
     });
+
+    if (!HIGH_ROLE_USERS.includes(user.role)) {
+      const isAttendee = meeting.attendees.some(
+        (a: { user: { id: string } }) => a.user.id === userId,
+      );
+      if (!isAttendee) {
+        throw new ForbiddenError("You are not assigned to this meeting");
+      }
+    }
 
     return SuccessResponse({ data: meeting });
   },

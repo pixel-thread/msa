@@ -3,6 +3,7 @@ import { MeetingType, MeetingStatus } from "@prisma/client";
 
 interface FindManyMeetingsProps {
   associationId: string;
+  userId?: string;
   filters?: {
     type?: MeetingType;
     status?: MeetingStatus;
@@ -52,3 +53,4 @@ export async function findManyMeetings({
     },
   };
 }
+

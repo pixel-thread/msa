@@ -1,4 +1,4 @@
-import type { ErrorEnvelope, SuccessEnvelope } from "~/shared/types";
+import type { ErrorEnvelope, SuccessEnvelope } from "@src/shared/types";
 
 type QueryValue =
   | string
@@ -169,8 +169,8 @@ export class ApiClient {
           payload.error.code,
           payload.error.details,
           payload.error.traceId ??
-            response.headers.get("x-trace-id") ??
-            undefined,
+          response.headers.get("x-trace-id") ??
+          undefined,
         );
       }
 

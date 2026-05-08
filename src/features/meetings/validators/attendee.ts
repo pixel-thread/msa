@@ -2,7 +2,7 @@ import z from "zod";
 import { AttendeeRole, RsvpStatus } from "@prisma/client";
 
 export const AssignAttendeeSchema = z.object({
-  userId: z.uuid("Invalid user ID format"),
+  userId: z.string("Invalid user ID format"),
   attendeeRole: z
     .enum(AttendeeRole, { message: "Invalid attendee role" })
     .default(AttendeeRole.OPTIONAL),

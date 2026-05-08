@@ -28,6 +28,7 @@ export const GET = withAssociation(
       throw new ForbiddenError("Invalid query parameters");
     }
 
+    const userId = request.headers.get("x-user-id")!;
     const { page, limit, type, status } = query;
 
     if (HIGH_ROLE_USERS.includes(user.role)) {
@@ -44,6 +45,7 @@ export const GET = withAssociation(
 
     const result = await findManyMeetings({
       associationId: association.id,
+      userId,
       filters: { status: MeetingStatus.SCHEDULED },
       pagination: { page, limit },
     });
@@ -86,4 +88,3 @@ export const POST = withAssociation(
     return SuccessResponse({ data: meeting }, 201);
   },
 );
-

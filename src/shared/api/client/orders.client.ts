@@ -3,7 +3,7 @@ import type {
   FeedbackInput,
   UpdateOrderStatusInput,
 } from "~/features/orders/validators";
-import type { ApiOrder, OrderCollection } from "~/shared/types";
+import type { ApiOrder, OrderCollection } from "@src/shared/types";
 import type { ApiClient } from "./client.js";
 
 export function createOrdersClient(client: ApiClient) {
