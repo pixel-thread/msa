@@ -10,7 +10,9 @@ import {
   FileText,
   User,
   Gear,
+  List,
 } from "@phosphor-icons/react";
+import { useState } from "react";
 
 import {
   Sidebar,
@@ -22,9 +24,11 @@ import {
   SidebarMenuItem,
   SidebarInset,
   SidebarProvider,
+  SidebarTrigger,
 } from "@src/shared/components/ui/sidebar";
 import { TooltipProvider } from "@src/shared/components/ui/tooltip";
 import { Avatar, AvatarFallback } from "@src/shared/components/ui/avatar";
+import { Button } from "@src/shared/components/ui/button";
 import { Redirect } from "@src/shared/components/Redirect";
 import { useAuthStore } from "@src/shared/stores/auth";
 
@@ -58,12 +62,12 @@ function DashboardSidebar() {
     <Sidebar collapsible="icon" className="border-r border-border/60">
       <SidebarHeader className="py-4 px-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-white font-bold text-sm shadow-sm">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-white font-bold text-sm shadow-sm shrink-0">
             MFSA
           </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold">MFSA Connect</span>
-            <span className="text-xs text-muted-foreground">Dashboard</span>
+          <div className="flex flex-col min-w-0">
+            <span className="text-sm font-semibold truncate">MFSA Connect</span>
+            <span className="text-xs text-muted-foreground truncate">Dashboard</span>
           </div>
         </div>
       </SidebarHeader>
@@ -74,8 +78,8 @@ function DashboardSidebar() {
             <SidebarMenuItem key={item.href}>
               <SidebarMenuButton asChild isActive={pathname === item.href}>
                 <Link href={item.href} className="flex items-center gap-3">
-                  <item.icon className="h-5 w-5" />
-                  <span>{item.title}</span>
+                  <item.icon className="h-5 w-5 shrink-0" />
+                  <span className="truncate">{item.title}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -89,20 +93,20 @@ function DashboardSidebar() {
             <SidebarMenuItem key={item.href}>
               <SidebarMenuButton asChild isActive={pathname === item.href}>
                 <Link href={item.href} className="flex items-center gap-3">
-                  <item.icon className="h-5 w-5" />
-                  <span>{item.title}</span>
+                  <item.icon className="h-5 w-5 shrink-0" />
+                  <span className="truncate">{item.title}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
           <SidebarMenuItem>
             <div className="flex items-center gap-3 px-3 py-2 mt-2 border-t border-border/60 pt-3">
-              <Avatar className="h-8 w-8">
+              <Avatar className="h-8 w-8 shrink-0">
                 <AvatarFallback className="text-xs bg-muted">
                   {user?.name ? getInitials(user.name) : "U"}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex flex-col">
+              <div className="flex flex-col min-w-0">
                 <span className="text-sm font-medium truncate max-w-[120px]">
                   {user?.name || "User"}
                 </span>
@@ -118,6 +122,21 @@ function DashboardSidebar() {
   );
 }
 
+function DashboardHeader() {
+  return (
+    <header className="flex items-center gap-4 px-4 py-3 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
+      <SidebarTrigger className="h-8 w-8">
+        <List className="h-5 w-5" />
+        <span className="sr-only">Toggle Menu</span>
+      </SidebarTrigger>
+      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white font-bold text-xs shrink-0">
+        MFSA
+      </div>
+      <span className="text-sm font-semibold">MFSA Connect</span>
+    </header>
+  );
+}
+
 export default function DashboardLayout({
   children,
 }: {
@@ -128,8 +147,11 @@ export default function DashboardLayout({
       <TooltipProvider>
         <SidebarProvider defaultOpen>
           <DashboardSidebar />
-          <SidebarInset>
-            <div className="p-6 lg:p-8">{children}</div>
+          <SidebarInset className="flex flex-col">
+            <DashboardHeader />
+            <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
+              {children}
+            </main>
           </SidebarInset>
         </SidebarProvider>
       </TooltipProvider>

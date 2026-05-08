@@ -22,6 +22,7 @@ export function ErrorResponse({
   return NextResponse.json(
     {
       success: false,
+      message: message,
       error: {
         code,
         message,

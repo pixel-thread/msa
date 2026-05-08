@@ -15,8 +15,8 @@ const HIGH_ROLE_USERS: UserRole[] = [
 ];
 
 const AttendeeParamsSchema = z.object({
-  meetingId: z.string("Invalid meeting ID"),
-  userId: z.string("Invalid user ID"),
+  meetingId: z.string().uuid("Invalid meeting ID"),
+  userId: z.string().uuid("Invalid user ID"),
 });
 
 export const PATCH = withAssociation(
