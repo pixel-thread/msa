@@ -29,6 +29,7 @@ export default function MeetingsPage() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [attendeesDialogOpen, setAttendeesDialogOpen] = useState(false);
   const [selectedMeeting, setSelectedMeeting] = useState<Meeting | null>(null);
+
   const [createForm, setCreateForm] = useState<CreateMeetingForm>({
     title: "",
     type: "GENERAL_MEETING",
@@ -45,7 +46,7 @@ export default function MeetingsPage() {
 
   const { members } = useMembers();
 
-  const { rsvpDialogOpen, setRsvpDialogOpen } = useRsvp();
+  const { setRsvpDialogOpen } = useRsvp();
 
   const { attendees, addAttendee, removeAttendee, isAdding, isRemoving } =
     useMeetingAttendees(selectedMeeting?.id || null);
@@ -96,10 +97,6 @@ export default function MeetingsPage() {
           <CreateMeetingDialog
             open={createDialogOpen}
             onOpenChange={setCreateDialogOpen}
-            form={createForm}
-            onFormChange={setCreateForm}
-            onSubmit={handleCreateMeeting}
-            isPending={isCreating}
           />
         )}
       </div>

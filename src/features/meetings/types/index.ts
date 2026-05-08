@@ -34,14 +34,6 @@ export interface Attendee {
   rsvpStatus?: string;
 }
 
-export interface CreateMeetingForm {
-  title: string;
-  type: string;
-  scheduledAt: string;
-  venue: string;
-  agendaItems: string;
-}
-
 export interface AddAttendeeForm {
   userId: string;
   attendeeRole: string;
@@ -52,10 +44,15 @@ export interface RsvpForm {
   note?: string;
 }
 
-export const HIGH_ROLE_USERS = ["SUPER_ADMIN", "PRESIDENT", "SECRETARY"] as const;
+export const HIGH_ROLE_USERS = [
+  "SUPER_ADMIN",
+  "PRESIDENT",
+  "SECRETARY",
+] as const;
 
 export type HighRoleUser = (typeof HIGH_ROLE_USERS)[number];
 
 export function isHighRoleUser(role: string): role is HighRoleUser {
   return HIGH_ROLE_USERS.includes(role as HighRoleUser);
 }
+

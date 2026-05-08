@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { Plus } from "@phosphor-icons/react";
+import { useFieldArray } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { PlusIcon, TrashIcon } from "@phosphor-icons/react";
 
 import {
   Dialog,
@@ -21,135 +22,262 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@src/shared/components/ui/select";
-import type { CreateMeetingForm } from "../types";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@src/shared/components/ui/form";
+import {
+  FieldSet,
+  FieldLegend,
+  FieldGroup,
+  FieldContent,
+  FieldLabel as ShadFieldLabel,
+  Field,
+} from "@src/shared/components/ui/field";
+import { useMeetings } from "../hooks";
+import { CreateMeetingSchema, type CreateMeetingInput } from "../validators";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Textarea } from "@src/shared/components/ui/textarea";
 
-interface CreateMeetingDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  form: CreateMeetingForm;
-  onFormChange: (form: CreateMeetingForm) => void;
-  onSubmit: (e: React.FormEvent) => void;
-  isPending: boolean;
+interface AgendaItemForm {
+  title: string;
+  description?: string;
 }
 
 export function CreateMeetingDialog({
   open,
   onOpenChange,
-  form,
-  onFormChange,
-  onSubmit,
-  isPending,
-}: CreateMeetingDialogProps) {
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const form = useForm({
+    resolver: zodResolver(CreateMeetingSchema),
+    defaultValues: {
+      title: "",
+      type: "GENERAL_MEETING",
+      scheduledAt: new Date(),
+      venue: "",
+      agendaItems: [{ title: "", description: "" }],
+    },
+  });
+
+  const { createMeeting, isCreating: isPending } = useMeetings();
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "agendaItems",
+  });
+
+  const onSubmit: SubmitHandler<CreateMeetingInput> = (values) => {
+    const formattedData = {
+      ...values,
+      scheduledAt: values.scheduledAt,
+      agendaItems: values.agendaItems
+        .filter((item) => item.title.trim())
+        .map((item, index) => ({
+          order: index + 1,
+          title: item.title,
+          description: item.description || undefined,
+        })),
+    };
+
+    createMeeting(formattedData, {
+      onSuccess: (data) => {
+        if (data.success) {
+          onOpenChange(false);
+          form.reset({
+            title: "",
+            type: "GENERAL_MEETING",
+            scheduledAt: new Date(),
+            venue: "",
+            agendaItems: [{ title: "Agenda 1", description: "" }],
+          });
+        }
+      },
+    });
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <Button className="gap-2">
-          <Plus className="h-4 w-4" />
+          <PlusIcon className="h-4 w-4" />
           Create Meeting
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create New Meeting</DialogTitle>
           <DialogDescription>
             Create a new meeting for your association.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Title</label>
-            <Input
-              placeholder="Meeting title"
-              value={form.title}
-              onChange={(e) => onFormChange({ ...form, title: e.target.value })}
-              required
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Meeting title" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Type</label>
-            <Select
-              value={form.type}
-              onValueChange={(value) =>
-                onFormChange({ ...form, type: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="GENERAL_MEETING">General Meeting</SelectItem>
-                <SelectItem value="EC_MEETING">EC Meeting</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Date & Time</label>
-            <Input
-              type="datetime-local"
-              value={form.scheduledAt}
-              onChange={(e) =>
-                onFormChange({ ...form, scheduledAt: e.target.value })
-              }
-              required
+
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem className="flex w-full flex-col">
+                  <FormLabel>Type</FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="GENERAL_MEETING">
+                          General Meeting
+                        </SelectItem>
+                        <SelectItem value="EC_MEETING">EC Meeting</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Venue (optional)</label>
-            <Input
-              placeholder="Meeting venue"
-              value={form.venue}
-              onChange={(e) => onFormChange({ ...form, venue: e.target.value })}
+
+            <FormField
+              control={form.control}
+              name="scheduledAt"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Date & Time</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="datetime-local"
+                      value={
+                        field.value instanceof Date
+                          ? field.value.toISOString().slice(0, 16)
+                          : ""
+                      }
+                      onChange={(e) => field.onChange(new Date(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Agenda Items (optional)
-            </label>
-            <textarea
-              className="w-full min-h-[80px] rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 placeholder:text-muted-foreground"
-              placeholder="Enter agenda items (one per line)"
-              value={form.agendaItems}
-              onChange={(e) =>
-                onFormChange({ ...form, agendaItems: e.target.value })
-              }
+
+            <FormField
+              control={form.control}
+              name="venue"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Venue</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Meeting venue" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isPending}>
-              {isPending ? "Creating..." : "Create Meeting"}
-            </Button>
-          </DialogFooter>
-        </form>
+
+            <FieldSet>
+              <FieldLegend>Agenda Items</FieldLegend>
+              <FieldGroup>
+                {fields.map((fieldItem, index) => (
+                  <Field key={fieldItem.id}>
+                    <FieldContent>
+                      <ShadFieldLabel className="text-xs font-medium">
+                        Agenda {index + 1}
+                      </ShadFieldLabel>
+                      <div className="flex flex-col gap-3 mt-1">
+                        <FormField
+                          control={form.control}
+                          name={`agendaItems.${index}.title`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Input
+                                  placeholder="Agenda item title"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`agendaItems.${index}.description`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Textarea
+                                  rows={3}
+                                  placeholder="Description (optional)"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        {fields.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => remove(index)}
+                            className="text-destructive hover:text-destructive gap-1 w-fit"
+                          >
+                            <TrashIcon className="h-3 w-3" />
+                            Remove
+                          </Button>
+                        )}
+                      </div>
+                    </FieldContent>
+                  </Field>
+                ))}
+              </FieldGroup>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => append({ title: "", description: "" })}
+                className="gap-1 mt-2"
+              >
+                <PlusIcon className="h-3 w-3" />
+                Add Agenda Item
+              </Button>
+            </FieldSet>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isPending}>
+                {isPending ? "Creating..." : "Create Meeting"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
-}
-
-export function useCreateMeetingForm() {
-  const [form, setForm] = useState<CreateMeetingForm>({
-    title: "",
-    type: "GENERAL_MEETING",
-    scheduledAt: "",
-    venue: "",
-    agendaItems: "",
-  });
-
-  const resetForm = () => {
-    setForm({
-      title: "",
-      type: "GENERAL_MEETING",
-      scheduledAt: "",
-      venue: "",
-      agendaItems: "",
-    });
-  };
-
-  return { form, setForm, resetForm };
 }

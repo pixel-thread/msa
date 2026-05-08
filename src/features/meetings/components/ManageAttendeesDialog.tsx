@@ -180,7 +180,7 @@ export function ManageAttendeesDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="overflow-hidden flex flex-col p-0">
+      <DialogContent className="overflow-hidden w-[800px] flex flex-col p-0">
         <DialogHeader className="px-6 pt-6 pb-4 border-b bg-muted/30">
           <div className="flex items-center justify-between">
             <div>
@@ -340,4 +340,3 @@ export function useAttendeeForm() {
 
   return { form, setForm, resetForm };
 }
-

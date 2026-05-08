@@ -1,7 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import http from "@src/shared/utils/http";
 import { toast } from "sonner";
-import type { Meeting, Member, Attendee, CreateMeetingForm } from "../types";
+import type { Meeting, Member, Attendee } from "../types";
+import type { CreateMeetingInput } from "../validators";
 
 interface UseMeetingsOptions {
   limit?: number;
@@ -22,26 +23,8 @@ export function useMeetings(options: UseMeetingsOptions = {}) {
   });
 
   const createMeetingMutation = useMutation({
-    mutationFn: async (formData: CreateMeetingForm) => {
-      const agendaItems = formData.agendaItems
-        ? formData.agendaItems
-            .split("\n")
-            .filter(Boolean)
-            .map((title, index) => ({
-              order: index + 1,
-              title: title.trim(),
-              description: undefined,
-            }))
-        : undefined;
-
-      return http.post("/meetings", {
-        title: formData.title,
-        type: formData.type,
-        scheduledAt: formData.scheduledAt,
-        venue: formData.venue || undefined,
-        agendaItems,
-      });
-    },
+    mutationFn: (data: CreateMeetingInput) =>
+      http.post<Meeting>("/meetings", data),
     onSuccess: (data) => {
       if (data.success) {
         queryClient.invalidateQueries({ queryKey: ["meetings"] });
@@ -49,6 +32,7 @@ export function useMeetings(options: UseMeetingsOptions = {}) {
         return data;
       }
       toast.error(data.message);
+      return data;
     },
   });
 

@@ -116,28 +116,27 @@ export function MeetingsTable({ onOpenAttendees }: MeetingsTableProps) {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
-                      {!isHighRole && (
-                        <>
-                          <Button
-                            size="xs"
-                            variant="outline"
-                            onClick={() => accept(meeting.id)}
-                            disabled={isRsvpPending}
-                            className="gap-1"
-                          >
-                            Accept
-                          </Button>
-                          <Button
-                            size="xs"
-                            variant="ghost"
-                            onClick={() => setRsvpDialogOpen(true)}
-                            disabled={isRsvpPending}
-                            className="text-destructive hover:text-destructive"
-                          >
-                            Decline
-                          </Button>
-                        </>
-                      )}
+                      <>
+                        <Button
+                          size="xs"
+                          variant="default"
+                          onClick={() => accept(meeting.id)}
+                          disabled={isRsvpPending}
+                          className="gap-1"
+                        >
+                          Accept
+                        </Button>
+                        <Button
+                          size="xs"
+                          variant="destructive"
+                          onClick={() => setRsvpDialogOpen(true)}
+                          disabled={isRsvpPending}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          Decline
+                        </Button>
+                      </>
+
                       {isHighRole && (
                         <>
                           <Button

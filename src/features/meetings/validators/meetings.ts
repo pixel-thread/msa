@@ -1,6 +1,20 @@
 import { z } from "zod";
 import { MeetingType, MeetingStatus } from "@prisma/client";
-import { CreateAgendaItemSchema } from "./agenda-items";
+
+export const agendaItemSchema = z.object({
+  title: z
+    .string({ message: "Title is required" })
+    .min(1, "Agenda item title is required"),
+  description: z
+    .string({ message: "Description must be a string" })
+    .max(1000, "Description cannot exceed 1000 characters")
+    .optional(),
+  order: z
+    .number({ message: "Order must be a number" })
+    .int({ message: "Order must be an integer" })
+    .positive({ message: "Order must be a positive number" })
+    .optional(),
+});
 
 export const CreateMeetingSchema = z.object({
   title: z
@@ -13,7 +27,7 @@ export const CreateMeetingSchema = z.object({
     .max(500, "Venue cannot exceed 500 characters")
     .optional(),
   agendaItems: z
-    .array(CreateAgendaItemSchema)
+    .array(agendaItemSchema)
     .min(1, "At least one agenda item is required"),
 });
 
@@ -54,3 +68,4 @@ export const MeetingQuerySchema = z.object({
 export type CreateMeetingInput = z.infer<typeof CreateMeetingSchema>;
 export type UpdateMeetingInput = z.infer<typeof UpdateMeetingSchema>;
 export type MeetingQueryInput = z.infer<typeof MeetingQuerySchema>;
+export type AgendaItemInput = z.infer<typeof agendaItemSchema>;

@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import http from "@src/shared/utils/http";
@@ -87,4 +88,3 @@ export function useRsvp() {
     },
   };
 }
-
