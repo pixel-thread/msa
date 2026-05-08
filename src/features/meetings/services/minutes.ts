@@ -1,4 +1,5 @@
 import { prisma } from "@lib/prisma";
+import { Prisma } from "@prisma/client";
 import { NotFoundError } from "@src/shared/errors";
 import {
   CreateMeetingMinuteInput,
@@ -34,7 +35,7 @@ export async function createMeetingMinute({
       ...data,
       meetingId,
       // Prisma handles Json fields directly
-      actionItems: data.actionItems as any,
+      actionItems: data.actionItems as Prisma.JsonValue,
     },
   });
 }
@@ -59,7 +60,9 @@ export async function updateMeetingMinute({
     where: { id: minuteId },
     data: {
       ...data,
-      actionItems: data.actionItems ? (data.actionItems as any) : undefined,
+      actionItems: data.actionItems
+        ? (data.actionItems as Prisma.JsonValue)
+        : undefined,
     },
   });
 }
