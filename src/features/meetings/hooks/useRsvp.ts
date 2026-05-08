@@ -7,8 +7,13 @@ import type { RsvpForm } from "../types";
 export function useRsvp() {
   const queryClient = useQueryClient();
   const [rsvpDialogOpen, setRsvpDialogOpen] = useState(false);
-  const [selectedMeetingId, setSelectedMeetingId] = useState<string | null>(null);
-  const [rsvpForm, setRsvpForm] = useState<RsvpForm>({ status: "ACCEPTED", note: "" });
+  const [selectedMeetingId, setSelectedMeetingId] = useState<string | null>(
+    null,
+  );
+  const [rsvpForm, setRsvpForm] = useState<RsvpForm>({
+    status: "ACCEPTED",
+    note: "",
+  });
 
   const rsvpMutation = useMutation({
     mutationFn: async ({
@@ -17,31 +22,31 @@ export function useRsvp() {
     }: {
       meetingId: string;
       formData: RsvpForm;
-    }) => {
-      const res = await http.patch(`/meetings/${meetingId}/attendees/me`, {
+    }) =>
+      http.patch(`/meetings/${meetingId}/rsvp`, {
         rsvpStatus: formData.status,
         rsvpNote: formData.note,
-      });
-      if (!res.success) throw new Error(res.message);
-      return res;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["meetings"] });
-      setRsvpDialogOpen(false);
-      setRsvpForm({ status: "ACCEPTED", note: "" });
-      setSelectedMeetingId(null);
-      toast.success(
-        rsvpForm.status === "ACCEPTED"
-          ? "RSVP confirmed successfully"
-          : "RSVP declined successfully"
-      );
+      }),
+    onSuccess: (data) => {
+      if (data.success) {
+        queryClient.invalidateQueries({ queryKey: ["meetings"] });
+        setRsvpDialogOpen(false);
+        setRsvpForm({ status: "ACCEPTED", note: "" });
+        setSelectedMeetingId(null);
+        toast.success(data.message);
+        return data;
+      }
+      toast.error(data.message);
     },
     onError: (err: Error) => {
       toast.error(err.message || "Failed to submit RSVP");
     },
   });
 
-  const openRsvpDialog = (meetingId: string, status: "ACCEPTED" | "DECLINED" = "ACCEPTED") => {
+  const openRsvpDialog = (
+    meetingId: string,
+    status: "ACCEPTED" | "DECLINED" = "ACCEPTED",
+  ) => {
     setSelectedMeetingId(meetingId);
     setRsvpForm({ status, note: "" });
     setRsvpDialogOpen(true);
@@ -60,7 +65,7 @@ export function useRsvp() {
       formData: rsvpForm,
     });
   };
-
+  console.log("rsvp DialogOpen", rsvpDialogOpen);
   return {
     rsvpDialogOpen,
     setRsvpDialogOpen,
@@ -82,3 +87,4 @@ export function useRsvp() {
     },
   };
 }
+

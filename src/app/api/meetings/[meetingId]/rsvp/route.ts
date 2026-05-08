@@ -16,7 +16,6 @@ const HIGH_ROLE_USERS: UserRole[] = [
 
 const AttendeeParamsSchema = z.object({
   meetingId: z.uuid("Invalid meeting ID"),
-  userId: z.uuid("Invalid user ID"),
 });
 
 export const PATCH = withAssociation(
@@ -33,11 +32,12 @@ export const PATCH = withAssociation(
       request as unknown as NextRequest,
       UserRole.MEMBER,
     );
-    const requestingUserId = request.headers.get("x-user-id")!;
 
     const isAdmin = HIGH_ROLE_USERS.includes(user.role);
 
-    const isSelfUpdate = params.userId === requestingUserId;
+    const userId = isAdmin ? body.userId : request.headers.get("x-user-id");
+
+    const isSelfUpdate = !!userId;
 
     if (!isAdmin && !isSelfUpdate) {
       throw new ForbiddenError("You can only update your own RSVP");
@@ -46,18 +46,22 @@ export const PATCH = withAssociation(
     const updated = await updateAttendee({
       meetingId: params.meetingId,
       associationId: association.id,
-      userId: params.userId,
+      userId: userId || "",
       data: { ...body },
       isAdminUpdate: isAdmin,
     });
 
-    return SuccessResponse({ data: updated });
+    return SuccessResponse({
+      data: updated,
+      message: "Successfully updated joining status",
+    });
   },
 );
 
 export const DELETE = withAssociation(
   { params: AttendeeParamsSchema },
   async (association, { params }, request) => {
+    const userId = request.headers.get("x-user-id ");
     if (!params) {
       throw new ForbiddenError("Invalid parameters");
     }
@@ -76,7 +80,7 @@ export const DELETE = withAssociation(
     await removeAttendee({
       meetingId: params.meetingId,
       associationId: association.id,
-      userId: params.userId,
+      userId: userId || "",
     });
 
     return SuccessResponse({

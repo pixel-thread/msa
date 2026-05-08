@@ -10,17 +10,21 @@ import {
 } from "@src/shared/components/ui/dialog";
 import { Button } from "@src/shared/components/ui/button";
 import { Textarea } from "@src/shared/components/ui/textarea";
-import { XIcon as X } from "@phosphor-icons/react";
 import { useRsvp } from "../hooks";
 
 interface RsvpDialogProps {
-  open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function RsvpDialog({ open, onOpenChange }: RsvpDialogProps) {
-  const { rsvpForm, setRsvpForm, closeRsvpDialog, submitRsvp, isPending } =
-    useRsvp();
+export function RsvpDialog({ onOpenChange }: RsvpDialogProps) {
+  const {
+    rsvpForm,
+    rsvpDialogOpen: open,
+    setRsvpForm,
+    closeRsvpDialog,
+    submitRsvp,
+    isPending,
+  } = useRsvp();
   const note = rsvpForm.note;
   const status = rsvpForm.status;
   const isDecline = status === "DECLINED";
@@ -48,7 +52,13 @@ export function RsvpDialog({ open, onOpenChange }: RsvpDialogProps) {
               <Textarea
                 placeholder="Please provide your reason for declining..."
                 value={note}
-                onChange={(e) => setRsvpForm(e?.target.value as any)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setRsvpForm({
+                    status: isDecline ? "DECLINED" : "ACCEPTED",
+                    note: value,
+                  });
+                }}
                 className="min-h-[100px]"
                 required
               />
@@ -74,43 +84,5 @@ export function RsvpDialog({ open, onOpenChange }: RsvpDialogProps) {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
-}
-
-interface RsvpButtonsProps {
-  meetingId: string;
-  onAccept: (meetingId: string) => void;
-  onDecline: (meetingId: string) => void;
-  isPending?: boolean;
-}
-
-export function RsvpButtons({
-  meetingId,
-  onAccept,
-  onDecline,
-  isPending,
-}: RsvpButtonsProps) {
-  return (
-    <div className="flex items-center gap-1">
-      <Button
-        size="xs"
-        variant="outline"
-        onClick={() => onAccept(meetingId)}
-        disabled={isPending}
-        className="gap-1"
-      >
-        <X className="h-3 w-3" />
-        Accept
-      </Button>
-      <Button
-        size="xs"
-        variant="ghost"
-        onClick={() => onDecline(meetingId)}
-        disabled={isPending}
-        className="text-destructive hover:text-destructive"
-      >
-        Decline
-      </Button>
-    </div>
   );
 }

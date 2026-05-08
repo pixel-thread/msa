@@ -41,26 +41,11 @@ export default function MeetingsPage() {
     attendeeRole: "ATTENDEE",
   });
 
-  const {
-    meetings,
-    isLoading,
-    createMeeting,
-    deleteMeeting,
-    isCreating,
-    isDeleting,
-  } = useMeetings();
+  const { createMeeting, isCreating } = useMeetings();
 
   const { members } = useMembers();
 
-  const {
-    rsvpDialogOpen,
-    setRsvpDialogOpen,
-    rsvpForm,
-    setRsvpForm,
-    closeRsvpDialog,
-    submitRsvp,
-    isPending: isRsvpPending,
-  } = useRsvp();
+  const { rsvpDialogOpen, setRsvpDialogOpen } = useRsvp();
 
   const { attendees, addAttendee, removeAttendee, isAdding, isRemoving } =
     useMeetingAttendees(selectedMeeting?.id || null);
@@ -140,8 +125,7 @@ export default function MeetingsPage() {
           isRemoving={isRemoving}
         />
       )}
-
-      <RsvpDialog open={rsvpDialogOpen} onOpenChange={setRsvpDialogOpen} />
+      <RsvpDialog onOpenChange={setRsvpDialogOpen} />
     </div>
   );
 }

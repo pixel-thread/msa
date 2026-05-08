@@ -21,6 +21,7 @@ export const BulkAssignAttendeesSchema = z.object({
 });
 
 export const UpdateAttendeeSchema = z.object({
+  userId: z.uuid().optional(),
   attendeeRole: z
     .enum(AttendeeRole, { message: "Invalid attendee role" })
     .optional(),
