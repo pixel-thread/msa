@@ -8,3 +8,4 @@ export * from "./findUniqueMeeting";
 export * from "./removeAttendee";
 export * from "./updateAttendee";
 export * from "./updateMeeting";
+export * from "./processAgendaOperations";
