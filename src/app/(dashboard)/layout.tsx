@@ -20,9 +20,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarInset,
+  SidebarProvider,
 } from "@src/shared/components/ui/sidebar";
+import { TooltipProvider } from "@src/shared/components/ui/tooltip";
 import { Avatar, AvatarFallback } from "@src/shared/components/ui/avatar";
-import { SidebarInset, SidebarProvider } from "@src/shared/components/ui/sidebar";
 import { Redirect } from "@src/shared/components/Redirect";
 import { useAuthStore } from "@src/shared/stores/auth";
 
@@ -53,10 +55,10 @@ function DashboardSidebar() {
   };
 
   return (
-    <Sidebar collapsible="icon" className="border-r">
-      <SidebarHeader className="py-4">
-        <div className="flex items-center gap-3 px-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-white font-bold text-sm">
+    <Sidebar collapsible="icon" className="border-r border-border/60">
+      <SidebarHeader className="py-4 px-3">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-white font-bold text-sm shadow-sm">
             MFSA
           </div>
           <div className="flex flex-col">
@@ -94,7 +96,7 @@ function DashboardSidebar() {
             </SidebarMenuItem>
           ))}
           <SidebarMenuItem>
-            <div className="flex items-center gap-3 px-3 py-2">
+            <div className="flex items-center gap-3 px-3 py-2 mt-2 border-t border-border/60 pt-3">
               <Avatar className="h-8 w-8">
                 <AvatarFallback className="text-xs bg-muted">
                   {user?.name ? getInitials(user.name) : "U"}
@@ -123,14 +125,14 @@ export default function DashboardLayout({
 }) {
   return (
     <Redirect>
-      <SidebarProvider defaultOpen>
-        <DashboardSidebar />
-        <SidebarInset>
-          <div className="container mx-auto py-8 space-y-8">
-            {children}
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
+      <TooltipProvider>
+        <SidebarProvider defaultOpen>
+          <DashboardSidebar />
+          <SidebarInset>
+            <div className="p-6 lg:p-8">{children}</div>
+          </SidebarInset>
+        </SidebarProvider>
+      </TooltipProvider>
     </Redirect>
   );
 }

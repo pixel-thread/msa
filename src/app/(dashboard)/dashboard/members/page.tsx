@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Users } from "@phosphor-icons/react";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@shared/components/ui/card";
-import { Badge } from "@shared/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@shared/components/ui/table";
-import { Avatar, AvatarFallback } from "@shared/components/ui/avatar";
-import http from "@shared/utils/http";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@src/shared/components/ui/card";
+import { Badge } from "@src/shared/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@src/shared/components/ui/table";
+import { Avatar, AvatarFallback } from "@src/shared/components/ui/avatar";
+import http from "@src/shared/utils/http";
 
 interface Member {
   id: string;
@@ -20,25 +20,16 @@ interface Member {
 }
 
 export default function MembersPage() {
-  const [members, setMembers] = useState<Member[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading } = useQuery<{ members: Member[] }>({
+    queryKey: ["members"],
+    queryFn: async () => {
+      const res = await http.get<{ members: Member[] }>("/members?limit=50");
+      if (!res.success || !res.data) throw new Error("Failed to fetch members");
+      return res.data;
+    },
+  });
 
-  useEffect(() => {
-    async function fetchMembers() {
-      try {
-        const res = await http.get<{ members: Member[] }>("/members?limit=50");
-        if (res.success && res.data) {
-          setMembers(res.data.members);
-        }
-      } catch (error) {
-        console.error("Failed to fetch members:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchMembers();
-  }, []);
+  const members = data?.members ?? [];
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString("en-IN", {
@@ -66,7 +57,7 @@ export default function MembersPage() {
     return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
@@ -75,31 +66,38 @@ export default function MembersPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Members</h1>
-        <p className="text-muted-foreground">
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">Members</h1>
+        <p className="text-sm text-muted-foreground mt-1">
           Manage and view all members in your association.
         </p>
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>All Members</CardTitle>
-          <CardDescription>
-            Total of {members.length} members in your association
-          </CardDescription>
+        <CardHeader className="px-5 pt-5 pb-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-base">All Members</CardTitle>
+              <CardDescription className="text-sm">
+                Total of {members.length} members in your association
+              </CardDescription>
+            </div>
+            <div className="h-9 w-9 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+              <Users className="h-4 w-4 text-indigo-500" />
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-5 pb-5">
           {members.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-8 text-center">
-              <Users className="h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">No members found</p>
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <Users className="h-10 w-10 text-muted-foreground mb-3" />
+              <p className="text-sm text-muted-foreground">No members found</p>
             </div>
           ) : (
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="border-muted/50">
                   <TableHead>Member</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Role</TableHead>
@@ -109,11 +107,11 @@ export default function MembersPage() {
               </TableHeader>
               <TableBody>
                 {members.map((member) => (
-                  <TableRow key={member.id}>
+                  <TableRow key={member.id} className="border-muted/30">
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
-                          <AvatarFallback className="text-xs">
+                          <AvatarFallback className="text-xs bg-muted">
                             {getInitials(member.name)}
                           </AvatarFallback>
                         </Avatar>
@@ -127,7 +125,7 @@ export default function MembersPage() {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">{member.email}</TableCell>
+                    <TableCell className="text-muted-foreground text-sm">{member.email}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className="text-xs">
                         {member.role}

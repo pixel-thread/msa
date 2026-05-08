@@ -3,10 +3,10 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
-    DATABASE_URL: z.string().url(),
+    DATABASE_URL: z.url(),
     CLERK_SECRET_KEY: z.string().startsWith("sk_"),
     CLERK_WEBHOOK_SECRET: z.string().startsWith("whsec_"),
-    UPSTASH_REDIS_REST_URL: z.string().url(),
+    UPSTASH_REDIS_REST_URL: z.url(),
     UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
     FIELD_ENCRYPTION_KEY: z.string().length(64), // 32-byte hex
     CRON_SECRET: z.string().min(32),
@@ -22,7 +22,7 @@ export const env = createEnv({
     NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: z.string().default("/"),
     NEXT_PUBLIC_APP_URL: z.url(),
     NEXT_PUBLIC_ASSOCIATION_SLUG: z.string().min(2).max(10), // Set per-app build
-    NEXT_PUBLIC_API_BASE_URL: z.url(),
+    NEXT_PUBLIC_API_BASE_URL: z.url().default("http://localhost:3000/api"),
   },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,

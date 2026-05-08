@@ -1,12 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Calendar } from "@phosphor-icons/react";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@shared/components/ui/card";
-import { Badge } from "@shared/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@shared/components/ui/table";
-import http from "@shared/utils/http";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@src/shared/components/ui/card";
+import { Badge } from "@src/shared/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@src/shared/components/ui/table";
+import http from "@src/shared/utils/http";
 
 interface Meeting {
   id: string;
@@ -25,25 +38,13 @@ interface Meeting {
 }
 
 export default function MeetingsPage() {
-  const [meetings, setMeetings] = useState<Meeting[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data = [], isLoading } = useQuery({
+    queryKey: ["meetings"],
+    queryFn: () => http.get<Meeting[]>("/meetings?limit=50"),
+    select: (data) => data.data,
+  });
 
-  useEffect(() => {
-    async function fetchMeetings() {
-      try {
-        const res = await http.get<{ data: Meeting[] }>("/meetings?limit=50");
-        if (res.success && res.data) {
-          setMeetings(res.data.data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch meetings:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchMeetings();
-  }, []);
+  const meetings = data ?? [];
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString("en-IN", {
@@ -56,7 +57,10 @@ export default function MeetingsPage() {
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+    const variants: Record<
+      string,
+      "default" | "secondary" | "destructive" | "outline"
+    > = {
       SCHEDULED: "outline",
       NOTICE_ISSUED: "default",
       COMPLETED: "default",
@@ -65,7 +69,7 @@ export default function MeetingsPage() {
     return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
@@ -74,31 +78,40 @@ export default function MeetingsPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Meetings</h1>
-        <p className="text-muted-foreground">
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">Meetings</h1>
+        <p className="text-sm text-muted-foreground mt-1">
           View and manage all meetings in your association.
         </p>
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>All Meetings</CardTitle>
-          <CardDescription>
-            Total of {meetings.length} meetings in your association
-          </CardDescription>
+        <CardHeader className="px-5 pt-5 pb-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-base">All Meetings</CardTitle>
+              <CardDescription className="text-sm">
+                Total of {meetings.length} meetings in your association
+              </CardDescription>
+            </div>
+            <div className="h-9 w-9 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+              <Calendar className="h-4 w-4 text-emerald-500" />
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-5 pb-5">
           {meetings.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-8 text-center">
-              <Calendar className="h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">No meetings scheduled</p>
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <Calendar className="h-10 w-10 text-muted-foreground mb-3" />
+              <p className="text-sm text-muted-foreground">
+                No meetings scheduled
+              </p>
             </div>
           ) : (
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="border-muted/50">
                   <TableHead>Title</TableHead>
                   <TableHead>Type</TableHead>
                   <TableHead>Status</TableHead>
@@ -109,19 +122,23 @@ export default function MeetingsPage() {
               </TableHeader>
               <TableBody>
                 {meetings.map((meeting) => (
-                  <TableRow key={meeting.id}>
-                    <TableCell className="font-medium">{meeting.title}</TableCell>
+                  <TableRow key={meeting.id} className="border-muted/30">
+                    <TableCell className="font-medium">
+                      {meeting.title}
+                    </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{meeting.type}</Badge>
+                      <Badge variant="outline" className="text-xs">
+                        {meeting.type}
+                      </Badge>
                     </TableCell>
                     <TableCell>{getStatusBadge(meeting.status)}</TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="text-muted-foreground text-sm">
                       {formatDate(meeting.scheduledAt)}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="text-muted-foreground text-sm">
                       {meeting.venue || "TBD"}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right text-sm">
                       {meeting._count.attendees}
                     </TableCell>
                   </TableRow>
@@ -134,3 +151,4 @@ export default function MeetingsPage() {
     </div>
   );
 }
+

@@ -1,0 +1,19 @@
+import { Prisma } from "@prisma/client";
+import { prisma } from "../lib/prisma";
+
+type Props = {
+  where: Prisma.UserWhereUniqueInput;
+};
+export async function getUniqueUser({ where }: Props) {
+  return await prisma.user.findUnique({
+    where,
+    select: {
+      id: true,
+      clerkId: true,
+      associationId: true,
+      email: true,
+      name: true,
+      role: true,
+    },
+  });
+}

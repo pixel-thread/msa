@@ -3,22 +3,26 @@ import { withRole } from "@src/shared/api/with-role";
 import { SuccessResponse } from "@src/shared/utils/responses";
 import { ForbiddenError } from "@src/shared/errors";
 import { UserRole, MeetingStatus } from "@prisma/client";
-import {
-  createMeeting,
-  findManyMeetings,
-} from "@feature/meetings/services";
+import { createMeeting, findManyMeetings } from "@feature/meetings/services";
 import {
   CreateMeetingSchema,
   MeetingQuerySchema,
 } from "@feature/meetings/validators/meetings";
 import { NextRequest } from "next/server";
 
-const HIGH_ROLE_USERS: UserRole[] = [UserRole.SUPER_ADMIN, UserRole.PRESIDENT, UserRole.SECRETARY];
+const HIGH_ROLE_USERS: UserRole[] = [
+  UserRole.SUPER_ADMIN,
+  UserRole.PRESIDENT,
+  UserRole.SECRETARY,
+];
 
 export const GET = withAssociation(
   { query: MeetingQuerySchema },
   async (association, { query }, request) => {
-    const user = await withRole(request as unknown as NextRequest, UserRole.MEMBER);
+    const user = await withRole(
+      request as unknown as NextRequest,
+      UserRole.MEMBER,
+    );
 
     if (!query) {
       throw new ForbiddenError("Invalid query parameters");
@@ -32,7 +36,10 @@ export const GET = withAssociation(
         filters: { type, status },
         pagination: { page, limit },
       });
-      return SuccessResponse({ data: result.meetings, meta: result.pagination });
+      return SuccessResponse({
+        data: result.meetings,
+        meta: result.pagination,
+      });
     }
 
     const result = await findManyMeetings({
@@ -53,10 +60,15 @@ export const POST = withAssociation(
     }
 
     const userId = request.headers.get("x-user-id")!;
-    const user = await withRole(request as unknown as NextRequest, UserRole.SECRETARY);
+    const user = await withRole(
+      request as unknown as NextRequest,
+      UserRole.SECRETARY,
+    );
 
     if (!HIGH_ROLE_USERS.includes(user.role)) {
-      throw new ForbiddenError("Only secretary, president, or super admin can create meetings");
+      throw new ForbiddenError(
+        "Only secretary, president, or super admin can create meetings",
+      );
     }
 
     const meeting = await createMeeting({
@@ -74,3 +86,4 @@ export const POST = withAssociation(
     return SuccessResponse({ data: meeting }, 201);
   },
 );
+

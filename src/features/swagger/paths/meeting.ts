@@ -8,12 +8,18 @@ export const meetingPaths = {
         {
           name: "type",
           in: "query",
-          schema: { type: "string", enum: ["ANNUAL", "GENERAL", "EXTRAORDINARY", "COMMITTEE"] },
+          schema: {
+            type: "string",
+            enum: ["ANNUAL", "GENERAL", "EXTRAORDINARY", "COMMITTEE"],
+          },
         },
         {
           name: "status",
           in: "query",
-          schema: { type: "string", enum: ["SCHEDULED", "IN_PROGRESS", "COMPLETED", "CANCELLED"] },
+          schema: {
+            type: "string",
+            enum: ["SCHEDULED", "IN_PROGRESS", "COMPLETED", "CANCELLED"],
+          },
         },
         {
           name: "page",
@@ -35,7 +41,8 @@ export const meetingPaths = {
     post: {
       tags: ["Meetings"],
       summary: "Create a meeting",
-      description: "Create a new meeting (requires SECRETARY, PRESIDENT, or SUPER_ADMIN role)",
+      description:
+        "Create a new meeting (requires SECRETARY, PRESIDENT, or SUPER_ADMIN role)",
       requestBody: {
         required: true,
         content: {
@@ -45,7 +52,10 @@ export const meetingPaths = {
               required: ["title", "type", "scheduledAt", "agendaItems"],
               properties: {
                 title: { type: "string", minLength: 3 },
-                type: { type: "string", enum: ["ANNUAL", "GENERAL", "EXTRAORDINARY", "COMMITTEE"] },
+                type: {
+                  type: "string",
+                  enum: ["ANNUAL", "GENERAL", "EXTRAORDINARY", "COMMITTEE"],
+                },
                 scheduledAt: { type: "string", format: "date-time" },
                 venue: { type: "string", maxLength: 500 },
                 agendaItems: {
@@ -70,7 +80,7 @@ export const meetingPaths = {
       },
     },
   },
-  "/meeting/{meetingId}": {
+  "/meetings/{meetingId}": {
     get: {
       tags: ["Meetings"],
       summary: "Get a meeting by ID",
@@ -109,7 +119,10 @@ export const meetingPaths = {
                 type: { type: "string" },
                 scheduledAt: { type: "string", format: "date-time" },
                 venue: { type: "string" },
-                status: { type: "string", enum: ["SCHEDULED", "IN_PROGRESS", "COMPLETED", "CANCELLED"] },
+                status: {
+                  type: "string",
+                  enum: ["SCHEDULED", "IN_PROGRESS", "COMPLETED", "CANCELLED"],
+                },
               },
             },
           },
@@ -140,3 +153,4 @@ export const meetingPaths = {
     },
   },
 };
+
