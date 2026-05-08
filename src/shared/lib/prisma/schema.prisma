@@ -199,6 +199,7 @@ model User {
   dataRetentionUntil   DateTime      @default(dbgenerated("(NOW() + INTERVAL '7 years')"))
   failedLoginAttempts  Int           @default(0)
   lockedUntil          DateTime?
+  imageUrl             String?
   deletedAt            DateTime?
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
@@ -218,8 +219,8 @@ model User {
   meetingAttendances   MeetingAttendee[]     // ★ Meetings this user is assigned to
 
   // Email is unique within one association; same person can join MFSA and MPSA separately
-  @@unique([associationId, email])
-  @@unique([associationId, clerkId])
+  // @@unique([associationId, email])
+  // @@unique([associationId, clerkId])
   @@unique([associationId, membershipNumber])
   @@index([associationId])
   @@index([email])
