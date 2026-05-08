@@ -4,8 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { CreditCard } from "@phosphor-icons/react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@src/shared/components/ui/card";
-import { Badge } from "@src/shared/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@src/shared/components/ui/table";
+import { DataTable } from "@src/shared/components/data-table";
+import { usePaymentTableColumns } from "@src/features/subscription/hooks/usePaymentTableColumns";
 import http from "@src/shared/utils/http";
 
 interface Payment {
@@ -24,6 +24,7 @@ interface Payment {
 }
 
 export default function PaymentsPage() {
+  const { columns } = usePaymentTableColumns();
   const { data, isLoading } = useQuery<{ payments: Payment[] }>({
     queryKey: ["payments"],
     queryFn: async () => {
@@ -35,30 +36,12 @@ export default function PaymentsPage() {
 
   const payments = data?.payments ?? [];
 
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString("en-IN", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-  };
-
   const formatCurrency = (amount: number, currency: string = "INR") => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
       currency,
       maximumFractionDigits: 0,
     }).format(amount);
-  };
-
-  const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-      COMPLETED: "default",
-      PENDING: "outline",
-      FAILED: "destructive",
-      REFUNDED: "secondary",
-    };
-    return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
   };
 
   const totalCollected = payments
@@ -149,39 +132,7 @@ export default function PaymentsPage() {
               <p className="text-sm text-muted-foreground">No payments found</p>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow className="border-muted/50">
-                  <TableHead>Member</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Receipt</TableHead>
-                  <TableHead className="text-right">Date</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {payments.map((payment) => (
-                  <TableRow key={payment.id} className="border-muted/30">
-                    <TableCell className="font-medium">
-                      <div className="flex flex-col">
-                        <span className="text-sm">{payment.user.name}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {payment.user.email}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-sm font-medium">{formatCurrency(payment.amount, payment.currency)}</TableCell>
-                    <TableCell>{getStatusBadge(payment.status)}</TableCell>
-                    <TableCell className="text-muted-foreground text-sm">
-                      {payment.receiptNumber || "-"}
-                    </TableCell>
-                    <TableCell className="text-right text-muted-foreground text-sm">
-                      {formatDate(payment.paymentDate)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <DataTable data={payments} columns={columns} loading={isLoading} />
           )}
         </CardContent>
       </Card>

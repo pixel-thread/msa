@@ -10,18 +10,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@src/shared/components/ui/card";
-import { Badge } from "@src/shared/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@src/shared/components/ui/table";
-import { Avatar, AvatarFallback } from "@src/shared/components/ui/avatar";
+import { DataTable } from "@src/shared/components/data-table";
+import { useMemberTableColumns } from "@src/features/members/hooks/useMemberTableColumns";
 import http from "@src/shared/utils/http";
-import { formatDate } from "@src/shared/utils";
 
 interface Member {
   id: string;
@@ -34,40 +25,12 @@ interface Member {
 }
 
 export default function MembersPage() {
+  const { columns } = useMemberTableColumns();
   const { data: members = [], isLoading } = useQuery({
     queryKey: ["members"],
     queryFn: async () => http.get<Member[]>("/members?limit=50"),
     select: (d) => d.data,
   });
-
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
-  const getStatusBadge = (status: string) => {
-    const variants: Record<
-      string,
-      "default" | "secondary" | "destructive" | "outline"
-    > = {
-      ACTIVE: "default",
-      INACTIVE: "secondary",
-      SUSPENDED: "destructive",
-    };
-    return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -99,54 +62,7 @@ export default function MembersPage() {
               <p className="text-sm text-muted-foreground">No members found</p>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow className="border-muted/50">
-                  <TableHead>Member</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Joined</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {members?.map((member) => (
-                  <TableRow key={member.id} className="border-muted/30">
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback className="text-xs bg-muted">
-                            {getInitials(member.name)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col">
-                          <span className="text-sm font-medium">
-                            {member.name}
-                          </span>
-                          {member.membershipNumber && (
-                            <span className="text-xs text-muted-foreground">
-                              {member.membershipNumber}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground text-sm">
-                      {member.email}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="text-xs">
-                        {member.role}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{getStatusBadge(member.status)}</TableCell>
-                    <TableCell className="text-right text-muted-foreground text-sm">
-                      {formatDate(member.createdAt)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <DataTable data={members} columns={columns} loading={isLoading} />
           )}
         </CardContent>
       </Card>

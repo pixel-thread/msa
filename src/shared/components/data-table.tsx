@@ -20,17 +20,20 @@ type DataTableProps<TData> = {
   loading?: boolean;
   data: TData[];
   columns: ColumnDef<TData>[];
+  meta?: Record<string, unknown>;
 };
 
 export function DataTable<TData>({
   loading = false,
   data,
   columns,
+  meta,
 }: DataTableProps<TData>) {
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    meta,
   });
 
   return (

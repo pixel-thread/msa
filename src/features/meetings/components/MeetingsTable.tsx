@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { CalendarIcon as Calendar } from "@phosphor-icons/react";
 
 import {
@@ -14,6 +15,7 @@ import { useMeetingTableColumns } from "../hooks/useMeetingTableColumns";
 import { useMeetings } from "../hooks";
 
 export function MeetingsTable() {
+  const router = useRouter();
   const { columns } = useMeetingTableColumns();
   const { meetings } = useMeetings();
 
@@ -41,7 +43,7 @@ export function MeetingsTable() {
             </p>
           </div>
         ) : (
-          <DataTable data={meetings} columns={columns} loading={false} />
+          <DataTable data={meetings} columns={columns} loading={false} meta={{ router }} />
         )}
       </CardContent>
     </Card>

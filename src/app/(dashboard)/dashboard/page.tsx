@@ -6,12 +6,12 @@ import { Users, Calendar, CreditCard, TrendUp } from "@phosphor-icons/react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@src/shared/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@src/shared/components/ui/tabs";
-import { Badge } from "@src/shared/components/ui/badge";
 import { Button } from "@src/shared/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@src/shared/components/ui/table";
-import { Avatar, AvatarFallback } from "@src/shared/components/ui/avatar";
+import { DataTable } from "@src/shared/components/data-table";
 import { useAuthStore } from "@src/shared/stores/auth";
 import http from "@src/shared/utils/http";
+import { useDashboardMeetingColumns } from "@src/features/meetings/hooks/useDashboardMeetingColumns";
+import { useDashboardMemberColumns } from "@src/features/members/hooks/useDashboardMemberColumns";
 
 interface Plan {
   id: string;
@@ -58,6 +58,8 @@ interface Member {
 export default function DashboardPage() {
   const { user } = useAuthStore();
   const [paying, setPaying] = useState(false);
+  const { columns: meetingColumns } = useDashboardMeetingColumns();
+  const { columns: memberColumns } = useDashboardMemberColumns();
 
   const { data: subscription, isLoading: subscriptionLoading } = useQuery<SubscriptionStatus>({
     queryKey: ["subscription"],
@@ -126,27 +128,6 @@ export default function DashboardPage() {
       currency,
       maximumFractionDigits: 0,
     }).format(amount);
-  };
-
-  const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-      ACTIVE: "default",
-      INACTIVE: "secondary",
-      SUSPENDED: "destructive",
-      SCHEDULED: "outline",
-      COMPLETED: "default",
-      CANCELLED: "destructive",
-    };
-    return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
-  };
-
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
   };
 
   if (isLoading) {
@@ -277,34 +258,7 @@ export default function DashboardPage() {
                   <p className="text-sm text-muted-foreground">No meetings scheduled</p>
                 </div>
               ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow className="border-muted/50">
-                      <TableHead>Title</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead className="text-right">Attendees</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {meetings.map((meeting) => (
-                      <TableRow key={meeting.id} className="border-muted/30">
-                        <TableCell className="font-medium">{meeting.title}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="text-xs">{meeting.type}</Badge>
-                        </TableCell>
-                        <TableCell>{getStatusBadge(meeting.status)}</TableCell>
-                        <TableCell className="text-muted-foreground text-sm">
-                          {formatDate(meeting.scheduledAt)}
-                        </TableCell>
-                        <TableCell className="text-right text-sm">
-                          {meeting._count.attendees}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <DataTable data={meetings} columns={meetingColumns} loading={meetingsLoading} />
               )}
             </CardContent>
           </Card>
@@ -327,50 +281,7 @@ export default function DashboardPage() {
                   <p className="text-sm text-muted-foreground">No members found</p>
                 </div>
               ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow className="border-muted/50">
-                      <TableHead>Member</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Joined</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {members.map((member) => (
-                      <TableRow key={member.id} className="border-muted/30">
-                        <TableCell className="font-medium">
-                          <div className="flex items-center gap-3">
-                            <Avatar className="h-8 w-8">
-                              <AvatarFallback className="text-xs bg-muted">
-                                {getInitials(member.name)}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="flex flex-col">
-                              <span className="text-sm font-medium">{member.name}</span>
-                              {member.membershipNumber && (
-                                <span className="text-xs text-muted-foreground">
-                                  {member.membershipNumber}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-muted-foreground text-sm">{member.email}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="text-xs">
-                            {member.role}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{getStatusBadge(member.status)}</TableCell>
-                        <TableCell className="text-right text-muted-foreground text-sm">
-                          {formatDate(member.createdAt)}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <DataTable data={members} columns={memberColumns} loading={membersLoading} />
               )}
             </CardContent>
           </Card>
