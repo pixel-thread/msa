@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { UserIcon as Users } from "@phosphor-icons/react";
 
 import {
@@ -25,11 +26,14 @@ interface Member {
 }
 
 export default function MembersPage() {
+  const router = useRouter();
   const { columns } = useMemberTableColumns();
-  const { data: members = [], isLoading } = useQuery({
+  const { data: members = [], isLoading } = useQuery<Member[]>({
     queryKey: ["members"],
-    queryFn: async () => http.get<Member[]>("/members?limit=50"),
-    select: (d) => d.data,
+    queryFn: async () => {
+      const res = await http.get<Member[]>("/members?limit=50");
+      return res.data ?? [];
+    },
   });
 
   return (
@@ -62,7 +66,7 @@ export default function MembersPage() {
               <p className="text-sm text-muted-foreground">No members found</p>
             </div>
           ) : (
-            <DataTable data={members} columns={columns} loading={isLoading} />
+            <DataTable data={members} columns={columns} loading={isLoading} meta={{ router }} />
           )}
         </CardContent>
       </Card>

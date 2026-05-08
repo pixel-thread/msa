@@ -1,14 +1,18 @@
 import { withAssociation } from "@src/shared/api/with-association";
-import { SuccessResponse, ErrorResponse } from "@src/shared/utils/responses";
+import { SuccessResponse } from "@src/shared/utils/responses";
 import { NotFoundError } from "@src/shared/errors";
 import { prisma } from "@src/shared/lib/prisma";
+import z from "zod";
 
+const ParamSchema = z.object({
+  memberId: z.string(),
+});
 export const GET = withAssociation(
-  { params: null },
+  { params: ParamSchema },
   async (association, { params }) => {
     const member = await prisma.user.findFirst({
       where: {
-        id: params.memberId,
+        id: params?.memberId,
         associationId: association.id,
       },
       select: {
@@ -39,7 +43,7 @@ export const GET = withAssociation(
 
     const subscription = await prisma.payment.findFirst({
       where: {
-        userId: params.memberId,
+        userId: params?.memberId,
         type: "SUBSCRIPTION",
         status: "COMPLETED",
       },
@@ -47,7 +51,7 @@ export const GET = withAssociation(
     });
 
     return SuccessResponse({
-      member: {
+      data: {
         ...member,
         hasPaid: !!subscription,
         lastPaymentDate: subscription?.paymentDate,
@@ -55,3 +59,4 @@ export const GET = withAssociation(
     });
   },
 );
+
