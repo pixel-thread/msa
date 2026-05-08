@@ -44,6 +44,7 @@ import {
 import { useMemberDetail } from "@src/features/members/hooks/useMemberDetail";
 import { formatDate } from "@src/shared/utils";
 import http from "@src/shared/utils/http";
+import { toast } from "sonner";
 
 interface PageProps {
   params: Promise<{ memberId: string }>;
@@ -73,16 +74,17 @@ export default function MemberDetailPage({ params }: PageProps) {
   });
 
   const changeOrgMutation = useMutation({
-    mutationFn: async (newOrgId: string) => {
-      const res = await http.patch(`/api/members/${memberId}`, {
-        associationId: newOrgId,
-      });
-      return res.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["member", memberId] });
-      setIsOrgDialogOpen(false);
-      setSelectedOrgId("");
+    mutationFn: async (newOrgId: string) =>
+      http.post(`/associations/${newOrgId}/members`, {
+        memberId: memberId,
+      }),
+    onSuccess: (data) => {
+      if (data.success) {
+        queryClient.invalidateQueries({ queryKey: ["member", memberId] });
+        setIsOrgDialogOpen(false);
+        setSelectedOrgId("");
+        toast.success(data.message);
+      }
     },
   });
 

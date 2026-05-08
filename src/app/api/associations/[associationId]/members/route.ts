@@ -1,21 +1,27 @@
 import { withAssociation } from "@src/shared/api/with-association";
 import { SuccessResponse } from "@src/shared/utils/responses";
 import { withRole } from "@src/shared/api/with-role";
-import { ConflictError, NotFoundError, ValidationError } from "@src/shared/errors";
+import {
+  ConflictError,
+  NotFoundError,
+  ValidationError,
+} from "@src/shared/errors";
 import { prisma } from "@src/shared/lib/prisma";
 import { UserRole } from "@prisma/client";
 import { NextRequest } from "next/server";
 import z from "zod";
 
 const BodySchema = z.object({
-  memberId: z.string().uuid(),
+  memberId: z.string(),
 });
-
+const ParamsSchema = z.object({
+  associationId: z.string().uuid(),
+});
 const ALLOWED_ROLES: UserRole[] = [UserRole.PRESIDENT, UserRole.SUPER_ADMIN];
 
 export const POST = withAssociation(
-  { body: BodySchema },
-  async (association, { body }, request) => {
+  { body: BodySchema, params: ParamsSchema },
+  async (association, { body, params }, request) => {
     const user = await withRole(request as NextRequest, UserRole.PRESIDENT);
 
     if (!ALLOWED_ROLES.includes(user.role)) {
@@ -34,7 +40,7 @@ export const POST = withAssociation(
       throw new NotFoundError("Member not found");
     }
 
-    if (existingMember.associationId === association.id) {
+    if (existingMember.associationId === params?.associationId) {
       throw new ConflictError("Member already in this association");
     }
 
@@ -55,3 +61,4 @@ export const POST = withAssociation(
     return SuccessResponse({ data: updatedMember }, 201);
   },
 );
+
