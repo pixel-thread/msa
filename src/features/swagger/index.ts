@@ -4,6 +4,7 @@ import { attendeePaths } from "./paths/attendee";
 import { adminPaths } from "./paths/admin";
 import { subscriptionPaths } from "./paths/subscription";
 import { memberPaths } from "./paths/members";
+import { authPaths } from "./paths/auth";
 
 export const openApiSpec = {
   openapi: "3.0.0",
@@ -24,7 +25,7 @@ export const openApiSpec = {
         type: "http",
         scheme: "bearer",
         bearerFormat: "JWT",
-        description: "Enter your JWT token (from Clerk)",
+        description: "Enter your JWT access token. Get it from /auth/sign-in",
       },
     },
   },
@@ -35,6 +36,7 @@ export const openApiSpec = {
   ],
   paths: {
     ...healthPath,
+    ...authPaths,
     ...meetingPaths,
     ...attendeePaths,
     ...adminPaths,
@@ -44,6 +46,7 @@ export const openApiSpec = {
 };
 
 export { healthPath } from "./paths/health";
+export { authPaths } from "./paths/auth";
 export { meetingPaths } from "./paths/meeting";
 export { attendeePaths } from "./paths/attendee";
 export { adminPaths } from "./paths/admin";

@@ -2,6 +2,72 @@
 @meetingId=c93c3433-bbdd-49b2-96c9-23372c7375bc
 @userId=126c111f-dbd3-4a07-8dc6-5998f9a0c62a
 
+### ----------------- AUTH ------------------
+
+###
+# @name Sign Up
+POST http://localhost:3000/api/auth/sign-up
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "Password123!",
+  "name": "Test User",
+  "associationId": "{{associationsId}}"
+}
+
+###
+# @name Sign In
+POST http://localhost:3000/api/auth/sign-in
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "Password123!"
+}
+
+###
+# @name Get Me
+GET http://localhost:3000/api/auth/me
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Logout
+POST http://localhost:3000/api/auth/logout
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Forgot Password
+POST http://localhost:3000/api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "user@example.com"
+}
+
+###
+# @name Reset Password
+POST http://localhost:3000/api/auth/reset-password
+Content-Type: application/json
+
+{
+  "token": "reset-token-from-email",
+  "password": "NewPassword123!"
+}
+
+###
+# @name Change Password
+POST http://localhost:3000/api/auth/change-password
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "currentPassword": "Password123!",
+  "newPassword": "NewPassword123!"
+}
+
 # ----------------- ADMIN ------------------
 
 ### 
