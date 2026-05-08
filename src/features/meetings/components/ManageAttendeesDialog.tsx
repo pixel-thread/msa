@@ -1,6 +1,11 @@
 "use client";
 
-import { Check, Clock, Users, X as XIcon } from "@phosphor-icons/react";
+import {
+  CheckIcon as Check,
+  ClockIcon as Clock,
+  UserIcon as Users,
+  XIcon,
+} from "@phosphor-icons/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -31,10 +36,7 @@ import {
 } from "@src/shared/components/ui/form";
 import { cn } from "@src/shared/lib/utils";
 import type { Meeting, Member, Attendee } from "../types";
-import {
-  AssignAttendeeSchema,
-  type AssignAttendeeInput,
-} from "../validators";
+import { AssignAttendeeSchema, type AssignAttendeeInput } from "../validators";
 
 interface ManageAttendeesDialogProps {
   open: boolean;
@@ -179,7 +181,7 @@ export function ManageAttendeesDialog({
   isAdding,
   isRemoving,
 }: ManageAttendeesDialogProps) {
-  const form = useForm<AssignAttendeeInput>({
+  const form = useForm({
     resolver: zodResolver(AssignAttendeeSchema),
     defaultValues: {
       userId: "",
@@ -203,7 +205,7 @@ export function ManageAttendeesDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="overflow-hidden w-[800px] flex flex-col p-0 max-h-[90vh]">
+      <DialogContent className="overflow-hidden w-200 flex flex-col p-0 max-h-[90vh]">
         <DialogHeader className="px-6 pt-6 pb-4 border-b bg-muted/30">
           <div className="flex items-center justify-between">
             <div>
@@ -303,21 +305,11 @@ export function ManageAttendeesDialog({
               />
 
               <div className="flex justify-end">
-                <Button
-                  type="submit"
-                  disabled={!form.watch("userId") || isAdding}
-                >
-                  {isAdding ? (
-                    <>
-                      <span className="animate-spin mr-2">⟳</span>
-                      Adding...
-                    </>
-                  ) : (
-                    <>
-                      <Users className="h-4 w-4 mr-2" />
-                      Add Attendee
-                    </>
-                  )}
+                <Button type="submit" disabled={isAdding}>
+                  <>
+                    <Users className="h-4 w-4 mr-2" />
+                    Add Attendee
+                  </>
                 </Button>
               </div>
             </form>
