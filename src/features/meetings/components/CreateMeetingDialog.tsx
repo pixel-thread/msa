@@ -2,7 +2,7 @@
 
 import { useFieldArray } from "react-hook-form";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { PlusIcon, TrashIcon } from "@phosphor-icons/react";
+import { Plus, Trash } from "@phosphor-icons/react";
 
 import {
   Dialog,
@@ -41,12 +41,6 @@ import {
 import { useMeetings } from "../hooks";
 import { CreateMeetingSchema, type CreateMeetingInput } from "../validators";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Textarea } from "@src/shared/components/ui/textarea";
-
-interface AgendaItemForm {
-  title: string;
-  description?: string;
-}
 
 export function CreateMeetingDialog({
   open,
@@ -106,7 +100,7 @@ export function CreateMeetingDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <Button className="gap-2">
-          <PlusIcon className="h-4 w-4" />
+          <Plus className="h-4 w-4" />
           Create Meeting
         </Button>
       </DialogTrigger>
@@ -224,8 +218,7 @@ export function CreateMeetingDialog({
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
-                                <Textarea
-                                  rows={3}
+                                <Input
                                   placeholder="Description (optional)"
                                   {...field}
                                 />
@@ -242,7 +235,7 @@ export function CreateMeetingDialog({
                             onClick={() => remove(index)}
                             className="text-destructive hover:text-destructive gap-1 w-fit"
                           >
-                            <TrashIcon className="h-3 w-3" />
+                            <Trash className="h-3 w-3" />
                             Remove
                           </Button>
                         )}
@@ -258,7 +251,7 @@ export function CreateMeetingDialog({
                 onClick={() => append({ title: "", description: "" })}
                 className="gap-1 mt-2"
               >
-                <PlusIcon className="h-3 w-3" />
+                <Plus className="h-3 w-3" />
                 Add Agenda Item
               </Button>
             </FieldSet>
