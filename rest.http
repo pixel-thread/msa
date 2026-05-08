@@ -71,7 +71,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name List meetings
-GET http://localhost:3000/api/meeting
+GET http://localhost:3000/api/meetings
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -107,13 +107,13 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Get meeting details
-GET http://localhost:3000/api/meeting/{{meetingId}}
+GET http://localhost:3000/api/meetings/{{meetingId}}
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Update meeting
-PATCH http://localhost:3000/api/meeting/{{meetingId}}
+PATCH http://localhost:3000/api/meetings/{{meetingId}}
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -124,7 +124,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Delete meeting
-DELETE http://localhost:3000/api/meeting/{{meetingId}}
+DELETE http://localhost:3000/api/meetings/{{meetingId}}
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -132,13 +132,13 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name List meeting attendees
-GET http://localhost:3000/api/meeting/{{meetingId}}/attendees
+GET http://localhost:3000/api/meetings/{{meetingId}}/attendees
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Assign single attendee
-POST http://localhost:3000/api/meeting/{{meetingId}}/attendees
+POST http://localhost:3000/api/meetings/{{meetingId}}/attendees
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -149,7 +149,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Bulk assign attendees
-PUT http://localhost:3000/api/meeting/{{meetingId}}/attendees
+PUT http://localhost:3000/api/meetings/{{meetingId}}/attendees
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -160,7 +160,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Update attendee RSVP
-PATCH http://localhost:3000/api/meeting/{{meetingId}}/rsvp
+PATCH http://localhost:3000/api/meetings/{{meetingId}}/rsvp
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -171,6 +171,6 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Remove attendee
-DELETE http://localhost:3000/api/meeting/{{meetingId}}/rsvp
+DELETE http://localhost:3000/api/meetings/{{meetingId}}/rsvp
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}

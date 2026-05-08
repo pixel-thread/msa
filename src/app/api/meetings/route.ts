@@ -20,7 +20,7 @@ export const GET = withAssociation(
   { query: MeetingQuerySchema },
   async (association, { query }, request) => {
     const user = await withRole(
-      request as unknown as NextRequest,
+      request,
       UserRole.MEMBER,
     );
 
@@ -63,7 +63,7 @@ export const POST = withAssociation(
 
     const userId = request.headers.get("x-user-id")!;
     const user = await withRole(
-      request as unknown as NextRequest,
+      request,
       UserRole.SECRETARY,
     );
 
@@ -81,7 +81,10 @@ export const POST = withAssociation(
         type: body.type,
         scheduledAt: new Date(body.scheduledAt),
         venue: body.venue,
-        agendaItems: body.agendaItems,
+        agendaItems: body.agendaItems?.map((item, idx) => ({
+          ...item,
+          order: item.order ?? idx + 1,
+        })),
       },
     });
 

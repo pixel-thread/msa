@@ -29,7 +29,7 @@ export const PATCH = withAssociation(
     }
 
     const user = await withRole(
-      request as unknown as NextRequest,
+      request,
       UserRole.MEMBER,
     );
 
@@ -61,13 +61,13 @@ export const PATCH = withAssociation(
 export const DELETE = withAssociation(
   { params: AttendeeParamsSchema },
   async (association, { params }, request) => {
-    const userId = request.headers.get("x-user-id ");
+    const userId = request.headers.get("x-user-id");
     if (!params) {
       throw new ForbiddenError("Invalid parameters");
     }
 
     const user = await withRole(
-      request as unknown as NextRequest,
+      request,
       UserRole.SECRETARY,
     );
 

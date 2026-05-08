@@ -1,5 +1,5 @@
 export const meetingPaths = {
-  "/meeting": {
+  "/meetings": {
     get: {
       tags: ["Meetings"],
       summary: "Get all meetings",
@@ -80,7 +80,7 @@ export const meetingPaths = {
       },
     },
   },
-  "/meeting/{meetingId}": {
+  "/meetings/{meetingId}": {
     get: {
       tags: ["Meetings"],
       summary: "Get a meeting by ID",
@@ -153,7 +153,7 @@ export const meetingPaths = {
     },
   },
 
-  "/meeting/{meetingId}/rsvp": {
+  "/meetings/{meetingId}/rsvp": {
     patch: {
       tags: ["Meetings"],
       summary: "Update a meeting",

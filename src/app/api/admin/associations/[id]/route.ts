@@ -6,6 +6,7 @@ import {
 import { findUniqueAssociation } from "@src/features/associations/services/findUniqueAssociation";
 import { findFirstAssociation } from "@src/features/associations/services/findFirstAssociation";
 import { updateAssociation } from "@src/features/associations/services/updateAssociation";
+import { deleteAssociation } from "@src/features/associations/services/deleteAssociation";
 import { SuccessResponse } from "@src/shared/utils";
 import type { Association } from "@prisma/client";
 import { ConflictError, NotFoundError } from "@src/shared/errors";
@@ -65,6 +66,28 @@ export const PUT = withValidation(
 
     return SuccessResponse<Association>(
       { data: updated, message: "Association updated successfully" },
+      200,
+    );
+  },
+);
+
+export const DELETE = withValidation(
+  { params: ParamsSchema },
+  async (_req, _ctx, { params }) => {
+    const existing = await findUniqueAssociation({
+      where: { id: params?.id },
+    });
+
+    if (!existing) {
+      throw new NotFoundError("Association Not Found");
+    }
+
+    const deleted = await deleteAssociation({
+      id: params?.id as string,
+    });
+
+    return SuccessResponse<Association>(
+      { data: deleted, message: "Association deleted successfully" },
       200,
     );
   },

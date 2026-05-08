@@ -1,5 +1,5 @@
 export const attendeePaths = {
-  "/meeting/{meetingId}/attendees": {
+  "/meetings/{meetingId}/attendees": {
     get: {
       tags: ["Attendees"],
       summary: "Get meeting attendees",
@@ -50,7 +50,7 @@ export const attendeePaths = {
       },
     },
   },
-  "/meeting/{meetingId}/attendees/{userId}": {
+  "/meetings/{meetingId}/attendees/{userId}": {
     get: {
       tags: ["Attendees"],
       summary: "Get attendee by user ID",

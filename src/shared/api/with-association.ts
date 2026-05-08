@@ -1,6 +1,7 @@
 import { ForbiddenError, UnauthorizedError } from "@src/shared/errors";
 import { withValidation, RouteContext } from "./with-validation";
 import { prisma } from "../lib/prisma";
+import type { NextRequest } from "next/server";
 
 export interface AssociationDetails {
   id: string;
@@ -25,7 +26,7 @@ export function withAssociation<
   handler: (
     association: AssociationDetails,
     validated: { body?: TBody; query?: TQuery; params?: TParams },
-    request: Request,
+    request: NextRequest,
     context: RouteContext<TParams>,
   ) => Promise<Response>,
   options?: WithAssociationOptions,

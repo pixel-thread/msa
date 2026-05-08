@@ -30,7 +30,7 @@ export const PATCH = withAssociation(
     }
 
     const user = await withRole(
-      request as unknown as NextRequest,
+      request,
       UserRole.MEMBER,
     );
     const requestingUserId = request.headers.get("x-user-id")!;
@@ -62,7 +62,7 @@ export const DELETE = withAssociation(
     }
 
     const user = await withRole(
-      request as unknown as NextRequest,
+      request,
       UserRole.SECRETARY,
     );
 

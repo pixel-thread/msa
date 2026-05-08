@@ -2,6 +2,7 @@
 
 import { use } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import {
   ArrowLeft,
   User,
@@ -10,7 +11,9 @@ import {
   Calendar,
   CreditCard,
   Users,
+  Buildings,
 } from "@phosphor-icons/react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@src/shared/components/ui/button";
 import {
@@ -22,18 +25,66 @@ import {
 } from "@src/shared/components/ui/card";
 import { Badge } from "@src/shared/components/ui/badge";
 import { Avatar, AvatarFallback } from "@src/shared/components/ui/avatar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@src/shared/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@src/shared/components/ui/select";
 import { useMemberDetail } from "@src/features/members/hooks/useMemberDetail";
 import { formatDate } from "@src/shared/utils";
+import http from "@src/shared/utils/http";
 
 interface PageProps {
   params: Promise<{ memberId: string }>;
 }
 
+interface Association {
+  id: string;
+  name: string;
+}
+
 export default function MemberDetailPage({ params }: PageProps) {
   const { memberId } = use(params);
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const [isOrgDialogOpen, setIsOrgDialogOpen] = useState(false);
+  const [selectedOrgId, setSelectedOrgId] = useState("");
+
   console.log(memberId);
   const { member, isLoading, error } = useMemberDetail(memberId);
+
+  const { data: associations } = useQuery({
+    queryKey: ["associations"],
+    queryFn: async () => {
+      const res = await http.get<Association[]>("/associations");
+      return res.data;
+    },
+  });
+
+  const changeOrgMutation = useMutation({
+    mutationFn: async (newOrgId: string) => {
+      const res = await http.patch(`/api/members/${memberId}`, {
+        associationId: newOrgId,
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["member", memberId] });
+      setIsOrgDialogOpen(false);
+      setSelectedOrgId("");
+    },
+  });
 
   const getInitials = (name: string) => {
     return name
@@ -119,7 +170,7 @@ export default function MemberDetailPage({ params }: PageProps) {
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <div>
+        <div className="flex-1">
           <h1 className="text-2xl font-semibold tracking-tight">
             {member.name}
           </h1>
@@ -127,6 +178,53 @@ export default function MemberDetailPage({ params }: PageProps) {
             Member details and activity
           </p>
         </div>
+        <Dialog open={isOrgDialogOpen} onOpenChange={setIsOrgDialogOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="gap-2">
+              <Buildings className="h-4 w-4" />
+              Change Organization
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Change Member Organization</DialogTitle>
+              <DialogDescription>
+                Move this member to a different association. This action cannot
+                be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <Select value={selectedOrgId} onValueChange={setSelectedOrgId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select new association" />
+                </SelectTrigger>
+                <SelectContent>
+                  {associations?.map((assoc) => (
+                    <SelectItem key={assoc.id} value={assoc.id}>
+                      {assoc.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setIsOrgDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => changeOrgMutation.mutate(selectedOrgId)}
+                disabled={!selectedOrgId || changeOrgMutation.isPending}
+              >
+                {changeOrgMutation.isPending
+                  ? "Changing..."
+                  : "Change Organization"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">

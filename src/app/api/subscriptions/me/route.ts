@@ -11,7 +11,7 @@ export async function GET() {
     }
 
     const result = await getMySubscription(userId);
-    return SuccessResponse(result);
+    return SuccessResponse({ data: result });
   } catch (error) {
     if (error instanceof Error) {
       return ErrorResponse(error.message, 500);

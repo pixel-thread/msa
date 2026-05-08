@@ -34,29 +34,33 @@ export async function POST(request: Request) {
 
     if (result.status === "already_paid") {
       return SuccessResponse({
-        status: "paid",
-        message: "Membership fee already paid",
-        payment: {
-          id: result.payment.id,
-          amount: result.payment.amount,
-          currency: result.payment.currency,
-          receiptNumber: result.payment.receiptNumber,
-          paymentDate: result.payment.paymentDate,
+        data: {
+          status: "paid",
+          payment: {
+            id: result.payment.id,
+            amount: result.payment.amount,
+            currency: result.payment.currency,
+            receiptNumber: result.payment.receiptNumber,
+            paymentDate: result.payment.paymentDate,
+          },
         },
+        message: "Membership fee already paid",
       });
     }
 
     return SuccessResponse(
       {
-        status: "paid",
-        message: "Payment successful",
-        payment: {
-          id: result.payment.id,
-          amount: result.payment.amount,
-          currency: result.payment.currency,
-          receiptNumber: result.payment.receiptNumber,
-          paymentDate: result.payment.paymentDate,
+        data: {
+          status: "paid",
+          payment: {
+            id: result.payment.id,
+            amount: result.payment.amount,
+            currency: result.payment.currency,
+            receiptNumber: result.payment.receiptNumber,
+            paymentDate: result.payment.paymentDate,
+          },
         },
+        message: "Payment successful",
       },
       201,
     );

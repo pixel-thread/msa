@@ -25,6 +25,6 @@ export const GET = withAssociation(
     }
 
     const result = await getAllPayments(association);
-    return SuccessResponse(result);
+    return SuccessResponse({ data: result });
   },
 );

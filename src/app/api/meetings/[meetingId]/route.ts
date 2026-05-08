@@ -29,7 +29,7 @@ export const GET = withAssociation(
       throw new ForbiddenError("Invalid meeting ID");
     }
 
-    const user = await withRole(request as NextRequest, UserRole.MEMBER);
+    const user = await withRole(request, UserRole.MEMBER);
     const userId = request.headers.get("x-user-id")!;
 
     const meeting = await findUniqueMeeting({
@@ -57,7 +57,7 @@ export const PATCH = withAssociation(
       throw new ForbiddenError("Invalid meeting ID");
     }
 
-    const user = await withRole(request as NextRequest, UserRole.SECRETARY);
+    const user = await withRole(request, UserRole.SECRETARY);
 
     if (!HIGH_ROLE_USERS.includes(user.role)) {
       throw new ForbiddenError(
@@ -88,7 +88,7 @@ export const DELETE = withAssociation(
     }
 
     const user = await withRole(
-      request as unknown as NextRequest,
+      request,
       UserRole.SECRETARY,
     );
 

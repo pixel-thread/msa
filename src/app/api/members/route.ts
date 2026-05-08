@@ -19,7 +19,7 @@ import { NextRequest } from "next/server";
 // });
 
 export const GET = withAssociation({}, async (association, {}, request) => {
-  await withRole(request as unknown as NextRequest, UserRole.MEMBER);
+  await withRole(request, UserRole.MEMBER);
 
   const members = await prisma.user.findMany({
     where: { associationId: association.id },

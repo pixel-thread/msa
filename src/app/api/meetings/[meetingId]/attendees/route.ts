@@ -35,7 +35,7 @@ export const GET = withAssociation(
     }
 
     const user = await withRole(
-      request as unknown as NextRequest,
+      request,
       UserRole.MEMBER,
     );
 
@@ -71,7 +71,7 @@ export const POST = withAssociation(
     }
 
     const user = await withRole(
-      request as unknown as NextRequest,
+      request,
       UserRole.SECRETARY,
     );
 
@@ -103,7 +103,7 @@ export const PUT = withAssociation(
     }
 
     const user = await withRole(
-      request as unknown as NextRequest,
+      request,
       UserRole.SECRETARY,
     );
 
