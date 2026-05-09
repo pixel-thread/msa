@@ -14,6 +14,7 @@ export const env = createEnv({
     ALLOWED_ORIGINS: z
       .array(z.url())
       .transform((origins) => origins.join(","))
+      .default("http://localhost:3000")
       .optional(),
 
     // JWT Configuration
@@ -25,6 +26,7 @@ export const env = createEnv({
     OTP_LENGTH: z.number().default(6),
     OTP_MAX_ATTEMPTS: z.number().default(3),
     OTP_RESEND_COOLDOWN: z.number().default(60),
+    ASSOCIATION_SLUG: z.string().min(2).max(10).default("mfsa"),
 
     // Password reset
     PASSWORD_RESET_TOKEN_EXPIRY: z.string().default("1h"),
@@ -69,4 +71,3 @@ export const env = createEnv({
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
 });
-

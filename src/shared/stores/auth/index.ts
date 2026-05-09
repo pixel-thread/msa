@@ -27,8 +27,16 @@ export interface AuthState {
   setLoading: (isLoading: boolean) => void;
   clearUser: () => void;
   fetchUser: () => Promise<void>;
-  signIn: (email: string, password: string) => Promise<{ mfaRequired?: boolean; tempToken?: string }>;
-  signUp: (email: string, password: string, name: string, associationId?: string) => Promise<void>;
+  signIn: (
+    email: string,
+    password: string,
+  ) => Promise<{ mfaRequired?: boolean; tempToken?: string }>;
+  signUp: (
+    email: string,
+    password: string,
+    name: string,
+    associationId?: string,
+  ) => Promise<void>;
   signOut: () => Promise<void>;
   verifyMfa: (code: string) => Promise<void>;
   isAdmin: () => boolean;
@@ -40,7 +48,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isHydrated: false,
   isSignedIn: false,
   user: null,
-  isLoading: false,
+  isLoading: true,
 
   setHydrated: () => set({ isHydrated: true }),
 
@@ -82,7 +90,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true });
 
     try {
-      const res = await http.post<{ user: AuthUser; mfaRequired?: boolean; tempToken?: string }>("/auth/sign-in", {
+      const res = await http.post<{
+        user: AuthUser;
+        mfaRequired?: boolean;
+        tempToken?: string;
+      }>("/auth/sign-in", {
         email,
         password,
       });
@@ -189,3 +201,4 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     return ROLE_HIERARCHY[user.role] <= ROLE_HIERARCHY[role];
   },
 }));
+

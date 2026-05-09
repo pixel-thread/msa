@@ -1,4 +1,3 @@
-import React from "react";
 import { Resend } from "resend";
 
 import { env } from "@src/env";
@@ -52,9 +51,7 @@ export async function sendVerificationEmail(
   const subject = isSetup
     ? "Verify your email to enable MFA"
     : "Your MFA Verification Code";
-  const title = isSetup
-    ? "Verify Your Email"
-    : "Your Verification Code";
+  const title = isSetup ? "Verify Your Email" : "Your Verification Code";
 
   const html = `
 <!DOCTYPE html>
@@ -82,9 +79,11 @@ export async function sendVerificationEmail(
     </div>
     <div class="title">${title}</div>
     <div class="content">
-      ${isSetup
-        ? `Enter the verification code below to enable two-factor authentication for your account.`
-        : `Enter the verification code below to sign in to your account.`}
+      ${
+        isSetup
+          ? `Enter the verification code below to enable two-factor authentication for your account.`
+          : `Enter the verification code below to sign in to your account.`
+      }
     </div>
     <div class="code-container">
       <div class="code">${code}</div>
@@ -196,3 +195,4 @@ export async function sendWelcomeEmail(
     html,
   });
 }
+

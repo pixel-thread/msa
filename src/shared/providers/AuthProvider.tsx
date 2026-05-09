@@ -1,27 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
-import { useAuthStore } from "@src/shared/stores/auth";
+import { useAuthStore } from "../stores/auth";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { fetchUser, setHydrated, isHydrated } = useAuthStore();
-  const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
-    setMounted(true);
-    setHydrated();
-  }, [setHydrated]);
+    useAuthStore.getState().fetchUser();
+  }, []);
 
-  useEffect(() => {
-    if (mounted && isHydrated) {
-      fetchUser();
-    }
-  }, [mounted, isHydrated, fetchUser]);
-
-  if (!mounted) {
-    return null;
-  }
-
-  return children;
+  return <>{children}</>;
 }
+

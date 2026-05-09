@@ -9,7 +9,6 @@ export async function getUniqueUser({ where }: Props) {
     where,
     select: {
       id: true,
-      clerkId: true,
       associationId: true,
       email: true,
       name: true,

@@ -185,7 +185,7 @@ model User {
   mobile               String?                        // Encrypted (AES-256-GCM)
   designation          String?                        // Encrypted (AES-256-GCM)
   role                 UserRole      @default(MEMBER)
-  status               UserStatus    @default(ACTIVE)
+  status               UserStatus    @default(INACTIVE)
   dateOfJoiningGovt    DateTime?
   dateOfJoiningMfsa    DateTime?
   membershipNumber     String?

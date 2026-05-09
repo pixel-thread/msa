@@ -1,5 +1,4 @@
 export * from "./chain";
-export * from "./withAdminRole.middleware";
 export * from "./withAuth.middleware";
 export * from "./withLogging.middleware";
 export * from "./withSecurityHeaders.middleware";

@@ -8,11 +8,11 @@ export const ADMIN_ROUTES = ["/api/admin(.*)", "/admin(.*)"] as const;
  */
 export const PUBLIC_ROUTES = [
   "/",
-  "/docs(.*)",
-  "/sign-in(.*)",
-  "/sign-up(.*)",
-  "/forgot-password(.*)",
-  "/reset-password(.*)",
+  "/docs",
+  "/sign-in",
+  "/sign-up",
+  "/forgot-password",
+  "/reset-password",
   "/forbidden",
 ] as const;
 
@@ -31,4 +31,9 @@ export const API_PUBLIC_ROUTES = [
 /**
  * Private routes that require an authenticated user.
  */
-export const AUTH_ROUTES = ["/dashboard(.*)", "/settings(.*)", "/profile(.*)"] as const;
+export const AUTH_ROUTES = [
+  "/dashboard(.*)",
+  "/settings(.*)",
+  "/profile(.*)",
+] as const;
+

@@ -13,11 +13,12 @@ import { sendVerificationEmail } from "@src/shared/lib/email";
 import { generateOTP, hashToken } from "@src/shared/lib/password";
 import { env } from "@src/env";
 import { ForbiddenError, UnauthorizedError } from "@src/shared/errors";
-import { ErrorResponse, SuccessResponse } from "@src/shared/utils";
+import { SuccessResponse } from "@src/shared/utils";
+import { passwordValidation } from "@src/shared/lib/validations/auth";
 
 const SignInSchema = z.object({
   email: z.email("Invalid email address"),
-  password: z.string().min(1, "Password is required"),
+  password: passwordValidation,
 });
 
 export const POST = withValidation(
@@ -121,7 +122,7 @@ export const POST = withValidation(
       return mfaResponse;
     }
 
-    const accessToken = await signAccessToken(user.id, user.email, user.role);
+    const accessToken = await signAccessToken(user.id);
     const refreshToken = await signRefreshToken(user.id);
     const hashedRefreshToken = hashToken(refreshToken);
 
@@ -166,4 +167,3 @@ export const POST = withValidation(
     return response;
   },
 );
-

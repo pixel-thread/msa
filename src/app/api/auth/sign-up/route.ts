@@ -1,50 +1,53 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { prisma } from "@src/shared/lib/prisma";
 import { withValidation } from "@src/shared/api";
-import { hashPassword, validatePasswordStrength } from "@src/shared/lib/password";
-import { signAccessToken, signRefreshToken } from "@src/shared/lib/jwt";
+import {
+  hashPassword,
+  validatePasswordStrength,
+} from "@src/shared/lib/password";
 import { sendWelcomeEmail } from "@src/shared/lib/email";
-import { hashToken } from "@src/shared/lib/password";
+import {
+  BadRequestError,
+  ConflictError,
+  ValidationError,
+} from "@src/shared/errors";
+import { SuccessResponse } from "@src/shared/utils";
+import { env } from "@src/env";
+import { passwordValidation } from "@src/shared/lib/validations/auth";
 
-const signUpSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+const SignUpSchema = z.object({
+  email: z.email("Invalid email address"),
+  password: passwordValidation,
   name: z.string().min(1, "Name is required"),
-  associationId: z.string().uuid("Invalid association ID").optional(),
+  associationId: z.uuid("Invalid association ID").optional(),
 });
 
-type SignUpBody = z.infer<typeof signUpSchema>;
+type SignUpBody = z.infer<typeof SignUpSchema>;
 
 export const POST = withValidation(
-  { body: signUpSchema },
-  async (_, { body }) => {
+  { body: SignUpSchema },
+  async (_req, _ctx, { body }) => {
     const { email, password, name, associationId } = body as SignUpBody;
-    
+
     const passwordValidation = validatePasswordStrength(password);
+
     if (!passwordValidation.valid) {
-      return NextResponse.json(
-        { success: false, message: passwordValidation.errors[0], errors: passwordValidation.errors },
-        { status: 400 },
-      );
+      throw new ValidationError(passwordValidation.errors[0]);
     }
 
     let targetAssociationId = associationId;
-    
+
     if (!targetAssociationId) {
       const defaultAssociation = await prisma.association.findFirst({
-        where: { isActive: true },
+        where: { slug: env.ASSOCIATION_SLUG },
         select: { id: true },
       });
-      
+
       if (!defaultAssociation) {
-        return NextResponse.json(
-          { success: false, message: "No active association found" },
-          { status: 400 },
-        );
+        throw new BadRequestError("No active associations found");
       }
-      
+
       targetAssociationId = defaultAssociation.id;
     }
 
@@ -56,10 +59,7 @@ export const POST = withValidation(
     });
 
     if (existingUser) {
-      return NextResponse.json(
-        { success: false, message: "User already exists with this email" },
-        { status: 409 },
-      );
+      throw new ConflictError("User already exists with this email");
     }
 
     const hashedPassword = await hashPassword(password);
@@ -80,55 +80,24 @@ export const POST = withValidation(
       },
     });
 
-    const accessToken = await signAccessToken(user.id, user.email, user.role);
-    const refreshToken = await signRefreshToken(user.id);
-    const hashedRefreshToken = hashToken(refreshToken);
-    
-    const refreshTokenExpiry = new Date();
-    refreshTokenExpiry.setDate(refreshTokenExpiry.getDate() + 7);
-
-    await prisma.refreshToken.create({
-      data: {
-        userId: user.id,
-        token: hashedRefreshToken,
-        expiresAt: refreshTokenExpiry,
-      },
-    });
-
-    const response = NextResponse.json(
+    const response = SuccessResponse(
       {
-        success: true,
         message: "Account created successfully",
         data: {
-          user: {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            role: user.role,
-          },
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
         },
       },
-      { status: 201 },
+      201,
     );
 
-    response.cookies.set("access_token", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 15 * 60,
-      path: "/",
-    });
-
-    response.cookies.set("refresh_token", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60,
-      path: "/",
-    });
-
-    await sendWelcomeEmail(user.email, user.name);
+    if (env.NODE_ENV === "production") {
+      await sendWelcomeEmail(user.email, user.name);
+    }
 
     return response;
-  }
+  },
 );
+
