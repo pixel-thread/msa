@@ -50,7 +50,7 @@ axiosClient.interceptors.request.use(
 axiosClient.interceptors.response.use(
   (response) => response,
   async (error) => {
-    console.log("[Axios] Error caught:", {
+    logger.debug("[Axios] Error caught:", {
       isAxiosError: axios.isAxiosError(error),
       hasResponse: !!error.response,
       hasRequest: !!error.request,
@@ -62,7 +62,7 @@ axiosClient.interceptors.response.use(
       _retry?: boolean;
     };
 
-    console.log("[Axios] Original request:", {
+    logger.debug("[Axios] Original request:", {
       url: originalRequest?.url,
       method: originalRequest?.method,
       hasConfig: !!originalRequest,
@@ -81,26 +81,26 @@ axiosClient.interceptors.response.use(
         url.includes("/auth/sign-up") ||
         url.includes("/auth/refresh");
 
-      console.log("[Axios] Checking 401:", { url, isAuthAction });
+      logger.debug("[Axios] Checking 401:", { url, isAuthAction });
 
       if (isAuthAction) {
-        console.log("[Axios] Skipping retry for auth action");
+        logger.debug("[Axios] Skipping retry for auth action");
         return Promise.reject(error);
       }
 
       originalRequest._retry = true;
-      console.log("[Axios] Attempting token refresh for:", url);
+      logger.debug("[Axios] Attempting token refresh for:", { url });
 
       const refreshed = await attemptTokenRefresh();
 
-      console.log("[Axios] Refresh result:", refreshed);
+      logger.debug("[Axios] Refresh result:", { refreshed });
 
       if (refreshed) {
-        console.log("[Axios] Retrying original request");
+        logger.debug("[Axios] Retrying original request");
         return axiosClient(originalRequest);
       }
 
-      console.log("[Axios] Refresh failed");
+      logger.debug("[Axios] Refresh failed");
     }
 
     return Promise.reject(error);

@@ -62,7 +62,6 @@ export default function MemberDetailPage({ params }: PageProps) {
   const [isOrgDialogOpen, setIsOrgDialogOpen] = useState(false);
   const [selectedOrgId, setSelectedOrgId] = useState("");
 
-  console.log(memberId);
   const { member, isLoading, error } = useMemberDetail(memberId);
 
   const { data: associations } = useQuery({

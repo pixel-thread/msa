@@ -1,6 +1,7 @@
 import { prisma } from "@lib/prisma";
 import { NotFoundError, ForbiddenError } from "@src/shared/errors";
 import { AttendeeRole, RsvpStatus } from "@prisma/client";
+import { logger } from "@src/shared/logger";
 
 interface UpdateAttendeeProps {
   meetingId: string;
@@ -29,7 +30,7 @@ export async function updateAttendee({
     throw new NotFoundError("Meeting");
   }
 
-  console.log("Update Attendee", {
+  logger.debug("Update Attendee", {
     meetingId,
     userId,
   });

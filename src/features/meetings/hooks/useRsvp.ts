@@ -67,7 +67,6 @@ export function useRsvp() {
       formData: rsvpForm,
     });
   };
-  console.log("rsvp DialogOpen", rsvpDialogOpen);
   return {
     rsvpDialogOpen,
     setRsvpDialogOpen,
