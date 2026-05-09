@@ -1,82 +1,109 @@
 "use client";
 
-import { useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { useAuthStore } from "../stores/auth";
-import { PUBLIC_ROUTES } from "../constants/routes";
 
-interface RedirectProps {
+type PropsT = {
   children: React.ReactNode;
-}
+};
 
-export function Redirect({ children }: RedirectProps) {
+const pageAccessOnlyIfUnAuthenticated: string[] = [
+  "/sign-in",
+  "/sign-up",
+  "/reset-password",
+  "/verify-email",
+];
+
+const routeRoles = [
+  {
+    url: "/",
+    role: ["ADMIN", "USER", "SUPER_ADMIN"],
+    redirect: "/",
+    needAuth: true,
+  },
+  {
+    url: "/dashboard/*",
+    role: ["ADMIN", "USER", "SUPER_ADMIN"],
+    redirect: "/",
+    needAuth: true,
+  },
+];
+
+export const Redirect = ({ children }: PropsT) => {
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect");
   const router = useRouter();
-  const pathname = usePathname();
+  const pathName = usePathname();
+  const [isLoading, setIsLoading] = useState(false);
+  const { user, isLoading: isAuthLoading, isSignedIn } = useAuthStore();
+  const userRoles = useMemo(() => user?.role || [], [user]);
+  const isAuthenticated = !!(user && isSignedIn);
 
-  const isHydrated = useAuthStore((state) => state.isHydrated);
-
-  const isLoading = useAuthStore((state) => state.isLoading);
-
-  const user = useAuthStore((state) => state.user);
-
+  // Show loader during route changes or delays
   useEffect(() => {
-    // wait for zustand hydration
-    if (!isHydrated) return;
+    if (isAuthLoading) return;
+    // eslint-disable-next-line
+    setIsLoading(true);
+    const timer = setTimeout(() => setIsLoading(false), 500);
+    return () => clearTimeout(timer); // Cleanup the timer
+  }, [isAuthLoading, pathName]);
 
-    // wait for fetchUser()
-    if (isLoading) return;
+  // Handle authentication and role-based redirects
+  useEffect(() => {
+    // Wait until authentication loading is complete to proceed
+    if (isAuthLoading) return;
 
-    const isPublicRoute = PUBLIC_ROUTES.some((route) => {
-      // exact match for root
-      if (route === "/") {
-        return pathname === "/";
+    // Step 1: Identify the current route from the `routeRoles` configuration
+    const currentRoute = routeRoles.find((route) => {
+      if (route.url === pathName) return true; // Direct match for the route
+      if (route.url.endsWith("/*")) {
+        const basePath = route.url.replace("/*", ""); // Handle wildcard route (e.g., `/dashboard/*`)
+        return pathName.startsWith(basePath); // Check if the current path starts with the base path
       }
-
-      // support nested public routes
-      return pathname.startsWith(route);
+      return false; // No match found
     });
 
-    // not authenticated
-    if (!user) {
-      // allow public routes
-      if (isPublicRoute) return;
+    // Step 2: Handle authentication-based redirection
+    if (currentRoute) {
+      // If the route requires authentication and the user is not authenticated
+      if (currentRoute.needAuth && !isAuthenticated) {
+        // Redirect the user to the signin page and include the current path as a `redirect` query parameter
+        router.replace(`/signin?redirect=${encodeURIComponent(pathName)}`);
+        return; // Exit the logic as redirection is in progress
+      }
 
-      // prevent redirect loop
-      if (pathname === "/sign-in") return;
+      // Step 3: Handle role-based access control
+      if (isAuthenticated) {
+        // Check if the user has at least one of the required roles for the current route
+        const hasRequiredRole = currentRoute.role.some((role) =>
+          userRoles.includes(role),
+        );
 
-      router.replace("/sign-in");
-      return;
+        // If the user does not have the required role(s)
+        if (!hasRequiredRole) {
+          // Redirect the user to a fallback page specified in the route's configuration or to the homepage
+          router.replace(currentRoute.redirect || "/");
+          return; // Exit the logic as redirection is in progress
+        }
+      }
     }
+  }, [pathName, isAuthenticated, userRoles, router, isAuthLoading]);
 
-    // authenticated user on auth pages
-    if (pathname === "/sign-in" || pathname === "/sign-up") {
-      router.replace("/");
+  // Prevent authenticated users from accessing unauthenticated-only pages
+  useEffect(() => {
+    if (isAuthLoading || isLoading) return;
+    if (isAuthenticated && pageAccessOnlyIfUnAuthenticated.includes(pathName)) {
+      router.push(redirectTo || "/");
     }
-  }, [isHydrated, isLoading, pathname, router, user]);
+  }, [isAuthenticated, pathName, redirectTo, router, isAuthLoading, isLoading]);
 
-  // loading screen
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-indigo-600" />
-      </div>
-    );
-  }
-
-  // prevent flashing protected pages
-  const isPublicRoute = PUBLIC_ROUTES.some((route) => {
-    if (route === "/") {
-      return pathname === "/";
-    }
-
-    return pathname.startsWith(route);
-  });
-
-  if (!user && !isPublicRoute) {
+  // Display preloader if authentication or loading is in progress
+  if (isAuthLoading || isLoading) {
     return null;
   }
 
   return <>{children}</>;
-}
+};
 
