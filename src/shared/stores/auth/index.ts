@@ -1,32 +1,26 @@
 "use client";
 
-import type { UserRole as Role } from "@prisma/client";
 import { create } from "zustand";
 
-import { ROLE_HIERARCHY } from "@src/shared/constants/roles";
 import http from "@src/shared/utils/http";
 
 export interface AuthUser {
   id: string;
   email: string;
   name: string | null;
-  role: Role;
+  role: string;
   mfaEnabled: boolean;
   associationId: string;
 }
 
 export interface AuthState {
-  isHydrated: boolean;
-  isSignedIn: boolean;
   user: AuthUser | null;
   isLoading: boolean;
 
-  setHydrated: () => void;
-  setSignedIn: (isSignedIn: boolean) => void;
   setUser: (user: AuthUser | null) => void;
   setLoading: (isLoading: boolean) => void;
-  clearUser: () => void;
   fetchUser: () => Promise<void>;
+  isSignedIn: () => boolean;
   signIn: (
     email: string,
     password: string,
@@ -39,30 +33,18 @@ export interface AuthState {
   ) => Promise<void>;
   signOut: () => Promise<void>;
   verifyMfa: (code: string) => Promise<void>;
-  isAdmin: () => boolean;
-  isSuperAdmin: () => boolean;
-  hasRole: (role: Role) => boolean;
+  setupMfa: (password: string) => Promise<void>;
+  enableMfa: (code: string) => Promise<void>;
+  disableMfa: (password: string) => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>((set, get) => ({
-  isHydrated: false,
-  isSignedIn: false,
+export const useAuthStore = create<AuthState>((set) => ({
   user: null,
-  isLoading: true,
-
-  setHydrated: () => set({ isHydrated: true }),
-
-  setSignedIn: (isSignedIn: boolean) => set({ isSignedIn }),
+  isLoading: false,
 
   setUser: (user: AuthUser | null) => set({ user }),
 
   setLoading: (isLoading: boolean) => set({ isLoading }),
-
-  clearUser: () =>
-    set({
-      user: null,
-      isSignedIn: false,
-    }),
 
   fetchUser: async () => {
     set({ isLoading: true });
@@ -71,16 +53,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const res = await http.get<AuthUser>("/auth/me");
 
       if (!res.success || !res.data) {
-        set({ user: null, isSignedIn: false });
+        set({ user: null });
         return;
       }
 
-      set({
-        user: res.data,
-        isSignedIn: true,
-      });
+      set({ user: res.data });
     } catch {
-      set({ user: null, isSignedIn: false });
+      set({ user: null });
     } finally {
       set({ isLoading: false });
     }
@@ -108,11 +87,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         return { mfaRequired: true, tempToken: res.data.tempToken };
       }
 
-      set({
-        user: res.data?.user || null,
-        isSignedIn: true,
-      });
-
+      set({ user: res.data?.user || null });
       set({ isLoading: false });
       return {};
     } catch (error) {
@@ -136,10 +111,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         throw new Error(res.message);
       }
 
-      set({
-        user: res.data?.user || null,
-        isSignedIn: true,
-      });
+      set({ user: res.data?.user || null });
     } catch (error) {
       set({ isLoading: false });
       throw error;
@@ -153,10 +125,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       await http.post("/auth/logout");
     } catch {
     } finally {
-      set({
-        user: null,
-        isSignedIn: false,
-      });
+      set({ user: null });
     }
   },
 
@@ -172,10 +141,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         throw new Error(res.message);
       }
 
-      set({
-        user: res.data?.user || null,
-        isSignedIn: true,
-      });
+      set({ user: res.data?.user || null });
     } catch (error) {
       set({ isLoading: false });
       throw error;
@@ -184,20 +150,56 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  isAdmin: () => {
-    const { user } = get();
-    return user?.role === "SUPER_ADMIN";
+  setupMfa: async (password: string) => {
+    set({ isLoading: true });
+    try {
+      const res = await http.post<{ pending: boolean; codeSent: boolean }>(
+        "/auth/mfa/setup",
+        { password },
+      );
+      if (!res.success) {
+        throw new Error(res.message);
+      }
+    } catch (error) {
+      set({ isLoading: false });
+      throw error;
+    }
+    set({ isLoading: false });
   },
 
-  isSuperAdmin: () => {
-    const { user } = get();
-    return user?.role === "SUPER_ADMIN";
+  enableMfa: async (code: string) => {
+    set({ isLoading: true });
+    try {
+      const res = await http.post<{ user: AuthUser }>("/auth/mfa/verify", {
+        code,
+      });
+      if (!res.success) {
+        throw new Error(res.message);
+      }
+      set({ user: res.data?.user || null });
+    } catch (error) {
+      set({ isLoading: false });
+      throw error;
+    } finally {
+      set({ isLoading: false });
+    }
   },
 
-  hasRole: (role: Role) => {
-    const { user } = get();
-    if (!user) return false;
-
-    return ROLE_HIERARCHY[user.role] <= ROLE_HIERARCHY[role];
+  disableMfa: async (password: string) => {
+    set({ isLoading: true });
+    try {
+      const res = await http.post<{ user: AuthUser }>("/auth/mfa/disable", {
+        password,
+      });
+      if (!res.success) {
+        throw new Error(res.message);
+      }
+      set({ user: res.data?.user || null });
+    } catch (error) {
+      set({ isLoading: false });
+      throw error;
+    } finally {
+      set({ isLoading: false });
+    }
   },
 }));

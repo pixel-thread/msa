@@ -1,17 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
-
+import { useEffect, useRef } from "react";
 import { useAuthStore } from "../stores/auth";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { fetchUser, isSignedIn } = useAuthStore();
+  const { fetchUser, user, isLoading } = useAuthStore();
+  const hasFetched = useRef(false);
+
   useEffect(() => {
-    if (!isSignedIn) {
+    if (!hasFetched.current && !user && !isLoading) {
+      hasFetched.current = true;
       fetchUser();
     }
-  }, [isSignedIn, fetchUser]);
+  }, [user, isLoading, fetchUser]);
 
   return <>{children}</>;
 }
-

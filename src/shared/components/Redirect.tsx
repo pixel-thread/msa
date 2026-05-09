@@ -19,13 +19,7 @@ const pageAccessOnlyIfUnAuthenticated: string[] = [
 const routeRoles = [
   {
     url: "/",
-    role: ["ADMIN", "USER", "SUPER_ADMIN"],
-    redirect: "/",
-    needAuth: true,
-  },
-  {
-    url: "/dashboard/*",
-    role: ["ADMIN", "USER", "SUPER_ADMIN"],
+    role: ["ADMIN", "USER", "SUPER_ADMIN", "MEMBER"],
     redirect: "/",
     needAuth: true,
   },
@@ -37,9 +31,9 @@ export const Redirect = ({ children }: PropsT) => {
   const router = useRouter();
   const pathName = usePathname();
   const [isLoading, setIsLoading] = useState(false);
-  const { user, isLoading: isAuthLoading, isSignedIn } = useAuthStore();
+  const { user, isLoading: isAuthLoading } = useAuthStore();
   const userRoles = useMemo(() => user?.role || [], [user]);
-  const isAuthenticated = !!(user && isSignedIn);
+  const isAuthenticated = !!user;
 
   // Show loader during route changes or delays
   useEffect(() => {
@@ -106,4 +100,3 @@ export const Redirect = ({ children }: PropsT) => {
 
   return <>{children}</>;
 };
-

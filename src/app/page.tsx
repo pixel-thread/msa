@@ -5,13 +5,13 @@ import Link from "next/link";
 import { useAuthStore } from "@src/shared/stores/auth";
 
 export default function Home() {
-  const { isSignedIn } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 text-gray-900">
       <header className="fixed top-0 w-full p-6 flex justify-between items-center max-w-7xl mx-auto">
         <h1 className="text-2xl font-bold tracking-tight">MFSA Connect</h1>
-        {isSignedIn ? (
+        {user ? (
           <Link
             href="/dashboard"
             className="bg-indigo-600 text-white px-4 py-2 rounded-md font-medium hover:bg-indigo-700 transition"

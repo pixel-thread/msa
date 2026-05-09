@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 
 import { env } from "@src/env";
+import { logger } from "../logger";
 
 export const axiosClient: AxiosInstance = axios.create({
   baseURL: env.NEXT_PUBLIC_API_BASE_URL,
@@ -20,10 +21,11 @@ async function attemptTokenRefresh(): Promise<boolean> {
 
   refreshPromise = (async () => {
     try {
-      const response = await axiosClient.post(
-        "/auth/refresh",
+      logger.debug("[Axios] Attempting token refresh");
+      const response = await axios.post(
+        `${env.NEXT_PUBLIC_API_BASE_URL}/auth/refresh`,
         {},
-        { withCredentials: true }
+        { withCredentials: true },
       );
       return response.data?.success === true;
     } catch {
@@ -42,33 +44,65 @@ axiosClient.interceptors.request.use(
     console.debug(`[Axios] -> ${config.method?.toUpperCase()} ${config.url}`);
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 axiosClient.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
+    console.log("[Axios] Error caught:", {
+      isAxiosError: axios.isAxiosError(error),
+      hasResponse: !!error.response,
+      hasRequest: !!error.request,
+      status: error.response?.status,
+      message: error.message,
+    });
+
+    const originalRequest = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
+
+    console.log("[Axios] Original request:", {
+      url: originalRequest?.url,
+      method: originalRequest?.method,
+      hasConfig: !!originalRequest,
+      retry: originalRequest?._retry,
+    });
 
     if (
       error.response?.status === 401 &&
-      !originalRequest._retry &&
-      !originalRequest.url?.includes("/auth/") &&
-      !originalRequest.url?.includes("/refresh")
+      originalRequest &&
+      !originalRequest._retry
     ) {
+      const url = originalRequest.url || "";
+      // Only skip refresh for actual auth actions, not for identity checks like /auth/me
+      const isAuthAction =
+        url.includes("/auth/sign-in") ||
+        url.includes("/auth/sign-up") ||
+        url.includes("/auth/refresh");
+
+      console.log("[Axios] Checking 401:", { url, isAuthAction });
+
+      if (isAuthAction) {
+        console.log("[Axios] Skipping retry for auth action");
+        return Promise.reject(error);
+      }
+
       originalRequest._retry = true;
+      console.log("[Axios] Attempting token refresh for:", url);
 
       const refreshed = await attemptTokenRefresh();
 
+      console.log("[Axios] Refresh result:", refreshed);
+
       if (refreshed) {
+        console.log("[Axios] Retrying original request");
         return axiosClient(originalRequest);
       }
 
-      if (typeof window !== "undefined") {
-        window.location.href = "/sign-in";
-      }
+      console.log("[Axios] Refresh failed");
     }
 
     return Promise.reject(error);
-  }
+  },
 );

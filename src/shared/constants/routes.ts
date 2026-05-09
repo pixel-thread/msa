@@ -22,6 +22,7 @@ export const PUBLIC_ROUTES = [
 export const API_PUBLIC_ROUTES = [
   "/api/health",
   "/api/docs",
+  "/api/auth/refresh",
   "/api/auth/sign-up",
   "/api/auth/sign-in",
   "/api/auth/forgot-password",

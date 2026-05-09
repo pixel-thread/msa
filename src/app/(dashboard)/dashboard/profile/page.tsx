@@ -1,10 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { useAuthStore } from "@src/shared/stores/auth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@src/shared/components/ui/card";
 import { Avatar, AvatarFallback } from "@src/shared/components/ui/avatar";
 import { Badge } from "@src/shared/components/ui/badge";
-import { User, EnvelopeSimple, IdentificationBadge, CalendarCheck } from "@phosphor-icons/react";
+import { Button } from "@src/shared/components/ui/button";
+import { Input } from "@src/shared/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@src/shared/components/ui/dialog";
+import { User, EnvelopeSimple, IdentificationBadge, CalendarCheck, ShieldCheck, ShieldWarning } from "@phosphor-icons/react";
 
 export default function ProfilePage() {
   const { user } = useAuthStore();
@@ -87,27 +91,162 @@ export default function ProfilePage() {
 
         <Card className="p-5">
           <CardHeader className="px-0 pt-0 pb-4">
-            <CardTitle className="text-base">Account Details</CardTitle>
-            <CardDescription className="text-sm">Additional information about your account</CardDescription>
+            <CardTitle className="text-base">Security</CardTitle>
+            <CardDescription className="text-sm">Manage your account security settings</CardDescription>
           </CardHeader>
-          <CardContent className="p-0">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                <p className="text-sm text-muted-foreground">Account Type</p>
-                <p className="text-sm font-medium">Member</p>
+          <CardContent className="p-0 space-y-4">
+            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+              <div className="flex items-center gap-3">
+                <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                  {user?.mfaEnabled ? (
+                    <ShieldCheck className="h-4 w-4 text-emerald-500" />
+                  ) : (
+                    <ShieldWarning className="h-4 w-4 text-amber-500" />
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Two-Factor Authentication</p>
+                  <p className="text-xs text-muted-foreground">
+                    {user?.mfaEnabled ? "Enabled" : "Disabled"}
+                  </p>
+                </div>
               </div>
-              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                <p className="text-sm text-muted-foreground">Membership</p>
-                <p className="text-sm font-medium">Active</p>
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                <p className="text-sm text-muted-foreground">Access Level</p>
-                <p className="text-sm font-medium">{user?.role || "MEMBER"}</p>
-              </div>
+              {user?.mfaEnabled ? (
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      Disable
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Disable Two-Factor Authentication</DialogTitle>
+                    </DialogHeader>
+                    <MfaDisableForm />
+                  </DialogContent>
+                </Dialog>
+              ) : (
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      Enable
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Enable Two-Factor Authentication</DialogTitle>
+                    </DialogHeader>
+                    <MfaEnableForm />
+                  </DialogContent>
+                </Dialog>
+              )}
             </div>
           </CardContent>
         </Card>
       </div>
     </div>
+  );
+}
+
+function MfaEnableForm() {
+  const { setupMfa, enableMfa, isLoading } = useAuthStore();
+  const [step, setStep] = useState<"password" | "verify">("password");
+  const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSetup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    try {
+      await setupMfa(password);
+      setStep("verify");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to send code");
+    }
+  };
+
+  const handleVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    try {
+      await enableMfa(code);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Invalid code");
+    }
+  };
+
+  if (step === "verify") {
+    return (
+      <form onSubmit={handleVerify} className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          Enter the 6-digit code sent to your email to enable 2FA.
+        </p>
+        <Input
+          type="text"
+          placeholder="000000"
+          value={code}
+          onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+          maxLength={6}
+          className="text-center text-2xl tracking-widest"
+        />
+        {error && <p className="text-sm text-red-500">{error}</p>}
+        <Button type="submit" disabled={isLoading || code.length !== 6} className="w-full">
+          {isLoading ? "Verifying..." : "Enable 2FA"}
+        </Button>
+      </form>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSetup} className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        Enter your password to receive a verification code.
+      </p>
+      <Input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      {error && <p className="text-sm text-red-500">{error}</p>}
+      <Button type="submit" disabled={isLoading || !password} className="w-full">
+        {isLoading ? "Sending..." : "Send Verification Code"}
+      </Button>
+    </form>
+  );
+}
+
+function MfaDisableForm() {
+  const { disableMfa, isLoading } = useAuthStore();
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    try {
+      await disableMfa(password);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Invalid password");
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        Enter your password to disable two-factor authentication.
+      </p>
+      <Input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      {error && <p className="text-sm text-red-500">{error}</p>}
+      <Button type="submit" disabled={isLoading || !password} className="w-full">
+        {isLoading ? "Disabling..." : "Disable 2FA"}
+      </Button>
+    </form>
   );
 }

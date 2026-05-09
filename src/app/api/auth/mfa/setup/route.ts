@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { prisma } from "@src/shared/lib/prisma";
@@ -8,6 +7,12 @@ import { verifyPassword } from "@src/shared/lib/password";
 import { generateOTP, hashToken } from "@src/shared/lib/password";
 import { sendVerificationEmail } from "@src/shared/lib/email";
 import { env } from "@src/env";
+import {
+  BadRequestError,
+  ConflictError,
+  ValidationError,
+} from "@src/shared/errors";
+import { SuccessResponse } from "@src/shared/utils";
 
 const setupMfaSchema = z.object({
   password: z.string().min(1, "Password is required"),
@@ -17,9 +22,9 @@ type SetupMfaBody = z.infer<typeof setupMfaSchema>;
 
 export const POST = withValidation(
   { body: setupMfaSchema },
-  async (_, { body }) => {
+  async (_, _ctx, { body }) => {
     const { userId } = await requireAuth();
-    
+
     const { password } = body as SetupMfaBody;
 
     const user = await prisma.user.findUnique({
@@ -28,31 +33,22 @@ export const POST = withValidation(
     });
 
     if (!user || !user.password) {
-      return NextResponse.json(
-        { success: false, message: "Please set a password first" },
-        { status: 400 },
-      );
+      throw new BadRequestError("Please set a password first");
     }
 
     if (user.mfaEnabled) {
-      return NextResponse.json(
-        { success: false, message: "MFA is already enabled" },
-        { status: 400 },
-      );
+      throw new ConflictError("MFA is already enabled");
     }
 
     const isValid = await verifyPassword(password, user.password);
-    
+
     if (!isValid) {
-      return NextResponse.json(
-        { success: false, message: "Invalid password" },
-        { status: 401 },
-      );
+      throw new ValidationError("Invalid password");
     }
 
     const otp = generateOTP(env.OTP_LENGTH);
     const hashedOTP = hashToken(otp);
-    
+
     const otpExpiry = new Date();
     otpExpiry.setMinutes(otpExpiry.getMinutes() + 5);
 
@@ -74,13 +70,13 @@ export const POST = withValidation(
       await sendVerificationEmail(authUser.email, otp, "SETUP_MFA");
     }
 
-    return NextResponse.json({
-      success: true,
+    return SuccessResponse({
       message: "Verification code sent to your email",
       data: {
         pending: true,
         codeSent: true,
       },
     });
-  }
+  },
 );
+
