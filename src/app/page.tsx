@@ -1,31 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 
 import { useAuthStore } from "@src/shared/stores/auth";
 
 export default function Home() {
-  const { isHydrated, isSignedIn, fetchUser } = useAuthStore();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (mounted && isHydrated) {
-      fetchUser();
-    }
-  }, [mounted, isHydrated, fetchUser]);
-
-  if (!mounted || !isHydrated) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
-      </div>
-    );
-  }
+  const { isSignedIn } = useAuthStore();
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 text-gray-900">
@@ -89,3 +69,4 @@ export default function Home() {
     </div>
   );
 }
+

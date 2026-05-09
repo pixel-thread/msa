@@ -20,12 +20,12 @@ export const PUBLIC_ROUTES = [
  * Publicly accessible API endpoints that do not require authentication.
  */
 export const API_PUBLIC_ROUTES = [
-  "/api/health(.*)",
-  "/api/docs(.*)",
-  "/api/auth/sign-up(.*)",
-  "/api/auth/sign-in(.*)",
-  "/api/auth/forgot-password(.*)",
-  "/api/auth/reset-password(.*)",
+  "/api/health",
+  "/api/docs",
+  "/api/auth/sign-up",
+  "/api/auth/sign-in",
+  "/api/auth/forgot-password",
+  "/api/auth/reset-password",
 ] as const;
 
 /**

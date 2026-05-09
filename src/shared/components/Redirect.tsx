@@ -56,7 +56,7 @@ export function Redirect({ children }: RedirectProps) {
   }, [isHydrated, isLoading, pathname, router, user]);
 
   // loading screen
-  if (!isHydrated || isLoading) {
+  if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-indigo-600" />

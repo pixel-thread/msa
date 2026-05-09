@@ -201,4 +201,3 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     return ROLE_HIERARCHY[user.role] <= ROLE_HIERARCHY[role];
   },
 }));
-
