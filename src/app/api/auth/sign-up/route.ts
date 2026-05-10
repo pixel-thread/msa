@@ -20,7 +20,7 @@ const SignUpSchema = z.object({
   email: z.email("Invalid email address"),
   password: passwordValidation,
   name: z.string().min(1, "Name is required"),
-  associationId: z.uuid("Invalid association ID").optional(),
+  association_slug: z.enum(["mfsa", "mpsa"]).optional(),
 });
 
 type SignUpBody = z.infer<typeof SignUpSchema>;
@@ -28,7 +28,7 @@ type SignUpBody = z.infer<typeof SignUpSchema>;
 export const POST = withValidation(
   { body: SignUpSchema },
   async (_req, _ctx, { body }) => {
-    const { email, password, name, associationId } = body as SignUpBody;
+    const { email, password, name, association_slug } = body as SignUpBody;
 
     const passwordValidation = validatePasswordStrength(password);
 
@@ -36,11 +36,14 @@ export const POST = withValidation(
       throw new ValidationError(passwordValidation.errors[0]);
     }
 
-    let targetAssociationId = associationId;
+    const targetAssociationSlug = association_slug;
+    let targetAssociationId: string | null = null;
 
     if (!targetAssociationId) {
       const defaultAssociation = await prisma.association.findFirst({
-        where: { slug: env.ASSOCIATION_SLUG },
+        where: {
+          slug: targetAssociationSlug || env.NEXT_PUBLIC_ASSOCIATION_SLUG,
+        },
         select: { id: true },
       });
 
@@ -100,4 +103,3 @@ export const POST = withValidation(
     return response;
   },
 );
-

@@ -15,6 +15,7 @@ import { env } from "@src/env";
 import { ForbiddenError, UnauthorizedError } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
 import { passwordValidation } from "@src/shared/lib/validations/auth";
+import { logger } from "@src/shared/logger";
 
 const SignInSchema = z.object({
   email: z.email("Invalid email address"),
@@ -99,15 +100,19 @@ export const POST = withValidation(
         },
       });
 
-      await sendVerificationEmail(user.email, otp, "LOGIN_MFA");
+      if (env.NODE_ENV === "development") {
+        logger.debug(`OTP: ${otp}`);
+      }
+      if (env.NODE_ENV === "production") {
+        await sendVerificationEmail(user.email, otp, "LOGIN_MFA");
+      }
 
       const mfaTempToken = await signPasswordResetToken(user.id);
-      const mfaResponse = NextResponse.json({
-        success: true,
+      const mfaResponse = SuccessResponse({
         message: "MFA verification required",
-        mfaRequired: true,
         data: {
           tempToken: mfaTempToken,
+          mfaRequired: true,
         },
       });
 
@@ -140,11 +145,8 @@ export const POST = withValidation(
     const response = SuccessResponse({
       message: "Signed in successfully",
       data: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        mfaEnabled: user.mfaEnabled,
+        access_token: accessToken,
+        refresh_token: refreshToken,
       },
     });
 

@@ -25,6 +25,7 @@ export const API_PUBLIC_ROUTES = [
   "/api/auth/refresh",
   "/api/auth/sign-up",
   "/api/auth/sign-in",
+  "/api/auth/sign-in/verify",
   "/api/auth/forgot-password",
   "/api/auth/reset-password",
 ] as const;
@@ -37,4 +38,3 @@ export const AUTH_ROUTES = [
   "/settings(.*)",
   "/profile(.*)",
 ] as const;
-

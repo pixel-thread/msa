@@ -16,11 +16,11 @@ type VerifyBody = z.infer<typeof verifySchema>;
 
 export const POST = withValidation(
   { body: verifySchema },
-  async (request, { body }) => {
+  async (request, _ctx, { body }) => {
     const { code } = body as VerifyBody;
 
     const mfaCookie = request.cookies.get("mfa_temp_token");
-    
+
     if (!mfaCookie?.value) {
       return NextResponse.json(
         { success: false, message: "Session expired. Please sign in again" },
@@ -51,7 +51,7 @@ export const POST = withValidation(
     }
 
     const hashedCode = hashToken(code);
-    
+
     const verificationCode = await prisma.verificationCode.findFirst({
       where: {
         userId: user.id,
@@ -71,7 +71,10 @@ export const POST = withValidation(
 
     if (verificationCode.attempts >= env.OTP_MAX_ATTEMPTS) {
       return NextResponse.json(
-        { success: false, message: "Too many attempts. Please request a new code" },
+        {
+          success: false,
+          message: "Too many attempts. Please request a new code",
+        },
         { status: 429 },
       );
     }
@@ -93,10 +96,10 @@ export const POST = withValidation(
       data: { usedAt: new Date() },
     });
 
-    const accessToken = await signAccessToken(user.id, user.email, user.role);
+    const accessToken = await signAccessToken(user.id);
     const refreshToken = await signRefreshToken(user.id);
     const hashedRefreshToken = hashToken(refreshToken);
-    
+
     const refreshTokenExpiry = new Date();
     refreshTokenExpiry.setDate(refreshTokenExpiry.getDate() + 7);
 
@@ -112,11 +115,8 @@ export const POST = withValidation(
       success: true,
       message: "Signed in successfully",
       data: {
-        user: {
-          id: user.id,
-          email: user.email,
-          role: user.role,
-        },
+        access_token: accessToken,
+        refresh_token: refreshToken,
       },
     });
 
@@ -139,5 +139,6 @@ export const POST = withValidation(
     response.cookies.delete("mfa_temp_token");
 
     return response;
-  }
+  },
 );
+
