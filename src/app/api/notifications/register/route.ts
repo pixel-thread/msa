@@ -1,13 +1,19 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '@src/shared/lib/prisma';
+import { prisma } from "@src/shared/lib/prisma";
+import { withValidation } from "@src/shared/api";
+import z from "zod";
+import { ValidationError } from "@src/shared/errors";
+import { SuccessResponse } from "@src/shared/utils";
 
-export async function POST(req: Request) {
-  try {
-    const body = await req.json();
-    const { token } = body;
+const RegisterPushTokenSchema = z.object({
+  token: z.string(),
+});
+export const POST = withValidation(
+  { body: RegisterPushTokenSchema },
+  async (_req, _ctx, { body }) => {
+    const token = body?.token;
 
     if (!token) {
-      return NextResponse.json({ error: 'Token is required' }, { status: 400 });
+      throw new ValidationError("Missing token");
     }
 
     const pushToken = await prisma.pushToken.upsert({
@@ -16,9 +22,6 @@ export async function POST(req: Request) {
       create: { token },
     });
 
-    return NextResponse.json(pushToken);
-  } catch (error) {
-    console.error('Registration error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-  }
-}
+    return SuccessResponse({ data: pushToken });
+  },
+);
