@@ -2,9 +2,13 @@ import { Meeting } from "@prisma/client";
 import { formatDate } from "@src/shared/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@src/shared/components/ui/badge";
+import { useRouter } from "next/navigation";
 
 const getStatusBadge = (status: string) => {
-  const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+  const variants: Record<
+    string,
+    "default" | "secondary" | "destructive" | "outline"
+  > = {
     SCHEDULED: "default",
     COMPLETED: "secondary",
     CANCELLED: "destructive",
@@ -13,16 +17,18 @@ const getStatusBadge = (status: string) => {
 };
 
 export const useMeetingTableColumns = (): { columns: ColumnDef<Meeting>[] } => {
+  const router = useRouter();
   const columns: ColumnDef<Meeting>[] = [
     {
       accessorKey: "title",
       header: "Meeting Title",
-      cell: ({ row, table }) => {
-        const router = table.options.meta?.router as ReturnType<typeof import("next/navigation").useRouter> | undefined;
+      cell: ({ row }) => {
         return (
           <button
             className="text-left font-medium hover:underline text-primary"
-            onClick={() => router?.push(`/dashboard/meetings/${row.original.id}`)}
+            onClick={() =>
+              router?.push(`/dashboard/meetings/${row.original.id}`)
+            }
           >
             {row.original.title}
           </button>

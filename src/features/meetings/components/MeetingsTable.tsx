@@ -43,7 +43,12 @@ export function MeetingsTable() {
             </p>
           </div>
         ) : (
-          <DataTable data={meetings} columns={columns} loading={false} meta={{ router }} />
+          <DataTable
+            data={meetings || []}
+            columns={[]}
+            loading={false}
+            meta={{ router }}
+          />
         )}
       </CardContent>
     </Card>
