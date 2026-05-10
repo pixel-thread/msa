@@ -210,6 +210,7 @@ model User {
   meetingAttendances   MeetingAttendee[]     // ★ Meetings this user is assigned to
   refreshTokens        RefreshToken[]
   verificationCodes    VerificationCode[]
+  pushTokens           PushToken[]
 
   @@unique([associationId, email])
   @@unique([associationId, membershipNumber])
@@ -420,5 +421,17 @@ model VerificationCode {
   @@index([userId])
   @@index([expiresAt])
   @@map("verification_codes")
+}
+
+model PushToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String?  
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("push_tokens")
 }
 
