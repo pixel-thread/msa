@@ -6,16 +6,14 @@ import { getAllPayments } from "@feature/subscription/services";
 
 const ADMIN_ROLES = ["SECRETARY", "PRESIDENT", "SUPER_ADMIN", "FINANCE"];
 
-export const GET = withAssociation(
-  {},
-  async (association) => {
-    const { userId, role } = await requireAuth();
+export const GET = withAssociation({}, async (association) => {
+  const { role } = await requireAuth();
 
-    if (!ADMIN_ROLES.includes(role)) {
-      throw new ForbiddenError("Only admins can view all payments");
-    }
+  if (!ADMIN_ROLES.includes(role)) {
+    throw new ForbiddenError("Only admins can view all payments");
+  }
 
-    const result = await getAllPayments(association, userId);
-    return SuccessResponse({ data: result });
-  },
-);
+  const result = await getAllPayments(association);
+  return SuccessResponse({ data: result });
+});
+
