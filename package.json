@@ -27,6 +27,7 @@
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "expo-server-sdk": "^6.1.0",
     "jose": "^6.0.0",
     "lucide-react": "^1.14.0",
     "next": "16.2.5",
