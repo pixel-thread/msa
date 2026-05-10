@@ -45,7 +45,7 @@ export function withAssociation<
         include: { association: true },
       });
 
-      if (!user || !user.association) {
+      if (!user || !user.associationId) {
         throw new ForbiddenError("User association not found");
       }
 

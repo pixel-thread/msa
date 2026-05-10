@@ -1,6 +1,6 @@
 @associationsId=cmov70woz0000qyfbz7usbd5u
-@meetingId=mfsa-meeting-2
-@userId=126c111f-dbd3-4a07-8dc6-5998f9a0c62a
+@meetingId=08fba230-789f-40d8-a15b-6eeab5de24cb
+@userId=0c2396a3-0e53-4428-8b54-3fefd21941e3
 
 ### ----------------- AUTH ------------------
 
@@ -10,8 +10,8 @@ POST http://localhost:3000/api/auth/sign-up
 Content-Type: application/json
 
 {
-  "email": "user@example.com",
-  "password": "Password123!",
+  "email": "test2@gmail.com",
+  "password": "123Pass@",
   "name": "Test User",
   "associationId": "{{associationsId}}"
 }
@@ -22,8 +22,8 @@ POST http://localhost:3000/api/auth/sign-in
 Content-Type: application/json
 
 {
-  "email": "test@gmail.com",
-  "password": "123Clashofclan@"
+  "email": "test2@gmail.com",
+  "password": "123Pass@"
 }
 
 ###

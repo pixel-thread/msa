@@ -20,7 +20,9 @@ const SignUpSchema = z.object({
   email: z.email("Invalid email address"),
   password: passwordValidation,
   name: z.string().min(1, "Name is required"),
-  association_slug: z.enum(["mfsa", "mpsa"]).optional(),
+  association_slug: z
+    .enum(["mfsa", "mpsa", "mpsc"], "invalid association")
+    .optional(),
 });
 
 type SignUpBody = z.infer<typeof SignUpSchema>;

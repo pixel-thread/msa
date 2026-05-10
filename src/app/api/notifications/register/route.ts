@@ -7,6 +7,7 @@ import { SuccessResponse } from "@src/shared/utils";
 const RegisterPushTokenSchema = z.object({
   token: z.string(),
 });
+
 export const POST = withValidation(
   { body: RegisterPushTokenSchema },
   async (_req, _ctx, { body }) => {

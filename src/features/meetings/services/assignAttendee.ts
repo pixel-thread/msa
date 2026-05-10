@@ -1,7 +1,12 @@
 import { prisma } from "@lib/prisma";
-import { NotFoundError, ConflictError, ForbiddenError } from "@src/shared/errors";
+import {
+  NotFoundError,
+  ConflictError,
+  ForbiddenError,
+} from "@src/shared/errors";
 import { AttendeeRole } from "@prisma/client";
 import { ExpoNotificationService } from "@lib/expo";
+import { logger } from "@src/shared/logger";
 
 interface AssignAttendeeProps {
   meetingId: string;
@@ -70,12 +75,13 @@ export async function assignAttendee({
         tokens.map((t) => t.token),
         "New Meeting Assigned",
         `You have been assigned to: ${meeting.title}`,
-        { meetingId: meeting.id }
+        { meetingId: meeting.id },
       );
     }
   } catch (error) {
-    console.error("Failed to send push notification:", error);
+    logger.error("Failed to send push notification:", { error });
   }
 
   return attendee;
 }
+
