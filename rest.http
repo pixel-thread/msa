@@ -1,5 +1,5 @@
 @associationsId=cmov70woz0000qyfbz7usbd5u
-@meetingId=c93c3433-bbdd-49b2-96c9-23372c7375bc
+@meetingId=mfsa-meeting-2
 @userId=126c111f-dbd3-4a07-8dc6-5998f9a0c62a
 
 ### ----------------- AUTH ------------------
@@ -22,8 +22,8 @@ POST http://localhost:3000/api/auth/sign-in
 Content-Type: application/json
 
 {
-  "email": "user@example.com",
-  "password": "Password123!"
+  "email": "test@gmail.com",
+  "password": "123Clashofclan@"
 }
 
 ###
@@ -223,6 +223,13 @@ Authorization: Bearer {{TOKEN}}
   "userIds": ["uuid-1", "uuid-2", "uuid-3"],
   "attendeeRole": "REQUIRED"
 }
+
+###
+# @name  meeting agenda
+GET http://localhost:3000/api/meetings/{{meetingId}}/agenda
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
 
 ###
 # @name Update attendee RSVP

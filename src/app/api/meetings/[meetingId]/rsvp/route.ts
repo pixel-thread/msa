@@ -6,7 +6,6 @@ import { UserRole } from "@prisma/client";
 import { updateAttendee, removeAttendee } from "@feature/meetings/services";
 import { UpdateAttendeeSchema } from "@feature/meetings/validators/attendee";
 import { z } from "zod";
-import { NextRequest } from "next/server";
 
 const HIGH_ROLE_USERS: UserRole[] = [
   UserRole.SUPER_ADMIN,
@@ -28,10 +27,7 @@ export const PATCH = withAssociation(
       throw new ForbiddenError("Invalid request body");
     }
 
-    const user = await withRole(
-      request,
-      UserRole.MEMBER,
-    );
+    const user = await withRole(request, UserRole.MEMBER);
 
     const isAdmin = HIGH_ROLE_USERS.includes(user.role);
 
@@ -66,10 +62,7 @@ export const DELETE = withAssociation(
       throw new ForbiddenError("Invalid parameters");
     }
 
-    const user = await withRole(
-      request,
-      UserRole.SECRETARY,
-    );
+    const user = await withRole(request, UserRole.SECRETARY);
 
     if (!HIGH_ROLE_USERS.includes(user.role)) {
       throw new ForbiddenError(

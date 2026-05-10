@@ -10,7 +10,6 @@ import {
 } from "@feature/meetings/services";
 import { UpdateMeetingSchema } from "@feature/meetings/validators/meetings";
 import { z } from "zod";
-import { NextRequest } from "next/server";
 
 const HIGH_ROLE_USERS: UserRole[] = [
   UserRole.SUPER_ADMIN,
@@ -19,7 +18,7 @@ const HIGH_ROLE_USERS: UserRole[] = [
 ];
 
 const MeetingParamsSchema = z.object({
-  meetingId: z.uuid("Invalid meeting ID"),
+  meetingId: z.string("Invalid meeting ID"),
 });
 
 export const GET = withAssociation(
@@ -36,9 +35,6 @@ export const GET = withAssociation(
       meetingId: params.meetingId,
       associationId: association.id,
     });
-    const meetingAgenda = meeting.agendaItems.map((a) => {
-      return { ...a, order: a.order };
-    });
 
     if (!HIGH_ROLE_USERS.includes(user.role)) {
       const isAttendee = meeting.attendees.some(
@@ -50,7 +46,7 @@ export const GET = withAssociation(
     }
 
     return SuccessResponse({
-      data: { ...meeting, agendaItems: meetingAgenda },
+      data: meeting,
     });
   },
 );
