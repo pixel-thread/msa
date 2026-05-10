@@ -15,7 +15,7 @@ type ForgotPasswordBody = z.infer<typeof forgotPasswordSchema>;
 
 export const POST = withValidation(
   { body: forgotPasswordSchema },
-  async (_, { body }) => {
+  async (_, _ctx, { body }) => {
     const { email } = body as ForgotPasswordBody;
 
     const user = await prisma.user.findFirst({
@@ -49,5 +49,6 @@ export const POST = withValidation(
       success: true,
       message: "If an account exists, a reset email will be sent",
     });
-  }
+  },
 );
+

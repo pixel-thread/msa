@@ -14,9 +14,9 @@ type DisableMfaBody = z.infer<typeof disableMfaSchema>;
 
 export const POST = withValidation(
   { body: disableMfaSchema },
-  async (_, { body }) => {
+  async (_, _ctx, { body }) => {
     const { userId } = await requireAuth();
-    
+
     const { password } = body as DisableMfaBody;
 
     const user = await prisma.user.findUnique({
@@ -39,7 +39,7 @@ export const POST = withValidation(
     }
 
     const isValid = await verifyPassword(password, user.password);
-    
+
     if (!isValid) {
       return NextResponse.json(
         { success: false, message: "Invalid password" },
@@ -59,5 +59,6 @@ export const POST = withValidation(
         mfaEnabled: false,
       },
     });
-  }
+  },
 );
+
