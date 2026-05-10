@@ -1,7 +1,8 @@
-import { Expo, ExpoPushMessage, ExpoPushTicket } from 'expo-server-sdk';
-import { prisma } from './prisma';
+import { Expo, ExpoPushMessage, ExpoPushTicket } from "expo-server-sdk";
+import { prisma } from "./prisma";
+import { logger } from "../logger";
 
-let expo = new Expo();
+const expo = new Expo();
 
 export class ExpoNotificationService {
   /**
@@ -12,17 +13,17 @@ export class ExpoNotificationService {
     tokens: string[],
     title: string,
     body: string,
-    data?: any
+    data?: any,
   ) {
     const messages: ExpoPushMessage[] = [];
     for (const pushToken of tokens) {
       if (!Expo.isExpoPushToken(pushToken)) {
-        console.error(`Push token ${pushToken} is not a valid Expo push token`);
+        logger.error(`Push token ${pushToken} is not a valid Expo push token`);
         continue;
       }
       messages.push({
         to: pushToken,
-        sound: 'default',
+        sound: "default",
         title,
         body,
         data,
@@ -36,24 +37,28 @@ export class ExpoNotificationService {
       try {
         const ticketChunk = await expo.sendPushNotificationsAsync(chunk);
         tickets.push(...ticketChunk);
-        
+
         // Match tickets with tokens to handle invalid tokens
         for (let i = 0; i < ticketChunk.length; i++) {
           const ticket = ticketChunk[i];
           const token = chunk[i].to;
-          
-          if (typeof token === 'string' && ticket.status === 'error') {
-            if (ticket.details?.error === 'DeviceNotRegistered') {
-              console.log(`Token ${token} is no longer registered. Removing from DB.`);
-              await prisma.pushToken.delete({ where: { token } }).catch(e => console.error('Failed to delete token', e));
+
+          if (typeof token === "string" && ticket.status === "error") {
+            if (ticket.details?.error === "DeviceNotRegistered") {
+              logger.debug(
+                `Token ${token} is no longer registered. Removing from DB.`,
+              );
+              await prisma.pushToken
+                .delete({ where: { token } })
+                .catch((e) => logger.error("Failed to delete token", e));
             }
           }
         }
       } catch (error) {
-        console.error('Error sending push notification chunk:', error);
+        logger.error("Error sending push notification chunk:", { error });
       }
     }
-    
+
     return tickets;
   }
 }

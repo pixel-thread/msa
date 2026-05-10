@@ -1,5 +1,5 @@
 import * as crypto from "crypto";
-import { env } from "@/env";
+import { env } from "@src/env";
 
 const KEY = Buffer.from(env.FIELD_ENCRYPTION_KEY, "hex");
 
@@ -21,7 +21,7 @@ export const encrypt = (plain: string): string => {
 export const decrypt = (ciphertext: string): string => {
   const [ivHex, tagHex, encHex] = ciphertext.split(":");
   if (!ivHex || !tagHex || !encHex) return ciphertext;
-  
+
   const iv = Buffer.from(ivHex, "hex");
   const tag = Buffer.from(tagHex, "hex");
   const enc = Buffer.from(encHex, "hex");
