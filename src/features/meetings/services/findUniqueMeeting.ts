@@ -6,26 +6,28 @@ interface FindUniqueMeetingProps {
   associationId: string;
 }
 
-export async function findUniqueMeeting({ meetingId, associationId }: FindUniqueMeetingProps) {
+export async function findUniqueMeeting({
+  meetingId,
+  associationId,
+}: FindUniqueMeetingProps) {
   const meeting = await prisma.meeting.findFirst({
     where: { id: meetingId, associationId },
     include: {
-      createdBy: {
-        select: { id: true, name: true, email: true },
-      },
+      createdBy: { select: { id: true, name: true, email: true } },
       attendees: {
         include: {
           user: {
-            select: { id: true, name: true, email: true, membershipNumber: true },
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              membershipNumber: true,
+            },
           },
         },
       },
-      agendaItems: {
-        orderBy: { order: "asc" },
-      },
-      minutes: {
-        orderBy: { recordedAt: "desc" },
-      },
+      agendaItems: { orderBy: { order: "asc" } },
+      minutes: { orderBy: { recordedAt: "desc" } },
     },
   });
 
@@ -35,3 +37,4 @@ export async function findUniqueMeeting({ meetingId, associationId }: FindUnique
 
   return meeting;
 }
+

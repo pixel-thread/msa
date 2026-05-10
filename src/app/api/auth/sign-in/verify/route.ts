@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { prisma } from "@src/shared/lib/prisma";
@@ -7,9 +6,16 @@ import { verifyPasswordResetToken } from "@src/shared/lib/jwt";
 import { signAccessToken, signRefreshToken } from "@src/shared/lib/jwt";
 import { hashToken } from "@src/shared/lib/password";
 import { env } from "@src/env";
+import {
+  BadRequestError,
+  TooManyRequestsError,
+  UnauthorizedError,
+} from "@src/shared/errors";
+import { SuccessResponse } from "@src/shared/utils";
 
 const verifySchema = z.object({
   code: z.string().length(6, "Code must be 6 digits"),
+  mfa_temp_token: z.string().optional(),
 });
 
 type VerifyBody = z.infer<typeof verifySchema>;
@@ -19,23 +25,18 @@ export const POST = withValidation(
   async (request, _ctx, { body }) => {
     const { code } = body as VerifyBody;
 
-    const mfaCookie = request.cookies.get("mfa_temp_token");
+    const mfaCookie =
+      request.cookies.get("mfa_temp_token")?.value || body?.mfa_temp_token;
 
-    if (!mfaCookie?.value) {
-      return NextResponse.json(
-        { success: false, message: "Session expired. Please sign in again" },
-        { status: 400 },
-      );
+    if (!mfaCookie) {
+      throw new BadRequestError("Session expired. Please signin again");
     }
 
     let payload;
     try {
-      payload = await verifyPasswordResetToken(mfaCookie.value);
+      payload = await verifyPasswordResetToken(mfaCookie);
     } catch {
-      return NextResponse.json(
-        { success: false, message: "Session expired. Please sign in again" },
-        { status: 400 },
-      );
+      throw new BadRequestError("Session expired. Please signin again");
     }
 
     const user = await prisma.user.findUnique({
@@ -44,10 +45,7 @@ export const POST = withValidation(
     });
 
     if (!user || user.status !== "ACTIVE") {
-      return NextResponse.json(
-        { success: false, message: "User not found or inactive" },
-        { status: 401 },
-      );
+      throw new UnauthorizedError("User not found or inactive");
     }
 
     const hashedCode = hashToken(code);
@@ -63,19 +61,12 @@ export const POST = withValidation(
     });
 
     if (!verificationCode) {
-      return NextResponse.json(
-        { success: false, message: "Invalid or expired verification code" },
-        { status: 401 },
-      );
+      throw new UnauthorizedError("Invalid or expired verification code");
     }
 
     if (verificationCode.attempts >= env.OTP_MAX_ATTEMPTS) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Too many attempts. Please request a new code",
-        },
-        { status: 429 },
+      throw new TooManyRequestsError(
+        "Too many attempts. Please request a new code",
       );
     }
 
@@ -85,10 +76,7 @@ export const POST = withValidation(
         data: { attempts: { increment: 1 } },
       });
 
-      return NextResponse.json(
-        { success: false, message: "Invalid verification code" },
-        { status: 401 },
-      );
+      throw new UnauthorizedError("Invalid verification code");
     }
 
     await prisma.verificationCode.update({
@@ -111,8 +99,7 @@ export const POST = withValidation(
       },
     });
 
-    const response = NextResponse.json({
-      success: true,
+    const response = SuccessResponse({
       message: "Signed in successfully",
       data: {
         access_token: accessToken,

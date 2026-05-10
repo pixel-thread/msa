@@ -47,3 +47,8 @@ export class InvalidJsonError extends AppError {
     super("INVALID_JSON", "Invalid request body", 400);
   }
 }
+export class TooManyRequestsError extends AppError {
+  constructor(message = "Too many requests", details?: unknown) {
+    super("TOO_MANY_REQUESTS", message, 429, details);
+  }
+}

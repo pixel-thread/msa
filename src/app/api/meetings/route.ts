@@ -8,7 +8,6 @@ import {
   CreateMeetingSchema,
   MeetingQuerySchema,
 } from "@feature/meetings/validators/meetings";
-import { NextRequest } from "next/server";
 
 const HIGH_ROLE_USERS: UserRole[] = [
   UserRole.SUPER_ADMIN,
@@ -19,10 +18,7 @@ const HIGH_ROLE_USERS: UserRole[] = [
 export const GET = withAssociation(
   { query: MeetingQuerySchema },
   async (association, { query }, request) => {
-    const user = await withRole(
-      request,
-      UserRole.MEMBER,
-    );
+    const user = await withRole(request, UserRole.MEMBER);
 
     if (!query) {
       throw new ForbiddenError("Invalid query parameters");
@@ -62,10 +58,7 @@ export const POST = withAssociation(
     }
 
     const userId = request.headers.get("x-user-id")!;
-    const user = await withRole(
-      request,
-      UserRole.SECRETARY,
-    );
+    const user = await withRole(request, UserRole.SECRETARY);
 
     if (!HIGH_ROLE_USERS.includes(user.role)) {
       throw new ForbiddenError(

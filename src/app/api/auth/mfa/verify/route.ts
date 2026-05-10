@@ -15,13 +15,13 @@ type VerifyMfaBody = z.infer<typeof verifyMfaSchema>;
 
 export const POST = withValidation(
   { body: verifyMfaSchema },
-  async (_, { body }) => {
+  async (_, _ctx, { body }) => {
     const { userId } = await requireAuth();
-    
+
     const { code } = body as VerifyMfaBody;
 
     const hashedCode = hashToken(code);
-    
+
     const verificationCode = await prisma.verificationCode.findFirst({
       where: {
         userId,
@@ -41,7 +41,10 @@ export const POST = withValidation(
 
     if (verificationCode.attempts >= env.OTP_MAX_ATTEMPTS) {
       return NextResponse.json(
-        { success: false, message: "Too many attempts. Please request a new code" },
+        {
+          success: false,
+          message: "Too many attempts. Please request a new code",
+        },
         { status: 429 },
       );
     }
@@ -75,5 +78,6 @@ export const POST = withValidation(
         mfaEnabled: true,
       },
     });
-  }
+  },
 );
+

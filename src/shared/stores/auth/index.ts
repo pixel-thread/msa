@@ -33,6 +33,7 @@ export interface AuthState {
   ) => Promise<void>;
   signOut: () => Promise<void>;
   verifyMfa: (code: string) => Promise<void>;
+  resendMfaCode: () => Promise<void>;
   setupMfa: (password: string) => Promise<void>;
   enableMfa: (code: string) => Promise<void>;
   disableMfa: (password: string) => Promise<void>;
@@ -147,6 +148,17 @@ export const useAuthStore = create<AuthState>((set) => ({
       throw error;
     } finally {
       set({ isLoading: false });
+    }
+  },
+
+  resendMfaCode: async () => {
+    try {
+      const res = await http.post<{ codeSent: boolean }>("/auth/mfa/resend-login");
+      if (!res.success) {
+        throw new Error(res.message);
+      }
+    } catch (error) {
+      throw error;
     }
   },
 

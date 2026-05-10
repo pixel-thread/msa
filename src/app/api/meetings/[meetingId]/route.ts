@@ -36,6 +36,9 @@ export const GET = withAssociation(
       meetingId: params.meetingId,
       associationId: association.id,
     });
+    const meetingAgenda = meeting.agendaItems.map((a) => {
+      return { ...a, order: a.order };
+    });
 
     if (!HIGH_ROLE_USERS.includes(user.role)) {
       const isAttendee = meeting.attendees.some(
@@ -46,7 +49,9 @@ export const GET = withAssociation(
       }
     }
 
-    return SuccessResponse({ data: meeting });
+    return SuccessResponse({
+      data: { ...meeting, agendaItems: meetingAgenda },
+    });
   },
 );
 
@@ -87,10 +92,7 @@ export const DELETE = withAssociation(
       throw new ForbiddenError("Invalid meeting ID");
     }
 
-    const user = await withRole(
-      request,
-      UserRole.SECRETARY,
-    );
+    const user = await withRole(request, UserRole.SECRETARY);
 
     if (!HIGH_ROLE_USERS.includes(user.role)) {
       throw new ForbiddenError(

@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { prisma } from "@src/shared/lib/prisma";
@@ -108,6 +107,7 @@ export const POST = withValidation(
       }
 
       const mfaTempToken = await signPasswordResetToken(user.id);
+
       const mfaResponse = SuccessResponse({
         message: "MFA verification required",
         data: {

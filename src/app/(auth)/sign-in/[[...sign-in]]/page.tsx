@@ -108,10 +108,12 @@ export default function SignInPage() {
 
 function MfaVerify({ email, onBack }: { email: string; onBack: () => void }) {
   const router = useRouter();
-  const { verifyMfa, isLoading } = useAuthStore();
+  const { verifyMfa, resendMfaCode, isLoading } = useAuthStore();
 
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,6 +124,20 @@ function MfaVerify({ email, onBack }: { email: string; onBack: () => void }) {
       router.push("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Verification failed");
+    }
+  };
+
+  const handleResend = async () => {
+    setResendLoading(true);
+    setError("");
+    try {
+      await resendMfaCode();
+      setResendSuccess(true);
+      setTimeout(() => setResendSuccess(false), 3000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to resend code");
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -155,6 +171,10 @@ function MfaVerify({ email, onBack }: { email: string; onBack: () => void }) {
             <div className="text-red-600 text-sm text-center">{error}</div>
           )}
 
+          {resendSuccess && (
+            <div className="text-green-600 text-sm text-center">Code resent successfully!</div>
+          )}
+
           <button
             type="submit"
             disabled={isLoading || code.length !== 6}
@@ -163,13 +183,23 @@ function MfaVerify({ email, onBack }: { email: string; onBack: () => void }) {
             {isLoading ? "Verifying..." : "Verify"}
           </button>
 
-          <button
-            type="button"
-            onClick={onBack}
-            className="text-sm text-gray-600 hover:text-gray-500"
-          >
-            Back to sign in
-          </button>
+          <div className="flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={resendLoading}
+              className="text-sm text-indigo-600 hover:text-indigo-500 disabled:opacity-50"
+            >
+              {resendLoading ? "Sending..." : "Resend code"}
+            </button>
+            <button
+              type="button"
+              onClick={onBack}
+              className="text-sm text-gray-600 hover:text-gray-500"
+            >
+              Back to sign in
+            </button>
+          </div>
         </form>
       </div>
     </div>
