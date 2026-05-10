@@ -31,7 +31,6 @@ export const GET = withAssociation(
         updatedAt: true,
         _count: {
           select: {
-            payments: true,
             meetingAttendances: true,
           },
         },
@@ -42,20 +41,9 @@ export const GET = withAssociation(
       throw new NotFoundError("Member not found");
     }
 
-    const subscription = await prisma.payment.findFirst({
-      where: {
-        userId: params?.memberId,
-        type: "SUBSCRIPTION",
-        status: "COMPLETED",
-      },
-      orderBy: { paymentDate: "desc" },
-    });
-
     return SuccessResponse({
       data: {
         ...member,
-        hasPaid: !!subscription,
-        lastPaymentDate: subscription?.paymentDate,
       },
     });
   },
