@@ -12,6 +12,7 @@ import {
   verifyPaymentSignature,
 } from "./razorpay.service";
 import { getOutstandingContributions } from "./contribution.service";
+import { env } from "@src/env";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -43,6 +44,73 @@ export interface RecordManualPaymentInput {
   createdById: string;
 }
 
+export interface RazorpayOptions {
+  description?: string;
+  image?: string;
+  currency: string;
+  key: string;
+  amount: number | string;
+  name: string;
+  transaction_id?: string;
+
+  order_id?: string;
+  receipt?: string;
+
+  prefill?: {
+    email?: string;
+    contact?: string;
+    name?: string;
+  };
+
+  theme?: {
+    color?: string;
+  };
+
+  notes?: Record<string, string>;
+
+  retry?: {
+    enabled?: boolean;
+    max_count?: number;
+  };
+
+  modal?: {
+    confirm_close?: boolean;
+    animation?: boolean;
+    ondismiss?: () => void;
+  };
+
+  timeout?: number;
+
+  readonly?: {
+    contact?: boolean;
+    email?: boolean;
+    name?: boolean;
+  };
+
+  hide_topbar?: boolean;
+
+  method?: "card" | "upi" | "netbanking" | "wallet" | "emi";
+
+  send_sms_hash?: boolean;
+
+  remember_customer?: boolean;
+
+  customer_id?: string;
+
+  subscription_id?: string;
+
+  config?: {
+    display?: {
+      language?: string;
+    };
+  };
+
+  handler?: (response: {
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+  }) => void;
+}
 // ---------------------------------------------------------------------------
 // 1. Create Razorpay Order
 // ---------------------------------------------------------------------------
@@ -86,13 +154,17 @@ export async function createPaymentOrder(input: CreateOrderInput) {
     data: { razorpayOrderId: razorpayOrder.id },
   });
 
-  return {
-    transactionId: transaction.id,
-    razorpayOrderId: razorpayOrder.id,
+  const options: RazorpayOptions = {
+    name: env.NEXT_PUBLIC_ASSOCIATION_SLUG.toUpperCase(),
+    transaction_id: transaction.id,
+    description: input.notes,
+    order_id: razorpayOrder.id,
     amount: amountInPaise,
     currency: "INR",
-    keyId: process.env.RAZORPAY_KEY_ID!,
+    key: process.env.RAZORPAY_KEY_ID!,
   };
+
+  return options;
 }
 
 // ---------------------------------------------------------------------------
@@ -269,8 +341,8 @@ export async function recordManualPayment(input: RecordManualPaymentInput) {
  *   - If remaining > 0 but < dueAmount → partially paid
  *   - If remaining == 0 → stop
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function allocatePaymentToContributions(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx: any, // Prisma transaction client
   paymentTransactionId: string,
   userId: string,
@@ -337,8 +409,8 @@ async function allocatePaymentToContributions(
 // 5. Ledger Entry Creation
 // ---------------------------------------------------------------------------
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function createLedgerEntry(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx: any,
   paymentTransactionId: string,
   amount: number,

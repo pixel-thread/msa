@@ -311,7 +311,37 @@ Authorization: Bearer {{TOKEN}}
 }
 
 ###
-# @name Record Payment (Ledger Entry)
+# @name Get Payment History
+GET http://localhost:3000/api/payments/history?page=1&pageSize=20
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Create Payment Order
+POST http://localhost:3000/api/payments/order
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "userId": "{{userId}}",
+  "amount": 5000,
+  "notes": "Monthly contribution for May 2026"
+}
+
+###
+# @name Verify Payment
+POST http://localhost:3000/api/payments/verify
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "razorpayOrderId": "order_12345",
+  "razorpayPaymentId": "pay_12345",
+  "razorpaySignature": "sig_12345"
+}
+
+###
+# @name Record Manual Payment
 POST http://localhost:3000/api/payments/record
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
@@ -319,12 +349,60 @@ Authorization: Bearer {{TOKEN}}
 {
   "userId": "{{userId}}",
   "amount": 5000,
-  "method": "ONLINE",
-  "type": "SUBSCRIPTION",
-  "notes": "Paid via Razorpay",
+  "method": "CASH",
+  "notes": "Paid in cash at the office",
   "receiptNumber": "REC-001",
-  "razorpayOrderId": "order_12345",
-  "razorpayPaymentId": "pay_12345"
+  "referenceNumber": "REF-12345"
+}
+
+###
+# @name Generate Contributions
+POST http://localhost:3000/api/payments/contributions
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "year": 2026,
+  "month": 5
+}
+
+###
+# @name Waive Contribution
+PATCH http://localhost:3000/api/payments/contributions
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "contributionPeriodId": "REPLACE_WITH_UUID",
+  "reason": "Hardship case"
+}
+
+###
+# @name Payment Webhook
+POST http://localhost:3000/api/payments/webhook
+Content-Type: application/json
+x-razorpay-signature: REPLACE_WITH_HMAC
+
+{
+  "entity": "event",
+  "account_id": "acc_BFQ7uS97yRUrSg",
+  "event": "payment.captured",
+  "contains": ["payment"],
+  "payload": {
+    "payment": {
+      "entity": {
+        "id": "pay_DESLFWSkdsc9",
+        "amount": 5000,
+        "currency": "INR",
+        "status": "captured",
+        "order_id": "order_DESLFWSkdsc9",
+        "notes": {
+          "associationId": "{{associationsId}}"
+        }
+      }
+    }
+  },
+  "created_at": 1400826750
 }
 
 ### ----------------- MEMBERS ------------------
@@ -340,3 +418,65 @@ Authorization: Bearer {{TOKEN}}
 GET http://localhost:3000/api/members/{{userId}}
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
+
+### ----------------- USER ------------------
+
+###
+# @name Update My Profile
+POST http://localhost:3000/api/user
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "name": "Updated Name",
+  "mobile": "9876543210",
+  "designation": "Executive Member",
+  "dateOfJoiningGovt": "2015-01-01",
+  "dateOfJoiningMfsa": "2020-01-01"
+}
+
+### ----------------- NOTIFICATIONS ------------------
+
+###
+# @name Register Push Token
+POST http://localhost:3000/api/notifications/register
+Content-Type: application/json
+
+{
+  "token": "exponent-push-token-here"
+}
+
+###
+# @name Link Token to User
+POST http://localhost:3000/api/notifications/link
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "token": "exponent-push-token-here"
+}
+
+### ----------------- ASSOCIATIONS (General) ------------------
+
+###
+# @name List All Associations
+GET http://localhost:3000/api/associations
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Add Member to Association
+POST http://localhost:3000/api/associations/{{associationsId}}/members
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "memberId": "{{userId}}"
+}
+
+### ----------------- HEALTH ------------------
+
+###
+# @name Health Check
+GET http://localhost:3000/api/health
+Content-Type: application/json
