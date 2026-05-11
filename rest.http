@@ -21,7 +21,7 @@ Content-Type: application/json
 
 ###
 # @name Sign In
-POST http://localhost:3000/api/auth/sign-in
+POST {{NEXT_PUBLIC_API_BASE_URL}}/auth/sign-in
 Content-Type: application/json
 
 {
@@ -31,19 +31,19 @@ Content-Type: application/json
 
 ###
 # @name Get Me
-GET http://localhost:3000/api/auth/me
+GET {{NEXT_PUBLIC_API_BASE_URL}}/auth/me
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Logout
-POST http://localhost:3000/api/auth/logout
+POST {{NEXT_PUBLIC_API_BASE_URL}}/auth/logout
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Forgot Password
-POST http://localhost:3000/api/auth/forgot-password
+POST {{NEXT_PUBLIC_API_BASE_URL}}/auth/forgot-password
 Content-Type: application/json
 
 {
@@ -52,7 +52,7 @@ Content-Type: application/json
 
 ###
 # @name Reset Password
-POST http://localhost:3000/api/auth/reset-password
+POST {{NEXT_PUBLIC_API_BASE_URL}}/auth/reset-password
 Content-Type: application/json
 
 {
@@ -62,7 +62,7 @@ Content-Type: application/json
 
 ###
 # @name Change Password
-POST http://localhost:3000/api/auth/change-password
+POST {{NEXT_PUBLIC_API_BASE_URL}}/auth/change-password
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -75,14 +75,14 @@ Authorization: Bearer {{TOKEN}}
 
 ### 
 # @name Get associations
-GET http://localhost:3000/api/admin/associations
+GET {{NEXT_PUBLIC_API_BASE_URL}}/admin/associations
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 ### 
 
 # @name create associations
-POST http://localhost:3000/api/admin/associations
+POST {{NEXT_PUBLIC_API_BASE_URL}}/admin/associations
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -99,7 +99,7 @@ Authorization: Bearer {{TOKEN}}
 ### 
 
 # @name add associations member
-POST http://localhost:3000/api/admin/associations/{{associationsId}}/member
+POST {{NEXT_PUBLIC_API_BASE_URL}}/admin/associations/{{associationsId}}/member
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -111,7 +111,7 @@ Authorization: Bearer {{TOKEN}}
 ### 
 
 # @name update associations
-PUT http://localhost:3000/api/admin/associations/{{associationsId}}
+PUT {{NEXT_PUBLIC_API_BASE_URL}}/admin/associations/{{associationsId}}
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -128,18 +128,18 @@ Authorization: Bearer {{token}}
 ### 
 
 # @name delete associations
-DELETE http://localhost:3000/api/admin/associations/{{associationsId}}
+DELETE {{NEXT_PUBLIC_API_BASE_URL}}/admin/associations/{{associationsId}}
 Content-Type: application/json
 
 ### 
 # @name get unique associations
-GET http://localhost:3000/api/admin/associations/{{associationsId}}
+GET {{NEXT_PUBLIC_API_BASE_URL}}/admin/associations/{{associationsId}}
 Content-Type: application/json
 
 
 ### 
 # @name get unique associations
-POST http://localhost:3000/api/admin
+POST {{NEXT_PUBLIC_API_BASE_URL}}/admin
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -152,13 +152,13 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name List meetings
-GET http://localhost:3000/api/meetings
+GET {{NEXT_PUBLIC_API_BASE_URL}}/meetings
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Create meeting
-POST http://localhost:3000/api/meetings
+POST {{NEXT_PUBLIC_API_BASE_URL}}/meetings
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -188,13 +188,13 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Get meeting details
-GET http://localhost:3000/api/meetings/{{meetingId}}
+GET {{NEXT_PUBLIC_API_BASE_URL}}/meetings/{{meetingId}}
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Update meeting
-PATCH http://localhost:3000/api/meetings/{{meetingId}}
+PATCH {{NEXT_PUBLIC_API_BASE_URL}}/meetings/{{meetingId}}
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -205,7 +205,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Delete meeting
-DELETE http://localhost:3000/api/meetings/{{meetingId}}
+DELETE {{NEXT_PUBLIC_API_BASE_URL}}/meetings/{{meetingId}}
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -213,13 +213,13 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name List meeting attendees
-GET http://localhost:3000/api/meetings/{{meetingId}}/attendees
+GET {{NEXT_PUBLIC_API_BASE_URL}}/meetings/{{meetingId}}/attendees
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Assign single attendee
-POST http://localhost:3000/api/meetings/{{meetingId}}/attendees
+POST {{NEXT_PUBLIC_API_BASE_URL}}/meetings/{{meetingId}}/attendees
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -230,7 +230,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Bulk assign attendees
-PUT http://localhost:3000/api/meetings/{{meetingId}}/attendees
+PUT {{NEXT_PUBLIC_API_BASE_URL}}/meetings/{{meetingId}}/attendees
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -241,14 +241,14 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name  meeting agenda
-GET http://localhost:3000/api/meetings/{{meetingId}}/agenda
+GET {{NEXT_PUBLIC_API_BASE_URL}}/meetings/{{meetingId}}/agenda
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 
 ###
 # @name Update attendee RSVP
-PATCH http://localhost:3000/api/meetings/{{meetingId}}/rsvp
+PATCH {{NEXT_PUBLIC_API_BASE_URL}}/meetings/{{meetingId}}/rsvp
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -259,7 +259,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Remove attendee
-DELETE http://localhost:3000/api/meetings/{{meetingId}}/rsvp
+DELETE {{NEXT_PUBLIC_API_BASE_URL}}/meetings/{{meetingId}}/rsvp
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -267,18 +267,18 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Get Subscription Plans
-GET http://localhost:3000/api/subscriptions/plans
+GET {{NEXT_PUBLIC_API_BASE_URL}}/subscriptions/plans
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Create Subscription Plan
-POST http://localhost:3000/api/subscriptions/plans
+POST {{NEXT_PUBLIC_API_BASE_URL}}/subscriptions/plans
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "name": "Annual Premium Membership",
+  "name": "Membership",
   "description": "Full access to all association benefits",
   "amount": 5000,
   "currency": "INR",
@@ -291,7 +291,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Subscribe to Plan
-POST http://localhost:3000/api/subscriptions/subscribe
+POST {{NEXT_PUBLIC_API_BASE_URL}}/subscriptions/subscribe
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -301,7 +301,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Waive Subscription
-POST http://localhost:3000/api/subscriptions/waive
+POST {{NEXT_PUBLIC_API_BASE_URL}}/subscriptions/waive
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -312,13 +312,13 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Get Payment History
-GET http://localhost:3000/api/payments/history?page=1&pageSize=20
+GET {{NEXT_PUBLIC_API_BASE_URL}}/payments/history?page=1&pageSize=20
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Create Payment Order
-POST http://localhost:3000/api/payments/order
+POST {{NEXT_PUBLIC_API_BASE_URL}}/payments/order
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -330,7 +330,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Verify Payment
-POST http://localhost:3000/api/payments/verify
+POST {{NEXT_PUBLIC_API_BASE_URL}}/payments/verify
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -342,7 +342,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Record Manual Payment
-POST http://localhost:3000/api/payments/record
+POST {{NEXT_PUBLIC_API_BASE_URL}}/payments/record
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -357,7 +357,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Generate Contributions
-POST http://localhost:3000/api/payments/contributions
+POST {{NEXT_PUBLIC_API_BASE_URL}}/payments/contributions
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -368,7 +368,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Waive Contribution
-PATCH http://localhost:3000/api/payments/contributions
+PATCH {{NEXT_PUBLIC_API_BASE_URL}}/payments/contributions
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -379,7 +379,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Payment Webhook
-POST http://localhost:3000/api/payments/webhook
+POST {{NEXT_PUBLIC_API_BASE_URL}}/payments/webhook
 Content-Type: application/json
 x-razorpay-signature: REPLACE_WITH_HMAC
 
@@ -409,13 +409,13 @@ x-razorpay-signature: REPLACE_WITH_HMAC
 
 ###
 # @name List Members
-GET http://localhost:3000/api/members
+GET {{NEXT_PUBLIC_API_BASE_URL}}/members
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Get Member Details
-GET http://localhost:3000/api/members/{{userId}}
+GET {{NEXT_PUBLIC_API_BASE_URL}}/members/{{userId}}
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -423,7 +423,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Update My Profile
-POST http://localhost:3000/api/user
+POST {{NEXT_PUBLIC_API_BASE_URL}}/user
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -439,7 +439,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Register Push Token
-POST http://localhost:3000/api/notifications/register
+POST {{NEXT_PUBLIC_API_BASE_URL}}/notifications/register
 Content-Type: application/json
 
 {
@@ -448,7 +448,7 @@ Content-Type: application/json
 
 ###
 # @name Link Token to User
-POST http://localhost:3000/api/notifications/link
+POST {{NEXT_PUBLIC_API_BASE_URL}}/notifications/link
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -460,13 +460,13 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name List All Associations
-GET http://localhost:3000/api/associations
+GET {{NEXT_PUBLIC_API_BASE_URL}}/associations
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Add Member to Association
-POST http://localhost:3000/api/associations/{{associationsId}}/members
+POST {{NEXT_PUBLIC_API_BASE_URL}}/associations/{{associationsId}}/members
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -478,5 +478,5 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Health Check
-GET http://localhost:3000/api/health
+GET {{NEXT_PUBLIC_API_BASE_URL}}/health
 Content-Type: application/json

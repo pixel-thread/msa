@@ -1,11 +1,7 @@
 import { withAssociation } from "@src/shared/api/with-association";
 import { SuccessResponse } from "@utils/responses";
-import {
-  getUserPaymentHistory,
-} from "@feature/payments/services/payment.service";
-import {
-  getUserContributionSummary,
-} from "@feature/payments/services/contribution.service";
+import { getUserPaymentHistory } from "@feature/payments/services/payment.service";
+import { getUserContributionSummary } from "@feature/payments/services/contribution.service";
 import { PaymentHistoryQuerySchema } from "@feature/payments/validators";
 
 /**
