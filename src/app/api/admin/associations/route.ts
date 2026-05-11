@@ -4,13 +4,13 @@ import { createAssociation } from "@src/features/associations/services/createAss
 import { findManyAssociation } from "@src/features/associations/services/findManyAssociation";
 import { findFirstAssociation } from "@src/features/associations/services/findFirstAssociation";
 import { SuccessResponse } from "@src/shared/utils";
-import type { Association } from "@prisma/client";
+import { UserRole, type Association } from "@prisma/client";
 import { ConflictError } from "@src/shared/errors";
 import type { CreateAssociationInput } from "@src/features/associations/validators/associations";
 import { withRole } from "@src/shared/api/with-role";
 
 export const GET = withValidation({}, async (req) => {
-  await withRole(req, "SUPER_ADMIN");
+  await withRole(req, UserRole.SUPER_ADMIN);
 
   const associations = await findManyAssociation({
     orderBy: { createdAt: "desc" },
@@ -23,7 +23,7 @@ export const GET = withValidation({}, async (req) => {
 export const POST = withValidation(
   { body: CreateAssociationSchema },
   async (req, _ctx, { body }) => {
-    await withRole(req, "SUPER_ADMIN");
+    await withRole(req, UserRole.SUPER_ADMIN);
 
     const existing = await findFirstAssociation({
       where: {
