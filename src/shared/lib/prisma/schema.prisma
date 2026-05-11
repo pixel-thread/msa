@@ -95,6 +95,21 @@ enum PaymentStatus {
   @@map("payment_status")
 }
 
+enum ContributionStatus {
+  DUE
+  PARTIAL
+  PAID
+  WAIVED
+  OVERDUE
+  @@map("contribution_status")
+}
+
+enum PaymentGateway {
+  RAZORPAY
+  MANUAL
+  @@map("payment_gateway")
+}
+
 enum ApprovalStatus {
   PENDING
   APPROVED
@@ -146,6 +161,14 @@ enum AuditAction {
   ROLE_CHANGE
   MEETING_ASSIGN
   MEETING_RSVP
+  PAYMENT_CREATED
+  PAYMENT_COMPLETED
+  PAYMENT_FAILED
+  PAYMENT_REFUNDED
+  PAYMENT_VERIFIED
+  PAYMENT_WAIVED
+  WEBHOOK_RECEIVED
+  REPORT_EXPORTED
   @@map("audit_action")
 }
 
@@ -176,6 +199,7 @@ model Association {
   subscriptionPlans SubscriptionPlan[]
   meetings          Meeting[]
   auditLogs         AuditLog[]
+  paymentTransactions PaymentTransaction[]
 
   @@index([slug])
   @@index([isActive])
@@ -214,7 +238,8 @@ model User {
   association          Association   @relation(fields: [associationId], references: [id], onDelete: Cascade)
 
   subscription         Subscription?
-  payments             Payment[]
+  payments             PaymentTransaction[]
+  contributionPeriods  ContributionPeriod[]
   auditLogs            AuditLog[]            @relation("ActorLogs")
   meetingsCreated      Meeting[]             @relation("CreatedMeetings")
   meetingAttendances   MeetingAttendee[]     // ★ Meetings this user is assigned to
@@ -276,7 +301,6 @@ model Subscription {
 
   user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   plan         SubscriptionPlan @relation(fields: [planId], references: [id])
-  payments     Payment[]
 
   @@index([status])
   @@index([endDate])
@@ -450,39 +474,146 @@ model PushToken {
 // PAYMENTS & LEDGER
 // ─────────────────────────────────────────────────────────────────────────────
 
-model Payment {
-  id                String @id @default(uuid())
-  associationId     String
-  userId            String
-  subscriptionId    String?
-  amount            Decimal @db.Decimal(10,2)
-  currency          String @default("INR")
-  type              PaymentType
-  method            PaymentMethod   @default(ONLINE)
-  status            PaymentStatus   @default(PENDING)
-  receiptNumber     String?
-  notes             String?
-  
-  // Future-proofing for Razorpay integration
-  razorpayOrderId   String? @unique
-  razorpayPaymentId String? @unique
+model PaymentTransaction {
+  id                    String   @id @default(uuid())
 
-  paymentDate       DateTime @default(now())
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  associationId         String
+  userId                String
 
-  user              User @relation(fields: [userId], references: [id])
-  subscription      Subscription? @relation(fields: [subscriptionId], references: [id])
-  ledgerEntries     LedgerEntry[]
+  amount                Decimal  @db.Decimal(10,2)
+  currency              String   @default("INR")
+
+  gateway               PaymentGateway @default(RAZORPAY)
+
+  status                PaymentStatus @default(PENDING)
+
+  method                PaymentMethod?
+
+  referenceNumber       String?
+  receiptNumber         String?
+
+  notes                 String?
+
+  // Razorpay
+  razorpayOrderId       String? @unique
+  razorpayPaymentId     String? @unique
+  razorpaySignature     String?
+  razorpayRefundId      String?
+
+  receiptUrl            String?
+  invoiceUrl            String?
+
+  paidAt                DateTime?
+  failedAt              DateTime?
+
+  createdById           String?
+  verifiedById          String?
+
+  paymentDate           DateTime @default(now())
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  association           Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  user                  User @relation(fields: [userId], references: [id])
+
+  allocations           PaymentAllocation[]
+  ledgerEntries         LedgerEntry[]
 
   @@index([associationId])
   @@index([userId])
-  @@map("payments")
+  @@index([status])
+  @@index([paymentDate])
+
+  @@map("payment_transactions")
+}
+
+model ContributionPeriod {
+  id                 String @id @default(uuid())
+
+  associationId      String
+  userId             String
+
+  year               Int
+  month              Int
+
+  expectedAmount     Decimal @db.Decimal(10,2)
+
+  paidAmount         Decimal @default(0) @db.Decimal(10,2)
+
+  dueAmount          Decimal @db.Decimal(10,2)
+
+  status             ContributionStatus @default(DUE)
+
+  dueDate            DateTime
+
+  waivedAt           DateTime?
+  waivedReason       String?
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user               User @relation(fields: [userId], references: [id])
+
+  allocations        PaymentAllocation[]
+
+  @@unique([userId, year, month])
+
+  @@index([associationId])
+  @@index([userId])
+  @@index([status])
+
+  @@map("contribution_periods")
+}
+
+model PaymentAllocation {
+  id                    String @id @default(uuid())
+
+  paymentTransactionId  String
+  contributionPeriodId  String
+
+  allocatedAmount       Decimal @db.Decimal(10,2)
+
+  createdAt             DateTime @default(now())
+
+  paymentTransaction    PaymentTransaction @relation(fields: [paymentTransactionId], references: [id], onDelete: Cascade)
+  contributionPeriod    ContributionPeriod @relation(fields: [contributionPeriodId], references: [id], onDelete: Cascade)
+
+  @@index([paymentTransactionId])
+  @@index([contributionPeriodId])
+
+  @@map("payment_allocations")
+}
+
+model PaymentWebhookEvent {
+  id                String @id @default(uuid())
+
+  eventId           String? @unique
+  eventType         String
+
+  gateway           PaymentGateway @default(RAZORPAY)
+
+  payload           Json
+
+  signature         String?
+
+  processed         Boolean @default(false)
+
+  processedAt       DateTime?
+
+  errorMessage      String?
+
+  createdAt         DateTime @default(now())
+
+  @@index([eventType])
+  @@index([processed])
+
+  @@map("payment_webhook_events")
 }
 
 model LedgerEntry {
   id             String @id @default(uuid())
-  paymentId      String?
+  paymentTransactionId String?
   description    String
   approvalStatus ApprovalStatus @default(PENDING)
   createdById    String
@@ -490,10 +621,10 @@ model LedgerEntry {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  payment        Payment? @relation(fields: [paymentId], references: [id])
+  paymentTransaction PaymentTransaction? @relation(fields: [paymentTransactionId], references: [id])
   lines          LedgerLine[]
 
-  @@index([paymentId])
+  @@index([paymentTransactionId])
   @@map("ledger_entries")
 }
 
@@ -510,4 +641,3 @@ model LedgerLine {
   @@index([ledgerEntryId])
   @@map("ledger_lines")
 }
-

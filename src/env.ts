@@ -11,6 +11,11 @@ export const env = createEnv({
     BLOB_READ_WRITE_TOKEN: z.string().optional(),
     RESEND_API_KEY: z.string().startsWith("re_").optional(),
     NODE_ENV: z.enum(["development", "test", "production"]),
+
+    // Razorpay
+    RAZORPAY_KEY_ID: z.string().min(1).optional(),
+    RAZORPAY_KEY_SECRET: z.string().min(1).optional(),
+    RAZORPAY_WEBHOOK_SECRET: z.string().min(1).optional(),
     ALLOWED_ORIGINS: z
       .array(z.url())
       .transform((origins) => origins.join(","))
@@ -45,6 +50,9 @@ export const env = createEnv({
     CRON_SECRET: process.env.CRON_SECRET,
     BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
+    RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID,
+    RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET,
+    RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_ASSOCIATION_SLUG: process.env.NEXT_PUBLIC_ASSOCIATION_SLUG,
     NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,

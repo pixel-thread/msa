@@ -1,0 +1,99 @@
+import { NextRequest, NextResponse } from "next/server";
+import { AuditAction } from "@prisma/client";
+import { prisma } from "@src/shared/lib/prisma";
+import {
+  processWebhookEvent,
+  WebhookSignatureError,
+} from "@feature/payments/services/webhook.service";
+
+/**
+ * POST /api/payments/webhook
+ *
+ * Razorpay webhook endpoint. This route is PUBLIC (no auth required) because
+ * Razorpay calls it directly. Authentication is done via HMAC signature
+ * verification using RAZORPAY_WEBHOOK_SECRET.
+ *
+ * CRITICAL DESIGN DECISIONS:
+ *
+ * 1. We read the raw body (not parsed JSON) for signature verification.
+ *    Razorpay signs the raw payload — if we parse and re-serialize, the
+ *    signature check will fail.
+ *
+ * 2. We always return 200 for valid signatures, even if processing fails
+ *    internally — to prevent Razorpay from retrying indefinitely on our
+ *    application errors. We store the error in the webhook event record
+ *    for later investigation.
+ *
+ * 3. Idempotency: duplicate events (same eventId) are detected and skipped.
+ *
+ * 4. For invalid signatures, we return 400 and log the attempt.
+ */
+export async function POST(request: NextRequest) {
+  let rawBody: string;
+
+  try {
+    rawBody = await request.text();
+  } catch {
+    return NextResponse.json(
+      { error: "Failed to read request body" },
+      { status: 400 },
+    );
+  }
+
+  const signature = request.headers.get("x-razorpay-signature");
+
+  if (!signature) {
+    return NextResponse.json(
+      { error: "Missing x-razorpay-signature header" },
+      { status: 400 },
+    );
+  }
+
+  try {
+    const result = await processWebhookEvent(rawBody, signature);
+
+    // Log webhook receipt in audit log (best-effort)
+    try {
+      const payload = JSON.parse(rawBody);
+      // Find association from the payment's notes if available
+      const notes = payload?.payload?.payment?.entity?.notes;
+      const associationId = notes?.associationId;
+
+      if (associationId) {
+        await prisma.auditLog.create({
+          data: {
+            associationId,
+            actorId: null,
+            action: AuditAction.WEBHOOK_RECEIVED,
+            resourceType: "PaymentWebhookEvent",
+            resourceId: result.eventId ?? null,
+            newValues: {
+              event: payload.event,
+              status: result.status,
+            },
+          },
+        });
+      }
+    } catch {
+      // Non-critical — don't fail the webhook for audit logging errors
+    }
+
+    return NextResponse.json({ status: result.status }, { status: 200 });
+  } catch (error) {
+    if (error instanceof WebhookSignatureError) {
+      console.error("[Webhook] Signature verification failed:", error.message);
+      return NextResponse.json(
+        { error: "Invalid webhook signature" },
+        { status: 400 },
+      );
+    }
+
+    // For all other errors, still return 200 to prevent infinite retries.
+    // The error has already been stored in the webhook event record.
+    console.error("[Webhook] Processing error:", error);
+    return NextResponse.json(
+      { status: "error", message: "Webhook processing failed" },
+      { status: 200 },
+    );
+  }
+}
