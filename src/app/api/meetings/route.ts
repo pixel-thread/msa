@@ -33,6 +33,7 @@ export const GET = withAssociation(
         filters: { type, status },
         pagination: { page, limit },
       });
+
       return SuccessResponse({
         data: result.meetings,
         meta: result.pagination,
@@ -40,8 +41,8 @@ export const GET = withAssociation(
     }
 
     const result = await findManyMeetings({
+      userId: userId,
       associationId: association.id,
-      userId,
       filters: { status: MeetingStatus.SCHEDULED },
       pagination: { page, limit },
     });
