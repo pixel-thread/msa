@@ -87,7 +87,7 @@ export const POST = withValidation(
 
     const response = SuccessResponse(
       {
-        message: "Account created successfully",
+        message: "Account created Successfully, waiting for approval",
         data: {
           id: user.id,
           email: user.email,
