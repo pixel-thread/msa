@@ -2,6 +2,7 @@
 @meetingId=08fba230-789f-40d8-a15b-6eeab5de24cb
 @userId=0c2396a3-0e53-4428-8b54-3fefd21941e3
 
+
 ### ----------------- AUTH ------------------
 
 ###
@@ -22,8 +23,8 @@ POST http://localhost:3000/api/auth/sign-in
 Content-Type: application/json
 
 {
-  "email": "test2@gmail.com",
-  "password": "123Pass@"
+  "email": "{{EMAIL}}",
+  "password": "{{PASSWORD}}"
 }
 
 ###
