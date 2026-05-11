@@ -17,11 +17,11 @@ export const POST = withAssociation(
   { body: CreateOrderSchema },
   async (association, { body }, request) => {
     // Only finance officers and above can initiate orders
-    await withRole(request, UserRole.FINANCE);
+    const user = await withRole(request, UserRole.MEMBER);
 
     const orderDetails = await createPaymentOrder({
       associationId: association.id,
-      userId: body!.userId,
+      userId: user?.id,
       amount: body!.amount,
       notes: body!.notes,
     });

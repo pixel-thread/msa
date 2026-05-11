@@ -45,15 +45,15 @@ export interface RecordManualPaymentInput {
 }
 
 export interface RazorpayOptions {
-  description?: string;
+  description: string;
   image?: string;
   currency: string;
   key: string;
-  amount: number | string;
+  amount: number;
   name: string;
   transaction_id?: string;
 
-  order_id?: string;
+  order_id: string;
   receipt?: string;
 
   prefill?: {
@@ -69,22 +69,22 @@ export interface RazorpayOptions {
   notes?: Record<string, string>;
 
   retry?: {
-    enabled?: boolean;
-    max_count?: number;
+    enabled: boolean;
+    max_count: number;
   };
 
   modal?: {
-    confirm_close?: boolean;
-    animation?: boolean;
-    ondismiss?: () => void;
+    confirm_close: boolean;
+    animation: boolean;
+    ondismiss: () => void;
   };
 
   timeout?: number;
 
   readonly?: {
-    contact?: boolean;
-    email?: boolean;
-    name?: boolean;
+    contact: boolean;
+    email: boolean;
+    name: boolean;
   };
 
   hide_topbar?: boolean;
@@ -100,8 +100,8 @@ export interface RazorpayOptions {
   subscription_id?: string;
 
   config?: {
-    display?: {
-      language?: string;
+    display: {
+      language: "en" | "ben" | "hi" | "mar" | "guj" | "tam" | "tel";
     };
   };
 
@@ -157,11 +157,11 @@ export async function createPaymentOrder(input: CreateOrderInput) {
   const options: RazorpayOptions = {
     name: env.NEXT_PUBLIC_ASSOCIATION_SLUG.toUpperCase(),
     transaction_id: transaction.id,
-    description: input.notes,
+    description: "Membership payment",
     order_id: razorpayOrder.id,
     amount: amountInPaise,
     currency: "INR",
-    key: process.env.RAZORPAY_KEY_ID!,
+    key: env.RAZORPAY_KEY_ID,
   };
 
   return options;

@@ -5,7 +5,6 @@ import { z } from "zod";
 // ---------------------------------------------------------------------------
 
 export const CreateOrderSchema = z.object({
-  userId: z.string().uuid(),
   amount: z.number().positive("Amount must be positive"),
   notes: z.string().optional(),
 });

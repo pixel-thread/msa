@@ -13,9 +13,9 @@ export const env = createEnv({
     NODE_ENV: z.enum(["development", "test", "production"]),
 
     // Razorpay
-    RAZORPAY_KEY_ID: z.string().min(1).optional(),
-    RAZORPAY_KEY_SECRET: z.string().min(1).optional(),
-    RAZORPAY_WEBHOOK_SECRET: z.string().min(1).optional(),
+    RAZORPAY_KEY_ID: z.string().min(1),
+    RAZORPAY_KEY_SECRET: z.string().min(1),
+    RAZORPAY_WEBHOOK_SECRET: z.string().min(1),
     ALLOWED_ORIGINS: z
       .array(z.url())
       .transform((origins) => origins.join(","))
