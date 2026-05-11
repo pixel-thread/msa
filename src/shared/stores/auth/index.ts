@@ -42,6 +42,7 @@ export interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isLoading: false,
+  isSignedIn: () => false,
 
   setUser: (user: AuthUser | null) => set({ user }),
 
@@ -153,7 +154,9 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   resendMfaCode: async () => {
     try {
-      const res = await http.post<{ codeSent: boolean }>("/auth/mfa/resend-login");
+      const res = await http.post<{ codeSent: boolean }>(
+        "/auth/mfa/resend-login",
+      );
       if (!res.success) {
         throw new Error(res.message);
       }

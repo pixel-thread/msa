@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { UserRole as Role } from "@prisma/client";
 
 /**
  * User roles supported by the application and stored in Clerk publicMetadata.

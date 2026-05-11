@@ -1,5 +1,12 @@
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient, UserRole, MeetingType, MeetingStatus, AttendeeRole, RsvpStatus } from "@prisma/client";
+import {
+  PrismaClient,
+  UserRole,
+  MeetingType,
+  MeetingStatus,
+  AttendeeRole,
+  RsvpStatus,
+} from "@prisma/client";
 import { Pool } from "pg";
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
@@ -49,10 +56,14 @@ async function main() {
 
   const mfsaUsers = await Promise.all([
     prisma.user.upsert({
-      where: { associationId_email: { associationId: mfsa.id, email: "president@mfsa.org" } },
+      where: {
+        associationId_email: {
+          associationId: mfsa.id,
+          email: "president@mfsa.org",
+        },
+      },
       update: {},
       create: {
-        clerkId: "clerk_mfsa_president",
         associationId: mfsa.id,
         email: "president@mfsa.org",
         name: "Rajesh Sharma",
@@ -61,10 +72,14 @@ async function main() {
       },
     }),
     prisma.user.upsert({
-      where: { associationId_email: { associationId: mfsa.id, email: "secretary@mfsa.org" } },
+      where: {
+        associationId_email: {
+          associationId: mfsa.id,
+          email: "secretary@mfsa.org",
+        },
+      },
       update: {},
       create: {
-        clerkId: "clerk_mfsa_secretary",
         associationId: mfsa.id,
         email: "secretary@mfsa.org",
         name: "Priya Patel",
@@ -73,10 +88,14 @@ async function main() {
       },
     }),
     prisma.user.upsert({
-      where: { associationId_email: { associationId: mfsa.id, email: "finance@mfsa.org" } },
+      where: {
+        associationId_email: {
+          associationId: mfsa.id,
+          email: "finance@mfsa.org",
+        },
+      },
       update: {},
       create: {
-        clerkId: "clerk_mfsa_finance",
         associationId: mfsa.id,
         email: "finance@mfsa.org",
         name: "Anil Kumar",
@@ -85,10 +104,14 @@ async function main() {
       },
     }),
     prisma.user.upsert({
-      where: { associationId_email: { associationId: mfsa.id, email: "member1@mfsa.org" } },
+      where: {
+        associationId_email: {
+          associationId: mfsa.id,
+          email: "member1@mfsa.org",
+        },
+      },
       update: {},
       create: {
-        clerkId: "clerk_mfsa_member1",
         associationId: mfsa.id,
         email: "member1@mfsa.org",
         name: "Suresh Yadav",
@@ -97,10 +120,14 @@ async function main() {
       },
     }),
     prisma.user.upsert({
-      where: { associationId_email: { associationId: mfsa.id, email: "member2@mfsa.org" } },
+      where: {
+        associationId_email: {
+          associationId: mfsa.id,
+          email: "member2@mfsa.org",
+        },
+      },
       update: {},
       create: {
-        clerkId: "clerk_mfsa_member2",
         associationId: mfsa.id,
         email: "member2@mfsa.org",
         name: "Meera Desai",
@@ -112,10 +139,14 @@ async function main() {
 
   const mpsaUsers = await Promise.all([
     prisma.user.upsert({
-      where: { associationId_email: { associationId: mpsa.id, email: "president@mpsa.org" } },
+      where: {
+        associationId_email: {
+          associationId: mpsa.id,
+          email: "president@mpsa.org",
+        },
+      },
       update: {},
       create: {
-        clerkId: "clerk_mpsa_president",
         associationId: mpsa.id,
         email: "president@mpsa.org",
         name: "Vikram Singh",
@@ -124,10 +155,14 @@ async function main() {
       },
     }),
     prisma.user.upsert({
-      where: { associationId_email: { associationId: mpsa.id, email: "secretary@mpsa.org" } },
+      where: {
+        associationId_email: {
+          associationId: mpsa.id,
+          email: "secretary@mpsa.org",
+        },
+      },
       update: {},
       create: {
-        clerkId: "clerk_mpsa_secretary",
         associationId: mpsa.id,
         email: "secretary@mpsa.org",
         name: "Sunita Rao",
@@ -136,10 +171,11 @@ async function main() {
       },
     }),
     prisma.user.upsert({
-      where: { associationId_email: { associationId: mpsa.id, email: "dpo@mpsa.org" } },
+      where: {
+        associationId_email: { associationId: mpsa.id, email: "dpo@mpsa.org" },
+      },
       update: {},
       create: {
-        clerkId: "clerk_mpsa_dpo",
         associationId: mpsa.id,
         email: "dpo@mpsa.org",
         name: "Arjun Nair",
@@ -148,10 +184,14 @@ async function main() {
       },
     }),
     prisma.user.upsert({
-      where: { associationId_email: { associationId: mpsa.id, email: "member1@mpsa.org" } },
+      where: {
+        associationId_email: {
+          associationId: mpsa.id,
+          email: "member1@mpsa.org",
+        },
+      },
       update: {},
       create: {
-        clerkId: "clerk_mpsa_member1",
         associationId: mpsa.id,
         email: "member1@mpsa.org",
         name: "Lakshmi Iyer",
@@ -160,10 +200,14 @@ async function main() {
       },
     }),
     prisma.user.upsert({
-      where: { associationId_email: { associationId: mpsa.id, email: "member2@mpsa.org" } },
+      where: {
+        associationId_email: {
+          associationId: mpsa.id,
+          email: "member2@mpsa.org",
+        },
+      },
       update: {},
       create: {
-        clerkId: "clerk_mpsa_member2",
         associationId: mpsa.id,
         email: "member2@mpsa.org",
         name: "Ravi Kulkarni",
@@ -243,7 +287,12 @@ async function main() {
 
   await Promise.all([
     prisma.meetingAttendee.upsert({
-      where: { meetingId_userId: { meetingId: meetings[0].id, userId: mfsaUsers[0].id } },
+      where: {
+        meetingId_userId: {
+          meetingId: meetings[0].id,
+          userId: mfsaUsers[0].id,
+        },
+      },
       update: {},
       create: {
         meetingId: meetings[0].id,
@@ -254,7 +303,12 @@ async function main() {
       },
     }),
     prisma.meetingAttendee.upsert({
-      where: { meetingId_userId: { meetingId: meetings[0].id, userId: mfsaUsers[1].id } },
+      where: {
+        meetingId_userId: {
+          meetingId: meetings[0].id,
+          userId: mfsaUsers[1].id,
+        },
+      },
       update: {},
       create: {
         meetingId: meetings[0].id,
@@ -265,7 +319,12 @@ async function main() {
       },
     }),
     prisma.meetingAttendee.upsert({
-      where: { meetingId_userId: { meetingId: meetings[0].id, userId: mfsaUsers[2].id } },
+      where: {
+        meetingId_userId: {
+          meetingId: meetings[0].id,
+          userId: mfsaUsers[2].id,
+        },
+      },
       update: {},
       create: {
         meetingId: meetings[0].id,
@@ -275,7 +334,12 @@ async function main() {
       },
     }),
     prisma.meetingAttendee.upsert({
-      where: { meetingId_userId: { meetingId: meetings[0].id, userId: mfsaUsers[3].id } },
+      where: {
+        meetingId_userId: {
+          meetingId: meetings[0].id,
+          userId: mfsaUsers[3].id,
+        },
+      },
       update: {},
       create: {
         meetingId: meetings[0].id,
@@ -287,7 +351,12 @@ async function main() {
       },
     }),
     prisma.meetingAttendee.upsert({
-      where: { meetingId_userId: { meetingId: meetings[0].id, userId: mfsaUsers[4].id } },
+      where: {
+        meetingId_userId: {
+          meetingId: meetings[0].id,
+          userId: mfsaUsers[4].id,
+        },
+      },
       update: {},
       create: {
         meetingId: meetings[0].id,
@@ -297,7 +366,12 @@ async function main() {
       },
     }),
     prisma.meetingAttendee.upsert({
-      where: { meetingId_userId: { meetingId: meetings[1].id, userId: mfsaUsers[0].id } },
+      where: {
+        meetingId_userId: {
+          meetingId: meetings[1].id,
+          userId: mfsaUsers[0].id,
+        },
+      },
       update: {},
       create: {
         meetingId: meetings[1].id,
@@ -308,7 +382,12 @@ async function main() {
       },
     }),
     prisma.meetingAttendee.upsert({
-      where: { meetingId_userId: { meetingId: meetings[1].id, userId: mfsaUsers[1].id } },
+      where: {
+        meetingId_userId: {
+          meetingId: meetings[1].id,
+          userId: mfsaUsers[1].id,
+        },
+      },
       update: {},
       create: {
         meetingId: meetings[1].id,
@@ -319,7 +398,12 @@ async function main() {
       },
     }),
     prisma.meetingAttendee.upsert({
-      where: { meetingId_userId: { meetingId: meetings[2].id, userId: mpsaUsers[0].id } },
+      where: {
+        meetingId_userId: {
+          meetingId: meetings[2].id,
+          userId: mpsaUsers[0].id,
+        },
+      },
       update: {},
       create: {
         meetingId: meetings[2].id,
@@ -330,7 +414,12 @@ async function main() {
       },
     }),
     prisma.meetingAttendee.upsert({
-      where: { meetingId_userId: { meetingId: meetings[2].id, userId: mpsaUsers[1].id } },
+      where: {
+        meetingId_userId: {
+          meetingId: meetings[2].id,
+          userId: mpsaUsers[1].id,
+        },
+      },
       update: {},
       create: {
         meetingId: meetings[2].id,
@@ -341,7 +430,12 @@ async function main() {
       },
     }),
     prisma.meetingAttendee.upsert({
-      where: { meetingId_userId: { meetingId: meetings[2].id, userId: mpsaUsers[2].id } },
+      where: {
+        meetingId_userId: {
+          meetingId: meetings[2].id,
+          userId: mpsaUsers[2].id,
+        },
+      },
       update: {},
       create: {
         meetingId: meetings[2].id,
@@ -351,7 +445,12 @@ async function main() {
       },
     }),
     prisma.meetingAttendee.upsert({
-      where: { meetingId_userId: { meetingId: meetings[3].id, userId: mpsaUsers[0].id } },
+      where: {
+        meetingId_userId: {
+          meetingId: meetings[3].id,
+          userId: mpsaUsers[0].id,
+        },
+      },
       update: {},
       create: {
         meetingId: meetings[3].id,
@@ -362,7 +461,12 @@ async function main() {
       },
     }),
     prisma.meetingAttendee.upsert({
-      where: { meetingId_userId: { meetingId: meetings[3].id, userId: mpsaUsers[1].id } },
+      where: {
+        meetingId_userId: {
+          meetingId: meetings[3].id,
+          userId: mpsaUsers[1].id,
+        },
+      },
       update: {},
       create: {
         meetingId: meetings[3].id,
@@ -461,7 +565,8 @@ async function main() {
         meetingId: meetings[3].id,
         order: 2,
         title: "Election of Office Bearers",
-        description: "Annual election of president, secretary, and committee members",
+        description:
+          "Annual election of president, secretary, and committee members",
       },
     }),
   ]);
