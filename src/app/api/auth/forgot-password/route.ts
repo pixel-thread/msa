@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { prisma } from "@src/shared/lib/prisma";
@@ -6,15 +5,19 @@ import { withValidation } from "@src/shared/api";
 import { hashToken } from "@src/shared/lib/password";
 import { signPasswordResetToken } from "@src/shared/lib/jwt";
 import { sendPasswordResetEmail } from "@src/shared/lib/email";
+import { SuccessResponse } from "@src/shared/utils";
+import { env } from "@src/env";
+import { logger } from "@src/shared/logger";
+import { NotFoundError } from "@src/shared/errors";
 
-const forgotPasswordSchema = z.object({
-  email: z.string().email("Invalid email address"),
+const ForgotPasswordSchema = z.object({
+  email: z.email("Invalid email address"),
 });
 
-type ForgotPasswordBody = z.infer<typeof forgotPasswordSchema>;
+type ForgotPasswordBody = z.infer<typeof ForgotPasswordSchema>;
 
 export const POST = withValidation(
-  { body: forgotPasswordSchema },
+  { body: ForgotPasswordSchema },
   async (_, _ctx, { body }) => {
     const { email } = body as ForgotPasswordBody;
 
@@ -23,16 +26,14 @@ export const POST = withValidation(
     });
 
     if (!user) {
-      return NextResponse.json({
-        success: true,
-        message: "If an account exists, a reset email will be sent",
-      });
+      throw new NotFoundError("User not found");
     }
 
     const resetToken = await signPasswordResetToken(user.id);
     const hashedToken = hashToken(resetToken);
 
     const resetExpiry = new Date();
+
     resetExpiry.setHours(resetExpiry.getHours() + 1);
 
     await prisma.user.update({
@@ -43,12 +44,17 @@ export const POST = withValidation(
       },
     });
 
-    await sendPasswordResetEmail(user.email, resetToken);
+    if (env.NODE_ENV === "production") {
+      await sendPasswordResetEmail(user.email, resetToken);
+    }
 
-    return NextResponse.json({
-      success: true,
+    if (env.NODE_ENV === "development") {
+      logger.debug("Reset password Token", { token: resetToken });
+    }
+
+    return SuccessResponse({
       message: "If an account exists, a reset email will be sent",
+      data: null,
     });
   },
 );
-
