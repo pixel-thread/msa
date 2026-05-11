@@ -1,4 +1,4 @@
-@associationsId=cmov70woz0000qyfbz7usbd5u
+@associationsId=4364ffdc-eb65-45b7-8205-8d121cbb522c
 @meetingId=08fba230-789f-40d8-a15b-6eeab5de24cb
 @userId=0c2396a3-0e53-4428-8b54-3fefd21941e3
 
@@ -85,13 +85,25 @@ Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "slug": "mpsc",
-  "name": "Delhi Cricket Association",
+  "slug": "mfsa",
+  "name": "MFSA",
   "state": "Delhi",
   "country": "IN",
   "contactEmail": "contact@delhicricket.org",
   "primaryColor": "#1e40af",
   "secondaryColor": "#f59e0b"
+}
+
+### 
+
+# @name add associations member
+POST http://localhost:3000/api/admin/associations/{{associationsId}}/member
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{ 
+    "association_id":"{{associationsId}}",
+    "user_id":"{{userId}}"
 }
 
 ### 

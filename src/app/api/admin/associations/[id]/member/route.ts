@@ -1,7 +1,7 @@
 import { UserRole } from "@prisma/client";
 import { withAssociation } from "@src/shared/api/with-association";
 import { withRole } from "@src/shared/api/with-role";
-import { NotFoundError } from "@src/shared/errors";
+import { ConflictError, NotFoundError } from "@src/shared/errors";
 import { prisma } from "@src/shared/lib/prisma";
 import { SuccessResponse } from "@src/shared/utils";
 import { env } from "@src/env";
@@ -29,11 +29,20 @@ export const POST = withAssociation(
     if (!user) throw new NotFoundError("User not found");
 
     if (!association) throw new NotFoundError("Association not found");
+    if (body?.association_id === association.id)
+      throw new ConflictError("User already under the target association");
 
     const updatedUser = await prisma.user.update({
       where: { id: body?.user_id as string },
       data: {
         association: { connect: { id: body?.association_id as string } },
+      },
+      select: {
+        id: true,
+        role: true,
+        associationId: true,
+        email: true,
+        name: true,
       },
     });
 

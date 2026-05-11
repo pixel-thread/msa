@@ -17,6 +17,7 @@ const BodySchema = z.object({
 const ParamsSchema = z.object({
   associationId: z.string().uuid(),
 });
+
 const ALLOWED_ROLES: UserRole[] = [UserRole.PRESIDENT, UserRole.SUPER_ADMIN];
 
 export const POST = withAssociation(
@@ -61,4 +62,3 @@ export const POST = withAssociation(
     return SuccessResponse({ data: updatedMember }, 201);
   },
 );
-

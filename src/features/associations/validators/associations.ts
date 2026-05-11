@@ -20,5 +20,5 @@ export type CreateAssociationInput = z.infer<typeof CreateAssociationSchema>;
 
 export const AddAssociationMemberSchema = z.object({
   association_id: z.uuid(),
-  user_id: z.uuid,
+  user_id: z.uuid(),
 });
