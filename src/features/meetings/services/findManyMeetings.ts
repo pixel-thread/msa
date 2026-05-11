@@ -1,5 +1,5 @@
 import { prisma } from "@lib/prisma";
-import { MeetingType, MeetingStatus } from "@prisma/client";
+import { MeetingType, MeetingStatus, Prisma } from "@prisma/client";
 
 interface FindManyMeetingsProps {
   associationId: string;
@@ -18,11 +18,13 @@ export async function findManyMeetings({
   associationId,
   filters,
   pagination: { page, limit },
+  userId,
 }: FindManyMeetingsProps) {
-  const where = {
+  const where: Prisma.MeetingWhereInput = {
     associationId,
     ...(filters?.type && { type: filters.type }),
     ...(filters?.status && { status: filters.status }),
+    attendees: { some: { userId: userId } },
   };
 
   const [meetings, total] = await Promise.all([
