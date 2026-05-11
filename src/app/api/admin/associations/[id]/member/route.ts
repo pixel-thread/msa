@@ -29,7 +29,8 @@ export const POST = withAssociation(
     if (!user) throw new NotFoundError("User not found");
 
     if (!association) throw new NotFoundError("Association not found");
-    if (body?.association_id === association.id)
+
+    if (body?.association_id === user.associationId)
       throw new ConflictError("User already under the target association");
 
     const updatedUser = await prisma.user.update({
