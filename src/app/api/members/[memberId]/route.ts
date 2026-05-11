@@ -5,7 +5,7 @@ import { prisma } from "@src/shared/lib/prisma";
 import z from "zod";
 
 const ParamSchema = z.object({
-  memberId: z.string(),
+  memberId: z.uuid(),
 });
 
 export const GET = withAssociation(
@@ -37,14 +37,10 @@ export const GET = withAssociation(
       },
     });
 
-    if (!member) {
+    if (!member || member.id !== params?.memberId) {
       throw new NotFoundError("Member not found");
     }
 
-    return SuccessResponse({
-      data: {
-        ...member,
-      },
-    });
+    return SuccessResponse({ data: member });
   },
 );

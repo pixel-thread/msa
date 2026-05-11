@@ -6,14 +6,14 @@ export const CreateSubscriptionPlanSchema = z.object({
   amount: z.number().nonnegative(),
   currency: z.string().default("INR"),
   billingCycle: z.enum(["MONTHLY", "YEARLY"]).default("YEARLY"),
-  features: z.record(z.any()).default({}),
+  features: z.record(z.string(), z.any()).default({}),
 });
 
 export const SubscribeSchema = z.object({
-  planId: z.string().uuid(),
+  planId: z.uuid(),
 });
 
 export const WaiveSubscriptionSchema = z.object({
-  subscriptionId: z.string().uuid(),
+  subscriptionId: z.uuid(),
   reason: z.string().min(1),
 });

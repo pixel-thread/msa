@@ -224,7 +224,7 @@ Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "userId": "{{userId}}",
+  "userId": "{{test2UserId}}",
   "attendeeRole": "OPTIONAL"
 }
 
@@ -326,14 +326,6 @@ Authorization: Bearer {{TOKEN}}
   "razorpayOrderId": "order_12345",
   "razorpayPaymentId": "pay_12345"
 }
-
-### ----------------- MEMBERS ------------------
-
-###
-# @name get members
-GET http://localhost:3000/api/members
-Content-Type: application/json
-Authorization: Bearer {{TOKEN}}
 
 ### ----------------- MEMBERS ------------------
 
