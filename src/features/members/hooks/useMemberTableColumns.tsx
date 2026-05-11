@@ -2,6 +2,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@src/shared/components/ui/badge";
 import { Avatar, AvatarFallback } from "@src/shared/components/ui/avatar";
 import { formatDate } from "@src/shared/utils";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface Member {
   id: string;
@@ -23,7 +25,10 @@ const getInitials = (name: string) => {
 };
 
 const getStatusBadge = (status: string) => {
-  const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+  const variants: Record<
+    string,
+    "default" | "secondary" | "destructive" | "outline"
+  > = {
     ACTIVE: "default",
     INACTIVE: "secondary",
     SUSPENDED: "destructive",
@@ -36,13 +41,12 @@ export const useMemberTableColumns = (): { columns: ColumnDef<Member>[] } => {
     {
       accessorKey: "name",
       header: "Member",
-      cell: ({ row, table }) => {
+      cell: ({ row }) => {
         const member = row.original;
-        const router = table.options.meta?.router as ReturnType<typeof import("next/navigation").useRouter> | undefined;
         return (
-          <button
+          <Link
             className="flex items-center gap-3 text-left hover:underline"
-            onClick={() => router?.push(`/dashboard/members/${member.id}`)}
+            href={`/dashboard/members/${member.id}`}
           >
             <Avatar className="h-8 w-8">
               <AvatarFallback className="text-xs bg-muted">
@@ -57,7 +61,7 @@ export const useMemberTableColumns = (): { columns: ColumnDef<Member>[] } => {
                 </span>
               )}
             </div>
-          </button>
+          </Link>
         );
       },
     },
@@ -65,7 +69,9 @@ export const useMemberTableColumns = (): { columns: ColumnDef<Member>[] } => {
       accessorKey: "email",
       header: "Email",
       cell: ({ row }) => (
-        <span className="text-muted-foreground text-sm">{row.original.email}</span>
+        <span className="text-muted-foreground text-sm">
+          {row.original.email}
+        </span>
       ),
     },
     {
@@ -95,3 +101,4 @@ export const useMemberTableColumns = (): { columns: ColumnDef<Member>[] } => {
 
   return { columns };
 };
+
