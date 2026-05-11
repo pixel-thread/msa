@@ -326,3 +326,25 @@ Authorization: Bearer {{TOKEN}}
   "razorpayOrderId": "order_12345",
   "razorpayPaymentId": "pay_12345"
 }
+
+### ----------------- MEMBERS ------------------
+
+###
+# @name get members
+GET http://localhost:3000/api/members
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+### ----------------- MEMBERS ------------------
+
+###
+# @name List Members
+GET http://localhost:3000/api/members
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Get Member Details
+GET http://localhost:3000/api/members/{{userId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
