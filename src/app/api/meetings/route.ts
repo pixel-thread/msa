@@ -1,6 +1,6 @@
 import { withAssociation } from "@src/shared/api/with-association";
 import { withRole } from "@src/shared/api/with-role";
-import { SuccessResponse } from "@src/shared/utils/responses";
+import { SuccessResponse } from "@utils/responses";
 import { ForbiddenError } from "@src/shared/errors";
 import { UserRole, MeetingStatus } from "@prisma/client";
 import { createMeeting, findManyMeetings } from "@feature/meetings/services";
