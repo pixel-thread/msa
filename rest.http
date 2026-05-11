@@ -1,6 +1,8 @@
 @associationsId=4364ffdc-eb65-45b7-8205-8d121cbb522c
 @meetingId=08fba230-789f-40d8-a15b-6eeab5de24cb
 @userId=0c2396a3-0e53-4428-8b54-3fefd21941e3
+@testUserId=0c2396a3-0e53-4428-8b54-3fefd21941e3
+@test2UserId=63db7dfd-7d45-40c5-870a-a7087baf7e65
 
 
 ### ----------------- AUTH ------------------
@@ -260,3 +262,67 @@ Authorization: Bearer {{TOKEN}}
 DELETE http://localhost:3000/api/meetings/{{meetingId}}/rsvp
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
+
+### ----------------- SUBSCRIPTIONS & PAYMENTS ------------------
+
+###
+# @name Get Subscription Plans
+GET http://localhost:3000/api/subscriptions/plans
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Create Subscription Plan
+POST http://localhost:3000/api/subscriptions/plans
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "name": "Annual Premium Membership",
+  "description": "Full access to all association benefits",
+  "amount": 5000,
+  "currency": "INR",
+  "billingCycle": "YEARLY",
+  "features": {
+    "events": true,
+    "voting": true
+  }
+}
+
+###
+# @name Subscribe to Plan
+POST http://localhost:3000/api/subscriptions/subscribe
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "planId": "REPLACE_WITH_PLAN_ID"
+}
+
+###
+# @name Waive Subscription
+POST http://localhost:3000/api/subscriptions/waive
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "subscriptionId": "REPLACE_WITH_SUBSCRIPTION_ID",
+  "reason": "Exempted by the board"
+}
+
+###
+# @name Record Payment (Ledger Entry)
+POST http://localhost:3000/api/payments/record
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "userId": "{{userId}}",
+  "amount": 5000,
+  "method": "ONLINE",
+  "type": "SUBSCRIPTION",
+  "notes": "Paid via Razorpay",
+  "receiptNumber": "REC-001",
+  "razorpayOrderId": "order_12345",
+  "razorpayPaymentId": "pay_12345"
+}

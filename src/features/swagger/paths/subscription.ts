@@ -1,4 +1,135 @@
 export const subscriptionPaths = {
+  "/subscriptions/plans": {
+    get: {
+      tags: ["Subscriptions"],
+      summary: "Get active subscription plans",
+      description: "Retrieve all active subscription plans for the association",
+      security: [{ bearerAuth: [] }],
+      responses: {
+        "200": {
+          description: "List of active plans",
+        },
+      },
+    },
+    post: {
+      tags: ["Subscriptions"],
+      summary: "Create a subscription plan",
+      description: "Create a new subscription plan (Admin/President only)",
+      security: [{ bearerAuth: [] }],
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              required: ["name", "amount"],
+              properties: {
+                name: { type: "string" },
+                description: { type: "string" },
+                amount: { type: "number" },
+                currency: { type: "string", default: "INR" },
+                billingCycle: { type: "string", enum: ["MONTHLY", "YEARLY"], default: "YEARLY" },
+                features: { type: "object" },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        "201": { description: "Plan created" },
+        "403": { description: "Unauthorized" },
+      },
+    },
+  },
+  "/subscriptions/subscribe": {
+    post: {
+      tags: ["Subscriptions"],
+      summary: "Subscribe to a plan",
+      description: "Allows a member to subscribe to a specific plan",
+      security: [{ bearerAuth: [] }],
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              required: ["planId"],
+              properties: {
+                planId: { type: "string", format: "uuid" },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        "201": { description: "Subscribed successfully" },
+        "404": { description: "Plan not found" },
+        "409": { description: "User already has an active subscription" },
+      },
+    },
+  },
+  "/subscriptions/waive": {
+    post: {
+      tags: ["Subscriptions"],
+      summary: "Waive a subscription",
+      description: "Admin endpoint to waive a user's subscription",
+      security: [{ bearerAuth: [] }],
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              required: ["subscriptionId", "reason"],
+              properties: {
+                subscriptionId: { type: "string", format: "uuid" },
+                reason: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        "200": { description: "Subscription waived" },
+        "403": { description: "Unauthorized" },
+        "404": { description: "Subscription not found" },
+      },
+    },
+  },
+  "/payments/record": {
+    post: {
+      tags: ["Payments"],
+      summary: "Record a payment",
+      description: "Record a manual payment and generate ledger entries (Finance/Admin only)",
+      security: [{ bearerAuth: [] }],
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              required: ["userId", "amount", "method", "type"],
+              properties: {
+                userId: { type: "string", format: "uuid" },
+                subscriptionId: { type: "string", format: "uuid" },
+                amount: { type: "number" },
+                method: { type: "string", enum: ["CASH", "BANK_TRANSFER", "UPI", "CHEQUE", "ONLINE"] },
+                type: { type: "string", enum: ["SUBSCRIPTION", "DONATION", "EVENT_FEE", "BANK_INTEREST", "FAMILY_CONTRIBUTION"] },
+                notes: { type: "string" },
+                receiptNumber: { type: "string" },
+                razorpayOrderId: { type: "string" },
+                razorpayPaymentId: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        "201": { description: "Payment recorded and ledger updated" },
+        "403": { description: "Unauthorized" },
+      },
+    },
+  },
   "/subscriptions/plan": {
     get: {
       tags: ["Subscriptions"],
