@@ -74,3 +74,13 @@ type GetMeetingMinuitesProps = {
 export async function getMeetingMinuites({ where }: GetMeetingMinuitesProps) {
   return await prisma.meetingMinutes.findMany({ where });
 }
+
+type DeleteMeetingMinuiteProps = {
+  where: Prisma.MeetingMinutesWhereUniqueInput;
+};
+
+export async function deleteMeetingMinute({
+  where,
+}: DeleteMeetingMinuiteProps) {
+  return await prisma.meetingMinutes.delete({ where });
+}

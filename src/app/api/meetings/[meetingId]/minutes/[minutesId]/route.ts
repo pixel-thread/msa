@@ -2,7 +2,10 @@ import { withAssociation } from "@src/shared/api/with-association";
 import { withRole } from "@src/shared/api/with-role";
 import { SuccessResponse } from "@src/shared/utils/responses";
 import { UserRole } from "@prisma/client";
-import { updateMeetingMinute } from "@feature/meetings/services/minutes";
+import {
+  deleteMeetingMinute,
+  updateMeetingMinute,
+} from "@feature/meetings/services/minutes";
 import { UpdateMeetingMinuteSchema } from "@feature/meetings/validators/minutes";
 import { z } from "zod";
 
@@ -27,6 +30,26 @@ export const PATCH = withAssociation(
     return SuccessResponse({
       data: minute,
       message: "Meeting minute updated successfully",
+    });
+  },
+);
+
+export const DELETE = withAssociation(
+  { params: ParamsSchema },
+  async (_association, { params }, request) => {
+    // Check for administrative roles (Secretary and above)
+    await withRole(request, UserRole.SECRETARY);
+
+    const deletedMinute = await deleteMeetingMinute({
+      where: {
+        id: params!.minutesId,
+        meetingId: params!.meetingId,
+      },
+    });
+
+    return SuccessResponse({
+      data: deletedMinute,
+      message: "Meeting minute deleted successfully",
     });
   },
 );

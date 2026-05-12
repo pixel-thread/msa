@@ -14,9 +14,7 @@ const ParamsSchema = z.object({
 });
 
 export const GET = withAssociation(
-  {
-    params: ParamsSchema,
-  },
+  { params: ParamsSchema },
   async (_association, { params }, req) => {
     await withRole(req, UserRole.MEMBER);
 
@@ -24,7 +22,10 @@ export const GET = withAssociation(
       where: { meetingId: params?.meetingId },
     });
 
-    return SuccessResponse({ data: minuites });
+    return SuccessResponse({
+      data: minuites,
+      message: "Meeting minuites fetch successfully",
+    });
   },
 );
 
