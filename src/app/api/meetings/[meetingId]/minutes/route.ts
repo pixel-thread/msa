@@ -6,8 +6,8 @@ import { createMeetingMinute } from "@feature/meetings/services/minutes";
 import { CreateMeetingMinuteSchema } from "@feature/meetings/validators/minutes";
 import { z } from "zod";
 
-const ParamsSchema = z.object({ 
-  meetingId: z.string().uuid("Invalid meeting ID") 
+const ParamsSchema = z.object({
+  meetingId: z.uuid("Invalid meeting ID"),
 });
 
 export const POST = withAssociation(
@@ -15,16 +15,16 @@ export const POST = withAssociation(
   async (association, { params, body }, request) => {
     // Check for administrative roles (Secretary and above)
     await withRole(request, UserRole.SECRETARY);
-    
+
     const minute = await createMeetingMinute({
       meetingId: params!.meetingId,
       associationId: association.id,
-      data: body!
+      data: body!,
     });
 
-    return SuccessResponse({ 
+    return SuccessResponse({
       data: minute,
-      message: "Meeting minute recorded successfully"
+      message: "Meeting minute recorded successfully",
     });
-  }
+  },
 );
