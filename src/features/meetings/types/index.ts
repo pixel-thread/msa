@@ -51,7 +51,3 @@ export const HIGH_ROLE_USERS = [
 ] as const;
 
 export type HighRoleUser = (typeof HIGH_ROLE_USERS)[number];
-
-export function isHighRoleUser(role: string): role is HighRoleUser {
-  return HIGH_ROLE_USERS.includes(role as HighRoleUser);
-}
