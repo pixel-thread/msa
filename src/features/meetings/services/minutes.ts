@@ -66,3 +66,11 @@ export async function updateMeetingMinute({
     },
   });
 }
+
+type GetMeetingMinuitesProps = {
+  where: Prisma.MeetingMinutesWhereInput;
+};
+
+export async function getMeetingMinuites({ where }: GetMeetingMinuitesProps) {
+  return await prisma.meetingMinutes.findMany({ where });
+}

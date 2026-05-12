@@ -263,6 +263,18 @@ DELETE {{NEXT_PUBLIC_API_BASE_URL}}/meetings/{{meetingId}}/rsvp
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
+### ----------------- MEETING MINUITES ------------------
+###
+# @name Remove attendee
+POST {{NEXT_PUBLIC_API_BASE_URL}}/meetings/{{meetingId}}/minutes
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{ 
+
+  "title":"123"
+}
+
 ### ----------------- SUBSCRIPTIONS & PAYMENTS ------------------
 
 ###
