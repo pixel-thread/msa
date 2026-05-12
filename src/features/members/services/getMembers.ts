@@ -34,3 +34,4 @@ export async function getMemberCount(associationId: string) {
 
   return { total, active };
 }
+

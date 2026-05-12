@@ -24,7 +24,7 @@ export const VerifyPaymentSchema = z.object({
 // ---------------------------------------------------------------------------
 
 export const RecordManualPaymentSchema = z.object({
-  userId: z.string().uuid(),
+  userId: z.uuid(),
   amount: z.number().positive("Amount must be positive"),
   method: z.enum(["CASH", "BANK_TRANSFER", "UPI", "CHEQUE"]),
   notes: z.string().optional(),
@@ -46,7 +46,7 @@ export const GenerateContributionsSchema = z.object({
 // ---------------------------------------------------------------------------
 
 export const WaiveContributionSchema = z.object({
-  contributionPeriodId: z.string().uuid(),
+  contributionPeriodId: z.uuid(),
   reason: z.string().min(1, "Waiver reason is required"),
 });
 
@@ -68,7 +68,7 @@ export const PaymentHistoryQuerySchema = z.object({
 });
 
 export const ContributionReportQuerySchema = z.object({
-  userId: z.string().uuid(),
+  userId: z.uuid(),
   fromYear: z
     .string()
     .transform((v) => parseInt(v, 10))
