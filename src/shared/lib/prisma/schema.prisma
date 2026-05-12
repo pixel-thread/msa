@@ -34,6 +34,7 @@ enum UserStatus {
   INACTIVE
   SUSPENDED
   ANONYMIZED
+  PENDING
   @@map("user_status")
 }
 
@@ -217,7 +218,7 @@ model User {
   name                 String
   mobile               String?                        // Encrypted (AES-256-GCM)
   designation          String?                        // Encrypted (AES-256-GCM)
-  role                 UserRole      @default(MEMBER)
+  role                 UserRole[]     
   status               UserStatus    @default(INACTIVE)
   dateOfJoiningGovt    DateTime?
   dateOfJoiningMfsa    DateTime?

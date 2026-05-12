@@ -24,7 +24,13 @@ export async function withRole(req: NextRequest, role: UserRole) {
 
   if (!user) throw new UnauthorizedError("Unauthorized");
 
-  const hasPermission = ROLE_HIERARCHY[user.role] <= ROLE_HIERARCHY[role];
+  const highestUserRole = user.role.reduce((highest, current) => {
+    return ROLE_HIERARCHY[current] < ROLE_HIERARCHY[highest]
+      ? current
+      : highest;
+  });
+
+  const hasPermission = ROLE_HIERARCHY[highestUserRole] <= ROLE_HIERARCHY[role];
 
   if (!hasPermission) throw new ForbiddenError("Permission denied");
 
