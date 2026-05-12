@@ -1,8 +1,8 @@
 @associationsId=4364ffdc-eb65-45b7-8205-8d121cbb522c
 @meetingId=08fba230-789f-40d8-a15b-6eeab5de24cb
 @userId=0c2396a3-0e53-4428-8b54-3fefd21941e3
-@testUserId=0c2396a3-0e53-4428-8b54-3fefd21941e3
-@test2UserId=63db7dfd-7d45-40c5-870a-a7087baf7e65
+@testUserId=9a6043b7-2b58-425a-9912-3275dd4153fe
+@test2UserId=2b93c4f4-df94-45cb-b866-fa50ce47f780
 
 
 ### ----------------- AUTH ------------------
@@ -13,8 +13,8 @@ POST {{NEXT_PUBLIC_API_BASE_URL}}/auth/sign-up
 Content-Type: application/json
 
 {
-  "email": "test2@gmail.com",
-  "password": "123Pass@",
+  "email": "test3@gmail.com",
+  "password": "{{PASSWORD}}",
   "name": "Test User",
   "associationId": "{{associationsId}}"
 }
@@ -71,7 +71,7 @@ Authorization: Bearer {{TOKEN}}
   "newPassword": "NewPassword123!"
 }
 
-# ----------------- ADMIN ------------------
+### ----------------- ADMIN ------------------
 
 ### 
 # @name Get associations
