@@ -409,7 +409,7 @@ x-razorpay-signature: REPLACE_WITH_HMAC
 
 ###
 # @name List Members
-GET {{NEXT_PUBLIC_API_BASE_URL}}/members
+GET {{NEXT_PUBLIC_API_BASE_URL}}/members?page=0
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
