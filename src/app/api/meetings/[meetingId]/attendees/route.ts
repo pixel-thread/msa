@@ -15,13 +15,7 @@ import {
   MeetingQuerySchema,
 } from "@feature/meetings/validators";
 import { z } from "zod";
-import { NextRequest } from "next/server";
-
-const HIGH_ROLE_USERS: UserRole[] = [
-  UserRole.SUPER_ADMIN,
-  UserRole.PRESIDENT,
-  UserRole.SECRETARY,
-];
+import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
 
 const MeetingParamsSchema = z.object({
   meetingId: z.string("Invalid meeting ID"),
@@ -34,17 +28,14 @@ export const GET = withAssociation(
       throw new ForbiddenError("Invalid meeting ID");
     }
 
-    const user = await withRole(
-      request,
-      UserRole.MEMBER,
-    );
+    const user = await withRole(request, UserRole.MEMBER);
 
     const meeting = await findUniqueMeeting({
       meetingId: params.meetingId,
       associationId: association.id,
     });
 
-    if (!HIGH_ROLE_USERS.includes(user.role)) {
+    if (!hasHighRoleAccess(user.role)) {
       const myAttendance = meeting.attendees.find(
         (a: { user: { id: string } }) => a.user.id === user.id,
       );
@@ -70,12 +61,9 @@ export const POST = withAssociation(
       throw new ForbiddenError("Invalid request body");
     }
 
-    const user = await withRole(
-      request,
-      UserRole.SECRETARY,
-    );
+    const user = await withRole(request, UserRole.SECRETARY);
 
-    if (!HIGH_ROLE_USERS.includes(user.role)) {
+    if (!hasHighRoleAccess(user.role)) {
       throw new ForbiddenError(
         "Only secretary, president, or super admin can assign attendees",
       );
@@ -98,16 +86,14 @@ export const PUT = withAssociation(
     if (!params) {
       throw new ForbiddenError("Invalid meeting ID");
     }
+
     if (!body) {
       throw new ForbiddenError("Invalid request body");
     }
 
-    const user = await withRole(
-      request,
-      UserRole.SECRETARY,
-    );
+    const user = await withRole(request, UserRole.SECRETARY);
 
-    if (!HIGH_ROLE_USERS.includes(user.role)) {
+    if (!hasHighRoleAccess(user.role)) {
       throw new ForbiddenError(
         "Only secretary, president, or super admin can bulk assign attendees",
       );

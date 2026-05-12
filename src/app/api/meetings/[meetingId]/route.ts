@@ -10,12 +10,7 @@ import {
 } from "@feature/meetings/services";
 import { UpdateMeetingSchema } from "@feature/meetings/validators/meetings";
 import { z } from "zod";
-
-const HIGH_ROLE_USERS: UserRole[] = [
-  UserRole.SUPER_ADMIN,
-  UserRole.PRESIDENT,
-  UserRole.SECRETARY,
-];
+import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
 
 const MeetingParamsSchema = z.object({
   meetingId: z.string("Invalid meeting ID"),
@@ -36,7 +31,7 @@ export const GET = withAssociation(
       associationId: association.id,
     });
 
-    if (!HIGH_ROLE_USERS.includes(user.role)) {
+    if (!hasHighRoleAccess(user.role)) {
       const isAttendee = meeting.attendees.some(
         (a: { user: { id: string } }) => a.user.id === userId,
       );
@@ -60,7 +55,7 @@ export const PATCH = withAssociation(
 
     const user = await withRole(request, UserRole.SECRETARY);
 
-    if (!HIGH_ROLE_USERS.includes(user.role)) {
+    if (!hasHighRoleAccess(user.role)) {
       throw new ForbiddenError(
         "Only secretary, president, or super admin can update meetings",
       );
@@ -90,7 +85,7 @@ export const DELETE = withAssociation(
 
     const user = await withRole(request, UserRole.SECRETARY);
 
-    if (!HIGH_ROLE_USERS.includes(user.role)) {
+    if (!hasHighRoleAccess(user.role)) {
       throw new ForbiddenError(
         "Only secretary, president, or super admin can delete meetings",
       );

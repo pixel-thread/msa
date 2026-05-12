@@ -8,27 +8,23 @@ import {
   CreateMeetingSchema,
   MeetingQuerySchema,
 } from "@feature/meetings/validators/meetings";
-
-const HIGH_ROLE_USERS: UserRole[] = [
-  UserRole.SUPER_ADMIN,
-  UserRole.PRESIDENT,
-  UserRole.SECRETARY,
-];
+import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
 
 export const GET = withAssociation(
   { query: MeetingQuerySchema },
   async (association, { query }, request) => {
     const user = await withRole(request, UserRole.MEMBER);
-
     if (!query) {
       throw new ForbiddenError("Invalid query parameters");
     }
 
     const userId = request.headers.get("x-user-id")!;
+
     const { page, limit, type, status } = query;
 
-    if (HIGH_ROLE_USERS.includes(user.role)) {
+    if (hasHighRoleAccess(user.role)) {
       const result = await findManyMeetings({
+        role: user.role,
         associationId: association.id,
         filters: { type, status },
         pagination: { page, limit },
@@ -41,6 +37,7 @@ export const GET = withAssociation(
     }
 
     const result = await findManyMeetings({
+      role: user.role,
       userId: userId,
       associationId: association.id,
       filters: { status: MeetingStatus.SCHEDULED },
@@ -61,7 +58,7 @@ export const POST = withAssociation(
     const userId = request.headers.get("x-user-id")!;
     const user = await withRole(request, UserRole.SECRETARY);
 
-    if (!HIGH_ROLE_USERS.includes(user.role)) {
+    if (!hasHighRoleAccess(user.role)) {
       throw new ForbiddenError(
         "Only secretary, president, or super admin can create meetings",
       );

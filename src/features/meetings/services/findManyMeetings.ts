@@ -1,9 +1,11 @@
 import { prisma } from "@lib/prisma";
-import { MeetingType, MeetingStatus, Prisma } from "@prisma/client";
+import { MeetingType, MeetingStatus, Prisma, UserRole } from "@prisma/client";
+import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
 
 interface FindManyMeetingsProps {
   associationId: string;
   userId?: string;
+  role: UserRole[];
   filters?: {
     type?: MeetingType;
     status?: MeetingStatus;
@@ -19,13 +21,22 @@ export async function findManyMeetings({
   filters,
   pagination: { page, limit },
   userId,
+  role,
 }: FindManyMeetingsProps) {
-  const where: Prisma.MeetingWhereInput = {
+  const isHighRole = hasHighRoleAccess(role);
+
+  let where: Prisma.MeetingWhereInput = {
     associationId,
     ...(filters?.type && { type: filters.type }),
     ...(filters?.status && { status: filters.status }),
-    attendees: { some: { userId: userId } },
   };
+
+  if (!isHighRole) {
+    where = {
+      ...where,
+      attendees: { some: { userId: userId } },
+    };
+  }
 
   const [meetings, total] = await Promise.all([
     prisma.meeting.findMany({

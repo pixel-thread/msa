@@ -15,19 +15,13 @@ const BodySchema = z.object({
   memberId: z.string(),
 });
 const ParamsSchema = z.object({
-  associationId: z.string().uuid(),
+  associationId: z.uuid(),
 });
-
-const ALLOWED_ROLES: UserRole[] = [UserRole.PRESIDENT, UserRole.SUPER_ADMIN];
 
 export const POST = withAssociation(
   { body: BodySchema, params: ParamsSchema },
   async (association, { body, params }, request) => {
-    const user = await withRole(request as NextRequest, UserRole.PRESIDENT);
-
-    if (!ALLOWED_ROLES.includes(user.role)) {
-      throw new ValidationError("Insufficient permissions to add members");
-    }
+    await withRole(request as NextRequest, UserRole.PRESIDENT);
 
     if (!body?.memberId) {
       throw new ValidationError("memberId is required");

@@ -6,6 +6,7 @@ const HIGH_ROLE_USERS: UserRole[] = [
   UserRole.SECRETARY,
 ];
 
-export const hasHighRoleAccess = (roles: UserRole[]): boolean => {
-  return roles.some((role) => HIGH_ROLE_USERS.includes(role));
+export const hasHighRoleAccess = (roles: UserRole | UserRole[]): boolean => {
+  const roleArray = Array.isArray(roles) ? roles : [roles];
+  return roleArray.some((role) => HIGH_ROLE_USERS.includes(role));
 };

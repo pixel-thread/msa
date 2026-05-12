@@ -6,12 +6,7 @@ import { UserRole } from "@prisma/client";
 import { updateAttendee, removeAttendee } from "@feature/meetings/services";
 import { UpdateAttendeeSchema } from "@feature/meetings";
 import { z } from "zod";
-
-const HIGH_ROLE_USERS: UserRole[] = [
-  UserRole.SUPER_ADMIN,
-  UserRole.PRESIDENT,
-  UserRole.SECRETARY,
-];
+import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
 
 const AttendeeParamsSchema = z.object({
   meetingId: z.uuid("Invalid meeting ID"),
@@ -31,7 +26,7 @@ export const PATCH = withAssociation(
     const user = await withRole(request, UserRole.MEMBER);
     const requestingUserId = request.headers.get("x-user-id")!;
 
-    const isAdmin = HIGH_ROLE_USERS.includes(user.role);
+    const isAdmin = hasHighRoleAccess(user.role);
     const isSelfUpdate = params.userId === requestingUserId;
 
     if (!isAdmin && !isSelfUpdate) {
@@ -59,7 +54,7 @@ export const DELETE = withAssociation(
 
     const user = await withRole(request, UserRole.SECRETARY);
 
-    if (!HIGH_ROLE_USERS.includes(user.role)) {
+    if (!hasHighRoleAccess(user.role)) {
       throw new ForbiddenError(
         "Only secretary, president, or super admin can remove attendees",
       );

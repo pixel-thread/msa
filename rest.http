@@ -1,8 +1,8 @@
 @associationsId=4364ffdc-eb65-45b7-8205-8d121cbb522c
-@meetingId=08fba230-789f-40d8-a15b-6eeab5de24cb
+@meetingId=84ced85f-7ca6-4116-8289-62118da9cce4
 @userId=0c2396a3-0e53-4428-8b54-3fefd21941e3
-@testUserId=9a6043b7-2b58-425a-9912-3275dd4153fe
-@test2UserId=2b93c4f4-df94-45cb-b866-fa50ce47f780
+@test3UserId=9a6043b7-2b58-425a-9912-3275dd4153fe
+@test2UserId=9a6043b7-2b58-425a-9912-3275dd4153fe
 
 
 ### ----------------- AUTH ------------------
@@ -152,7 +152,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name List meetings
-GET {{NEXT_PUBLIC_API_BASE_URL}}/meetings
+GET {{NEXT_PUBLIC_API_BASE_URL}}/meetings?page=1
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -224,7 +224,7 @@ Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "userId": "{{test2UserId}}",
+  "userId": "{{test3UserId}}",
   "attendeeRole": "OPTIONAL"
 }
 

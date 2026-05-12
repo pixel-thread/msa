@@ -6,12 +6,7 @@ import { UserRole } from "@prisma/client";
 import { updateAttendee, removeAttendee } from "@feature/meetings/services";
 import { UpdateAttendeeSchema } from "@feature/meetings/validators/attendee";
 import { z } from "zod";
-
-const HIGH_ROLE_USERS: UserRole[] = [
-  UserRole.SUPER_ADMIN,
-  UserRole.PRESIDENT,
-  UserRole.SECRETARY,
-];
+import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
 
 const AttendeeParamsSchema = z.object({
   meetingId: z.uuid("Invalid meeting ID"),
@@ -23,26 +18,25 @@ export const PATCH = withAssociation(
     if (!params) {
       throw new ForbiddenError("Invalid parameters");
     }
+
     if (!body) {
       throw new ForbiddenError("Invalid request body");
     }
 
     const user = await withRole(request, UserRole.MEMBER);
 
-    const isAdmin = HIGH_ROLE_USERS.includes(user.role);
+    const isAdmin = hasHighRoleAccess(user.role);
 
-    const userId = request.headers.get("x-user-id");
+    const isSelfUpdate = user.id === body.userId;
 
-    const isSelfUpdate = !!userId;
-
-    if (!isAdmin && !isSelfUpdate) {
+    if (!isSelfUpdate) {
       throw new ForbiddenError("You can only update your own RSVP");
     }
 
     const updated = await updateAttendee({
       meetingId: params.meetingId,
       associationId: association.id,
-      userId: userId || "",
+      userId: user.id || "",
       data: { ...body },
       isAdminUpdate: isAdmin,
     });
@@ -64,7 +58,7 @@ export const DELETE = withAssociation(
 
     const user = await withRole(request, UserRole.SECRETARY);
 
-    if (!HIGH_ROLE_USERS.includes(user.role)) {
+    if (!hasHighRoleAccess(user.role)) {
       throw new ForbiddenError(
         "Only secretary, president, or super admin can remove attendees",
       );

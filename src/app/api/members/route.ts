@@ -4,6 +4,7 @@ import { UserRole } from "@prisma/client";
 import { withRole } from "@src/shared/api/with-role";
 import { getMembers } from "@src/features/members/services/getMembers";
 import z from "zod";
+import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
 
 const QuerySchema = z.object({
   page: z.coerce.number().positive().max(100).optional().default(1).catch(1),
@@ -11,13 +12,21 @@ const QuerySchema = z.object({
 export const GET = withAssociation(
   { query: QuerySchema },
   async (association, { query }, request) => {
-    await withRole(request, UserRole.MEMBER);
+    const user = await withRole(request, UserRole.MEMBER);
     const page = query?.page;
 
-    const members = await getMembers({
-      where: { associationId: association.id, status: "ACTIVE" },
-      page,
-    });
+    let members;
+    if (!hasHighRoleAccess(user.role)) {
+      members = await getMembers({
+        where: { associationId: association.id, status: "ACTIVE" },
+        page,
+      });
+    } else {
+      members = await getMembers({
+        where: { associationId: association.id },
+        page,
+      });
+    }
 
     return SuccessResponse({
       data: members.data,
