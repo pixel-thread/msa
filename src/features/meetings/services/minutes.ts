@@ -35,7 +35,7 @@ export async function createMeetingMinute({
       ...data,
       meetingId,
       // Prisma handles Json fields directly
-      actionItems: data.actionItems as Prisma.JsonValue as any,
+      actionItems: JSON.stringify(data.actionItems) as Prisma.JsonValue as any,
     },
   });
 }
@@ -60,9 +60,7 @@ export async function updateMeetingMinute({
     where: { id: minuteId },
     data: {
       ...data,
-      actionItems: data.actionItems
-        ? (data.actionItems as Prisma.JsonValue as any)
-        : undefined,
+      actionItems: JSON.stringify(data.actionItems) as Prisma.JsonValue as any,
     },
   });
 }

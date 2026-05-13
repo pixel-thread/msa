@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { useAuthStore } from "../stores/auth";
+import { UserRole } from "@prisma/client";
 
 type PropsT = {
   children: React.ReactNode;
@@ -16,10 +17,15 @@ const pageAccessOnlyIfUnAuthenticated: string[] = [
   "/verify-email",
 ];
 
-const routeRoles = [
+const routeRoles: {
+  url: string;
+  role: UserRole[];
+  redirect: string;
+  needAuth: boolean;
+}[] = [
   {
     url: "/",
-    role: ["ADMIN", "USER", "SUPER_ADMIN", "MEMBER"],
+    role: ["MEMBER", "PRESIDENT", "SECRETARY", "SUPER_ADMIN", "DPO", "FINANCE"],
     redirect: "/",
     needAuth: true,
   },
@@ -32,7 +38,7 @@ export const Redirect = ({ children }: PropsT) => {
   const pathName = usePathname();
   const [isLoading, setIsLoading] = useState(false);
   const { user, isLoading: isAuthLoading } = useAuthStore();
-  const userRoles = useMemo(() => user?.role || [], [user]);
+  const userRoles = useMemo(() => user?.role || ["MEMBER"], [user]);
   const isAuthenticated = !!user;
 
   // Show loader during route changes or delays
@@ -71,8 +77,8 @@ export const Redirect = ({ children }: PropsT) => {
       // Step 3: Handle role-based access control
       if (isAuthenticated) {
         // Check if the user has at least one of the required roles for the current route
-        const hasRequiredRole = currentRoute.role.some(
-          (role) => userRoles === role,
+        const hasRequiredRole = currentRoute.role.some((role) =>
+          userRoles.includes(role),
         );
 
         // If the user does not have the required role(s)
