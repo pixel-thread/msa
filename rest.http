@@ -1,6 +1,6 @@
 @associationsId=4364ffdc-eb65-45b7-8205-8d121cbb522c
-@meetingId=84ced85f-7ca6-4116-8289-62118da9cce4
-@userId=0c2396a3-0e53-4428-8b54-3fefd21941e3
+@meetingId=c8441d7f-3063-425b-87e0-90f4cdbe26a1
+@userId=0d627af0-bcb4-4b11-8934-0a3f3bfc53e8
 @test3UserId=9a6043b7-2b58-425a-9912-3275dd4153fe
 @test2UserId=9a6043b7-2b58-425a-9912-3275dd4153fe
 
@@ -13,7 +13,7 @@ POST {{NEXT_PUBLIC_API_BASE_URL}}/auth/sign-up
 Content-Type: application/json
 
 {
-  "email": "test3@gmail.com",
+  "email": "test@gmail.com",
   "password": "{{PASSWORD}}",
   "name": "Test User",
   "associationId": "{{associationsId}}"
@@ -139,13 +139,14 @@ Content-Type: application/json
 
 ### 
 # @name get unique associations
-POST {{NEXT_PUBLIC_API_BASE_URL}}/admin
+POST {{NEXT_PUBLIC_API_BASE_URL}}/admin/users/role
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 { 
 
-  "title":"123"
+  "userId":"{{userId}}",
+  "role":"SUPER_ADMIN"
 }
 
 ### ----------------- MEETINGS ------------------
@@ -224,7 +225,7 @@ Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "userId": "{{test3UserId}}",
+  "userId": "{{userId}}",
   "attendeeRole": "OPTIONAL"
 }
 
@@ -270,6 +271,17 @@ Authorization: Bearer {{TOKEN}}
 GET {{NEXT_PUBLIC_API_BASE_URL}}/meetings/{{meetingId}}/minutes
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
+
+###
+# @name add meeting minuites 
+POST {{NEXT_PUBLIC_API_BASE_URL}}/meetings/{{meetingId}}/minutes
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "agendaPoint": "Meeting minutes",
+  "decision": "Approved"
+}
 
 ###
 # @name delete meeting minuites 

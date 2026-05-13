@@ -4,9 +4,11 @@ import {
   ConflictError,
   ForbiddenError,
 } from "@src/shared/errors";
-import { AttendeeRole } from "@prisma/client";
+import { $Enums, AttendeeRole } from "@prisma/client";
 import { ExpoNotificationService } from "@lib/expo";
 import { logger } from "@src/shared/logger";
+import { ExpoRoutes } from "@src/shared/constants/expo-route";
+import { createNotification } from "@src/shared/services/notification";
 
 interface AssignAttendeeProps {
   meetingId: string;
@@ -71,11 +73,29 @@ export async function assignAttendee({
     });
 
     if (tokens.length > 0) {
+      const payload = {
+        userId: userId,
+        type: "GENERAL_MESSAGE" as $Enums.NotificationType,
+        title: meeting.title,
+        body: `You have been assigned to: ${meeting.title}`,
+        route: ExpoRoutes.MEETINGS.MEETING_DETAIL(meeting.id),
+        entityId: meetingId,
+        createdAt: new Date().toISOString(),
+        meta: { id: meeting.id, type: "MEETING" },
+      };
+
+      const notification = await createNotification({
+        data: payload,
+      });
+
       await ExpoNotificationService.sendPushNotifications(
         tokens.map((t) => t.token),
         "New Meeting Assigned",
         `You have been assigned to: ${meeting.title}`,
-        { meetingId: meeting.id },
+        {
+          id: notification.id,
+          ...payload,
+        },
       );
     }
   } catch (error) {
@@ -84,4 +104,3 @@ export async function assignAttendee({
 
   return attendee;
 }
-

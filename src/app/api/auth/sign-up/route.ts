@@ -75,6 +75,7 @@ export const POST = withValidation(
         password: hashedPassword,
         name,
         associationId: targetAssociationId,
+        role: ["MEMBER"],
       },
       select: {
         id: true,

@@ -19,13 +19,15 @@ enum UserRole {
   FINANCE
   DPO
   MEMBER
+
   @@map("user_role")
 }
 
-enum Status{ 
+enum Status {
   DELETED
   ACTIVE
   INACTIVE
+
   @@map("status")
 }
 
@@ -35,6 +37,7 @@ enum UserStatus {
   SUSPENDED
   ANONYMIZED
   PENDING
+
   @@map("user_status")
 }
 
@@ -44,12 +47,14 @@ enum ConsentPurpose {
   MEETINGS
   ANALYTICS
   MARKETING
+
   @@map("consent_purpose")
 }
 
 enum ConsentStatus {
   GRANTED
   WITHDRAWN
+
   @@map("consent_status")
 }
 
@@ -58,6 +63,7 @@ enum DsarRequestType {
   CORRECTION
   DELETION
   PORTABILITY
+
   @@map("dsar_request_type")
 }
 
@@ -66,6 +72,7 @@ enum DsarStatus {
   IN_PROGRESS
   COMPLETED
   REJECTED
+
   @@map("dsar_status")
 }
 
@@ -75,6 +82,7 @@ enum PaymentMethod {
   UPI
   CHEQUE
   ONLINE
+
   @@map("payment_method")
 }
 
@@ -84,6 +92,7 @@ enum PaymentType {
   EVENT_FEE
   BANK_INTEREST
   FAMILY_CONTRIBUTION
+
   @@map("payment_type")
 }
 
@@ -93,6 +102,7 @@ enum PaymentStatus {
   FAILED
   REFUNDED
   WAIVED
+
   @@map("payment_status")
 }
 
@@ -102,12 +112,14 @@ enum ContributionStatus {
   PAID
   WAIVED
   OVERDUE
+
   @@map("contribution_status")
 }
 
 enum PaymentGateway {
   RAZORPAY
   MANUAL
+
   @@map("payment_gateway")
 }
 
@@ -115,12 +127,14 @@ enum ApprovalStatus {
   PENDING
   APPROVED
   REJECTED
+
   @@map("approval_status")
 }
 
 enum MeetingType {
   EC_MEETING
   GENERAL_MEETING
+
   @@map("meeting_type")
 }
 
@@ -129,20 +143,23 @@ enum MeetingStatus {
   NOTICE_ISSUED
   COMPLETED
   CANCELLED
+
   @@map("meeting_status")
 }
 
 enum AttendeeRole {
-  REQUIRED    // Must attend
-  OPTIONAL    // Invited; attendance is optional
-  OBSERVER    // View-only participant
+  REQUIRED // Must attend
+  OPTIONAL // Invited; attendance is optional
+  OBSERVER // View-only participant
+
   @@map("attendee_role")
 }
 
 enum RsvpStatus {
-  PENDING     // Invited, not yet responded
+  PENDING // Invited, not yet responded
   ACCEPTED
   DECLINED
+
   @@map("rsvp_status")
 }
 
@@ -170,6 +187,7 @@ enum AuditAction {
   PAYMENT_WAIVED
   WEBHOOK_RECEIVED
   REPORT_EXPORTED
+
   @@map("audit_action")
 }
 
@@ -179,7 +197,7 @@ enum AuditAction {
 
 model Association {
   id             String   @id @default(uuid())
-  slug           String   @unique            // "mfsa" | "mpsa"
+  slug           String   @unique // "mfsa" | "mpsa"
   name           String   @unique
   description    String?
   logo           String?
@@ -194,12 +212,12 @@ model Association {
   isActive       Boolean  @default(true)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-  status            Status  @default(ACTIVE)
+  status         Status   @default(ACTIVE)
 
-  users             User[]
-  subscriptionPlans SubscriptionPlan[]
-  meetings          Meeting[]
-  auditLogs         AuditLog[]
+  users               User[]
+  subscriptionPlans   SubscriptionPlan[]
+  meetings            Meeting[]
+  auditLogs           AuditLog[]
   paymentTransactions PaymentTransaction[]
 
   @@index([slug])
@@ -213,12 +231,12 @@ model Association {
 
 model User {
   id                   String        @id @default(uuid())
-  associationId        String                         // ★ Every user belongs to one association
+  associationId        String // ★ Every user belongs to one association
   email                String
   name                 String
-  mobile               String?                        // Encrypted (AES-256-GCM)
-  designation          String?                        // Encrypted (AES-256-GCM)
-  role                 UserRole[]     
+  mobile               String? // Encrypted (AES-256-GCM)
+  designation          String? // Encrypted (AES-256-GCM)
+  role                 UserRole[]
   status               UserStatus    @default(INACTIVE)
   dateOfJoiningGovt    DateTime?
   dateOfJoiningMfsa    DateTime?
@@ -236,17 +254,17 @@ model User {
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
 
-  association          Association   @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
 
-  subscription         Subscription?
-  payments             PaymentTransaction[]
-  contributionPeriods  ContributionPeriod[]
-  auditLogs            AuditLog[]            @relation("ActorLogs")
-  meetingsCreated      Meeting[]             @relation("CreatedMeetings")
-  meetingAttendances   MeetingAttendee[]     // ★ Meetings this user is assigned to
-  refreshTokens        RefreshToken[]
-  verificationCodes    VerificationCode[]
-  pushTokens           PushToken[]
+  subscription        Subscription?
+  payments            PaymentTransaction[]
+  contributionPeriods ContributionPeriod[]
+  auditLogs           AuditLog[]           @relation("ActorLogs")
+  meetingsCreated     Meeting[]            @relation("CreatedMeetings")
+  meetingAttendances  MeetingAttendee[] // ★ Meetings this user is assigned to
+  refreshTokens       RefreshToken[]
+  verificationCodes   VerificationCode[]
+  pushTokens          PushToken[]
 
   @@unique([associationId, email])
   @@unique([associationId, membershipNumber])
@@ -259,27 +277,25 @@ model User {
   @@map("users")
 }
 
-
-
 // ─────────────────────────────────────────────────────────────────────────────
 // SUBSCRIPTIONS
 // ─────────────────────────────────────────────────────────────────────────────
 
 model SubscriptionPlan {
-  id            String        @id @default(uuid())
-  associationId String                               // ★
+  id            String   @id @default(uuid())
+  associationId String // ★
   name          String
   description   String?
-  amount        Decimal       @db.Decimal(10, 2)
-  currency      String        @default("INR")
-  billingCycle  String        @default("MONTHLY")
+  amount        Decimal  @db.Decimal(10, 2)
+  currency      String   @default("INR")
+  billingCycle  String   @default("MONTHLY")
   features      Json
-  isActive      Boolean       @default(true)
-  effectiveFrom DateTime      @default(now())
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  isActive      Boolean  @default(true)
+  effectiveFrom DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  association   Association   @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  association   Association    @relation(fields: [associationId], references: [id], onDelete: Cascade)
   subscriptions Subscription[]
 
   @@unique([associationId, name])
@@ -288,54 +304,49 @@ model SubscriptionPlan {
 }
 
 model Subscription {
-  id           String           @id @default(uuid())
-  userId       String           @unique              // One active subscription per user
+  id           String    @id @default(uuid())
+  userId       String    @unique // One active subscription per user
   planId       String
-  status       String           @default("ACTIVE")
-  startDate    DateTime         @default(now())
+  status       String    @default("ACTIVE")
+  startDate    DateTime  @default(now())
   endDate      DateTime
   waivedAt     DateTime?
   waivedReason String?
   waivedBy     String?
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
-  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  plan         SubscriptionPlan @relation(fields: [planId], references: [id])
+  user User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan SubscriptionPlan @relation(fields: [planId], references: [id])
 
   @@index([status])
   @@index([endDate])
   @@map("subscriptions")
 }
 
-
-
-
-
-
 // ─────────────────────────────────────────────────────────────────────────────
 // MEETINGS & GOVERNANCE
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Meeting {
-  id             String          @id @default(uuid())
-  associationId  String                               // ★
+  id             String        @id @default(uuid())
+  associationId  String // ★
   title          String
   type           MeetingType
-  status         MeetingStatus   @default(SCHEDULED)
+  status         MeetingStatus @default(SCHEDULED)
   scheduledAt    DateTime
   venue          String?
   noticeIssuedAt DateTime?
   createdById    String
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
-  association    Association     @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  createdBy      User            @relation("CreatedMeetings", fields: [createdById], references: [id])
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  createdBy   User        @relation("CreatedMeetings", fields: [createdById], references: [id])
 
-  attendees      MeetingAttendee[]   // ★ All assigned members
-  agendaItems    AgendaItem[]
-  minutes        MeetingMinutes[]
+  attendees   MeetingAttendee[] // ★ All assigned members
+  agendaItems AgendaItem[]
+  minutes     MeetingMinutes[]
 
   @@index([associationId])
   @@index([type])
@@ -351,16 +362,16 @@ model MeetingAttendee {
   userId       String
   attendeeRole AttendeeRole @default(OPTIONAL)
   rsvpStatus   RsvpStatus   @default(PENDING)
-  rsvpNote     String?                           // Decline reason, etc.
-  rsvpAt       DateTime?                         // Timestamp of RSVP
-  notifiedAt   DateTime?                         // When meeting notice was sent to them
+  rsvpNote     String? // Decline reason, etc.
+  rsvpAt       DateTime? // Timestamp of RSVP
+  notifiedAt   DateTime? // When meeting notice was sent to them
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
-  meeting      Meeting      @relation(fields: [meetingId], references: [id], onDelete: Cascade)
-  user         User         @relation(fields: [userId],   references: [id], onDelete: Cascade)
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([meetingId, userId])    // One row per member per meeting
+  @@unique([meetingId, userId]) // One row per member per meeting
   @@index([meetingId])
   @@index([userId])
   @@index([rsvpStatus])
@@ -375,7 +386,7 @@ model AgendaItem {
   description String?
   createdAt   DateTime @default(now())
 
-  meeting     Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
 
   @@index([meetingId])
   @@map("agenda_items")
@@ -386,14 +397,13 @@ model MeetingMinutes {
   meetingId   String
   agendaPoint String
   decision    String
-  actionItems Json?    // [{ assigneeId, task, dueDate }]
+  actionItems Json? // [{ assigneeId, task, dueDate }]
   recordedAt  DateTime @default(now())
 
-  meeting     Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
   @@map("meeting_minutes")
 }
-
-
 
 // ─────────────────────────────────────────────────────────────────────────────
 // AUDIT LOG  (append-only — no updatedAt)
@@ -401,7 +411,7 @@ model MeetingMinutes {
 
 model AuditLog {
   id            String      @id @default(uuid())
-  associationId String                               // ★
+  associationId String // ★
   actorId       String?
   action        AuditAction
   resourceType  String
@@ -413,8 +423,8 @@ model AuditLog {
   traceId       String?
   createdAt     DateTime    @default(now())
 
-  association   Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  actor         User?       @relation("ActorLogs", fields: [actorId], references: [id], onDelete: SetNull)
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  actor       User?       @relation("ActorLogs", fields: [actorId], references: [id], onDelete: SetNull)
 
   @@index([associationId])
   @@index([actorId])
@@ -436,7 +446,7 @@ model RefreshToken {
   revokedAt DateTime?
   createdAt DateTime  @default(now())
 
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("refresh_tokens")
@@ -449,10 +459,10 @@ model VerificationCode {
   type      String
   expiresAt DateTime
   usedAt    DateTime?
-  attempts  Int        @default(0)
+  attempts  Int       @default(0)
   createdAt DateTime  @default(now())
 
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([expiresAt])
@@ -462,7 +472,7 @@ model VerificationCode {
 model PushToken {
   id        String   @id @default(uuid())
   token     String   @unique
-  userId    String?  
+  userId    String?
   user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -476,169 +486,195 @@ model PushToken {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model PaymentTransaction {
-  id                    String   @id @default(uuid())
+  id String @id @default(uuid())
 
-  associationId         String
-  userId                String
+  associationId String
+  userId        String
 
-  amount                Decimal  @db.Decimal(10,2)
-  currency              String   @default("INR")
+  amount   Decimal @db.Decimal(10, 2)
+  currency String  @default("INR")
 
-  gateway               PaymentGateway @default(RAZORPAY)
+  gateway PaymentGateway @default(RAZORPAY)
 
-  status                PaymentStatus @default(PENDING)
+  status PaymentStatus @default(PENDING)
 
-  method                PaymentMethod?
+  method PaymentMethod?
 
-  referenceNumber       String?
-  receiptNumber         String?
+  referenceNumber String?
+  receiptNumber   String?
 
-  notes                 String?
+  notes String?
 
   // Razorpay
-  razorpayOrderId       String? @unique
-  razorpayPaymentId     String? @unique
-  razorpaySignature     String?
-  razorpayRefundId      String?
+  razorpayOrderId   String? @unique
+  razorpayPaymentId String? @unique
+  razorpaySignature String?
+  razorpayRefundId  String?
 
-  receiptUrl            String?
-  invoiceUrl            String?
+  receiptUrl String?
+  invoiceUrl String?
 
-  paidAt                DateTime?
-  failedAt              DateTime?
+  paidAt   DateTime?
+  failedAt DateTime?
 
-  createdById           String?
-  verifiedById          String?
+  createdById  String?
+  verifiedById String?
 
-  paymentDate           DateTime @default(now())
+  paymentDate DateTime @default(now())
 
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  association           Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  user                  User @relation(fields: [userId], references: [id])
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id])
 
-  allocations           PaymentAllocation[]
-  ledgerEntries         LedgerEntry[]
+  allocations   PaymentAllocation[]
+  ledgerEntries LedgerEntry[]
 
   @@index([associationId])
   @@index([userId])
   @@index([status])
   @@index([paymentDate])
-
   @@map("payment_transactions")
 }
 
 model ContributionPeriod {
-  id                 String @id @default(uuid())
+  id String @id @default(uuid())
 
-  associationId      String
-  userId             String
+  associationId String
+  userId        String
 
-  year               Int
-  month              Int
+  year  Int
+  month Int
 
-  expectedAmount     Decimal @db.Decimal(10,2)
+  expectedAmount Decimal @db.Decimal(10, 2)
 
-  paidAmount         Decimal @default(0) @db.Decimal(10,2)
+  paidAmount Decimal @default(0) @db.Decimal(10, 2)
 
-  dueAmount          Decimal @db.Decimal(10,2)
+  dueAmount Decimal @db.Decimal(10, 2)
 
-  status             ContributionStatus @default(DUE)
+  status ContributionStatus @default(DUE)
 
-  dueDate            DateTime
+  dueDate DateTime
 
-  waivedAt           DateTime?
-  waivedReason       String?
+  waivedAt     DateTime?
+  waivedReason String?
 
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user               User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
-  allocations        PaymentAllocation[]
+  allocations PaymentAllocation[]
 
   @@unique([userId, year, month])
-
   @@index([associationId])
   @@index([userId])
   @@index([status])
-
   @@map("contribution_periods")
 }
 
 model PaymentAllocation {
-  id                    String @id @default(uuid())
+  id String @id @default(uuid())
 
-  paymentTransactionId  String
-  contributionPeriodId  String
+  paymentTransactionId String
+  contributionPeriodId String
 
-  allocatedAmount       Decimal @db.Decimal(10,2)
+  allocatedAmount Decimal @db.Decimal(10, 2)
 
-  createdAt             DateTime @default(now())
+  createdAt DateTime @default(now())
 
-  paymentTransaction    PaymentTransaction @relation(fields: [paymentTransactionId], references: [id], onDelete: Cascade)
-  contributionPeriod    ContributionPeriod @relation(fields: [contributionPeriodId], references: [id], onDelete: Cascade)
+  paymentTransaction PaymentTransaction @relation(fields: [paymentTransactionId], references: [id], onDelete: Cascade)
+  contributionPeriod ContributionPeriod @relation(fields: [contributionPeriodId], references: [id], onDelete: Cascade)
 
   @@index([paymentTransactionId])
   @@index([contributionPeriodId])
-
   @@map("payment_allocations")
 }
 
 model PaymentWebhookEvent {
-  id                String @id @default(uuid())
+  id String @id @default(uuid())
 
-  eventId           String? @unique
-  eventType         String
+  eventId   String? @unique
+  eventType String
 
-  gateway           PaymentGateway @default(RAZORPAY)
+  gateway PaymentGateway @default(RAZORPAY)
 
-  payload           Json
+  payload Json
 
-  signature         String?
+  signature String?
 
-  processed         Boolean @default(false)
+  processed Boolean @default(false)
 
-  processedAt       DateTime?
+  processedAt DateTime?
 
-  errorMessage      String?
+  errorMessage String?
 
-  createdAt         DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([eventType])
   @@index([processed])
-
   @@map("payment_webhook_events")
 }
 
 model LedgerEntry {
-  id             String @id @default(uuid())
+  id                   String         @id @default(uuid())
   paymentTransactionId String?
-  description    String
-  approvalStatus ApprovalStatus @default(PENDING)
-  createdById    String
-  approvedById   String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  description          String
+  approvalStatus       ApprovalStatus @default(PENDING)
+  createdById          String
+  approvedById         String?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
 
   paymentTransaction PaymentTransaction? @relation(fields: [paymentTransactionId], references: [id])
-  lines          LedgerLine[]
+  lines              LedgerLine[]
 
   @@index([paymentTransactionId])
   @@map("ledger_entries")
 }
 
 model LedgerLine {
-  id              String @id @default(uuid())
-  ledgerEntryId   String
-  accountId       String // ID of the chart of accounts
-  isDebit         Boolean // true for debit, false for credit
-  amount          Decimal @db.Decimal(10,2)
-  createdAt       DateTime @default(now())
+  id            String   @id @default(uuid())
+  ledgerEntryId String
+  accountId     String // ID of the chart of accounts
+  isDebit       Boolean // true for debit, false for credit
+  amount        Decimal  @db.Decimal(10, 2)
+  createdAt     DateTime @default(now())
 
-  ledgerEntry     LedgerEntry @relation(fields: [ledgerEntryId], references: [id], onDelete: Cascade)
+  ledgerEntry LedgerEntry @relation(fields: [ledgerEntryId], references: [id], onDelete: Cascade)
 
   @@index([ledgerEntryId])
   @@map("ledger_lines")
+}
+
+enum NotificationType {
+  GENERAL_MESSAGE
+  FOLLOW
+  SYSTEM
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  title     String
+  type      NotificationType
+  body      String
+  route     String
+  entityId  String
+  imageUrl  String?
+
+  isRead    Boolean          @default(false)
+  readAt    DateTime?
+
+  isRecived Boolean          @default(false)
+  recivedAt DateTime?
+
+
+  meta      Json?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@index([id])
+  @@index([userId])
 }

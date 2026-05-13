@@ -1,21 +1,33 @@
 import { Expo, ExpoPushMessage, ExpoPushTicket } from "expo-server-sdk";
 import { prisma } from "./prisma";
 import { logger } from "../logger";
+import { NotificationDataT } from "@sharedType/notification";
 
 const expo = new Expo();
 
+/**
+ * Service for sending Expo push notifications.
+ */
 export class ExpoNotificationService {
   /**
-   * Sends push notifications to a list of tokens.
-   * Handles chunking and basic error logging.
+   * Sends push notifications to a list of Expo push tokens.
+   * Validates tokens, chunks requests, and handles error responses
+   * including removing invalid tokens from the database.
+   *
+   * @param tokens - Array of Expo push tokens to send notifications to
+   * @param title - Notification title
+   * @param body - Notification body text
+   * @param data - Optional custom data payload
+   * @returns Array of ExpoPushTicket results
    */
   static async sendPushNotifications(
     tokens: string[],
     title: string,
     body: string,
-    data?: any,
+    data?: NotificationDataT,
   ) {
     const messages: ExpoPushMessage[] = [];
+
     for (const pushToken of tokens) {
       if (!Expo.isExpoPushToken(pushToken)) {
         logger.error(`Push token ${pushToken} is not a valid Expo push token`);
@@ -26,7 +38,8 @@ export class ExpoNotificationService {
         sound: "default",
         title,
         body,
-        data,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data: data as Record<string, any>,
       });
     }
 

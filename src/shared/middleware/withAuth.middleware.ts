@@ -37,7 +37,6 @@ export const withAuth: MiddlewareFn = async (request, next) => {
     }
 
     const payload = await verifyAccessToken(accessToken);
-    console.log(payload.sub);
     request.headers.set("x-user-id", payload.sub);
 
     return next(request);
