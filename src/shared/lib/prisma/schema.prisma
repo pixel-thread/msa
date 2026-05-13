@@ -11,6 +11,23 @@ datasource db {
 // ─────────────────────────────────────────────────────────────────────────────
 // ENUMS
 // ─────────────────────────────────────────────────────────────────────────────
+enum AnnouncementStatus {
+  DRAFT
+  PUBLISHED
+  SCHEDULED
+  ARCHIVED
+
+  @@map("announcement_status")
+}
+
+enum AnnouncementPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+
+  @@map("announcement_priority")
+}
 
 enum UserRole {
   SUPER_ADMIN
@@ -187,6 +204,10 @@ enum AuditAction {
   PAYMENT_WAIVED
   WEBHOOK_RECEIVED
   REPORT_EXPORTED
+  ANNOUNCEMENT_CREATE
+  ANNOUNCEMENT_PUBLISH
+  ANNOUNCEMENT_DELETE
+  ANNOUNCEMENT_READ
 
   @@map("audit_action")
 }
@@ -219,6 +240,8 @@ model Association {
   meetings            Meeting[]
   auditLogs           AuditLog[]
   paymentTransactions PaymentTransaction[]
+  announcements       Announcement[]
+  notifications        Notification[]
 
   @@index([slug])
   @@index([isActive])
@@ -256,15 +279,17 @@ model User {
 
   association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
 
-  subscription        Subscription?
-  payments            PaymentTransaction[]
-  contributionPeriods ContributionPeriod[]
-  auditLogs           AuditLog[]           @relation("ActorLogs")
-  meetingsCreated     Meeting[]            @relation("CreatedMeetings")
-  meetingAttendances  MeetingAttendee[] // ★ Meetings this user is assigned to
-  refreshTokens       RefreshToken[]
-  verificationCodes   VerificationCode[]
-  pushTokens          PushToken[]
+  subscription          Subscription?
+  payments              PaymentTransaction[]
+  contributionPeriods   ContributionPeriod[]
+  auditLogs             AuditLog[]           @relation("ActorLogs")
+  meetingsCreated       Meeting[]            @relation("CreatedMeetings")
+  meetingAttendances    MeetingAttendee[] // ★ Meetings this user is assigned to
+  refreshTokens         RefreshToken[]
+  verificationCodes     VerificationCode[]
+  pushTokens            PushToken[]
+  authoredAnnouncements Announcement[]       @relation("AuthoredAnnouncements")
+  announcementReads     AnnouncementRead[]
 
   @@unique([associationId, email])
   @@unique([associationId, membershipNumber])
@@ -655,27 +680,81 @@ enum NotificationType {
 }
 
 model Notification {
-  id        String           @id @default(uuid())
-  userId    String
-  title     String
-  type      NotificationType
-  body      String
-  route     String
-  entityId  String
-  imageUrl  String?
+  id       String           @id @default(uuid())
+  userId   String
+  title    String
+  type     NotificationType
+  body     String
+  route    String
+  entityId String
+  imageUrl String?
 
-  isRead    Boolean          @default(false)
-  readAt    DateTime?
+  isRead Boolean   @default(false)
+  readAt DateTime?
 
-  isRecived Boolean          @default(false)
+  isRecived Boolean   @default(false)
   recevidAt DateTime?
 
-
   meta      Json?
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@index([id])
+  associationId String
+  association   Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+
+  @@index([associationId])
   @@index([userId])
   @@map("notifications")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ANNOUNCEMENTS (Broadcasts)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Announcement {
+  id            String @id @default(uuid())
+  associationId String
+  authorId      String
+
+  title    String
+  summary  String? // Short snippet for push/list view
+  content  String  @db.Text // Rich text/Markdown content
+  imageUrl String?
+
+  status   AnnouncementStatus   @default(DRAFT)
+  priority AnnouncementPriority @default(NORMAL)
+
+  // Targeting
+  targetRoles UserRole[] // Empty = Everyone, or specific roles like [PRESIDENT, SECRETARY]
+  isPinned    Boolean    @default(false)
+
+  // Scheduling
+  publishedAt DateTime?
+  expiresAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  association  Association        @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  author       User               @relation("AuthoredAnnouncements", fields: [authorId], references: [id])
+  readReceipts AnnouncementRead[]
+
+  @@index([associationId, status])
+  @@index([publishedAt])
+  @@map("announcements")
+}
+
+model AnnouncementRead {
+  id             String   @id @default(uuid())
+  announcementId String
+  userId         String
+  readAt         DateTime @default(now())
+
+  announcement Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([announcementId, userId])
+  @@index([userId])
+  @@map("announcement_reads")
 }

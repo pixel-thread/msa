@@ -96,6 +96,7 @@ export async function bulkAssignAttendees({
           route: ExpoRoutes.MEETINGS.MEETING_DETAIL(meeting.id),
           entityId: meetingId,
           meta: { id: meeting.id, type: "MEETING" },
+          associationId,
         }));
 
         await prisma.notification.createMany({

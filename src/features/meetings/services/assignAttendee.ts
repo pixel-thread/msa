@@ -82,6 +82,7 @@ export async function assignAttendee({
         entityId: meetingId,
         createdAt: new Date().toISOString(),
         meta: { id: meeting.id, type: "MEETING" },
+        associationId,
       };
 
       const notification = await createNotification({
