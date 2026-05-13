@@ -350,4 +350,35 @@ export const authPaths = {
       },
     },
   },
+  "/auth/sign-in/resend": {
+    post: {
+      tags: ["Authentication"],
+      summary: "Resend MFA code during sign-in",
+      description: "Resend the 6-digit MFA verification code during the sign-in flow (60 second cooldown)",
+      security: [],
+      responses: {
+        "200": {
+          description: "Verification code sent",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  message: { type: "string" },
+                  data: {
+                    type: "object",
+                    properties: {
+                      codeSent: { type: "boolean" },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        "400": { description: "Session expired. Please sign-in again" },
+        "429": { description: "Please wait before requesting another code" },
+      },
+    },
+  },
 };

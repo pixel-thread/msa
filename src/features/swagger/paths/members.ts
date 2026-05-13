@@ -109,4 +109,163 @@ export const memberPaths = {
       },
     },
   },
+  "/members/{memberId}/role": {
+    post: {
+      tags: ["Members"],
+      summary: "Add role to member",
+      description: "Add a role to a member (PRESIDENT only)",
+      security: [{ bearerAuth: [] }],
+      parameters: [
+        {
+          name: "memberId",
+          in: "path",
+          required: true,
+          schema: { type: "string", format: "uuid" },
+          description: "ID of the member",
+        },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              required: ["role"],
+              properties: {
+                role: {
+                  type: "string",
+                  enum: ["SUPER_ADMIN", "PRESIDENT", "SECRETARY", "FINANCE", "DPO", "MEMBER"],
+                  description: "Role to add to the member",
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        "200": {
+          description: "Role added successfully",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  id: { type: "string" },
+                  role: { type: "array", items: { type: "string" } },
+                  email: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+        "404": { description: "User does not exist in the association" },
+        "409": { description: "User already has the role" },
+      },
+    },
+    put: {
+      tags: ["Members"],
+      summary: "Remove role from member",
+      description: "Remove a role from a member (PRESIDENT only)",
+      security: [{ bearerAuth: [] }],
+      parameters: [
+        {
+          name: "memberId",
+          in: "path",
+          required: true,
+          schema: { type: "string", format: "uuid" },
+          description: "ID of the member",
+        },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              required: ["role"],
+              properties: {
+                role: {
+                  type: "string",
+                  enum: ["SUPER_ADMIN", "PRESIDENT", "SECRETARY", "FINANCE", "DPO", "MEMBER"],
+                  description: "Role to remove from the member",
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        "200": {
+          description: "Role removed successfully",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  id: { type: "string" },
+                  role: { type: "array", items: { type: "string" } },
+                  email: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+        "404": { description: "User does not exist in the association" },
+        "409": { description: "User does not have the role" },
+      },
+    },
+  },
+  "/members/{memberId}/status": {
+    patch: {
+      tags: ["Members"],
+      summary: "Update member status",
+      description: "Update a member's status (PRESIDENT only)",
+      security: [{ bearerAuth: [] }],
+      parameters: [
+        {
+          name: "memberId",
+          in: "path",
+          required: true,
+          schema: { type: "string", format: "uuid" },
+          description: "ID of the member",
+        },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              required: ["status"],
+              properties: {
+                status: {
+                  type: "string",
+                  enum: ["ACTIVE", "INACTIVE", "SUSPENDED", "PENDING"],
+                  description: "New status for the member",
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        "200": {
+          description: "Status updated successfully",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  id: { type: "string" },
+                  status: { type: "string" },
+                  email: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+        "404": { description: "User does not exist in the association" },
+      },
+    },
+  },
 };
