@@ -14,12 +14,13 @@ import {
   CreateMeetingDialog,
   ManageAttendeesDialog,
 } from "@feature/meetings/components";
-import { isHighRoleUser, type Meeting } from "@feature/meetings/types";
+import { type Meeting } from "@feature/meetings/types";
 import type { AssignAttendeeInput } from "@feature/meetings/validators";
+import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
 
 export default function MeetingsPage() {
   const { user } = useAuthStore();
-  const isHighRole = user ? isHighRoleUser(user.role) : false;
+  const isHighRole = user ? hasHighRoleAccess(user.role) : false;
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [attendeesDialogOpen, setAttendeesDialogOpen] = useState(false);

@@ -3,8 +3,8 @@ import { $Enums } from "@prisma/client";
 export type NotificationType = $Enums.NotificationType;
 
 export interface NotificationDataT {
-  id: string;
-  type: NotificationType;
+  id?: string;
+  type?: NotificationType;
 
   title: string;
   body: string;
@@ -16,7 +16,7 @@ export interface NotificationDataT {
 
   image?: string;
 
-  createdAt: string;
+  createdAt?: string;
 
   meta?: Record<string, string>;
 }

@@ -25,6 +25,7 @@ export const isPrismaError = (
 
 export const normalizeUnknownError = (error: unknown): AppError => {
   const isProd = env.NODE_ENV === "production";
+
   if (error instanceof AppError) {
     return error;
   }

@@ -1,7 +1,9 @@
 import { prisma } from "@lib/prisma";
 import { NotFoundError, ForbiddenError } from "@src/shared/errors";
-import { AttendeeRole } from "@prisma/client";
+import { $Enums, AttendeeRole } from "@prisma/client";
 import { ExpoNotificationService } from "@lib/expo";
+import { ExpoRoutes } from "@src/shared/constants/expo-route";
+import { logger } from "@src/shared/logger";
 
 interface BulkAssignAttendeesProps {
   meetingId: string;
@@ -16,6 +18,7 @@ export async function bulkAssignAttendees({
   userIds,
   attendeeRole = AttendeeRole.OPTIONAL,
 }: BulkAssignAttendeesProps) {
+  // 1. Verify Meeting exists and belongs to the association
   const meeting = await prisma.meeting.findFirst({
     where: { id: meetingId, associationId },
   });
@@ -24,6 +27,7 @@ export async function bulkAssignAttendees({
     throw new NotFoundError("Meeting");
   }
 
+  // 2. Verify all provided userIds exist within this association
   const users = await prisma.user.findMany({
     where: {
       id: { in: userIds },
@@ -36,9 +40,12 @@ export async function bulkAssignAttendees({
   const notFoundIds = userIds.filter((id) => !foundUserIds.includes(id));
 
   if (notFoundIds.length > 0) {
-    throw new ForbiddenError(`Users not found in association: ${notFoundIds.join(", ")}`);
+    throw new ForbiddenError(
+      `Access Denied: Users not found in this association: ${notFoundIds.join(", ")}`,
+    );
   }
 
+  // 3. Filter out users who are already attendees to avoid unique constraint errors
   const existingAttendees = await prisma.meetingAttendee.findMany({
     where: {
       meetingId,
@@ -50,10 +57,12 @@ export async function bulkAssignAttendees({
   const existingUserIds = existingAttendees.map((a) => a.userId);
   const newUserIds = foundUserIds.filter((id) => !existingUserIds.includes(id));
 
+  // If everyone is already assigned, return early
   if (newUserIds.length === 0) {
     return { assigned: [], skipped: existingUserIds };
   }
 
+  // 4. Bulk assign new attendees
   const assigned = await prisma.meetingAttendee.createManyAndReturn({
     data: newUserIds.map((userId) => ({
       meetingId,
@@ -67,25 +76,58 @@ export async function bulkAssignAttendees({
     },
   });
 
-  // Send Push Notifications in background
-  try {
-    const tokens = await prisma.pushToken.findMany({
-      where: { userId: { in: newUserIds } },
-      select: { token: true },
-    });
+  // 5. Handle Notifications (Database Persistence + Push Delivery)
+  // We wrap this in a non-awaited block to return the response to the UI faster
+  (async () => {
+    try {
+      // Fetch tokens for newly assigned users
+      const userPushTokens = await prisma.pushToken.findMany({
+        where: { userId: { in: newUserIds } },
+        select: { token: true, userId: true },
+      });
 
-    if (tokens.length > 0) {
-      // Not awaiting here to avoid blocking bulk assignment response
-      ExpoNotificationService.sendPushNotifications(
-        tokens.map((t) => t.token),
-        "New Meeting Assigned",
-        `You have been assigned to: ${meeting.title}`,
-        { meetingId: meeting.id }
-      ).catch((e) => console.error("Failed to send bulk push notifications:", e));
+      if (newUserIds.length > 0) {
+        // A. Create Notification Records in DB (One per User)
+        const dbNotifications = newUserIds.map((userId) => ({
+          userId,
+          type: $Enums.NotificationType.GENERAL_MESSAGE,
+          title: meeting.title,
+          body: `You have been assigned to: ${meeting.title}`,
+          route: ExpoRoutes.MEETINGS.MEETING_DETAIL(meeting.id),
+          entityId: meetingId,
+          meta: { id: meeting.id, type: "MEETING" },
+        }));
+
+        await prisma.notification.createMany({
+          data: dbNotifications,
+          skipDuplicates: true,
+        });
+
+        // B. Send Push Notifications (One per Token)
+        if (userPushTokens.length > 0) {
+          const allTokens = userPushTokens.map((t) => t.token);
+
+          await ExpoNotificationService.sendPushNotifications(
+            allTokens,
+            "New Meeting Assigned",
+            `You have been assigned to: ${meeting.title}`,
+            {
+              title: "New Meeting Assigned",
+              body: `You have been assigned to: ${meeting.title}`,
+              entityId: meeting.id,
+              route: ExpoRoutes.MEETINGS.MEETING_DETAIL(meeting.id),
+            },
+          );
+        }
+      }
+    } catch (error) {
+      logger.error("Background notification processing failed", {
+        meetingId,
+        error,
+      });
     }
-  } catch (error) {
-    console.error("Failed to fetch tokens for push notifications:", error);
-  }
+  })();
 
   return { assigned, skipped: existingUserIds };
 }
+

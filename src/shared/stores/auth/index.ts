@@ -3,12 +3,13 @@
 import { create } from "zustand";
 
 import http from "@src/shared/utils/http";
+import { UserRole } from "@prisma/client";
 
 export interface AuthUser {
   id: string;
   email: string;
   name: string | null;
-  role: string;
+  role: UserRole[];
   mfaEnabled: boolean;
   associationId: string;
 }
