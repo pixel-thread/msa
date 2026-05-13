@@ -68,7 +68,7 @@ export const PUT = withAssociation(
 
     const updatedUser = await prisma.user.update({
       where: { id: params?.memberId },
-      data: { role: userRole.filter((role) => role === removeRole) },
+      data: { role: userRole.filter((role) => role !== removeRole) },
       select: { id: true, role: true, email: true },
     });
 
