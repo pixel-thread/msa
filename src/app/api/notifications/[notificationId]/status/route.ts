@@ -1,11 +1,7 @@
 import { UserRole } from "@prisma/client";
 import { withValidation } from "@src/shared/api";
 import { withRole } from "@src/shared/api/with-role";
-import {
-  ForbiddenError,
-  NotFoundError,
-  UnauthorizedError,
-} from "@src/shared/errors";
+import { NotFoundError, UnauthorizedError } from "@src/shared/errors";
 import {
   findUniqueNotification,
   updateNotificationStatus,
@@ -33,14 +29,16 @@ export const PATCH = withValidation(
       throw new NotFoundError("Notification not found.");
     }
 
+    const payload = {
+      isRead: body?.isRead,
+      isReceived: body?.isRecived,
+      readAt: body?.isRead ? new Date() : null,
+      receivedAt: body?.isRecived ? new Date() : null,
+    };
+
     const notification = await updateNotificationStatus({
       where: { id: params?.notificationId },
-      data: {
-        isRead: body?.isRead,
-        readAt: body?.readAt,
-        isRecived: body?.isRecived,
-        recivedAt: body?.recevidAt,
-      },
+      data: payload,
     });
 
     return SuccessResponse({

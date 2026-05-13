@@ -692,8 +692,8 @@ model Notification {
   isRead Boolean   @default(false)
   readAt DateTime?
 
-  isRecived Boolean   @default(false)
-  recevidAt DateTime?
+  isReceived Boolean   @default(false)
+  receivedAt DateTime?
 
   meta      Json?
   createdAt DateTime @default(now())

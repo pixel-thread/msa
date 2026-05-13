@@ -48,9 +48,9 @@ export async function assignAttendee({
     },
   });
 
-  // if (existingAttendance) {
-  //   throw new ConflictError("User is already assigned to this meeting");
-  // }
+  if (existingAttendance) {
+    throw new ConflictError("User is already assigned to this meeting");
+  }
 
   const attendee = await prisma.meetingAttendee.create({
     data: {

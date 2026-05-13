@@ -6,6 +6,10 @@ import { subscriptionPaths } from "./paths/subscription";
 import { memberPaths } from "./paths/members";
 import { authPaths } from "./paths/auth";
 import { announcementPaths } from "./paths/announcement";
+import { associationPaths } from "./paths/associations";
+import { notificationPaths } from "./paths/notifications";
+import { userPaths } from "./paths/user";
+import { paymentPaths } from "./paths/payments";
 
 export const openApiSpec = {
   openapi: "3.0.0",
@@ -44,6 +48,10 @@ export const openApiSpec = {
     ...subscriptionPaths,
     ...memberPaths,
     ...announcementPaths,
+    ...associationPaths,
+    ...notificationPaths,
+    ...userPaths,
+    ...paymentPaths,
   },
 };
 
@@ -55,3 +63,7 @@ export { adminPaths } from "./paths/admin";
 export { subscriptionPaths } from "./paths/subscription";
 export { memberPaths } from "./paths/members";
 export { announcementPaths } from "./paths/announcement";
+export { associationPaths } from "./paths/associations";
+export { notificationPaths } from "./paths/notifications";
+export { userPaths } from "./paths/user";
+export { paymentPaths } from "./paths/payments";

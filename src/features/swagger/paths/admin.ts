@@ -116,4 +116,57 @@ export const adminPaths = {
       },
     },
   },
+  "/admin/associations/{id}/member": {
+    post: {
+      tags: ["Admin"],
+      summary: "Add member to association (admin)",
+      description: "Move a user to a different association (SUPER_ADMIN only)",
+      security: [{ bearerAuth: [] }],
+      parameters: [
+        {
+          name: "id",
+          in: "path",
+          required: true,
+          schema: { type: "string", format: "uuid" },
+          description: "ID of the target association",
+        },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              required: ["user_id", "association_id"],
+              properties: {
+                user_id: { type: "string", format: "uuid", description: "ID of the user to move" },
+                association_id: { type: "string", format: "uuid", description: "ID of the target association" },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        "201": {
+          description: "User association changed successfully",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  id: { type: "string" },
+                  role: { type: "array", items: { type: "string" } },
+                  associationId: { type: "string" },
+                  email: { type: "string" },
+                  name: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+        "404": { description: "User or association not found" },
+        "409": { description: "User already under the target association" },
+      },
+    },
+  },
 };
