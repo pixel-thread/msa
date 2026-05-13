@@ -48,9 +48,9 @@ export async function assignAttendee({
     },
   });
 
-  if (existingAttendance) {
-    throw new ConflictError("User is already assigned to this meeting");
-  }
+  // if (existingAttendance) {
+  //   throw new ConflictError("User is already assigned to this meeting");
+  // }
 
   const attendee = await prisma.meetingAttendee.create({
     data: {
@@ -89,7 +89,7 @@ export async function assignAttendee({
         data: payload,
       });
 
-      await ExpoNotificationService.sendPushNotifications(
+      const results = await ExpoNotificationService.sendPushNotifications(
         tokens.map((t) => t.token),
         "New Meeting Assigned",
         `You have been assigned to: ${meeting.title}`,
@@ -98,6 +98,7 @@ export async function assignAttendee({
           ...payload,
         },
       );
+      logger.debug("Push notification results:", { results });
     }
   } catch (error) {
     logger.error("Failed to send push notification:", { error });

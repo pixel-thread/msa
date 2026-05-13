@@ -1,7 +1,11 @@
 import { UserRole } from "@prisma/client";
 import { withValidation } from "@src/shared/api";
 import { withRole } from "@src/shared/api/with-role";
-import { ForbiddenError, NotFoundError } from "@src/shared/errors";
+import {
+  ForbiddenError,
+  NotFoundError,
+  UnauthorizedError,
+} from "@src/shared/errors";
 import {
   findUniqueNotification,
   updateNotificationStatus,
@@ -19,24 +23,23 @@ export const PATCH = withValidation(
     await withRole(req, UserRole.MEMBER);
 
     const userId = req.headers.get("x-user-id");
-
-    if (userId !== body?.userId) {
-      throw new ForbiddenError("Cannot update other user notificaiton");
-    }
+    if (!userId) throw new UnauthorizedError("Unauthorized");
 
     const isNotificaitonExist = await findUniqueNotification({
-      where: { id: params?.notificationId },
+      where: { id: params?.notificationId, userId },
     });
+
     if (!isNotificaitonExist) {
       throw new NotFoundError("Notification not found.");
     }
+
     const notification = await updateNotificationStatus({
       where: { id: params?.notificationId },
       data: {
-        isRead: body.isRead,
-        readAt: body.readAt,
-        isRecived: body.isRecived,
-        recivedAt: body.recevidAt,
+        isRead: body?.isRead,
+        readAt: body?.readAt,
+        isRecived: body?.isRecived,
+        recivedAt: body?.recevidAt,
       },
     });
 

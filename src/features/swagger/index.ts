@@ -5,6 +5,7 @@ import { adminPaths } from "./paths/admin";
 import { subscriptionPaths } from "./paths/subscription";
 import { memberPaths } from "./paths/members";
 import { authPaths } from "./paths/auth";
+import { announcementPaths } from "./paths/announcement";
 
 export const openApiSpec = {
   openapi: "3.0.0",
@@ -42,6 +43,7 @@ export const openApiSpec = {
     ...adminPaths,
     ...subscriptionPaths,
     ...memberPaths,
+    ...announcementPaths,
   },
 };
 
@@ -52,3 +54,4 @@ export { attendeePaths } from "./paths/attendee";
 export { adminPaths } from "./paths/admin";
 export { subscriptionPaths } from "./paths/subscription";
 export { memberPaths } from "./paths/members";
+export { announcementPaths } from "./paths/announcement";

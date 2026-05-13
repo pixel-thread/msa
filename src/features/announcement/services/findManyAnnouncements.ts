@@ -1,0 +1,69 @@
+import { prisma } from "@lib/prisma";
+import { AnnouncementStatus, AnnouncementPriority } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+
+interface FindManyAnnouncementsProps {
+  associationId: string;
+  filters?: {
+    status?: AnnouncementStatus;
+    priority?: AnnouncementPriority;
+    search?: string;
+  };
+  pagination?: {
+    page?: number;
+    limit?: number;
+  };
+}
+
+export async function findManyAnnouncements({
+  associationId,
+  filters,
+  pagination = { page: 1, limit: 10 },
+}: FindManyAnnouncementsProps) {
+  const { page = 1, limit = 10 } = pagination;
+  const skip = (page - 1) * limit;
+
+  const where: Prisma.AnnouncementWhereInput = {
+    associationId,
+    ...(filters?.status && { status: filters.status }),
+    ...(filters?.priority && { priority: filters.priority }),
+    ...(filters?.search && {
+      OR: [
+        { title: { contains: filters.search, mode: "insensitive" } },
+        { summary: { contains: filters.search, mode: "insensitive" } },
+      ],
+    }),
+  };
+
+  const [announcements, total] = await Promise.all([
+    prisma.announcement.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: [
+        { isPinned: "desc" },
+        { publishedAt: "desc" },
+        { createdAt: "desc" },
+      ],
+      include: {
+        author: {
+          select: { id: true, name: true, imageUrl: true },
+        },
+        _count: {
+          select: { readReceipts: true },
+        },
+      },
+    }),
+    prisma.announcement.count({ where }),
+  ]);
+
+  return {
+    announcements,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+}

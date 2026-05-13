@@ -3,4 +3,8 @@ export const ExpoRoutes = {
     MEETING_DETAIL: (id: string) => `/meetings/${id}`,
     MEETING: "/meetings",
   },
+  ANNOUNCEMENTS: {
+    DETAIL: (id: string) => `/announcements/${id}`,
+    LIST: "/announcements",
+  },
 };

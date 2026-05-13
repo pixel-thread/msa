@@ -2,7 +2,7 @@
 @meetingId=c8441d7f-3063-425b-87e0-90f4cdbe26a1
 @userId=0d627af0-bcb4-4b11-8934-0a3f3bfc53e8
 @test3UserId=9a6043b7-2b58-425a-9912-3275dd4153fe
-@test2UserId=9a6043b7-2b58-425a-9912-3275dd4153fe
+@test2UserId=0d627af0-bcb4-4b11-8934-0a3f3bfc53e8
 
 
 ### ----------------- AUTH ------------------
@@ -225,7 +225,7 @@ Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "userId": "{{userId}}",
+  "userId": "{{test2UserId}}",
   "attendeeRole": "OPTIONAL"
 }
 
@@ -507,3 +507,125 @@ Authorization: Bearer {{TOKEN}}
 # @name Health Check
 GET {{NEXT_PUBLIC_API_BASE_URL}}/health
 Content-Type: application/json
+
+### ----------------- ANNOUNCEMENTS ------------------
+
+###
+# @name List Announcements
+GET {{NEXT_PUBLIC_API_BASE_URL}}/announcements?page=1&limit=10
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name List Announcements with filters
+GET {{NEXT_PUBLIC_API_BASE_URL}}/announcements?status=PUBLISHED&priority=HIGH&page=1&limit=10
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Search Announcements
+GET {{NEXT_PUBLIC_API_BASE_URL}}/announcements?search=important&page=1
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Create Announcement (Draft)
+POST {{NEXT_PUBLIC_API_BASE_URL}}/announcements
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "title": "Important Update on Membership",
+  "summary": "New membership benefits starting next month",
+  "content": "We are excited to announce new benefits for all members...",
+  "status": "DRAFT",
+  "priority": "NORMAL",
+  "isPinned": false
+}
+
+###
+# @name Create and Publish Announcement
+POST {{NEXT_PUBLIC_API_BASE_URL}}/announcements
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "title": "Emergency Meeting Notice",
+  "summary": "Urgent: All members please note",
+  "content": "There will be an emergency meeting on June 20th...",
+  "status": "PUBLISHED",
+  "priority": "URGENT",
+  "targetRoles": ["PRESIDENT", "SECRETARY", "FINANCE"],
+  "isPinned": true
+}
+
+###
+# @name Create Scheduled Announcement
+POST {{NEXT_PUBLIC_API_BASE_URL}}/announcements
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "title": "Upcoming Annual General Meeting",
+  "summary": "AGM scheduled for July 15th",
+  "content": "The Annual General Meeting will be held on July 15th at 10:00 AM...",
+  "status": "SCHEDULED",
+  "priority": "HIGH",
+  "publishedAt": "2026-06-01T00:00:00Z",
+  "targetRoles": []
+}
+
+###
+# @name Get Announcement by ID
+GET {{NEXT_PUBLIC_API_BASE_URL}}/announcements/{{announcementId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Update Announcement
+PUT {{NEXT_PUBLIC_API_BASE_URL}}/announcements/{{announcementId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "title": "Updated Announcement Title",
+  "summary": "Updated summary text",
+  "priority": "HIGH",
+  "isPinned": true
+}
+
+###
+# @name Delete Announcement
+DELETE {{NEXT_PUBLIC_API_BASE_URL}}/announcements/{{announcementId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Publish Announcement
+PATCH {{NEXT_PUBLIC_API_BASE_URL}}/announcements/{{announcementId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "action": "publish"
+}
+
+###
+# @name Archive Announcement
+PATCH {{NEXT_PUBLIC_API_BASE_URL}}/announcements/{{announcementId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "action": "archive"
+}
+
+###
+# @name Unpublish Announcement
+PATCH {{NEXT_PUBLIC_API_BASE_URL}}/announcements/{{announcementId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "action": "unpublish"
+}
