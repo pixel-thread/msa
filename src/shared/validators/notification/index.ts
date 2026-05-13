@@ -10,8 +10,8 @@ export const CreateNotificationSchema = z.object({
   imageUrl: z.string().optional(),
   isRead: z.boolean().optional(),
   readAt: z.coerce.date().optional(),
-  isRecived: z.boolean().optional(),
-  recevidAt: z.coerce.date().optional(),
+  isReceived: z.boolean().optional(),
+  receivedAt: z.coerce.date().optional(),
   meta: z.json(),
 });
 

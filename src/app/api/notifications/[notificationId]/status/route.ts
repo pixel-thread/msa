@@ -31,9 +31,9 @@ export const PATCH = withValidation(
 
     const payload = {
       isRead: body?.isRead,
-      isReceived: body?.isRecived,
+      isReceived: body?.isReceived,
       readAt: body?.isRead ? new Date() : null,
-      receivedAt: body?.isRecived ? new Date() : null,
+      receivedAt: body?.isReceived ? new Date() : null,
     };
 
     const notification = await updateNotificationStatus({
