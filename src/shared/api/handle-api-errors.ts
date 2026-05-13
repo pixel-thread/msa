@@ -17,9 +17,8 @@ export function handleApiErrors<TContext>(handler: RouteHandler<TContext>) {
       return await handler(request, context);
     } catch (error) {
       const appError = normalizeUnknownError(error);
-      logger.debug("[Dev log]", { error });
       if (!(error instanceof AppError)) {
-        console.error("API ERROR", {
+        logger.error("API ERROR", {
           traceId,
           error,
         });

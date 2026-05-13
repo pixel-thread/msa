@@ -23,3 +23,13 @@ export async function updateNotificationStatus({
     data,
   });
 }
+
+type FindUniqueNotification = {
+  where: Prisma.NotificationWhereUniqueInput;
+};
+
+export async function findUniqueNotification({
+  where,
+}: FindUniqueNotification) {
+  return await prisma.notification.findUnique({ where });
+}
