@@ -668,7 +668,7 @@ model Notification {
   readAt    DateTime?
 
   isRecived Boolean          @default(false)
-  recivedAt DateTime?
+  recevidAt DateTime?
 
 
   meta      Json?
@@ -677,4 +677,5 @@ model Notification {
 
   @@index([id])
   @@index([userId])
+  @@map("notifications")
 }

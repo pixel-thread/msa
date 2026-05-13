@@ -6,5 +6,20 @@ type Props = {
 };
 
 export async function createNotification({ data }: Props) {
-  return prisma.notification.create({ data });
+  return await prisma.notification.create({ data });
+}
+
+type UpdateNotificationStatus = {
+  where: Prisma.NotificationWhereUniqueInput;
+  data: Prisma.NotificationUpdateInput;
+};
+
+export async function updateNotificationStatus({
+  data,
+  where,
+}: UpdateNotificationStatus) {
+  return await prisma.notification.update({
+    where,
+    data,
+  });
 }
