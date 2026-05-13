@@ -7,27 +7,34 @@ import { SuccessResponse } from "@src/shared/utils";
 import z from "zod";
 
 const UpdateUserRoleSchema = z.object({
-  userId: z.uuid(),
   role: z.enum(UserRole),
 });
+
+const UpdateUserRoleParamsSchema = z.object({
+  memberId: z.uuid(),
+});
+
 export const POST = withAssociation(
-  { body: UpdateUserRoleSchema },
-  async (association, { body }, req) => {
+  { body: UpdateUserRoleSchema, params: UpdateUserRoleParamsSchema },
+  async (association, { body, params }, req) => {
     await withRole(req, UserRole.PRESIDENT);
 
     const user = await prisma.user.findUnique({
-      where: { id: body?.userId, associationId: association.id },
+      where: { id: params?.memberId, associationId: association.id },
     });
 
     if (!user)
       throw new NotFoundError("User does not exist in the association");
+
     const userRole = user.role;
+
     const newRole = body?.role as UserRole;
+
     if (userRole.includes(newRole)) {
       throw new ConflictError("User already has the role");
     }
     const updatedUser = await prisma.user.update({
-      where: { id: body?.userId },
+      where: { id: params?.memberId },
       data: { role: [...userRole, newRole] },
       select: { id: true, role: true, email: true },
     });
