@@ -3,6 +3,8 @@ import { SuccessResponse } from "@utils/responses";
 import { getUserPaymentHistory } from "@feature/payments/services/payment.service";
 import { getUserContributionSummary } from "@feature/payments/services/contribution.service";
 import z from "zod";
+import { withRole } from "@src/shared/api/with-role";
+import { UserRole } from "@prisma/client";
 
 const LedgerRouteParams = z.object({
   memberId: z.uuid(),
@@ -16,6 +18,8 @@ const LedgerQueryParams = z.object({
 export const GET = withAssociation(
   { params: LedgerRouteParams, query: LedgerQueryParams },
   async (_association, { query }, request) => {
+    await withRole(request, UserRole.MEMBER);
+
     const userId = request.headers.get("x-user-id")!;
     const page = query?.page ?? 1;
     const pageSize = query?.pageSize ?? 20;
