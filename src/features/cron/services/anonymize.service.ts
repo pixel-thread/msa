@@ -49,34 +49,29 @@ export async function anonymizeExpiredUsers(
       };
     }
 
-    const anonymizedEmails = expiredUsers.map(
-      (u) => `anonymous+${u.id.slice(0, 8)}@deleted.invalid`,
-    );
+    const userIds = expiredUsers.map((u) => u.id);
 
-    await prisma.user.updateMany({
-      where: {
-        id: { in: expiredUsers.map((u) => u.id) },
-      },
-      data: {
-        name: "Anonymous User",
-        email: {
-          in: anonymizedEmails,
-        },
-        mobile: null,
-        designation: null,
-        status: UserStatus.ANONYMIZED,
-        deletedAt: now,
-      },
-    });
+    await prisma.$transaction(
+      userIds.map((userId) =>
+        prisma.user.update({
+          where: { id: userId },
+          data: {
+            name: "Anonymous User",
+            email: `anonymous+${userId.slice(0, 8)}@deleted.invalid`,
+            mobile: null,
+            designation: null,
+            status: UserStatus.ANONYMIZED,
+            deletedAt: now,
+          },
+        }),
+      ),
+    );
 
     await prisma.auditLog.create({
       data: {
         associationId,
         action: AuditAction.ANONYMIZE,
-        details: {
-          anonymizedCount: expiredUsers.length,
-          userIds: expiredUsers.map((u) => u.id),
-        },
+        resourceType: "User",
       },
     });
 
@@ -109,3 +104,4 @@ export async function runAnonymizeCron(): Promise<AnonymizeResult[]> {
 
   return results;
 }
+

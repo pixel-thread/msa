@@ -62,11 +62,12 @@ export async function expireOverdueSubscriptions(
       data: {
         associationId,
         action: AuditAction.SUBSCRIPTION_CHANGE,
-        details: {
-          action: "EXPIRE_OVERDUE",
-          expiredCount: expiredSubscriptions.length,
-          subscriptionIds: expiredSubscriptions.map((s) => s.id),
-        },
+        resourceType: "SUBSCRIPTION_OVERDUE",
+        // details: {
+        //   action: "EXPIRE_OVERDUE",
+        //   expiredCount: expiredSubscriptions.length,
+        //   subscriptionIds: expiredSubscriptions.map((s) => s.id),
+        // },
       },
     });
 
@@ -87,7 +88,9 @@ export async function expireOverdueSubscriptions(
   }
 }
 
-export async function runSubscriptionExpiryCron(): Promise<SubscriptionExpiryResult[]> {
+export async function runSubscriptionExpiryCron(): Promise<
+  SubscriptionExpiryResult[]
+> {
   const associations = await prisma.association.findMany({
     where: { isActive: true },
     select: { id: true },
@@ -99,3 +102,4 @@ export async function runSubscriptionExpiryCron(): Promise<SubscriptionExpiryRes
 
   return results;
 }
+

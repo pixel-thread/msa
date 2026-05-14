@@ -68,15 +68,16 @@ export async function checkDsarDeadlines(
       await prisma.auditLog.create({
         data: {
           associationId,
-          action: AuditAction.DSAR_SLA_ALERT,
-          details: {
-            totalOpenTickets: total,
-            breachedCount: breached,
-            atRiskCount: atRisk,
-            breachedTickets: breachedTickets.map((t) => t.ticketNumber),
-            atRiskTickets: atRiskTickets.map((t) => t.ticketNumber),
-            alertType: breached > 0 ? "BREACHED" : "AT_RISK",
-          },
+          action: AuditAction.DSAR_RESPOND,
+          resourceType: "DsarTicket",
+          // details: {
+          //   totalOpenTickets: total,
+          //   breachedCount: breached,
+          //   atRiskCount: atRisk,
+          //   breachedTickets: breachedTickets.map((t) => t.ticketNumber),
+          //   atRiskTickets: atRiskTickets.map((t) => t.ticketNumber),
+          //   alertType: breached > 0 ? "BREACHED" : "AT_RISK",
+          // },
         },
       });
     }
@@ -114,3 +115,4 @@ export async function runDsarSlaCron(): Promise<DsarSlaResult[]> {
 
   return results;
 }
+
