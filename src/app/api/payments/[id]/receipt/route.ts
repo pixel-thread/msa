@@ -29,9 +29,8 @@ export const GET = withAssociation(
       throw new NotFoundError("Transaction");
     }
     
-    const isFinance = user.role.some(r => 
-      [UserRole.FINANCE, UserRole.SECRETARY, UserRole.PRESIDENT, UserRole.SUPER_ADMIN].includes(r)
-    );
+    const adminRoles: UserRole[] = [UserRole.FINANCE, UserRole.SECRETARY, UserRole.PRESIDENT, UserRole.SUPER_ADMIN];
+    const isFinance = user.role.some(r => adminRoles.includes(r));
     
     if (!isFinance && transaction.userId !== user.id) {
       throw new ForbiddenError("You do not have permission to view this receipt");
