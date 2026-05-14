@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PaymentStatus, PaymentMethod, PaymentGateway, ContributionStatus } from "@prisma/client";
 
 // ---------------------------------------------------------------------------
 // Create Order (Razorpay)
@@ -24,9 +25,9 @@ export const VerifyPaymentSchema = z.object({
 // ---------------------------------------------------------------------------
 
 export const RecordManualPaymentSchema = z.object({
-  userId: z.uuid(),
+  userId: z.string().uuid(),
   amount: z.number().positive("Amount must be positive"),
-  method: z.enum(["CASH", "BANK_TRANSFER", "UPI", "CHEQUE"]),
+  method: z.nativeEnum(PaymentMethod),
   notes: z.string().optional(),
   receiptNumber: z.string().optional(),
   referenceNumber: z.string().optional(),
@@ -46,7 +47,7 @@ export const GenerateContributionsSchema = z.object({
 // ---------------------------------------------------------------------------
 
 export const WaiveContributionSchema = z.object({
-  contributionPeriodId: z.uuid(),
+  contributionPeriodId: z.string().uuid(),
   reason: z.string().min(1, "Waiver reason is required"),
 });
 
@@ -57,18 +58,18 @@ export const WaiveContributionSchema = z.object({
 export const PaymentHistoryQuerySchema = z.object({
   page: z
     .string()
-    .transform((v) => parseInt(v, 10))
-    .pipe(z.number().int().positive())
-    .optional(),
+    .optional()
+    .transform((v) => (v ? parseInt(v, 10) : 1))
+    .pipe(z.number().int().positive()),
   pageSize: z
     .string()
-    .transform((v) => parseInt(v, 10))
-    .pipe(z.number().int().min(1).max(100))
-    .optional(),
+    .optional()
+    .transform((v) => (v ? parseInt(v, 10) : 20))
+    .pipe(z.number().int().min(1).max(100)),
 });
 
 export const ContributionReportQuerySchema = z.object({
-  userId: z.uuid(),
+  userId: z.string().uuid(),
   fromYear: z
     .string()
     .transform((v) => parseInt(v, 10))
