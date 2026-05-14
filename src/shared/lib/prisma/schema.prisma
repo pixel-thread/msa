@@ -251,6 +251,7 @@ model Association {
   consentReceipts     ConsentReceipt[]
   trainingModules     TrainingModule[]
   complaints          Complaint[]
+  complianceChecks     ComplianceCheck[]
 
   @@index([slug])
   @@index([isActive])
@@ -908,4 +909,33 @@ model Complaint {
   @@index([userId])
   @@index([status])
   @@map("complaints")
+}
+
+enum ComplianceCheckStatus {
+  PASSED
+  FAILED
+  WARNING
+  SKIPPED
+
+  @@map("compliance_check_status")
+}
+
+model ComplianceCheck {
+  id             String               @id @default(uuid())
+  associationId  String
+  checkType      String
+  status         ComplianceCheckStatus
+  score          Int
+  message        String
+  details        Json?
+  recommendations Json?
+  checkedAt      DateTime             @default(now())
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+
+  @@index([associationId])
+  @@index([checkType])
+  @@index([status])
+  @@index([checkedAt])
+  @@map("compliance_checks")
 }

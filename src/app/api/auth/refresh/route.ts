@@ -1,5 +1,3 @@
-import { NextResponse } from "next/server";
-
 import { prisma } from "@src/shared/lib/prisma";
 import { withValidation } from "@src/shared/api";
 import {

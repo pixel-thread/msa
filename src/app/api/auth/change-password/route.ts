@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { prisma } from "@src/shared/lib/prisma";
@@ -9,6 +8,8 @@ import {
   validatePasswordStrength,
   verifyPassword,
 } from "@src/shared/lib/password";
+import { BadRequestError, ValidationError } from "@src/shared/errors";
+import { SuccessResponse } from "@src/shared/utils";
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, "Current password is required"),
@@ -26,13 +27,8 @@ export const POST = withValidation(
 
     const passwordValidation = validatePasswordStrength(newPassword);
     if (!passwordValidation.valid) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: passwordValidation.errors[0],
-          errors: passwordValidation.errors,
-        },
-        { status: 400 },
+      throw new ValidationError(
+        "Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, and one number",
       );
     }
 
@@ -42,22 +38,15 @@ export const POST = withValidation(
     });
 
     if (!user || !user.password) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Please use password reset to set a new password",
-        },
-        { status: 400 },
+      throw new BadRequestError(
+        "Please use password reset to set a new password",
       );
     }
 
     const isValid = await verifyPassword(currentPassword, user.password);
 
     if (!isValid) {
-      return NextResponse.json(
-        { success: false, message: "Current password is incorrect" },
-        { status: 401 },
-      );
+      throw new BadRequestError("Current password is incorrect");
     }
 
     const hashedPassword = await hashPassword(newPassword);
@@ -71,11 +60,10 @@ export const POST = withValidation(
       where: { userId },
     });
 
-    return NextResponse.json({
-      success: true,
+    return SuccessResponse({
+      data: null,
       message:
         "Password changed successfully. Please sign in again on other devices.",
     });
   },
 );
-

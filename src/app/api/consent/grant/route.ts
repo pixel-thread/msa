@@ -1,12 +1,13 @@
-import { NextResponse } from "next/server";
 import { withAssociation } from "@src/shared/api/with-association";
 import { requireAuth } from "@src/shared/api/auth";
 import { ConsentService, ConsentUpdateSchema } from "@src/features/consent";
 import { ConsentStatus } from "@prisma/client";
+import { SuccessResponse } from "@src/shared/utils";
+import { BadRequestError } from "@src/shared/errors";
 
 /**
  * POST /api/consent/grant
- * 
+ *
  * Grants consent for specific purposes.
  */
 export const POST = withAssociation(
@@ -15,12 +16,13 @@ export const POST = withAssociation(
   },
   async (association, { body }, request) => {
     const auth = await requireAuth();
-    
+
     if (!body) {
-      return NextResponse.json({ error: "Request body is required" }, { status: 400 });
+      throw new BadRequestError("Request body is required");
     }
 
     const ipAddress = request.headers.get("x-forwarded-for") || "unknown";
+
     const userAgent = request.headers.get("user-agent") || "unknown";
 
     const receipts = await ConsentService.updateConsent(
@@ -31,12 +33,12 @@ export const POST = withAssociation(
         action: ConsentStatus.GRANTED,
       },
       ipAddress,
-      userAgent
+      userAgent,
     );
 
-    return NextResponse.json({
+    return SuccessResponse({
       message: "Consent granted successfully",
       data: receipts,
     });
-  }
+  },
 );

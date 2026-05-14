@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { prisma } from "@src/shared/lib/prisma";
@@ -8,6 +7,8 @@ import {
   validatePasswordStrength,
   hashToken,
 } from "@src/shared/lib/password";
+import { UnauthorizedError, ValidationError } from "@src/shared/errors";
+import { SuccessResponse } from "@src/shared/utils";
 
 const resetPasswordSchema = z.object({
   token: z.string().min(1, "Token is required"),
@@ -23,13 +24,8 @@ export const POST = withValidation(
 
     const passwordValidation = validatePasswordStrength(password);
     if (!passwordValidation.valid) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: passwordValidation.errors[0],
-          errors: passwordValidation.errors,
-        },
-        { status: 400 },
+      throw new ValidationError(
+        "Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, and one number",
       );
     }
 
@@ -43,10 +39,7 @@ export const POST = withValidation(
     });
 
     if (!user) {
-      return NextResponse.json(
-        { success: false, message: "Invalid or expired reset token" },
-        { status: 400 },
-      );
+      throw new UnauthorizedError("Invalid or expired reset token");
     }
 
     const hashedPassword = await hashPassword(password);
@@ -66,11 +59,10 @@ export const POST = withValidation(
       where: { userId: user.id },
     });
 
-    return NextResponse.json({
-      success: true,
+    return SuccessResponse({
+      data: true,
       message:
         "Password reset successfully. Please sign in with your new password.",
     });
   },
 );
-
