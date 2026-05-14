@@ -12,7 +12,7 @@ export const ConsentUpdateSchema = z.object({
     .min(1, "At least one purpose is required"),
   action: z.nativeEnum(ConsentStatus),
   channel: z.enum(["web", "mobile", "email"]).default("web"),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
 });
 
 /**

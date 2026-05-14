@@ -67,7 +67,7 @@ export class ConsentService {
             channel,
             ipAddress: ipAddress || null,
             userAgent: userAgent || null,
-            metadata: metadata || {},
+            metadata: (metadata || {}) as any,
           },
         })
       )

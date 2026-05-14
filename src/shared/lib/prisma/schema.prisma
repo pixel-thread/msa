@@ -208,6 +208,9 @@ enum AuditAction {
   ANNOUNCEMENT_PUBLISH
   ANNOUNCEMENT_DELETE
   ANNOUNCEMENT_READ
+  TRAINING_MODULE_CREATE
+  TRAINING_MODULE_UPDATE
+  TRAINING_COMPLETE
 
   @@map("audit_action")
 }
@@ -243,6 +246,8 @@ model Association {
   announcements       Announcement[]
   notifications        Notification[]
   dsarTickets         DsarTicket[]
+  consentReceipts     ConsentReceipt[]
+  trainingModules     TrainingModule[]
 
   @@index([slug])
   @@index([isActive])
@@ -293,6 +298,8 @@ model User {
   announcementReads     AnnouncementRead[]
   dsarTickets           DsarTicket[]         @relation("MemberTickets")
   assignedDsarTickets   DsarTicket[]         @relation("AssignedTickets")
+  consentReceipts       ConsentReceipt[]
+  trainingCompletions   TrainingCompletion[]
 
   @@unique([associationId, email])
   @@unique([associationId, membershipNumber])
@@ -557,6 +564,27 @@ model PushToken {
   @@map("push_tokens")
 }
 
+model ConsentReceipt {
+  id            String         @id @default(uuid())
+  associationId String
+  userId        String
+  purpose       ConsentPurpose
+  status        ConsentStatus
+  ipAddress     String?
+  userAgent     String?
+  channel       String         @default("web")
+  metadata      Json?
+  createdAt     DateTime       @default(now())
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([associationId])
+  @@index([userId, purpose])
+  @@index([createdAt])
+  @@map("consent_receipts")
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // PAYMENTS & LEDGER
 // ─────────────────────────────────────────────────────────────────────────────
@@ -794,6 +822,44 @@ model Announcement {
   @@index([associationId, status])
   @@index([publishedAt])
   @@map("announcements")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TRAINING
+// ─────────────────────────────────────────────────────────────────────────────
+
+model TrainingModule {
+  id               String               @id @default(uuid())
+  associationId    String // ★
+  title            String
+  description      String?
+  content          String
+  durationMinutes  Int?
+  requiredForRoles UserRole[]           @default([MEMBER])
+  version          Int                  @default(1)
+  isActive         Boolean              @default(true)
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  association      Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  completions      TrainingCompletion[]
+
+  @@unique([associationId, title])
+  @@index([associationId])
+  @@map("training_modules")
+}
+
+model TrainingCompletion {
+  id             String         @id @default(uuid())
+  userId         String
+  moduleId       String
+  scorePercent   Decimal?       @db.Decimal(5, 2)
+  certificateUrl String?
+  completedAt    DateTime       @default(now())
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  module         TrainingModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, moduleId])
+  @@map("training_completions")
 }
 
 model AnnouncementRead {
