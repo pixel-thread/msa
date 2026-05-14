@@ -76,8 +76,8 @@ export const POST = withAssociation(
       checkTypes.map((type) => runComplianceCheck(association.id, type)),
     );
 
-    const checksData: Prisma.ComplianceCheckCreateManyArgs["data"][] = results.map(
-      (result) => ({
+    const checksData: Prisma.ComplianceCheckCreateManyArgs["data"][] =
+      results.map((result) => ({
         associationId: association.id,
         checkType: result.checkType,
         status: result.status as PrismaComplianceCheckStatus,
@@ -85,11 +85,10 @@ export const POST = withAssociation(
         message: result.message,
         details: result.details as Prisma.InputJsonValue,
         recommendations: result.recommendations as Prisma.InputJsonValue,
-      }),
-    );
+      }));
 
     const savedChecks = await prisma.complianceCheck.createMany({
-      data: checksData,
+      data: checksData as Prisma.ComplianceCheckCreateManyArgs["data"],
     });
 
     return SuccessResponse(
@@ -101,4 +100,3 @@ export const POST = withAssociation(
     );
   },
 );
-

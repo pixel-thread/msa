@@ -1,5 +1,5 @@
 import { prisma } from "@lib/prisma";
-import { NotificationType, UserRole } from "@prisma/client";
+import { NotificationType, Prisma, UserRole } from "@prisma/client";
 import { ExpoNotificationService } from "@lib/expo";
 import { logger } from "@src/shared/logger";
 import { ExpoRoutes } from "@src/shared/constants/expo-route";
@@ -7,7 +7,7 @@ import { createNotification } from "@src/shared/services/notification";
 
 export async function sendAnnouncementNotifications(
   announcementId: string,
-  associationId: string
+  associationId: string,
 ) {
   try {
     const announcement = await prisma.announcement.findUnique({
@@ -16,7 +16,7 @@ export async function sendAnnouncementNotifications(
 
     if (!announcement) return;
 
-    const whereClause: { associationId: string; status: string; role?: { hasSome: UserRole[] } } = {
+    const whereClause: Prisma.UserWhereInput = {
       associationId,
       status: "ACTIVE",
     };
@@ -60,10 +60,12 @@ export async function sendAnnouncementNotifications(
         announcement.summary ?? "New announcement posted",
         {
           id: notification.id,
-          type: "ANNOUNCEMENT",
+          title: announcement.title,
+          body: announcement.summary ?? "New announcement posted",
+          type: "GENERAL_MESSAGE",
           entityId: announcement.id,
           route: ExpoRoutes.ANNOUNCEMENTS.DETAIL(announcement.id),
-        }
+        },
       );
     });
 
@@ -72,3 +74,4 @@ export async function sendAnnouncementNotifications(
     logger.error("Failed to send announcement notifications:", { error });
   }
 }
+

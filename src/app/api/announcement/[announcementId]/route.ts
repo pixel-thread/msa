@@ -11,14 +11,21 @@ import {
 import { UpdateAnnouncementSchema } from "@feature/announcement/validators";
 import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
 import { NextRequest } from "next/server";
+import z from "zod";
 
-interface RouteParams {
-  params: Promise<{ announcementId: string }>;
-}
+const RouteParams = z.object({
+  announcementId: z.uuid(),
+});
 
 export const GET = withAssociation(
-  async (association, _body: unknown, request: NextRequest, { params }: RouteParams) => {
-    const { announcementId } = await params;
+  { params: RouteParams },
+  async (association, { params }, request) => {
+    const announcementId = params?.announcementId;
+
+    if (!announcementId) {
+      throw new ForbiddenError("Invalid announcement id");
+    }
+
     await withRole(request, UserRole.MEMBER);
 
     const announcement = await findUniqueAnnouncement({
@@ -27,24 +34,27 @@ export const GET = withAssociation(
     });
 
     return SuccessResponse({ data: announcement });
-  }
+  },
 );
 
 export const PUT = withAssociation(
-  { body: UpdateAnnouncementSchema },
-  async (association, { body }, request: NextRequest, { params }: RouteParams) => {
+  { body: UpdateAnnouncementSchema, params: RouteParams },
+  async (association, { body, params }, request: NextRequest) => {
     if (!body) {
       throw new ForbiddenError("Invalid request body");
     }
 
-    const { announcementId } = await params;
+    const announcementId = params?.announcementId;
+
+    if (!announcementId) {
+      throw new ForbiddenError("Invalid announcement id");
+    }
+
     const userId = request.headers.get("x-user-id")!;
     const user = await withRole(request, UserRole.MEMBER);
 
     if (!hasHighRoleAccess(user.role)) {
-      throw new ForbiddenError(
-        "Only high role users can update announcements"
-      );
+      throw new ForbiddenError("Only high role users can update announcements");
     }
 
     const announcement = await updateAnnouncement({
@@ -56,30 +66,33 @@ export const PUT = withAssociation(
         publishedAt: body.publishedAt
           ? new Date(body.publishedAt)
           : body.publishedAt === null
-          ? null
-          : undefined,
+            ? null
+            : undefined,
         expiresAt: body.expiresAt
           ? new Date(body.expiresAt)
           : body.expiresAt === null
-          ? null
-          : undefined,
+            ? null
+            : undefined,
       },
     });
 
     return SuccessResponse({ data: announcement });
-  }
+  },
 );
 
 export const DELETE = withAssociation(
-  async (association, _body: unknown, request: NextRequest, { params }: RouteParams) => {
-    const { announcementId } = await params;
+  { params: RouteParams },
+  async (association, { params }, request: NextRequest) => {
+    const announcementId = params?.announcementId;
+
+    if (!announcementId) {
+      throw new ForbiddenError("Invalid announcement id");
+    }
     const userId = request.headers.get("x-user-id")!;
     const user = await withRole(request, UserRole.MEMBER);
 
     if (!hasHighRoleAccess(user.role)) {
-      throw new ForbiddenError(
-        "Only high role users can delete announcements"
-      );
+      throw new ForbiddenError("Only high role users can delete announcements");
     }
 
     await deleteAnnouncement({
@@ -89,18 +102,28 @@ export const DELETE = withAssociation(
     });
 
     return SuccessResponse({ data: { success: true } });
-  }
+  },
 );
 
 export const PATCH = withAssociation(
-  async (association, _body: unknown, request: NextRequest, { params }: RouteParams) => {
-    const { announcementId } = await params;
+  { params: RouteParams },
+  async (
+    association,
+
+    { params },
+    request,
+  ) => {
+    const announcementId = params?.announcementId;
+
+    if (!announcementId) {
+      throw new ForbiddenError("Invalid announcement id");
+    }
     const userId = request.headers.get("x-user-id")!;
     const user = await withRole(request, UserRole.MEMBER);
 
     if (!hasHighRoleAccess(user.role)) {
       throw new ForbiddenError(
-        "Only high role users can publish/archive announcements"
+        "Only high role users can publish/archive announcements",
       );
     }
 
@@ -145,6 +168,9 @@ export const PATCH = withAssociation(
       return SuccessResponse({ data: announcement });
     }
 
-    throw new ForbiddenError("Invalid action. Use: publish, archive, or unpublish");
-  }
+    throw new ForbiddenError(
+      "Invalid action. Use: publish, archive, or unpublish",
+    );
+  },
 );
+

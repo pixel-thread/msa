@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { PaymentStatus, PaymentMethod, PaymentGateway, ContributionStatus } from "@prisma/client";
+import {
+  PaymentStatus,
+  PaymentMethod,
+  PaymentGateway,
+  ContributionStatus,
+} from "@prisma/client";
 
 // ---------------------------------------------------------------------------
 // Create Order (Razorpay)
@@ -110,4 +115,10 @@ export const GetTransactionsQuerySchema = z.object({
     .optional()
     .transform((v) => (v ? parseInt(v, 10) : 20))
     .pipe(z.number().int().min(1).max(100)),
+});
+
+export const CollectionReportQuerySchema = z.object({
+  year: z.coerce.number().int().min(2020).max(2100).optional(),
+  month: z.coerce.number().int().min(1).max(12).optional(),
+  status: z.enum(ContributionStatus).optional(),
 });
