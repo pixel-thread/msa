@@ -10,6 +10,7 @@ import {
 import { hashToken } from "@src/shared/lib/password";
 import { UnauthorizedError } from "@src/shared/errors";
 import z from "zod";
+import { SuccessResponse } from "@src/shared/utils";
 
 const RefreshTokenSchema = z.object({
   token: z.string().optional(),
@@ -72,9 +73,12 @@ export const POST = withValidation(
       },
     });
 
-    const response = NextResponse.json({
-      success: true,
+    const response = SuccessResponse({
       message: "Token refreshed successfully",
+      data: {
+        refreshToken: newRefreshToken,
+        accessToken: newAccessToken,
+      },
     });
 
     response.cookies.set("access_token", newAccessToken, {
@@ -96,4 +100,3 @@ export const POST = withValidation(
     return response;
   },
 );
-
