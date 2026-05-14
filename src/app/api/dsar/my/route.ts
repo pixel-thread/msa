@@ -1,0 +1,42 @@
+import { withAssociation } from "@src/shared/api/with-association";
+import { SuccessResponse } from "@src/shared/utils";
+import { findDsarTickets } from "@src/features/dsar/services";
+import { DsarQuerySchema } from "@src/features/dsar/validators";
+
+/**
+ * @api {get} /api/dsar/my List My DSAR Tickets
+ * @apiName ListMyDsars
+ * @apiGroup DSAR
+ * @apiDescription Retrieves a paginated list of DSAR tickets filed by the authenticated member.
+ * Results are strictly scoped to the current user and their association.
+ * 
+ * @apiQuery {Number} [page=1] Page number for pagination.
+ * @apiQuery {Number} [limit=10] Number of records per page.
+ * @apiQuery {String} [status] Filter by ticket status.
+ * @apiQuery {String} [requestType] Filter by request type.
+ * 
+ * @apiSuccess {Object[]} data List of DsarTicket objects.
+ * @apiSuccess {Object} meta Pagination metadata.
+ * @apiPermission MEMBER
+ */
+export const GET = withAssociation(
+  { query: DsarQuerySchema },
+  async (association, { query }, request) => {
+    const userId = request.headers.get("x-user-id")!;
+
+    const result = await findDsarTickets({
+      associationId: association.id,
+      userId,
+      filters: {
+        status: query?.status,
+        requestType: query?.requestType,
+      },
+      pagination: {
+        page: query?.page ?? 1,
+        limit: query?.limit ?? 10,
+      },
+    });
+
+    return SuccessResponse({ data: result.tickets, meta: result.pagination });
+  }
+);

@@ -242,6 +242,7 @@ model Association {
   paymentTransactions PaymentTransaction[]
   announcements       Announcement[]
   notifications        Notification[]
+  dsarTickets         DsarTicket[]
 
   @@index([slug])
   @@index([isActive])
@@ -290,6 +291,8 @@ model User {
   pushTokens            PushToken[]
   authoredAnnouncements Announcement[]       @relation("AuthoredAnnouncements")
   announcementReads     AnnouncementRead[]
+  dsarTickets           DsarTicket[]         @relation("MemberTickets")
+  assignedDsarTickets   DsarTicket[]         @relation("AssignedTickets")
 
   @@unique([associationId, email])
   @@unique([associationId, membershipNumber])
@@ -457,6 +460,54 @@ model AuditLog {
   @@index([resourceType, resourceId])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DSAR
+// ─────────────────────────────────────────────────────────────────────────────
+
+model DsarTicket {
+  id               String          @id @default(uuid())
+  associationId    String
+  ticketNumber     String          @unique
+  userId           String
+  requestType      DsarRequestType
+  requestedData    String[]
+  description      String?
+  status           DsarStatus      @default(PENDING)
+  assignedToId     String?
+  responseDeadline DateTime        @default(dbgenerated("(NOW() + INTERVAL '21 days')"))
+  rejectedReason   String?
+  completedAt      DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  member      User        @relation("MemberTickets", fields: [userId], references: [id], onDelete: Cascade)
+  assignedTo  User?       @relation("AssignedTickets", fields: [assignedToId], references: [id])
+  responses   DsarResponse[]
+
+  @@unique([associationId, ticketNumber])
+  @@index([associationId])
+  @@index([userId])
+  @@index([status])
+  @@index([responseDeadline])
+  @@map("dsar_tickets")
+}
+
+model DsarResponse {
+  id             String     @id @default(uuid())
+  dsarTicketId   String
+  responseType   String
+  storageKey     String?
+  deliveryMethod String     @default("secure_download")
+  notes          String?
+  deliveredAt    DateTime?
+  createdAt      DateTime   @default(now())
+
+  ticket DsarTicket @relation(fields: [dsarTicketId], references: [id], onDelete: Cascade)
+
+  @@map("dsar_responses")
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
