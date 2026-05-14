@@ -1,19 +1,20 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { prisma } from "@src/shared/lib/prisma";
 import { withValidation } from "@src/shared/api";
 import { requireAuth } from "@src/shared/api/auth";
 import { verifyPassword } from "@src/shared/lib/password";
+import { BadRequestError, UnauthorizedError } from "@src/shared/errors";
+import { SuccessResponse } from "@src/shared/utils";
 
-const disableMfaSchema = z.object({
+const DisableMfaSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
-type DisableMfaBody = z.infer<typeof disableMfaSchema>;
+type DisableMfaBody = z.infer<typeof DisableMfaSchema>;
 
 export const POST = withValidation(
-  { body: disableMfaSchema },
+  { body: DisableMfaSchema },
   async (_, _ctx, { body }) => {
     const { userId } = await requireAuth();
 
@@ -25,26 +26,17 @@ export const POST = withValidation(
     });
 
     if (!user || !user.mfaEnabled) {
-      return NextResponse.json(
-        { success: false, message: "MFA is not enabled" },
-        { status: 400 },
-      );
+      throw new BadRequestError("MFA is not enabled");
     }
 
     if (!user.password) {
-      return NextResponse.json(
-        { success: false, message: "Please set a password first" },
-        { status: 400 },
-      );
+      throw new BadRequestError("Please set a password first");
     }
 
     const isValid = await verifyPassword(password, user.password);
 
     if (!isValid) {
-      return NextResponse.json(
-        { success: false, message: "Invalid password" },
-        { status: 401 },
-      );
+      throw new UnauthorizedError("Invalid password");
     }
 
     await prisma.user.update({
@@ -52,13 +44,9 @@ export const POST = withValidation(
       data: { mfaEnabled: false },
     });
 
-    return NextResponse.json({
-      success: true,
+    return SuccessResponse({
       message: "MFA disabled successfully",
-      data: {
-        mfaEnabled: false,
-      },
+      data: { mfaEnabled: false },
     });
   },
 );
-

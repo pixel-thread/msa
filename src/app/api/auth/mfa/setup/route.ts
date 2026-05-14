@@ -13,15 +13,16 @@ import {
   ValidationError,
 } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
+import { logger } from "@src/shared/logger";
 
-const setupMfaSchema = z.object({
+const SetupMfaSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
-type SetupMfaBody = z.infer<typeof setupMfaSchema>;
+type SetupMfaBody = z.infer<typeof SetupMfaSchema>;
 
 export const POST = withValidation(
-  { body: setupMfaSchema },
+  { body: SetupMfaSchema },
   async (_, _ctx, { body }) => {
     const { userId } = await requireAuth();
 
@@ -47,6 +48,7 @@ export const POST = withValidation(
     }
 
     const otp = generateOTP(env.OTP_LENGTH);
+
     const hashedOTP = hashToken(otp);
 
     const otpExpiry = new Date();
@@ -66,8 +68,12 @@ export const POST = withValidation(
       select: { email: true },
     });
 
-    if (authUser) {
+    if (authUser && env.NODE_ENV === "production") {
       await sendVerificationEmail(authUser.email, otp, "SETUP_MFA");
+    }
+
+    if (authUser && env.NODE_ENV === "development") {
+      logger.debug("OTP:", { otp });
     }
 
     return SuccessResponse({
@@ -79,4 +85,3 @@ export const POST = withValidation(
     });
   },
 );
-

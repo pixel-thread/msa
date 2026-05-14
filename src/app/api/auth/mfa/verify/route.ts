@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { prisma } from "@src/shared/lib/prisma";
@@ -6,15 +5,17 @@ import { withValidation } from "@src/shared/api";
 import { requireAuth } from "@src/shared/api/auth";
 import { hashToken } from "@src/shared/lib/password";
 import { env } from "@src/env";
+import { TooManyRequestsError, UnauthorizedError } from "@src/shared/errors";
+import { SuccessResponse } from "@src/shared/utils";
 
-const verifyMfaSchema = z.object({
+const VerifyMfaSchema = z.object({
   code: z.string().length(6, "Code must be 6 digits"),
 });
 
-type VerifyMfaBody = z.infer<typeof verifyMfaSchema>;
+type VerifyMfaBody = z.infer<typeof VerifyMfaSchema>;
 
 export const POST = withValidation(
-  { body: verifyMfaSchema },
+  { body: VerifyMfaSchema },
   async (_, _ctx, { body }) => {
     const { userId } = await requireAuth();
 
@@ -33,19 +34,12 @@ export const POST = withValidation(
     });
 
     if (!verificationCode) {
-      return NextResponse.json(
-        { success: false, message: "Invalid or expired verification code" },
-        { status: 401 },
-      );
+      throw new UnauthorizedError("Invalid or expired verification code");
     }
 
     if (verificationCode.attempts >= env.OTP_MAX_ATTEMPTS) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Too many attempts. Please request a new code",
-        },
-        { status: 429 },
+      throw new TooManyRequestsError(
+        "Too many attempts. Please request a new code",
       );
     }
 
@@ -55,10 +49,7 @@ export const POST = withValidation(
         data: { attempts: { increment: 1 } },
       });
 
-      return NextResponse.json(
-        { success: false, message: "Invalid verification code" },
-        { status: 401 },
-      );
+      throw new UnauthorizedError("Invalid verification code");
     }
 
     await prisma.verificationCode.update({
@@ -71,13 +62,9 @@ export const POST = withValidation(
       data: { mfaEnabled: true },
     });
 
-    return NextResponse.json({
-      success: true,
+    return SuccessResponse({
       message: "MFA enabled successfully",
-      data: {
-        mfaEnabled: true,
-      },
+      data: { mfaEnabled: true },
     });
   },
 );
-
