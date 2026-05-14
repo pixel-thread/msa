@@ -2,23 +2,20 @@ import type { MiddlewareFn } from "./chain";
 
 import { verifyAccessToken } from "@src/shared/lib/jwt";
 import { normalizeUnknownError, UnauthorizedError } from "@src/shared/errors";
-import { AppErrorResponse } from "@utils/responses";
-import { handleUnauthorized } from "./handle-unauthorized";
 import { isApiPublicRoute, isPublicRoute } from "./route-matchers";
-import { getTraceId } from "../utils";
+import { AppErrorResponse, getTraceId } from "../utils";
 
 export const withAuth: MiddlewareFn = async (request, next) => {
   const traceId = getTraceId(request);
-
-  if (isPublicRoute(request.nextUrl.pathname)) {
-    return next(request);
-  }
-
-  if (isApiPublicRoute(request.nextUrl.pathname)) {
-    return next(request);
-  }
-
   try {
+    if (isPublicRoute(request.nextUrl.pathname)) {
+      return next(request);
+    }
+
+    if (isApiPublicRoute(request.nextUrl.pathname)) {
+      return next(request);
+    }
+
     let accessToken: string | undefined;
 
     // Check cookie first
@@ -37,17 +34,12 @@ export const withAuth: MiddlewareFn = async (request, next) => {
     }
 
     const payload = await verifyAccessToken(accessToken);
+
     request.headers.set("x-user-id", payload.sub);
 
     return next(request);
   } catch (error) {
-    const appError = normalizeUnknownError(error);
-
-    const isApi = request.nextUrl.pathname.startsWith("/api/");
-    if (isApi) {
-      return AppErrorResponse(appError, traceId);
-    }
-
-    return handleUnauthorized(request);
+    const apperror = normalizeUnknownError(error);
+    return AppErrorResponse(apperror, traceId);
   }
 };

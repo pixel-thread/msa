@@ -1,14 +1,14 @@
 import { ZodError } from "zod";
-
 import { env } from "@src/env";
 import { AppError } from "./classes/base";
-import { ValidationError } from "./classes/http-errors";
+import { UnauthorizedError, ValidationError } from "./classes/http-errors";
 import { Prisma } from "@prisma/client";
+import { JWTClaimValidationFailed, JOSEError } from "jose/errors";
 
 /**
  * Type guard to check if an error is a Prisma-specific error
  */
-export const isPrismaError = (
+const isPrismaError = (
   error: unknown,
 ): error is
   | Prisma.PrismaClientKnownRequestError
@@ -23,9 +23,18 @@ export const isPrismaError = (
   );
 };
 
+const isJwtError = (error: unknown): error is JWTClaimValidationFailed => {
+  return error instanceof JOSEError;
+};
+
 export const normalizeUnknownError = (error: unknown): AppError => {
   const isProd = env.NODE_ENV === "production";
 
+  if (isJwtError(error)) {
+    return new UnauthorizedError("Token has expired");
+  }
+
+  console.log("Here", { error });
   if (error instanceof AppError) {
     return error;
   }
