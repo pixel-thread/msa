@@ -483,7 +483,73 @@ export async function markPaymentFailed(
 }
 
 // ---------------------------------------------------------------------------
-// 7. Get Payment History
+// 7. Get All Transactions (Admin)
+// ---------------------------------------------------------------------------
+
+/**
+ * Get all transactions for an association with filtering and pagination.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function getAllTransactions(associationId: string, filters: any) {
+  const {
+    page,
+    pageSize,
+    userId,
+    status,
+    method,
+    gateway,
+    search,
+    startDate,
+    endDate,
+  } = filters;
+  const skip = (page - 1) * pageSize;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const where: any = { associationId };
+  if (userId) where.userId = userId;
+  if (status) where.status = status;
+  if (method) where.method = method;
+  if (gateway) where.gateway = gateway;
+  if (startDate || endDate) {
+    where.createdAt = {};
+    if (startDate) where.createdAt.gte = new Date(startDate);
+    if (endDate) where.createdAt.lte = new Date(endDate);
+  }
+  if (search) {
+    where.OR = [
+      { referenceNumber: { contains: search, mode: "insensitive" } },
+      { receiptNumber: { contains: search, mode: "insensitive" } },
+      { notes: { contains: search, mode: "insensitive" } },
+    ];
+  }
+
+  const [transactions, total] = await Promise.all([
+    prisma.paymentTransaction.findMany({
+      where,
+      include: {
+        user: { select: { name: true, email: true, membershipNumber: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: pageSize,
+    }),
+    prisma.paymentTransaction.count({ where }),
+  ]);
+
+  return {
+    transactions,
+    pagination: {
+      page,
+      pageSize,
+      total,
+      totalPages: Math.ceil(total / pageSize),
+      hasMore: skip + pageSize < total,
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------
+// 8. Get Payment History
 // ---------------------------------------------------------------------------
 
 export async function getUserPaymentHistory(
