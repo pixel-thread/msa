@@ -1,6 +1,12 @@
-import { chain, withAuth, withCors, withLogging } from "./shared/middleware";
+import {
+  chain,
+  withAuth,
+  withRateLimiting,
+  withCors,
+  withLogging,
+} from "./shared/middleware";
 
-export default chain([withAuth, withCors, withLogging]);
+export default chain([withRateLimiting, withAuth, withCors, withLogging]);
 
 export const config = {
   matcher: [
