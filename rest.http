@@ -629,3 +629,25 @@ Authorization: Bearer {{TOKEN}}
 {
   "action": "unpublish"
 }
+
+### ----------------- USER ------------------
+
+
+###
+# @name list user invoices 
+GET {{NEXT_PUBLIC_API_BASE_URL}}/user/invoice
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+
+###
+# @name get user invoices 
+GET {{NEXT_PUBLIC_API_BASE_URL}}/user/invoice/{{invoiceId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name get user 
+GET {{NEXT_PUBLIC_API_BASE_URL}}/user
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
