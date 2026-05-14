@@ -45,13 +45,12 @@ export const PATCH = withAssociation(
     }
 
     const { moduleId } = params;
-    const userId = request.headers.get("x-user-id")!;
     const user = await withRole(request, UserRole.DPO);
 
     const module = await updateModule({
       associationId: association.id,
       moduleId,
-      actorId: userId,
+      actorId: user.id,
       data: body,
     });
 

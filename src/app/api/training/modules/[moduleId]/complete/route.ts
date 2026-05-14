@@ -22,12 +22,11 @@ export const POST = withAssociation(
     }
 
     const { moduleId } = params;
-    const userId = request.headers.get("x-user-id")!;
-    await withRole(request, UserRole.MEMBER);
+    const user = await withRole(request, UserRole.MEMBER);
 
     const completion = await recordCompletion({
       associationId: association.id,
-      userId,
+      userId: user.id,
       moduleId,
       data: body,
     });

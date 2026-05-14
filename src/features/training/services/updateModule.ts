@@ -1,6 +1,6 @@
 import { prisma } from "@lib/prisma";
 import { UpdateTrainingModuleInput } from "../validators/training";
-import { AuditAction } from "@prisma/client";
+import { AuditAction, Prisma } from "@prisma/client";
 
 interface UpdateModuleProps {
   associationId: string;
@@ -27,8 +27,8 @@ export async function updateModule({ associationId, moduleId, actorId, data }: U
         action: AuditAction.TRAINING_MODULE_UPDATE,
         resourceType: "TrainingModule",
         resourceId: moduleId,
-        oldValues: oldModule as any,
-        newValues: updatedModule as any,
+        oldValues: oldModule as unknown as Prisma.InputJsonValue,
+        newValues: updatedModule as unknown as Prisma.InputJsonValue,
       },
     });
 

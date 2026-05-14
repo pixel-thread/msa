@@ -12,9 +12,10 @@ export const GET = withAssociation(
   async (association, _, request) => {
     const user = await withRole(request, UserRole.MEMBER);
     
-    // Admins see all, members see only active ones and those required for their role
-    const isActive = hasHighRoleAccess(user.role) ? undefined : true;
-    const role = hasHighRoleAccess(user.role) ? undefined : user.role;
+    // Admins and DPOs see all, members see only active ones and those required for their role
+    const isManager = hasHighRoleAccess(user.role) || user.role.includes(UserRole.DPO);
+    const isActive = isManager ? undefined : true;
+    const role = isManager ? undefined : user.role;
 
     const modules = await findManyModules({
       associationId: association.id,
@@ -33,12 +34,11 @@ export const POST = withAssociation(
       throw new ForbiddenError("Invalid request body");
     }
 
-    const userId = request.headers.get("x-user-id")!;
     const user = await withRole(request, UserRole.DPO); // DPO or higher
 
     const module = await createModule({
       associationId: association.id,
-      actorId: userId,
+      actorId: user.id,
       data: body,
     });
 

@@ -21,7 +21,6 @@ export const UpdateTrainingModuleSchema = z.object({
 });
 
 export const RecordCompletionSchema = z.object({
-  scorePercent: z.number().min(0).max(100).optional(),
   certificateUrl: z.string().url("Invalid certificate URL").optional(),
 });
 

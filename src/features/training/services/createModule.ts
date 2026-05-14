@@ -1,6 +1,6 @@
 import { prisma } from "@lib/prisma";
 import { CreateTrainingModuleInput } from "../validators/training";
-import { AuditAction } from "@prisma/client";
+import { AuditAction, Prisma } from "@prisma/client";
 
 interface CreateModuleProps {
   associationId: string;
@@ -24,7 +24,7 @@ export async function createModule({ associationId, actorId, data }: CreateModul
         action: AuditAction.TRAINING_MODULE_CREATE,
         resourceType: "TrainingModule",
         resourceId: module.id,
-        newValues: data as any,
+        newValues: data as Prisma.InputJsonValue,
       },
     });
 

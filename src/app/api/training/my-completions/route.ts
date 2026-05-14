@@ -6,11 +6,13 @@ import { findUserCompletions } from "@feature/training/services";
 
 export const GET = withAssociation(
   {},
-  async (_association, _, request) => {
-    await withRole(request, UserRole.MEMBER);
-    const userId = request.headers.get("x-user-id")!;
+  async (association, _, request) => {
+    const user = await withRole(request, UserRole.MEMBER);
 
-    const completions = await findUserCompletions({ userId });
+    const completions = await findUserCompletions({
+      userId: user.id,
+      associationId: association.id,
+    });
 
     return SuccessResponse({ data: completions });
   },

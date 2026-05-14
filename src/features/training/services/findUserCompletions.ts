@@ -2,11 +2,15 @@ import { prisma } from "@lib/prisma";
 
 interface FindUserCompletionsProps {
   userId: string;
+  associationId: string;
 }
 
-export async function findUserCompletions({ userId }: FindUserCompletionsProps) {
+export async function findUserCompletions({ userId, associationId }: FindUserCompletionsProps) {
   return await prisma.trainingCompletion.findMany({
-    where: { userId },
+    where: {
+      userId,
+      module: { associationId },
+    },
     include: {
       module: true,
     },
