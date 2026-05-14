@@ -12,7 +12,6 @@ import {
   createRazorpayOrder,
   verifyPaymentSignature,
 } from "./razorpay.service";
-import { getOutstandingContributions } from "./contribution.service";
 import { env } from "@src/env";
 
 // ---------------------------------------------------------------------------
@@ -28,7 +27,7 @@ export interface TransactionFilters {
   gateway?: PaymentGateway;
   search?: string;
   startDate?: string;
-  endDate?: string;
+  endDate?: string | Date;
 }
 
 export interface CreateOrderInput {
