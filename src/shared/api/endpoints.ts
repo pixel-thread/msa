@@ -34,6 +34,14 @@ export const endpoints = {
   pusher: {
     auth: `${API_BASE}/pusher/auth`,
   },
+  consent: {
+    my: `/api/consent/my`,
+    grant: `/api/consent/grant`,
+    revoke: `/api/consent/revoke`,
+    history: `/api/consent/history`,
+    all: `/api/consent/all`,
+    report: `/api/consent/report`,
+  },
   webhooks: {
     clerk: `${API_BASE}/webhooks/clerk`,
   },
