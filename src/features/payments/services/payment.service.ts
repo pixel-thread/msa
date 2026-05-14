@@ -654,7 +654,7 @@ export async function getFinancialStats(associationId: string) {
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-  const [monthTotal, dues] = await Promise.all([
+  const [monthTotal, duesSum, uniqueUsersWithDues] = await Promise.all([
     prisma.paymentTransaction.aggregate({
       where: {
         associationId,
@@ -675,13 +675,25 @@ export async function getFinancialStats(associationId: string) {
         },
       },
       _sum: { dueAmount: true },
-      _count: { userId: true },
+    }),
+    prisma.contributionPeriod.groupBy({
+      by: ["userId"],
+      where: {
+        associationId,
+        status: {
+          in: [
+            ContributionStatus.DUE,
+            ContributionStatus.PARTIAL,
+            ContributionStatus.OVERDUE,
+          ],
+        },
+      },
     }),
   ]);
 
   return {
     totalCollectedMonth: Number(monthTotal._sum.amount || 0),
-    pendingDuesAmount: Number(dues._sum.dueAmount || 0),
-    pendingDuesCount: dues._count.userId,
+    pendingDuesAmount: Number(duesSum._sum.dueAmount || 0),
+    pendingDuesCount: uniqueUsersWithDues.length,
   };
 }
