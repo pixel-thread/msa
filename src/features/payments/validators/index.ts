@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PaymentStatus, PaymentMethod, PaymentGateway, ContributionStatus } from "@prisma/client";
 
 // ---------------------------------------------------------------------------
 // Create Order (Razorpay)
@@ -24,9 +25,9 @@ export const VerifyPaymentSchema = z.object({
 // ---------------------------------------------------------------------------
 
 export const RecordManualPaymentSchema = z.object({
-  userId: z.uuid(),
+  userId: z.string().uuid(),
   amount: z.number().positive("Amount must be positive"),
-  method: z.enum(["CASH", "BANK_TRANSFER", "UPI", "CHEQUE"]),
+  method: z.nativeEnum(PaymentMethod),
   notes: z.string().optional(),
   receiptNumber: z.string().optional(),
   referenceNumber: z.string().optional(),
@@ -46,7 +47,7 @@ export const GenerateContributionsSchema = z.object({
 // ---------------------------------------------------------------------------
 
 export const WaiveContributionSchema = z.object({
-  contributionPeriodId: z.uuid(),
+  contributionPeriodId: z.string().uuid(),
   reason: z.string().min(1, "Waiver reason is required"),
 });
 
@@ -57,18 +58,18 @@ export const WaiveContributionSchema = z.object({
 export const PaymentHistoryQuerySchema = z.object({
   page: z
     .string()
-    .transform((v) => parseInt(v, 10))
-    .pipe(z.number().int().positive())
-    .optional(),
+    .optional()
+    .transform((v) => (v ? parseInt(v, 10) : 1))
+    .pipe(z.number().int().positive()),
   pageSize: z
     .string()
-    .transform((v) => parseInt(v, 10))
-    .pipe(z.number().int().min(1).max(100))
-    .optional(),
+    .optional()
+    .transform((v) => (v ? parseInt(v, 10) : 20))
+    .pipe(z.number().int().min(1).max(100)),
 });
 
 export const ContributionReportQuerySchema = z.object({
-  userId: z.uuid(),
+  userId: z.string().uuid(),
   fromYear: z
     .string()
     .transform((v) => parseInt(v, 10))
@@ -93,18 +94,32 @@ export const ContributionReportQuerySchema = z.object({
 
 export const GetTransactionsQuerySchema = z.object({
   userId: z.string().uuid().optional(),
-  status: z.enum(["PENDING", "COMPLETED", "FAILED", "REFUNDED", "WAIVED"]).optional(),
-  method: z.enum(["CASH", "BANK_TRANSFER", "UPI", "CHEQUE", "ONLINE"]).optional(),
-  gateway: z.enum(["RAZORPAY", "MANUAL"]).optional(),
+  status: z.nativeEnum(PaymentStatus).optional(),
+  method: z.nativeEnum(PaymentMethod).optional(),
+  gateway: z.nativeEnum(PaymentGateway).optional(),
   search: z.string().optional(),
-  startDate: z.string().datetime().optional(),
-  endDate: z.string().datetime().optional(),
-  page: z.string().optional().transform((v) => v ? parseInt(v, 10) : 1).pipe(z.number().int().positive()),
-  pageSize: z.string().optional().transform((v) => v ? parseInt(v, 10) : 20).pipe(z.number().int().min(1).max(100)),
+  startDate: z.string().pipe(z.coerce.date()).optional(),
+  endDate: z.string().pipe(z.coerce.date()).optional(),
+  page: z
+    .string()
+    .optional()
+    .transform((v) => (v ? parseInt(v, 10) : 1))
+    .pipe(z.number().int().positive()),
+  pageSize: z
+    .string()
+    .optional()
+    .transform((v) => (v ? parseInt(v, 10) : 20))
+    .pipe(z.number().int().min(1).max(100)),
 });
 
 export const CollectionReportQuerySchema = z.object({
-  year: z.string().transform((v) => parseInt(v, 10)).pipe(z.number().int().min(2020)),
-  month: z.string().transform((v) => parseInt(v, 10)).pipe(z.number().int().min(1).max(12)),
-  status: z.enum(["DUE", "PARTIAL", "PAID", "WAIVED", "OVERDUE"]).optional(),
+  year: z
+    .string()
+    .transform((v) => parseInt(v, 10))
+    .pipe(z.number().int().min(2020)),
+  month: z
+    .string()
+    .transform((v) => parseInt(v, 10))
+    .pipe(z.number().int().min(1).max(12)),
+  status: z.nativeEnum(ContributionStatus).optional(),
 });
