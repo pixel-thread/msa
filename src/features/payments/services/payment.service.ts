@@ -528,3 +528,125 @@ export async function getUserPaymentHistory(
     },
   };
 }
+
+// ---------------------------------------------------------------------------
+// 8. Admin Transaction Management
+// ---------------------------------------------------------------------------
+
+/**
+ * List all transactions with advanced filtering for admin dashboard.
+ */
+export async function getAllTransactions(associationId: string, filters: any) {
+  const {
+    page,
+    pageSize,
+    userId,
+    status,
+    method,
+    gateway,
+    search,
+    startDate,
+    endDate,
+  } = filters;
+  const skip = (page - 1) * pageSize;
+
+  const where: any = { associationId };
+  if (userId) where.userId = userId;
+  if (status) where.status = status;
+  if (method) where.method = method;
+  if (gateway) where.gateway = gateway;
+
+  if (startDate || endDate) {
+    where.createdAt = {};
+    if (startDate) where.createdAt.gte = new Date(startDate);
+    if (endDate) where.createdAt.lte = new Date(endDate);
+  }
+
+  if (search) {
+    where.OR = [
+      { referenceNumber: { contains: search, mode: "insensitive" } },
+      { receiptNumber: { contains: search, mode: "insensitive" } },
+      { notes: { contains: search, mode: "insensitive" } },
+    ];
+  }
+
+  const [transactions, total] = await Promise.all([
+    prisma.paymentTransaction.findMany({
+      where,
+      include: {
+        user: { select: { name: true, email: true, membershipNumber: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: pageSize,
+    }),
+    prisma.paymentTransaction.count({ where }),
+  ]);
+
+  return {
+    transactions,
+    pagination: {
+      page,
+      pageSize,
+      total,
+      totalPages: Math.ceil(total / pageSize),
+    },
+  };
+}
+
+/**
+ * Fetch a specific transaction with its full context (user, allocations, ledger).
+ */
+export async function getTransactionById(id: string, associationId: string) {
+  return prisma.paymentTransaction.findFirst({
+    where: { id, associationId },
+    include: {
+      user: { select: { name: true, email: true, membershipNumber: true } },
+      allocations: { include: { contributionPeriod: true } },
+      ledgerEntries: { include: { lines: true } },
+    },
+  });
+}
+
+// ---------------------------------------------------------------------------
+// 9. Financial Statistics
+// ---------------------------------------------------------------------------
+
+/**
+ * Get top-level financial summary for an association dashboard.
+ */
+export async function getFinancialStats(associationId: string) {
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const [monthTotal, dues] = await Promise.all([
+    prisma.paymentTransaction.aggregate({
+      where: {
+        associationId,
+        status: PaymentStatus.COMPLETED,
+        paidAt: { gte: startOfMonth },
+      },
+      _sum: { amount: true },
+    }),
+    prisma.contributionPeriod.aggregate({
+      where: {
+        associationId,
+        status: {
+          in: [
+            ContributionStatus.DUE,
+            ContributionStatus.PARTIAL,
+            ContributionStatus.OVERDUE,
+          ],
+        },
+      },
+      _sum: { dueAmount: true },
+      _count: { userId: true },
+    }),
+  ]);
+
+  return {
+    totalCollectedMonth: Number(monthTotal._sum.amount || 0),
+    pendingDuesAmount: Number(dues._sum.dueAmount || 0),
+    pendingDuesCount: dues._count.userId,
+  };
+}
