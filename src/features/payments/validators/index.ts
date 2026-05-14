@@ -86,3 +86,25 @@ export const ContributionReportQuerySchema = z.object({
     .transform((v) => parseInt(v, 10))
     .pipe(z.number().int().min(1).max(12)),
 });
+
+// ---------------------------------------------------------------------------
+// Transactions & Reports
+// ---------------------------------------------------------------------------
+
+export const GetTransactionsQuerySchema = z.object({
+  userId: z.string().uuid().optional(),
+  status: z.enum(["PENDING", "COMPLETED", "FAILED", "REFUNDED", "WAIVED"]).optional(),
+  method: z.enum(["CASH", "BANK_TRANSFER", "UPI", "CHEQUE", "ONLINE"]).optional(),
+  gateway: z.enum(["RAZORPAY", "MANUAL"]).optional(),
+  search: z.string().optional(),
+  startDate: z.string().datetime().optional(),
+  endDate: z.string().datetime().optional(),
+  page: z.string().optional().transform((v) => v ? parseInt(v, 10) : 1).pipe(z.number().int().positive()),
+  pageSize: z.string().optional().transform((v) => v ? parseInt(v, 10) : 20).pipe(z.number().int().min(1).max(100)),
+});
+
+export const CollectionReportQuerySchema = z.object({
+  year: z.string().transform((v) => parseInt(v, 10)).pipe(z.number().int().min(2020)),
+  month: z.string().transform((v) => parseInt(v, 10)).pipe(z.number().int().min(1).max(12)),
+  status: z.enum(["DUE", "PARTIAL", "PAID", "WAIVED", "OVERDUE"]).optional(),
+});
