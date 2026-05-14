@@ -1,11 +1,12 @@
 import { prisma } from "@src/shared/lib/prisma";
 import {
+  Prisma,
   PaymentStatus,
   PaymentGateway,
   ContributionStatus,
   AuditAction,
+  PaymentMethod,
 } from "@prisma/client";
-import type { PaymentMethod } from "@prisma/client";
 
 import {
   createRazorpayOrder,
@@ -17,6 +18,18 @@ import { env } from "@src/env";
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
+
+export interface TransactionFilters {
+  page?: number;
+  pageSize?: number;
+  userId?: string;
+  status?: PaymentStatus;
+  method?: PaymentMethod;
+  gateway?: PaymentGateway;
+  search?: string;
+  startDate?: string;
+  endDate?: string;
+}
 
 export interface CreateOrderInput {
   associationId: string;
@@ -342,8 +355,7 @@ export async function recordManualPayment(input: RecordManualPaymentInput) {
  *   - If remaining == 0 → stop
  */
 async function allocatePaymentToContributions(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  tx: any, // Prisma transaction client
+  tx: Prisma.TransactionClient, // Prisma transaction client
   paymentTransactionId: string,
   userId: string,
   totalAmount: number,
@@ -410,8 +422,7 @@ async function allocatePaymentToContributions(
 // ---------------------------------------------------------------------------
 
 async function createLedgerEntry(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  tx: any,
+  tx: Prisma.TransactionClient,
   paymentTransactionId: string,
   amount: number,
   description: string,
@@ -491,7 +502,9 @@ export async function getUserPaymentHistory(
   page = 1,
   pageSize = 20,
 ) {
-  const skip = (page - 1) * pageSize;
+  const validPage = Math.max(1, page);
+  const validPageSize = Math.max(1, pageSize);
+  const skip = (validPage - 1) * validPageSize;
 
   const [transactions, total] = await Promise.all([
     prisma.paymentTransaction.findMany({
@@ -512,7 +525,7 @@ export async function getUserPaymentHistory(
       },
       orderBy: { createdAt: "desc" },
       skip,
-      take: pageSize,
+      take: validPageSize,
     }),
     prisma.paymentTransaction.count({ where: { userId } }),
   ]);
@@ -520,11 +533,11 @@ export async function getUserPaymentHistory(
   return {
     transactions,
     pagination: {
-      page,
-      pageSize,
+      page: validPage,
+      pageSize: validPageSize,
       total,
-      totalPages: Math.ceil(total / pageSize),
-      hasMore: skip + pageSize < total,
+      totalPages: Math.ceil(total / validPageSize),
+      hasMore: skip + validPageSize < total,
     },
   };
 }
@@ -536,10 +549,13 @@ export async function getUserPaymentHistory(
 /**
  * List all transactions with advanced filtering for admin dashboard.
  */
-export async function getAllTransactions(associationId: string, filters: any) {
+export async function getAllTransactions(
+  associationId: string,
+  filters: TransactionFilters,
+) {
   const {
-    page,
-    pageSize,
+    page = 1,
+    pageSize = 20,
     userId,
     status,
     method,
@@ -548,18 +564,38 @@ export async function getAllTransactions(associationId: string, filters: any) {
     startDate,
     endDate,
   } = filters;
-  const skip = (page - 1) * pageSize;
 
-  const where: any = { associationId };
+  const validPage = Math.max(1, page);
+  const validPageSize = Math.max(1, pageSize);
+  const skip = (validPage - 1) * validPageSize;
+
+  const where: Prisma.PaymentTransactionWhereInput = { associationId };
+
   if (userId) where.userId = userId;
   if (status) where.status = status;
   if (method) where.method = method;
   if (gateway) where.gateway = gateway;
 
   if (startDate || endDate) {
-    where.createdAt = {};
-    if (startDate) where.createdAt.gte = new Date(startDate);
-    if (endDate) where.createdAt.lte = new Date(endDate);
+    const createdAt: Prisma.DateTimeFilter = {};
+
+    if (startDate) {
+      const start = new Date(startDate);
+      if (!isNaN(start.getTime())) {
+        createdAt.gte = start;
+      }
+    }
+
+    if (endDate) {
+      const end = new Date(endDate);
+      if (!isNaN(end.getTime())) {
+        createdAt.lte = end;
+      }
+    }
+
+    if (Object.keys(createdAt).length > 0) {
+      where.createdAt = createdAt;
+    }
   }
 
   if (search) {
@@ -578,7 +614,7 @@ export async function getAllTransactions(associationId: string, filters: any) {
       },
       orderBy: { createdAt: "desc" },
       skip,
-      take: pageSize,
+      take: validPageSize,
     }),
     prisma.paymentTransaction.count({ where }),
   ]);
@@ -586,10 +622,10 @@ export async function getAllTransactions(associationId: string, filters: any) {
   return {
     transactions,
     pagination: {
-      page,
-      pageSize,
+      page: validPage,
+      pageSize: validPageSize,
       total,
-      totalPages: Math.ceil(total / pageSize),
+      totalPages: Math.ceil(total / validPageSize),
     },
   };
 }
