@@ -5,15 +5,9 @@ import {
   DsarStatus,
   UserStatus,
   PaymentStatus,
-} from "@prisma/client";
-import type {
-  ComplianceCheckResult,
-  ComplianceEvidence,
-} from "../types";
-import type {
-  ComplianceCheckType,
   ComplianceCheckStatus,
-} from "../validators/compliance";
+} from "@prisma/client";
+import type { ComplianceCheckResult, ComplianceEvidence } from "../types";
 
 export async function runComplianceCheck(
   associationId: string,
@@ -33,8 +27,8 @@ export async function runComplianceCheck(
   const checker = checkers[checkType];
   if (!checker) {
     return {
-      checkType: checkType as ComplianceCheckType,
-      status: "SKIPPED" as ComplianceCheckStatus,
+      checkType,
+      status: "SKIPPED",
       score: 0,
       message: `Unknown check type: ${checkType}`,
       checkedAt: new Date(),
@@ -88,8 +82,7 @@ async function checkConsentCoverage(
   );
 
   const avgCoverage =
-    coverageByPurpose.reduce((sum, p) => sum + p.coverage, 0) /
-    purposes.length;
+    coverageByPurpose.reduce((sum, p) => sum + p.coverage, 0) / purposes.length;
 
   let status: ComplianceCheckStatus = "PASSED";
   if (avgCoverage < 50) status = "FAILED";
@@ -174,7 +167,9 @@ async function checkDsarSlaCompliance(
   };
 }
 
-async function checkDataRetention(associationId: string): Promise<ComplianceCheckResult> {
+async function checkDataRetention(
+  associationId: string,
+): Promise<ComplianceCheckResult> {
   const now = new Date();
   const sevenYearsAgo = new Date();
   sevenYearsAgo.setFullYear(now.getFullYear() - 7);
@@ -214,16 +209,27 @@ async function checkDataRetention(associationId: string): Promise<ComplianceChec
     details: { total, anonymizedCount, expiredActive },
     recommendations:
       expiredActive > 0
-        ? ["Run anonymization cron job", "Review data retention policy enforcement"]
+        ? [
+            "Run anonymization cron job",
+            "Review data retention policy enforcement",
+          ]
         : [],
     checkedAt: new Date(),
   };
 }
 
-async function checkPiiEncryption(associationId: string): Promise<ComplianceCheckResult> {
+async function checkPiiEncryption(
+  associationId: string,
+): Promise<ComplianceCheckResult> {
   const sampleUsers = await prisma.user.findMany({
     where: { associationId },
-    select: { id: true, name: true, email: true, mobile: true, designation: true },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      mobile: true,
+      designation: true,
+    },
     take: 10,
     orderBy: { createdAt: "desc" },
   });
@@ -265,9 +271,13 @@ async function checkPiiEncryption(associationId: string): Promise<ComplianceChec
     score,
     message,
     details: { totalMembers, checkedSamples: sampleUsers.length, issues },
-    recommendations: issues.length > 0
-      ? ["Verify encryption middleware is active", "Check FIELD_ENCRYPTION_KEY configuration"]
-      : [],
+    recommendations:
+      issues.length > 0
+        ? [
+            "Verify encryption middleware is active",
+            "Check FIELD_ENCRYPTION_KEY configuration",
+          ]
+        : [],
     checkedAt: new Date(),
   };
 }
@@ -383,9 +393,10 @@ async function checkMemberDataCompleteness(
     score: Math.round(avgScore * 100),
     message: `Average field completeness: ${(avgScore * 100).toFixed(1)}%`,
     details: { totalMembers: total, completeness },
-    recommendations: missingFields.length > 0
-      ? [`Complete missing data for: ${missingFields.join(", ")}`]
-      : [],
+    recommendations:
+      missingFields.length > 0
+        ? [`Complete missing data for: ${missingFields.join(", ")}`]
+        : [],
     checkedAt: new Date(),
   };
 }
@@ -584,11 +595,7 @@ async function getMemberEvidence(associationId: string) {
   };
 }
 
-async function getPaymentEvidence(
-  associationId: string,
-  from: Date,
-  to: Date,
-) {
+async function getPaymentEvidence(associationId: string, from: Date, to: Date) {
   const payments = await prisma.paymentTransaction.groupBy({
     by: ["status"],
     where: { associationId, createdAt: { gte: from, lte: to } },
@@ -611,11 +618,7 @@ async function getPaymentEvidence(
   };
 }
 
-async function getAuditEvidence(
-  associationId: string,
-  from: Date,
-  to: Date,
-) {
+async function getAuditEvidence(associationId: string, from: Date, to: Date) {
   const logs = await prisma.auditLog.groupBy({
     by: ["action"],
     where: { associationId, createdAt: { gte: from, lte: to } },
@@ -637,3 +640,4 @@ async function getAuditEvidence(
     metadata: grouped,
   };
 }
+
