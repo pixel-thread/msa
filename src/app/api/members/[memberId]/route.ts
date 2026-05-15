@@ -1,11 +1,13 @@
 import { withAssociation } from "@src/shared/api/with-association";
 import { SuccessResponse } from "@src/shared/utils/responses";
-import { NotFoundError } from "@src/shared/errors";
+import { NotFoundError, ValidationError } from "@src/shared/errors";
 import { prisma } from "@src/shared/lib/prisma";
+import { withRole } from "@src/shared/api/with-role";
+import { UserRole } from "@prisma/client";
 import z from "zod";
 
 const ParamSchema = z.object({
-  memberId: z.uuid(),
+  memberId: z.string().cuid(),
 });
 
 export const GET = withAssociation(
@@ -43,4 +45,58 @@ export const GET = withAssociation(
 
     return SuccessResponse({ data: member });
   },
+);
+
+const AdminOnboardingSchema = z.object({
+  name: z.string().min(1, "Name is required").optional(),
+  mobile: z
+    .string()
+    .min(10, "Mobile must be 10 digits")
+    .max(10, "Mobile must be 10 digits")
+    .regex(/^[0-9]+$/, "Mobile should contain only numbers")
+    .optional(),
+  designation: z.string().optional(),
+  dateOfJoiningGovt: z.coerce.date().optional(),
+  dateOfJoiningMfsa: z.coerce.date().optional(),
+  membershipNumber: z.string().optional(),
+});
+
+export const PATCH = withAssociation(
+  { body: AdminOnboardingSchema, params: ParamSchema },
+  async (association, { body, params }, request) => {
+    await withRole(request, UserRole.SECRETARY);
+
+    if (!body) {
+      throw new ValidationError("Invalid request body");
+    }
+
+    const memberId = params?.memberId;
+
+    const user = await prisma.user.update({
+      where: {
+        id: memberId,
+        associationId: association.id,
+      },
+      data: {
+        ...(body.name && { name: body.name }),
+        ...(body.mobile && { mobile: body.mobile }),
+        ...(body.designation && { designation: body.designation }),
+        ...(body.dateOfJoiningGovt && { dateOfJoiningGovt: body.dateOfJoiningGovt }),
+        ...(body.dateOfJoiningMfsa && { dateOfJoiningMfsa: body.dateOfJoiningMfsa }),
+        ...(body.membershipNumber && { membershipNumber: body.membershipNumber }),
+      },
+    });
+
+    return SuccessResponse({
+      data: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        designation: user.designation,
+        membershipNumber: user.membershipNumber,
+        dateOfJoiningGovt: user.dateOfJoiningGovt,
+        dateOfJoiningMfsa: user.dateOfJoiningMfsa,
+      },
+    });
+  }
 );

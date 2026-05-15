@@ -1,12 +1,17 @@
 import { UserRole } from "@prisma/client";
 import { findUniqueAssociation } from "@src/features/associations/services/findUniqueAssociation";
 import { updateAssociation } from "@src/features/associations/services/updateAssociation";
-import { withAssociation } from "@src/shared/api/with-association";
+import { withValidation } from "@src/shared/api";
 import { withRole } from "@src/shared/api/with-role";
 import { UnauthorizedError } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
+import z from "zod";
 
-export const POST = withAssociation({}, async (association, {}, req) => {
+const ParamsSchema = z.object({
+  associationId: z.string().cuid(),
+});
+
+export const POST = withValidation({ params: ParamsSchema }, async (req, _ctx, { params }) => {
   await withRole(req, UserRole.SUPER_ADMIN);
 
   const userId = req.headers.get("x-user-id");
@@ -16,7 +21,7 @@ export const POST = withAssociation({}, async (association, {}, req) => {
   }
 
   const isAssociationExist = await findUniqueAssociation({
-    where: { id: association.id },
+    where: { id: params?.associationId },
   });
 
   if (!isAssociationExist) {
@@ -24,7 +29,7 @@ export const POST = withAssociation({}, async (association, {}, req) => {
   }
 
   const updatedAssociation = await updateAssociation({
-    where: { id: association.id },
+    where: { id: params?.associationId },
     data: { isActive: false },
   });
 

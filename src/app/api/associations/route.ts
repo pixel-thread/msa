@@ -1,19 +1,54 @@
-import { SuccessResponse } from "@src/shared/utils/responses";
-import { prisma } from "@src/shared/lib/prisma";
+import { withValidation } from "@src/shared/api";
+import { CreateAssociationSchema } from "@src/shared/lib/validations";
+import { createAssociation } from "@src/features/associations/services/createAssociation";
+import { findManyAssociation } from "@src/features/associations/services/findManyAssociation";
+import { findFirstAssociation } from "@src/features/associations/services/findFirstAssociation";
+import { SuccessResponse } from "@src/shared/utils";
+import { UserRole, type Association } from "@prisma/client";
+import { ConflictError } from "@src/shared/errors";
+import type { CreateAssociationInput } from "@src/features/associations/validators/associations";
 import { withRole } from "@src/shared/api/with-role";
-import { UserRole } from "@prisma/client";
-import { NextRequest } from "next/server";
 
-export const GET = async (request: NextRequest) => {
-  await withRole(request, UserRole.MEMBER);
+export const GET = withValidation({}, async (req) => {
+  await withRole(req, UserRole.SUPER_ADMIN);
 
-  const associations = await prisma.association.findMany({
-    select: {
-      id: true,
-      name: true,
-    },
-    orderBy: { name: "asc" },
+  const associations = await findManyAssociation({
+    orderBy: { createdAt: "desc" },
+    where: { status: "ACTIVE" },
   });
 
-  return SuccessResponse({ data: associations });
-};
+  return SuccessResponse<Association[]>({ data: associations });
+});
+
+export const POST = withValidation(
+  { body: CreateAssociationSchema },
+  async (req, _ctx, { body }) => {
+    await withRole(req, UserRole.SUPER_ADMIN);
+
+    const existing = await findFirstAssociation({
+      where: {
+        OR: [
+          { slug: body?.slug, status: "ACTIVE" },
+          { name: body?.name, status: "ACTIVE" },
+        ],
+      },
+      take: 1,
+    });
+
+    if (existing) {
+      throw new ConflictError("Association Already Exists");
+    }
+
+    const association = await createAssociation({
+      data: body as CreateAssociationInput,
+    });
+
+    return SuccessResponse<Association>(
+      {
+        data: association,
+        message: "Association created successfully",
+      },
+      201,
+    );
+  },
+);
