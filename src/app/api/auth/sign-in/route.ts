@@ -1,6 +1,3 @@
-import { z } from "zod";
-
-import { prisma } from "@src/shared/lib/prisma";
 import { withValidation } from "@src/shared/api";
 import { verifyPassword } from "@src/shared/lib/password";
 import {
@@ -13,18 +10,17 @@ import { generateOTP, hashToken } from "@src/shared/lib/password";
 import { env } from "@src/env";
 import { ForbiddenError, UnauthorizedError } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
-import { passwordValidation } from "@src/shared/lib/validations/auth";
 import { logger } from "@src/shared/logger";
-
-const SignInSchema = z.object({
-  email: z.email("Invalid email address"),
-  password: passwordValidation,
-});
+import { SignInSchema } from "@src/features/auth/validators";
+import { getUserFirst } from "@src/shared/services/user/getUserFirst";
+import { updateUser } from "@src/features/user/services";
+import { createRefreshToken } from "@src/features/auth/services/create-refresh-token";
+import { createVerificationCode } from "@src/features/auth/services/create-verification-code";
 
 export const POST = withValidation(
   { body: SignInSchema },
   async (_req, _ctx, { body }) => {
-    const user = await prisma.user.findFirst({
+    const user = await getUserFirst({
       where: { email: body?.email },
     });
 
@@ -58,7 +54,7 @@ export const POST = withValidation(
       const failedAttempts = user.failedLoginAttempts + 1;
       const shouldLock = failedAttempts >= 5;
 
-      await prisma.user.update({
+      await updateUser({
         where: { id: user.id },
         data: {
           failedLoginAttempts: shouldLock ? 0 : failedAttempts,
@@ -75,7 +71,7 @@ export const POST = withValidation(
       throw new UnauthorizedError("Invalid email or password");
     }
 
-    await prisma.user.update({
+    await updateUser({
       where: { id: user.id },
       data: {
         failedLoginAttempts: 0,
@@ -90,9 +86,9 @@ export const POST = withValidation(
       const otpExpiry = new Date();
       otpExpiry.setMinutes(otpExpiry.getMinutes() + 5);
 
-      await prisma.verificationCode.create({
+      await createVerificationCode({
         data: {
-          userId: user.id,
+          user: { connect: { id: user.id } },
           code: hashedOTP,
           type: "LOGIN_MFA",
           expiresAt: otpExpiry,
@@ -134,9 +130,9 @@ export const POST = withValidation(
     const refreshTokenExpiry = new Date();
     refreshTokenExpiry.setDate(refreshTokenExpiry.getDate() + 7);
 
-    await prisma.refreshToken.create({
+    await createRefreshToken({
       data: {
-        userId: user.id,
+        user: { connect: { id: user.id } },
         token: hashedRefreshToken,
         expiresAt: refreshTokenExpiry,
       },

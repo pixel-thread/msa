@@ -1,29 +1,32 @@
-import { z } from "zod";
-
-import { prisma } from "@src/shared/lib/prisma";
 import { withValidation } from "@src/shared/api";
-import { requireAuth } from "@src/shared/api/auth";
 import {
   hashPassword,
   validatePasswordStrength,
   verifyPassword,
 } from "@src/shared/lib/password";
-import { BadRequestError, ValidationError } from "@src/shared/errors";
+import {
+  BadRequestError,
+  UnauthorizedError,
+  ValidationError,
+} from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
-
-const changePasswordSchema = z.object({
-  currentPassword: z.string().min(1, "Current password is required"),
-  newPassword: z.string().min(8, "New password must be at least 8 characters"),
-});
-
-type ChangePasswordBody = z.infer<typeof changePasswordSchema>;
+import {
+  ChangePasswordInput,
+  ChangePasswordSchema,
+} from "@src/features/auth/validators";
+import { updateUser } from "@src/features/user/services";
+import { deleteRefreshTokens } from "@src/features/auth/services/delete-refresh-tokens";
+import { getUniqueUserNoFilter } from "@src/shared/services/user/getUniqueUserNoFilter";
 
 export const POST = withValidation(
-  { body: changePasswordSchema },
-  async (_, _ctx, { body }) => {
-    const { userId } = await requireAuth();
+  { body: ChangePasswordSchema },
+  async (req, _ctx, { body }) => {
+    const userId = req.headers.get("x-user-id");
+    if (!userId) {
+      throw new UnauthorizedError("User not found");
+    }
 
-    const { currentPassword, newPassword } = body as ChangePasswordBody;
+    const { currentPassword, newPassword } = body as ChangePasswordInput;
 
     const passwordValidation = validatePasswordStrength(newPassword);
     if (!passwordValidation.valid) {
@@ -32,9 +35,8 @@ export const POST = withValidation(
       );
     }
 
-    const user = await prisma.user.findUnique({
+    const user = await getUniqueUserNoFilter({
       where: { id: userId },
-      select: { password: true },
     });
 
     if (!user || !user.password) {
@@ -51,14 +53,12 @@ export const POST = withValidation(
 
     const hashedPassword = await hashPassword(newPassword);
 
-    await prisma.user.update({
+    await updateUser({
       where: { id: userId },
       data: { password: hashedPassword },
     });
 
-    await prisma.refreshToken.deleteMany({
-      where: { userId },
-    });
+    await deleteRefreshTokens({ where: { userId } });
 
     return SuccessResponse({
       data: null,

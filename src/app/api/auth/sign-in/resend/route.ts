@@ -1,4 +1,3 @@
-import { prisma } from "@src/shared/lib/prisma";
 import { withValidation } from "@src/shared/api";
 import { verifyPasswordResetToken } from "@src/shared/lib/jwt";
 import { generateOTP, hashToken } from "@src/shared/lib/password";
@@ -11,13 +10,17 @@ import {
   TooManyRequestsError,
 } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
+import { getUniqueUser } from "@src/shared/services/user/getUniqueUser";
+import { getVerificationCodeFirst } from "@src/features/auth/services/get-verification-code-first";
+import { createVerificationCode } from "@src/features/auth/services/create-verification-code";
+import { logger } from "@src/shared/logger";
 
-const ResendSchema = z.object({
+const ResendSignInCodeSchema = z.object({
   mfa_temp_token: z.string(),
 });
 
 export const POST = withValidation(
-  { body: ResendSchema },
+  { body: ResendSignInCodeSchema },
   async (request, _ctx, { body }) => {
     const mfaCookie =
       request.cookies.get("mfa_temp_token")?.value || body?.mfa_temp_token;
@@ -27,22 +30,22 @@ export const POST = withValidation(
     }
 
     let payload;
+
     try {
       payload = await verifyPasswordResetToken(mfaCookie);
     } catch {
       throw new BadRequestError("Session expired. Please signin again");
     }
 
-    const user = await prisma.user.findUnique({
+    const user = await getUniqueUser({
       where: { id: payload?.sub },
-      select: { email: true },
     });
 
     if (!user) {
       throw new NotFoundError("User not found");
     }
 
-    const lastCode = await prisma.verificationCode.findFirst({
+    const lastCode = await getVerificationCodeFirst({
       where: {
         userId: payload.sub,
         type: "LOGIN_MFA",
@@ -72,16 +75,22 @@ export const POST = withValidation(
     const otpExpiry = new Date();
     otpExpiry.setMinutes(otpExpiry.getMinutes() + 5);
 
-    await prisma.verificationCode.create({
+    await createVerificationCode({
       data: {
-        userId: payload.sub,
+        user: { connect: { id: user.id } },
         code: hashedOTP,
         type: "LOGIN_MFA",
         expiresAt: otpExpiry,
       },
     });
 
-    await sendVerificationEmail(user.email, otp, "LOGIN_MFA");
+    if (env.NODE_ENV === "production") {
+      await sendVerificationEmail(user.email, otp, "LOGIN_MFA");
+    }
+
+    if (env.NODE_ENV === "development") {
+      logger.debug("Verification code: " + otp);
+    }
 
     return SuccessResponse({
       message: "Verification code sent to your email",
@@ -91,4 +100,3 @@ export const POST = withValidation(
     });
   },
 );
-

@@ -1,4 +1,3 @@
-import { prisma } from "@src/shared/lib/prisma";
 import { withValidation } from "@src/shared/api";
 import {
   verifyRefreshToken,
@@ -7,12 +6,12 @@ import {
 } from "@src/shared/lib/jwt";
 import { hashToken } from "@src/shared/lib/password";
 import { UnauthorizedError } from "@src/shared/errors";
-import z from "zod";
 import { SuccessResponse } from "@src/shared/utils";
+import { RefreshTokenSchema } from "@src/features/auth/validators";
+import { getUniqueRefreshToken } from "@src/features/auth/services/get-unique-refresh-token";
+import { updateRefreshToken } from "@src/features/auth/services/update-refresh-token";
+import { createRefreshToken } from "@src/features/auth/services/create-refresh-token";
 
-const RefreshTokenSchema = z.object({
-  token: z.string().optional(),
-});
 export const POST = withValidation(
   { body: RefreshTokenSchema },
   async (request, _, { body }) => {
@@ -32,7 +31,7 @@ export const POST = withValidation(
 
     const hashedToken = hashToken(refreshCookie);
 
-    const storedToken = await prisma.refreshToken.findUnique({
+    const storedToken = await getUniqueRefreshToken({
       where: { token: hashedToken },
       include: { user: true },
     });
@@ -51,7 +50,7 @@ export const POST = withValidation(
       throw new UnauthorizedError("User is not active");
     }
 
-    await prisma.refreshToken.update({
+    await updateRefreshToken({
       where: { id: storedToken.id },
       data: { revokedAt: new Date() },
     });
@@ -63,9 +62,9 @@ export const POST = withValidation(
     const refreshTokenExpiry = new Date();
     refreshTokenExpiry.setDate(refreshTokenExpiry.getDate() + 7);
 
-    await prisma.refreshToken.create({
+    await createRefreshToken({
       data: {
-        userId: user.id,
+        user: { connect: { id: user.id } },
         token: hashedNewRefreshToken,
         expiresAt: refreshTokenExpiry,
       },

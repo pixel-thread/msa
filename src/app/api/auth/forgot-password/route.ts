@@ -1,6 +1,3 @@
-import { z } from "zod";
-
-import { prisma } from "@src/shared/lib/prisma";
 import { withValidation } from "@src/shared/api";
 import { hashToken } from "@src/shared/lib/password";
 import { signPasswordResetToken } from "@src/shared/lib/jwt";
@@ -9,25 +6,23 @@ import { SuccessResponse } from "@src/shared/utils";
 import { env } from "@src/env";
 import { logger } from "@src/shared/logger";
 import { NotFoundError } from "@src/shared/errors";
-
-const ForgotPasswordSchema = z.object({
-  email: z.email("Invalid email address"),
-});
-
-type ForgotPasswordBody = z.infer<typeof ForgotPasswordSchema>;
+import {
+  ForgotPasswordInput,
+  ForgotPasswordSchema,
+} from "@src/features/auth/validators";
+import { updateUser } from "@src/features/user/services";
+import { getUserFirst } from "@src/shared/services/user/getUserFirst";
 
 export const POST = withValidation(
   { body: ForgotPasswordSchema },
   async (_, _ctx, { body }) => {
-    const { email } = body as ForgotPasswordBody;
+    const { email } = body as ForgotPasswordInput;
 
-    const user = await prisma.user.findFirst({
+    const user = await getUserFirst({
       where: { email },
     });
 
-    if (!user) {
-      throw new NotFoundError("User not found");
-    }
+    if (!user) throw new NotFoundError("User not found");
 
     const resetToken = await signPasswordResetToken(user.id);
     const hashedToken = hashToken(resetToken);
@@ -36,7 +31,7 @@ export const POST = withValidation(
 
     resetExpiry.setHours(resetExpiry.getHours() + 1);
 
-    await prisma.user.update({
+    await updateUser({
       where: { id: user.id },
       data: {
         passwordResetToken: hashedToken,
@@ -53,7 +48,7 @@ export const POST = withValidation(
     }
 
     return SuccessResponse({
-      message: "If an account exists, a reset email will be sent",
+      message: "A reset email will be sent",
       data: null,
     });
   },

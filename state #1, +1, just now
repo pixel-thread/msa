@@ -1,0 +1,3 @@
+export async function deleteRefreshTokens() {
+  return await prisma.refreshToken.deleteMany();
+}

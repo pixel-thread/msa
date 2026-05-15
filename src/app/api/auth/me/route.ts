@@ -1,7 +1,7 @@
-import { prisma } from "@src/shared/lib/prisma";
 import { SuccessResponse } from "@src/shared/utils";
 import { UnauthorizedError } from "@src/shared/errors";
 import { NextRequest } from "next/server";
+import { getUniqueUser } from "@src/shared/services/user/getUniqueUser";
 
 export const GET = async (req: NextRequest) => {
   const userId = req.headers.get("x-user-id");
@@ -10,18 +10,8 @@ export const GET = async (req: NextRequest) => {
     throw new UnauthorizedError("Unauthorized");
   }
 
-  const user = await prisma.user.findUnique({
+  const user = await getUniqueUser({
     where: { id: userId },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      role: true,
-      mfaEnabled: true,
-      associationId: true,
-      status: true,
-      createdAt: true,
-    },
   });
 
   if (!user || user.status !== "ACTIVE") {

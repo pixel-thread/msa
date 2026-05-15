@@ -1,5 +1,3 @@
-import { z } from "zod";
-
 import { prisma } from "@src/shared/lib/prisma";
 import { withValidation } from "@src/shared/api";
 import {
@@ -9,18 +7,17 @@ import {
 } from "@src/shared/lib/password";
 import { UnauthorizedError, ValidationError } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
-
-const resetPasswordSchema = z.object({
-  token: z.string().min(1, "Token is required"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-});
-
-type ResetPasswordBody = z.infer<typeof resetPasswordSchema>;
+import { updateUser } from "@src/features/user/services";
+import { deleteRefreshTokens } from "@src/features/auth/services/delete-refresh-tokens";
+import {
+  ResetPasswordInput,
+  ResetPasswordSchema,
+} from "@src/features/auth/validators";
 
 export const POST = withValidation(
-  { body: resetPasswordSchema },
+  { body: ResetPasswordSchema },
   async (_, _ctx, { body }) => {
-    const { token, password } = body as ResetPasswordBody;
+    const { token, password } = body as ResetPasswordInput;
 
     const passwordValidation = validatePasswordStrength(password);
     if (!passwordValidation.valid) {
@@ -44,7 +41,7 @@ export const POST = withValidation(
 
     const hashedPassword = await hashPassword(password);
 
-    await prisma.user.update({
+    await updateUser({
       where: { id: user.id },
       data: {
         password: hashedPassword,
@@ -55,9 +52,7 @@ export const POST = withValidation(
       },
     });
 
-    await prisma.refreshToken.deleteMany({
-      where: { userId: user.id },
-    });
+    await deleteRefreshTokens({ where: { userId: user.id } });
 
     return SuccessResponse({
       data: true,

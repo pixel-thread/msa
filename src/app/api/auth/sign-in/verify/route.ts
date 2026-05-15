@@ -1,6 +1,3 @@
-import { z } from "zod";
-
-import { prisma } from "@src/shared/lib/prisma";
 import { withValidation } from "@src/shared/api";
 import { verifyPasswordResetToken } from "@src/shared/lib/jwt";
 import { signAccessToken, signRefreshToken } from "@src/shared/lib/jwt";
@@ -12,18 +9,19 @@ import {
   UnauthorizedError,
 } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
-
-const verifySchema = z.object({
-  code: z.string().length(6, "Code must be 6 digits"),
-  mfa_temp_token: z.string().optional(),
-});
-
-type VerifyBody = z.infer<typeof verifySchema>;
+import {
+  VerifySignInInput,
+  VerifySignInSchema,
+} from "@src/features/auth/validators";
+import { getUniqueUser } from "@src/shared/services/user/getUniqueUser";
+import { getVerificationCodeFirst } from "@src/features/auth/services/get-verification-code-first";
+import { updateVerificationCode } from "@src/features/auth/services/update-verification-code";
+import { createRefreshToken } from "@src/features/auth/services/create-refresh-token";
 
 export const POST = withValidation(
-  { body: verifySchema },
+  { body: VerifySignInSchema },
   async (request, _ctx, { body }) => {
-    const { code } = body as VerifyBody;
+    const { code } = body as VerifySignInInput;
 
     const mfaCookie =
       request.cookies.get("mfa_temp_token")?.value || body?.mfa_temp_token;
@@ -39,9 +37,8 @@ export const POST = withValidation(
       throw new BadRequestError("Session expired. Please signin again");
     }
 
-    const user = await prisma.user.findUnique({
+    const user = await getUniqueUser({
       where: { id: payload.sub },
-      select: { id: true, email: true, role: true, status: true },
     });
 
     if (!user || user.status !== "ACTIVE") {
@@ -50,7 +47,7 @@ export const POST = withValidation(
 
     const hashedCode = hashToken(code);
 
-    const verificationCode = await prisma.verificationCode.findFirst({
+    const verificationCode = await getVerificationCodeFirst({
       where: {
         userId: user.id,
         type: "LOGIN_MFA",
@@ -71,7 +68,7 @@ export const POST = withValidation(
     }
 
     if (verificationCode.code !== hashedCode) {
-      await prisma.verificationCode.update({
+      await updateVerificationCode({
         where: { id: verificationCode.id },
         data: { attempts: { increment: 1 } },
       });
@@ -79,7 +76,7 @@ export const POST = withValidation(
       throw new UnauthorizedError("Invalid verification code");
     }
 
-    await prisma.verificationCode.update({
+    await updateVerificationCode({
       where: { id: verificationCode.id },
       data: { usedAt: new Date() },
     });
@@ -91,9 +88,9 @@ export const POST = withValidation(
     const refreshTokenExpiry = new Date();
     refreshTokenExpiry.setDate(refreshTokenExpiry.getDate() + 7);
 
-    await prisma.refreshToken.create({
+    await createRefreshToken({
       data: {
-        userId: user.id,
+        user: { connect: { id: user.id } },
         token: hashedRefreshToken,
         expiresAt: refreshTokenExpiry,
       },
@@ -128,4 +125,3 @@ export const POST = withValidation(
     return response;
   },
 );
-
