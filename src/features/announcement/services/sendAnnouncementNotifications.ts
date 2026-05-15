@@ -1,5 +1,5 @@
 import { prisma } from "@lib/prisma";
-import { NotificationType, Prisma, UserRole } from "@prisma/client";
+import { NotificationType, Prisma } from "@prisma/client";
 import { ExpoNotificationService } from "@lib/expo";
 import { logger } from "@src/shared/logger";
 import { ExpoRoutes } from "@src/shared/constants/expo-route";

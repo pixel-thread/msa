@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { withAssociation } from "@src/shared/api/with-association";
 import { ForbiddenError } from "@src/shared/errors";
 import { UserRole } from "@prisma/client";
-import { findAuditLogs, getAuditLogStats } from "@src/features/audit-logs";
+import { findAuditLogs, getAuditLogStats } from "@src/shared/services/audit-logs";
 
 const AuditLogQuerySchema = {
   parse: (params: URLSearchParams) => {

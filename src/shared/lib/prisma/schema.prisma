@@ -246,12 +246,13 @@ model Association {
   auditLogs           AuditLog[]
   paymentTransactions PaymentTransaction[]
   announcements       Announcement[]
-  notifications        Notification[]
+  notifications       Notification[]
   dsarTickets         DsarTicket[]
   consentReceipts     ConsentReceipt[]
   trainingModules     TrainingModule[]
   complaints          Complaint[]
-  complianceChecks     ComplianceCheck[]
+  complianceChecks    ComplianceCheck[]
+  memberTypes         MemberType[]
 
   @@index([slug])
   @@index([isActive])
@@ -494,9 +495,9 @@ model DsarTicket {
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
 
-  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  member      User        @relation("MemberTickets", fields: [userId], references: [id], onDelete: Cascade)
-  assignedTo  User?       @relation("AssignedTickets", fields: [assignedToId], references: [id])
+  association Association    @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  member      User           @relation("MemberTickets", fields: [userId], references: [id], onDelete: Cascade)
+  assignedTo  User?          @relation("AssignedTickets", fields: [assignedToId], references: [id])
   responses   DsarResponse[]
 
   @@unique([associationId, ticketNumber])
@@ -508,14 +509,14 @@ model DsarTicket {
 }
 
 model DsarResponse {
-  id             String     @id @default(uuid())
+  id             String    @id @default(uuid())
   dsarTicketId   String
   responseType   String
   storageKey     String?
-  deliveryMethod String     @default("secure_download")
+  deliveryMethod String    @default("secure_download")
   notes          String?
   deliveredAt    DateTime?
-  createdAt      DateTime   @default(now())
+  createdAt      DateTime  @default(now())
 
   ticket DsarTicket @relation(fields: [dsarTicketId], references: [id], onDelete: Cascade)
 
@@ -886,6 +887,7 @@ enum ComplaintStatus {
   IN_PROGRESS
   RESOLVED
   CLOSED
+
   @@map("complaint_status")
 }
 
@@ -921,15 +923,15 @@ enum ComplianceCheckStatus {
 }
 
 model ComplianceCheck {
-  id             String               @id @default(uuid())
-  associationId  String
-  checkType      String
-  status         ComplianceCheckStatus
-  score          Int
-  message        String
-  details        Json?
+  id              String                @id @default(uuid())
+  associationId   String
+  checkType       String
+  status          ComplianceCheckStatus
+  score           Int
+  message         String
+  details         Json?
   recommendations Json?
-  checkedAt      DateTime             @default(now())
+  checkedAt       DateTime              @default(now())
 
   association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
 
@@ -938,4 +940,14 @@ model ComplianceCheck {
   @@index([status])
   @@index([checkedAt])
   @@map("compliance_checks")
+}
+
+model MemberType {
+  id          String @id @default(uuid())
+  description String
+  lavel       Int
+
+  associationId   String
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  @@map("member_types")
 }

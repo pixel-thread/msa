@@ -1,8 +1,8 @@
 import { withAssociation } from "@src/shared/api/with-association";
-import { requireAuth, requireRole } from "@src/shared/api/auth";
 import { ConsentService } from "@src/features/consent";
-import { ForbiddenError } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
+import { withRole } from "@src/shared/api/with-role";
+import { UserRole } from "@prisma/client";
 
 /**
  * GET /api/consent/all
@@ -10,15 +10,8 @@ import { SuccessResponse } from "@src/shared/utils";
  * Retrieves all consent records in the association.
  * Roles: DPO, SUPER_ADMIN
  */
-export const GET = withAssociation({}, async (association) => {
-  const auth = await requireAuth();
-
-  // Strict role check according to PRD matrix
-  if (auth.role !== "DPO" && auth.role !== "SUPER_ADMIN") {
-    throw new ForbiddenError(
-      "Insufficient permissions: DPO or SUPER_ADMIN required",
-    );
-  }
+export const GET = withAssociation({}, async (association, _, req) => {
+  await withRole(req, UserRole.DPO);
 
   const records = await ConsentService.getAllConsentRecords(association.id);
 
