@@ -3,6 +3,13 @@
 @userId=0d627af0-bcb4-4b11-8934-0a3f3bfc53e8
 @test3UserId=9a6043b7-2b58-425a-9912-3275dd4153fe
 @test2UserId=0d627af0-bcb4-4b11-8934-0a3f3bfc53e8
+@moduleId=REPLACE_WITH_MODULE_ID
+@dsarTicketId=REPLACE_WITH_DSAR_TICKET_ID
+@notificationId=REPLACE_WITH_NOTIFICATION_ID
+@paymentId=REPLACE_WITH_PAYMENT_ID
+@announcementId=REPLACE_WITH_ANNOUNCEMENT_ID
+@invoiceId=REPLACE_WITH_INVOICE_ID
+@minuitesId=REPLACE_WITH_MINUTES_ID
 
 
 ### ----------------- AUTH ------------------
@@ -501,6 +508,402 @@ Authorization: Bearer {{TOKEN}}
   "memberId": "{{userId}}"
 }
 
+### ----------------- TRAINING ------------------
+
+###
+# @name List Training Modules
+GET {{NEXT_PUBLIC_API_BASE_URL}}/training/modules
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Create Training Module
+POST {{NEXT_PUBLIC_API_BASE_URL}}/training/modules
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "title": "Data Privacy Training",
+  "description": "Understanding GDPR and data protection",
+  "role": "MEMBER",
+  "isActive": true,
+  "content": {
+    "type": "article",
+    "body": "Training content here..."
+  }
+}
+
+###
+# @name Get Training Module
+GET {{NEXT_PUBLIC_API_BASE_URL}}/training/modules/{{moduleId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Update Training Module
+PATCH {{NEXT_PUBLIC_API_BASE_URL}}/training/modules/{{moduleId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "title": "Updated Training Module",
+  "isActive": false
+}
+
+###
+# @name Complete Training Module
+POST {{NEXT_PUBLIC_API_BASE_URL}}/training/modules/{{moduleId}}/complete
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{}
+###
+# @name Get My Training Completions
+GET {{NEXT_PUBLIC_API_BASE_URL}}/training/my-completions
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Get All Training Completions
+POST {{NEXT_PUBLIC_API_BASE_URL}}/training/completions
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "page": 1,
+  "limit": 10
+}
+
+### ----------------- COMPLIANCE ------------------
+
+###
+# @name Run Compliance Checks
+POST {{NEXT_PUBLIC_API_BASE_URL}}/compliance/checks
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "checkType": "DATA_RETENTION",
+  "targetUserId": "{{userId}}"
+}
+
+###
+# @name Add Compliance Evidence
+POST {{NEXT_PUBLIC_API_BASE_URL}}/compliance/evidence
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "checkId": "REPLACE_WITH_CHECK_ID",
+  "evidence": {
+    "documentUrl": "https://example.com/doc.pdf",
+    "notes": "Evidence for compliance"
+  }
+}
+
+### ----------------- AUDIT LOGS ------------------
+
+###
+# @name List Audit Logs
+GET {{NEXT_PUBLIC_API_BASE_URL}}/audit-logs?page=1&limit=20
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+### ----------------- CONSENT ------------------
+
+###
+# @name Grant Consent
+POST {{NEXT_PUBLIC_API_BASE_URL}}/consent/grant
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "purpose": "MARKETING",
+  "granted": true
+}
+
+###
+# @name Revoke Consent
+POST {{NEXT_PUBLIC_API_BASE_URL}}/consent/revoke
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "purpose": "MARKETING"
+}
+
+###
+# @name Get My Consent
+GET {{NEXT_PUBLIC_API_BASE_URL}}/consent/my
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Get All Consent (Admin)
+GET {{NEXT_PUBLIC_API_BASE_URL}}/consent/all?page=1&limit=10
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Get Consent History
+GET {{NEXT_PUBLIC_API_BASE_URL}}/consent/history?page=1&limit=10
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+### ----------------- DSAR ------------------
+
+###
+# @name Submit DSAR Request
+POST {{NEXT_PUBLIC_API_BASE_URL}}/dsar/submit
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "requestType": "ACCESS",
+  "reason": "Requesting my data"
+}
+
+###
+# @name List DSAR Tickets (Admin)
+GET {{NEXT_PUBLIC_API_BASE_URL}}/dsar?page=1&limit=10&status=PENDING
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Get My DSAR Requests
+GET {{NEXT_PUBLIC_API_BASE_URL}}/dsar/my?page=1&limit=10
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Get DSAR SLA Report
+GET {{NEXT_PUBLIC_API_BASE_URL}}/dsar/sla-report
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Get DSAR Ticket Details
+GET {{NEXT_PUBLIC_API_BASE_URL}}/dsar/{{dsarTicketId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Respond to DSAR
+POST {{NEXT_PUBLIC_API_BASE_URL}}/dsar/{{dsarTicketId}}/respond
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "response": "Data provided as requested"
+}
+
+###
+# @name Assign DSAR Ticket
+POST {{NEXT_PUBLIC_API_BASE_URL}}/dsar/{{dsarTicketId}}/assign
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "assignedTo": "{{userId}}"
+}
+
+###
+# @name Reject DSAR Ticket
+POST {{NEXT_PUBLIC_API_BASE_URL}}/dsar/{{dsarTicketId}}/reject
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "reason": "Invalid request"
+}
+
+### ----------------- USER MFA ------------------
+
+###
+# @name Manage User MFA
+POST {{NEXT_PUBLIC_API_BASE_URL}}/user/mfa
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "enabled": true
+}
+
+### ----------------- AUTH MFA ------------------
+
+###
+# @name Setup MFA
+POST {{NEXT_PUBLIC_API_BASE_URL}}/auth/mfa/setup
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{}
+###
+# @name Verify MFA
+POST {{NEXT_PUBLIC_API_BASE_URL}}/auth/mfa/verify
+Content-Type: application/json
+
+{
+  "code": "123456"
+}
+
+###
+# @name Resend MFA Code
+POST {{NEXT_PUBLIC_API_BASE_URL}}/auth/mfa/resend
+Content-Type: application/json
+
+{
+  "email": "user@example.com"
+}
+
+###
+# @name Disable MFA
+POST {{NEXT_PUBLIC_API_BASE_URL}}/auth/mfa/disable
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "password": "Password123!"
+}
+
+### ----------------- AUTH REFRESH ------------------
+
+###
+# @name Refresh Token
+POST {{NEXT_PUBLIC_API_BASE_URL}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "REPLACE_WITH_REFRESH_TOKEN"
+}
+
+### ----------------- SIGN-IN VERIFY/RESEND ------------------
+
+###
+# @name Verify Sign-In
+POST {{NEXT_PUBLIC_API_BASE_URL}}/auth/sign-in/verify
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "code": "123456"
+}
+
+###
+# @name Resend Sign-In Code
+POST {{NEXT_PUBLIC_API_BASE_URL}}/auth/sign-in/resend
+Content-Type: application/json
+
+{
+  "email": "user@example.com"
+}
+
+### ----------------- ASSOCIATIONS DEACTIVATE ------------------
+
+###
+# @name Deactivate Association
+POST {{NEXT_PUBLIC_API_BASE_URL}}/associations/deactivate
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "reason": "Association dissolved"
+}
+
+### ----------------- NOTIFICATIONS STATUS ------------------
+
+###
+# @name Update Notification Status
+PATCH {{NEXT_PUBLIC_API_BASE_URL}}/notifications/{{notificationId}}/status
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "read": true
+}
+
+### ----------------- PAYMENTS STATS & REPORTS ------------------
+
+###
+# @name Get Payment Stats
+GET {{NEXT_PUBLIC_API_BASE_URL}}/payments/stats?year=2026&month=5
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Get Payment Receipt
+GET {{NEXT_PUBLIC_API_BASE_URL}}/payments/{{paymentId}}/receipt
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Generate Collection Report
+POST {{NEXT_PUBLIC_API_BASE_URL}}/payments/reports/collections
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "year": 2026,
+  "month": 5,
+  "format": "PDF"
+}
+
+### ----------------- DOCS ------------------
+
+###
+# @name Get API Documentation
+GET {{NEXT_PUBLIC_API_BASE_URL}}/docs
+Content-Type: application/json
+
+### ----------------- MEMBERS (Additional) ------------------
+
+###
+# @name Get Member Ledger
+GET {{NEXT_PUBLIC_API_BASE_URL}}/members/{{userId}}/ledger
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Complete Member Onboarding
+POST {{NEXT_PUBLIC_API_BASE_URL}}/members/{{userId}}/onboarding
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "step": "PROFILE_COMPLETE"
+}
+
+###
+# @name Add Member to Suspense
+POST {{NEXT_PUBLIC_API_BASE_URL}}/members/{{userId}}/suspense
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "reason": "Non-payment of dues"
+}
+
+###
+# @name Update Member Role
+POST {{NEXT_PUBLIC_API_BASE_URL}}/members/{{userId}}/role
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "role": "SECRETARY"
+}
+
+###
+# @name Update Member Status
+POST {{NEXT_PUBLIC_API_BASE_URL}}/members/{{userId}}/status
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "status": "ACTIVE",
+  "reason": "Reinstated"
+}
+
 ### ----------------- HEALTH ------------------
 
 ###
@@ -635,7 +1038,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name list user invoices 
-GET {{NEXT_PUBLIC_API_BASE_URL}}/user/invoice
+GET {{NEXT_PUBLIC_API_BASE_URL}}/user/invoices
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
