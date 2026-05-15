@@ -12,7 +12,7 @@ const QuerySchema = z.object({
 export const GET = withAssociation(
   { query: QuerySchema },
   async (association, { query }, request) => {
-    const user = await withRole(request, UserRole.MEMBER);
+    const user = await withRole(request, UserRole.SECRETARY);
     const page = query?.page;
 
     let members;

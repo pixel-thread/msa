@@ -28,7 +28,7 @@ export const GET = withAssociation(
       throw new ForbiddenError("Invalid meeting ID");
     }
 
-    const user = await withRole(request, UserRole.MEMBER);
+    const user = await withRole(request, UserRole.SECRETARY);
 
     const meeting = await findUniqueMeeting({
       meetingId: params.meetingId,

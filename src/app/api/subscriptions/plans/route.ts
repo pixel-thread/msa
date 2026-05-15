@@ -25,7 +25,7 @@ export const GET = withAssociation({}, async (association, _, request) => {
 export const POST = withAssociation(
   { body: CreateSubscriptionPlanSchema },
   async (association, { body }, request) => {
-    await withRole(request, UserRole.PRESIDENT);
+    await withRole(request, UserRole.SUPER_ADMIN);
 
     if (!body) {
       throw new ValidationError("Invalid request body");

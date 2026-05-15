@@ -12,7 +12,7 @@ import {
 export const GET = withAssociation(
   { params: LedgerRouteParams, query: LedgerQueryParams },
   async (_association, { query }, request) => {
-    await withRole(request, UserRole.MEMBER);
+    await withRole(request, UserRole.FINANCE);
 
     const userId = request.headers.get("x-user-id")!;
     const page = query?.page ?? 1;

@@ -14,7 +14,7 @@ const SuspenseUserRouteParams = z.object({
 export const POST = withAssociation(
   { params: SuspenseUserRouteParams },
   async (association, { params }, req) => {
-    await withRole(req, UserRole.SUPER_ADMIN);
+    await withRole(req, UserRole.PRESIDENT);
 
     const user = await findUniqueMember({ where: { id: params?.memberId } });
 

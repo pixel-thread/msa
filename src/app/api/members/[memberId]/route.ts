@@ -12,7 +12,9 @@ const ParamSchema = z.object({
 
 export const GET = withAssociation(
   { params: ParamSchema },
-  async (association, { params }) => {
+  async (association, { params }, request) => {
+    await withRole(request, UserRole.DPO);
+
     const member = await prisma.user.findFirst({
       where: {
         id: params?.memberId,
