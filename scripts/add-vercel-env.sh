@@ -17,7 +17,7 @@ grep -v '^#' .env | grep -v '^\s*$' | while IFS='=' read -r key value; do
     echo "Adding $key..."
     # 'development' is the target environment. 
     # You can change this to 'production' or 'preview' if needed.
-    echo -n "$value" | vercel env add "$key" preview
+    echo -n "$value" | vercel env add "$key" production
   fi
 done
 

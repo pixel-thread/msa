@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ENVIRONMENT="preview"  # change to: production / development
+ENVIRONMENT="production"  # change to: production / development
 
 echo "Fetching env variables from Vercel ($ENVIRONMENT)..."
 

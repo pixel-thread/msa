@@ -2,18 +2,12 @@ import { withAssociation } from "@src/shared/api/with-association";
 import { SuccessResponse } from "@utils/responses";
 import { getUserPaymentHistory } from "@feature/payments/services/payment.service";
 import { getUserContributionSummary } from "@feature/payments/services/contribution.service";
-import z from "zod";
 import { withRole } from "@src/shared/api/with-role";
 import { UserRole } from "@prisma/client";
-
-const LedgerRouteParams = z.object({
-  memberId: z.uuid(),
-});
-
-const LedgerQueryParams = z.object({
-  page: z.coerce.number(),
-  pageSize: z.coerce.number(),
-});
+import {
+  LedgerQueryParams,
+  LedgerRouteParams,
+} from "@src/features/ledger/validators";
 
 export const GET = withAssociation(
   { params: LedgerRouteParams, query: LedgerQueryParams },
