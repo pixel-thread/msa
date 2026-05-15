@@ -1,9 +1,9 @@
 import { prisma } from "@src/shared/lib/prisma";
 import { ConsentPurpose, ConsentStatus } from "@prisma/client";
-import { 
-  UserConsentState, 
-  ConsentReceiptRecord, 
-  ConsentSummaryReport 
+import {
+  UserConsentState,
+  ConsentReceiptRecord,
+  ConsentSummaryReport,
 } from "../types/consent.types";
 import { ConsentUpdateInput } from "../validators/consent.validators";
 
@@ -13,24 +13,27 @@ import { ConsentUpdateInput } from "../validators/consent.validators";
 export class ConsentService {
   /**
    * Retrieves the current consent state for a user across all purposes.
-   * 
+   *
    * @param userId - The ID of the user.
    * @param associationId - The ID of the association.
    * @returns A promise that resolves to an array of UserConsentState objects.
    */
-  static async getUserConsentState(userId: string, associationId: string): Promise<UserConsentState[]> {
+  static async getUserConsentState(
+    userId: string,
+    associationId: string,
+  ): Promise<UserConsentState[]> {
     const states = await prisma.consentReceipt.findMany({
       where: {
         userId,
         associationId,
       },
-      distinct: ['purpose'],
+      distinct: ["purpose"],
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
     });
 
-    return states.map(s => ({
+    return states.map((s) => ({
       purpose: s.purpose,
       status: s.status,
       updatedAt: s.createdAt,
@@ -39,7 +42,7 @@ export class ConsentService {
 
   /**
    * Updates consent for a user for one or more purposes.
-   * 
+   *
    * @param userId - The ID of the user.
    * @param associationId - The ID of the association.
    * @param input - The consent update data (purposes, action, channel, etc.).
@@ -48,16 +51,16 @@ export class ConsentService {
    * @returns A promise that resolves to the created consent receipts.
    */
   static async updateConsent(
-    userId: string, 
-    associationId: string, 
+    userId: string,
+    associationId: string,
     input: ConsentUpdateInput,
     ipAddress?: string,
-    userAgent?: string
+    userAgent?: string,
   ): Promise<ConsentReceiptRecord[]> {
     const { purposes, action, channel, metadata } = input;
 
     const receipts = await prisma.$transaction(
-      purposes.map(purpose => 
+      purposes.map((purpose) =>
         prisma.consentReceipt.create({
           data: {
             userId,
@@ -67,10 +70,11 @@ export class ConsentService {
             channel,
             ipAddress: ipAddress || null,
             userAgent: userAgent || null,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             metadata: (metadata || {}) as any,
           },
-        })
-      )
+        }),
+      ),
     );
 
     return receipts as ConsentReceiptRecord[];
@@ -78,19 +82,22 @@ export class ConsentService {
 
   /**
    * Retrieves the consent history for a specific user.
-   * 
+   *
    * @param userId - The ID of the user.
    * @param associationId - The ID of the association.
    * @returns A promise that resolves to an array of ConsentReceiptRecord objects.
    */
-  static async getConsentHistory(userId: string, associationId: string): Promise<ConsentReceiptRecord[]> {
+  static async getConsentHistory(
+    userId: string,
+    associationId: string,
+  ): Promise<ConsentReceiptRecord[]> {
     const history = await prisma.consentReceipt.findMany({
       where: {
         userId,
         associationId,
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
     });
 
@@ -99,16 +106,19 @@ export class ConsentService {
 
   /**
    * Generates a report of consent statuses across the association.
-   * 
+   *
    * @param associationId - The ID of the association.
    * @returns A promise that resolves to an array of ConsentSummaryReport objects.
    */
-  static async getConsentReport(associationId: string): Promise<ConsentSummaryReport[]> {
+  static async getConsentReport(
+    associationId: string,
+  ): Promise<ConsentSummaryReport[]> {
     const purposes = Object.values(ConsentPurpose);
     const report: ConsentSummaryReport[] = [];
 
     for (const purpose of purposes) {
       // Get the latest consent status for each user for this purpose
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const latestConsents = await prisma.$queryRaw<any[]>`
         SELECT DISTINCT ON ("userId") status
         FROM "consent_receipts"
@@ -116,7 +126,9 @@ export class ConsentService {
         ORDER BY "userId", "createdAt" DESC
       `;
 
-      const grantedCount = latestConsents.filter(c => c.status === ConsentStatus.GRANTED).length;
+      const grantedCount = latestConsents.filter(
+        (c) => c.status === ConsentStatus.GRANTED,
+      ).length;
       const totalCount = latestConsents.length;
 
       report.push({
@@ -132,18 +144,21 @@ export class ConsentService {
 
   /**
    * Retrieves all consent records for the association (Admin/DPO only).
-   * 
+   *
    * @param associationId - The ID of the association.
    * @param limit - Optional limit for pagination.
    * @returns A promise that resolves to an array of ConsentReceiptRecord objects.
    */
-  static async getAllConsentRecords(associationId: string, limit = 100): Promise<ConsentReceiptRecord[]> {
+  static async getAllConsentRecords(
+    associationId: string,
+    limit = 100,
+  ): Promise<ConsentReceiptRecord[]> {
     const records = await prisma.consentReceipt.findMany({
       where: {
         associationId,
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
       take: limit,
       include: {

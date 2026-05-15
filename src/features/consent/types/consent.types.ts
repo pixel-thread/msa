@@ -20,6 +20,7 @@ export interface ConsentReceiptRecord {
   ipAddress: string | null;
   userAgent: string | null;
   channel: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata: any;
   createdAt: Date;
 }

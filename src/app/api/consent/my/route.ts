@@ -1,18 +1,24 @@
 import { withAssociation } from "@src/shared/api/with-association";
-import { requireAuth } from "@src/shared/api/auth";
 import { ConsentService } from "@src/features/consent";
 import { SuccessResponse } from "@src/shared/utils";
+import { UserRole } from "@prisma/client";
+import { withRole } from "@src/shared/api/with-role";
+import { UnauthorizedError } from "@src/shared/errors";
 
 /**
  * GET /api/consent/my
  *
  * Retrieves the current consent state for the authenticated user.
  */
-export const GET = withAssociation({}, async (association) => {
-  const auth = await requireAuth();
+export const GET = withAssociation({}, async (association, _, req) => {
+  await withRole(req, UserRole.MEMBER);
+
+  const userId = req.headers.get("x-user-id");
+
+  if (!userId) throw new UnauthorizedError("User ID not found");
 
   const consentState = await ConsentService.getUserConsentState(
-    auth.userId,
+    userId,
     association.id,
   );
 
