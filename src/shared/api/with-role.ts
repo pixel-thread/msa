@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { UserRole } from "@prisma/client";
 
 import { ForbiddenError, UnauthorizedError } from "../errors";
-import { prisma } from "../lib/prisma";
+import { getUniqueUser } from "../services/getUniqueUser";
 
 const ROLE_HIERARCHY: Record<UserRole, number> = {
   SUPER_ADMIN: 0,
@@ -18,9 +18,7 @@ export async function withRole(req: NextRequest, role: UserRole) {
 
   if (!userId) throw new UnauthorizedError("Unauthorized");
 
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-  });
+  const user = await getUniqueUser({ where: { id: userId } });
 
   if (!user) throw new UnauthorizedError("Unauthorized");
 
