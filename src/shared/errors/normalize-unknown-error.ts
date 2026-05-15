@@ -34,11 +34,6 @@ export const normalizeUnknownError = (error: unknown): AppError => {
     return new UnauthorizedError("Token has expired");
   }
 
-  console.log("Here", { error });
-  if (error instanceof AppError) {
-    return error;
-  }
-
   if (error instanceof ZodError) {
     return new ValidationError("Invalid input", error.issues);
   }
@@ -49,6 +44,10 @@ export const normalizeUnknownError = (error: unknown): AppError => {
       isProd ? "Database error" : error.message,
       500,
     );
+  }
+
+  if (error instanceof AppError) {
+    return error;
   }
 
   const message =

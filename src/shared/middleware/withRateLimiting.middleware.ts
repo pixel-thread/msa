@@ -6,7 +6,7 @@ import { MiddlewareFn } from "./chain";
 import { TooManyRequestsError, normalizeUnknownError } from "../errors";
 import { AppErrorResponse, getTraceId } from "../utils";
 
-const isProd = process.env.NODE_ENV === "production";
+const isProd = env.NODE_ENV === "production";
 
 let redis: Redis | null = null;
 
