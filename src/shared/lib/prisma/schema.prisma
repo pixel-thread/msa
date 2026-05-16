@@ -997,7 +997,7 @@ model ComplianceCheck {
 
 model MemberType {
   id          String @id @default(uuid())
-  description String
+  description String?
   level       Int
 
   associationId     String
@@ -1005,6 +1005,7 @@ model MemberType {
   users             User[]
   subscriptionPlans SubscriptionPlan[]
 
+  @@index([level])
   @@unique([associationId, level])
   @@map("member_types")
 }
