@@ -5,3 +5,4 @@ export * from "./findUniqueModule";
 export * from "./recordCompletion";
 export * from "./findManyCompletions";
 export * from "./findUserCompletions";
+export * from "./assignTraining";

@@ -45,4 +45,14 @@ export type CreateTrainingModuleInput = z.infer<
 export type UpdateTrainingModuleInput = z.infer<
   typeof UpdateTrainingModuleSchema
 >;
+export const AssignTrainingSchema = z.object({
+  userId: z.string().uuid("Invalid user ID"),
+});
+
+export const BulkAssignTrainingSchema = z.object({
+  userIds: z.array(z.string().uuid("Invalid user ID")).min(1, "At least one user is required"),
+});
+
 export type RecordCompletionInput = z.infer<typeof RecordCompletionSchema>;
+export type AssignTrainingInput = z.infer<typeof AssignTrainingSchema>;
+export type BulkAssignTrainingInput = z.infer<typeof BulkAssignTrainingSchema>;
