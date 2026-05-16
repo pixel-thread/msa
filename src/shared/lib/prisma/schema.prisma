@@ -306,6 +306,7 @@ model User {
   consentReceipts       ConsentReceipt[]
   trainingCompletions   TrainingCompletion[]
   complaints            Complaint[]
+trainingAssignments TrainingAssignment[]
 
   @@unique([associationId, email])
   @@unique([associationId, membershipNumber])
@@ -848,6 +849,7 @@ model TrainingModule {
   updatedAt        DateTime             @updatedAt
   association      Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
   completions      TrainingCompletion[]
+assignments TrainingAssignment[]
 
   @@unique([associationId, title])
   @@index([associationId])
@@ -866,6 +868,52 @@ model TrainingCompletion {
 
   @@unique([userId, moduleId])
   @@map("training_completions")
+}
+
+enum TrainingAssignmentStatus {
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
+  EXEMPT
+
+  @@map("training_assignment_status")
+}
+
+model TrainingAssignment {
+  id String @id @default(uuid())
+
+  moduleId String
+  userId   String
+
+  status TrainingAssignmentStatus @default(ASSIGNED)
+
+  assignedAt DateTime @default(now())
+
+  dueDate DateTime?
+
+  startedAt DateTime?
+
+  completedAt DateTime?
+
+  reminderSentAt DateTime?
+
+  assignedById String?
+
+  notes String?
+
+  // Relations
+  module TrainingModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([moduleId, userId])
+
+  @@index([userId])
+  @@index([moduleId])
+  @@index([status])
+
+  @@map("training_assignments")
 }
 
 model AnnouncementRead {
@@ -951,3 +999,4 @@ model MemberType {
   association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
   @@map("member_types")
 }
+

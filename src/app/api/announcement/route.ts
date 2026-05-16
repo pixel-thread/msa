@@ -11,7 +11,6 @@ import {
   CreateAnnouncementSchema,
   AnnouncementQuerySchema,
 } from "@feature/announcement/validators";
-import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
 
 export const GET = withAssociation(
   { query: AnnouncementQuerySchema },
