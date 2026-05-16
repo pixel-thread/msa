@@ -4,6 +4,8 @@ import { SuccessResponse } from "@utils/responses";
 import { UserRole } from "@prisma/client";
 import { CreateOrderSchema } from "@feature/payments/validators";
 import { createPaymentOrder } from "@feature/payments/services/payment.service";
+import { prisma } from "@src/shared/lib/prisma";
+import { NotFoundError } from "@src/shared/errors";
 
 /**
  * POST /api/payments/order
@@ -17,10 +19,29 @@ export const POST = withAssociation(
   { body: CreateOrderSchema },
   async (association, { body }, request) => {
     const user = await withRole(request, UserRole.MEMBER);
+    const typeId = user?.memberTypeId;
+
+    if (!typeId)
+      throw new NotFoundError(
+        "Member type not found. Please contact your administrator.",
+      );
+
+    const plan = await prisma.subscriptionPlan.findFirst({
+      where: {
+        associationId: association.id,
+        memberTypeId: typeId,
+        isActive: true,
+      },
+    });
+
+    if (!plan) {
+      throw new NotFoundError("Plan not found for member type");
+    }
+
     const orderDetails = await createPaymentOrder({
       associationId: association.id,
       userId: user?.id,
-      amount: body!.amount,
+      amount: parseInt(plan.amount.toFixed(2)),
       notes: body!.notes,
     });
 
