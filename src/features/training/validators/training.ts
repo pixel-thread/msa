@@ -53,6 +53,14 @@ export const BulkAssignTrainingSchema = z.object({
   userIds: z.array(z.string().uuid("Invalid user ID")).min(1, "At least one user is required"),
 });
 
+export const AdminRecordCompletionSchema = z.object({
+  userId: z.string().uuid("Invalid user ID"),
+  moduleId: z.string().uuid("Invalid module ID"),
+  scorePercent: z.number().min(0).max(100).optional(),
+  certificateUrl: z.string().url("Invalid certificate URL").optional(),
+});
+
 export type RecordCompletionInput = z.infer<typeof RecordCompletionSchema>;
+export type AdminRecordCompletionInput = z.infer<typeof AdminRecordCompletionSchema>;
 export type AssignTrainingInput = z.infer<typeof AssignTrainingSchema>;
 export type BulkAssignTrainingInput = z.infer<typeof BulkAssignTrainingSchema>;

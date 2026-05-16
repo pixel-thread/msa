@@ -4,6 +4,7 @@ import { SuccessResponse } from "@src/shared/utils";
 import { UserRole, AuditAction } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
 import { z } from "zod";
+import { withValidation } from "@src/shared/api";
 
 const ParamsSchema = z.object({
   ticketId: z.uuid(),

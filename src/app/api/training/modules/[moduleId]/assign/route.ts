@@ -7,7 +7,8 @@ import {
   assignTraining, 
   bulkAssignTraining, 
   removeTrainingAssignment,
-  bulkRemoveTrainingAssignment 
+  bulkRemoveTrainingAssignment,
+  getTrainingAssignments
 } from "@feature/training/services";
 import { AssignTrainingSchema, BulkAssignTrainingSchema } from "@feature/training/validators/training";
 import { z } from "zod";
@@ -23,6 +24,25 @@ const RemoveAssignSchema = z.object({
 const BulkRemoveAssignSchema = z.object({
   userIds: z.array(z.string().uuid("Invalid user ID")).min(1, "At least one user is required"),
 });
+
+export const GET = withAssociation(
+  { params: TrainingParamsSchema },
+  async (association, { params }, request) => {
+    if (!params) {
+      throw new ForbiddenError("Invalid module ID");
+    }
+
+    await withRole(request, UserRole.MEMBER);
+    const { moduleId } = params;
+
+    const assignments = await getTrainingAssignments({
+      associationId: association.id,
+      moduleId,
+    });
+
+    return SuccessResponse({ data: assignments });
+  },
+);
 
 export const POST = withAssociation(
   { params: TrainingParamsSchema, body: AssignTrainingSchema },

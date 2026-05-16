@@ -8,7 +8,7 @@ import { RecordCompletionSchema } from "@feature/training/validators/training";
 import { z } from "zod";
 
 const TrainingParamsSchema = z.object({
-  moduleId: z.string().uuid("Invalid module ID"),
+  moduleId: z.uuid("Invalid module ID"),
 });
 
 export const POST = withAssociation(
@@ -22,6 +22,7 @@ export const POST = withAssociation(
     }
 
     const { moduleId } = params;
+
     const user = await withRole(request, UserRole.MEMBER);
 
     const completion = await recordCompletion({

@@ -1,5 +1,34 @@
 import { prisma } from "@lib/prisma";
-import { AuditAction, Prisma, UserRole } from "@prisma/client";
+import { AuditAction, Prisma } from "@prisma/client";
+
+interface GetTrainingAssignmentsProps {
+  associationId: string;
+  moduleId: string;
+}
+
+export async function getTrainingAssignments({
+  associationId,
+  moduleId,
+}: GetTrainingAssignmentsProps) {
+  return await prisma.trainingAssignment.findMany({
+    where: {
+      moduleId,
+      module: { associationId },
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          status: true,
+        },
+      },
+    },
+    orderBy: { assignedAt: "desc" },
+  });
+}
 
 interface AssignTrainingProps {
   associationId: string;
