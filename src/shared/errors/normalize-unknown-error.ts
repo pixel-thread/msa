@@ -1,9 +1,14 @@
 import { ZodError } from "zod";
 import { env } from "@src/env";
 import { AppError } from "./classes/base";
-import { UnauthorizedError, ValidationError } from "./classes/http-errors";
+import {
+  PaymentError,
+  UnauthorizedError,
+  ValidationError,
+} from "./classes/http-errors";
 import { Prisma } from "@prisma/client";
 import { JWTClaimValidationFailed, JOSEError } from "jose/errors";
+import Razorpay from "razorpay";
 
 /**
  * Type guard to check if an error is a Prisma-specific error
@@ -30,12 +35,16 @@ const isJwtError = (error: unknown): error is JWTClaimValidationFailed => {
 export const normalizeUnknownError = (error: unknown): AppError => {
   const isProd = env.NODE_ENV === "production";
 
-  if (isJwtError(error)) {
-    return new UnauthorizedError("Token has expired");
+  if (isJwtError(error) || error instanceof UnauthorizedError) {
+    return new UnauthorizedError("Authentication required");
   }
 
   if (error instanceof ZodError) {
     return new ValidationError("Invalid input", error.issues);
+  }
+
+  if (error instanceof PaymentError) {
+    return new PaymentError(error.message, error.code, error.statusCode);
   }
 
   if (isPrismaError(error)) {

@@ -1,9 +1,17 @@
 import Razorpay from "razorpay";
 import * as crypto from "crypto";
+import { NotFoundError } from "@src/shared/errors";
 
 // ---------------------------------------------------------------------------
-// Razorpay SDK singleton
+// Razorpay SDK factory (replaces singleton for multi-tenant support)
 // ---------------------------------------------------------------------------
+
+export const createRazorpayClient = (
+  keyId: string,
+  keySecret: string,
+): Razorpay => {
+  return new Razorpay({ key_id: keyId, key_secret: keySecret });
+};
 
 const getRazorpayInstance = (): Razorpay => {
   const keyId = process.env.RAZORPAY_KEY_ID;
@@ -15,7 +23,7 @@ const getRazorpayInstance = (): Razorpay => {
     );
   }
 
-  return new Razorpay({ key_id: keyId, key_secret: keySecret });
+  return createRazorpayClient(keyId, keySecret);
 };
 
 // ---------------------------------------------------------------------------
@@ -81,17 +89,18 @@ export async function createRazorpayOrder(
  */
 export function verifyPaymentSignature(
   params: VerifySignatureParams,
+  keySecret?: string,
 ): boolean {
-  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+  const secret = keySecret ?? process.env.RAZORPAY_KEY_SECRET;
 
-  if (!keySecret) {
+  if (!secret) {
     throw new Error("RAZORPAY_KEY_SECRET is not configured");
   }
 
   const body = `${params.razorpayOrderId}|${params.razorpayPaymentId}`;
 
   const expectedSignature = crypto
-    .createHmac("sha256", keySecret)
+    .createHmac("sha256", secret)
     .update(body)
     .digest("hex");
 
@@ -107,15 +116,16 @@ export function verifyPaymentSignature(
 export function verifyWebhookSignature(
   rawBody: string,
   signature: string,
+  webhookSecret?: string,
 ): boolean {
-  const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+  const secret = webhookSecret ?? process.env.RAZORPAY_WEBHOOK_SECRET;
 
-  if (!webhookSecret) {
+  if (!secret) {
     throw new Error("RAZORPAY_WEBHOOK_SECRET is not configured");
   }
 
   const expectedSignature = crypto
-    .createHmac("sha256", webhookSecret)
+    .createHmac("sha256", secret)
     .update(rawBody)
     .digest("hex");
 
@@ -125,7 +135,6 @@ export function verifyWebhookSignature(
       Buffer.from(signature),
     );
   } catch {
-    // Lengths differ → signature is invalid
     return false;
   }
 }
@@ -147,6 +156,19 @@ export async function initiateRefund(
 ) {
   const razorpay = getRazorpayInstance();
   return razorpay.payments.refund(razorpayPaymentId, {
-    amount: amountInPaise, // undefined = full refund
+    amount: amountInPaise,
   });
+}
+
+export async function getRazorpayClientForAssociation(associationId: string) {
+  const { getActiveProvider } = await import("./payment-provider.service");
+  const { decrypt } = await import("@src/shared/lib/crypto");
+
+  const provider = await getActiveProvider(associationId, "RAZORPAY");
+  if (!provider) {
+    throw new NotFoundError("No payment provider configured for association");
+  }
+
+  const keySecret = decrypt(provider.encryptedKeySecret);
+  return createRazorpayClient(provider.keyId, keySecret);
 }

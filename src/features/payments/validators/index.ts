@@ -122,3 +122,26 @@ export const CollectionReportQuerySchema = z.object({
   month: z.coerce.number().int().min(1).max(12).optional(),
   status: z.enum(ContributionStatus).optional(),
 });
+
+// ---------------------------------------------------------------------------
+// Payment Provider CRUD
+// ---------------------------------------------------------------------------
+
+export const UpsertPaymentProviderSchema = z.object({
+  provider: z.enum(["RAZORPAY", "STRIPE", "PAYU", "CASHFREE"]),
+  keyId: z.string().min(1, "keyId is required"),
+  keySecret: z.string().min(1, "keySecret is required"),
+  webhookSecret: z.string().optional(),
+  isActive: z.boolean().default(true),
+});
+
+export const UpdatePaymentProviderSchema = z.object({
+  keyId: z.string().min(1).optional(),
+  keySecret: z.string().min(1).optional(),
+  webhookSecret: z.string().optional(),
+  isActive: z.boolean().optional(),
+});
+
+export const ProviderIdParamSchema = z.object({
+  providerId: z.string().uuid("Invalid provider ID"),
+});

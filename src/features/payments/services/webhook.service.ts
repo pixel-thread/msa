@@ -2,6 +2,8 @@ import { prisma } from "@src/shared/lib/prisma";
 import { AuditAction, PaymentGateway } from "@prisma/client";
 import { verifyWebhookSignature } from "./razorpay.service";
 import { verifyAndCompletePayment, markPaymentFailed } from "./payment.service";
+import { getActiveProvider } from "./payment-provider.service";
+import { decrypt } from "@src/shared/lib/crypto";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -73,13 +75,28 @@ export async function processWebhookEvent(
   rawBody: string,
   signature: string,
 ): Promise<{ status: "ok" | "duplicate" | "unhandled"; eventId?: string }> {
-  // 1. Verify webhook signature
-  const isValid = verifyWebhookSignature(rawBody, signature);
+  const payload: RazorpayWebhookPayload = JSON.parse(rawBody);
+
+  let webhookSecret: string | undefined;
+
+  const paymentOrderId = payload.payload.payment?.entity?.order_id;
+  if (paymentOrderId) {
+    const transaction = await prisma.paymentTransaction.findUnique({
+      where: { razorpayOrderId: paymentOrderId },
+    });
+
+    if (transaction) {
+      const provider = await getActiveProvider(transaction.associationId, "RAZORPAY");
+      if (provider && provider.encryptedWebhookSecret) {
+        webhookSecret = decrypt(provider.encryptedWebhookSecret);
+      }
+    }
+  }
+
+  const isValid = verifyWebhookSignature(rawBody, signature, webhookSecret);
   if (!isValid) {
     throw new WebhookSignatureError("Invalid webhook signature");
   }
-
-  const payload: RazorpayWebhookPayload = JSON.parse(rawBody);
 
   // Construct a deterministic event ID from Razorpay's data
   // Razorpay doesn't send a unique event ID in every webhook,

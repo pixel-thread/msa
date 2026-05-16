@@ -7,6 +7,7 @@
 @dsarTicketId=REPLACE_WITH_DSAR_TICKET_ID
 @notificationId=REPLACE_WITH_NOTIFICATION_ID
 @paymentId=REPLACE_WITH_PAYMENT_ID
+@providerId=REPLACE_WITH_PROVIDER_ID
 @announcementId=REPLACE_WITH_ANNOUNCEMENT_ID
 @invoiceId=REPLACE_WITH_INVOICE_ID
 @minuitesId=REPLACE_WITH_MINUTES_ID
@@ -438,6 +439,57 @@ x-razorpay-signature: REPLACE_WITH_HMAC
   },
   "created_at": 1400826750
 }
+
+### ----------------- PAYMENT PROVIDERS ------------------
+
+###
+# @name Upsert Payment Provider (Create or Update)
+POST {{NEXT_PUBLIC_API_BASE_URL}}/payments/providers
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "provider": "RAZORPAY",
+  "keyId": "{{RAZORPAY_KEY_ID}}",
+  "keySecret": "{{RAZORPAY_KEY_SECRET}}",
+  "webhookSecret": "{{RAZORPAY_WEBHOOK_SECRET}}",
+  "isActive": true
+}
+
+###
+# @name List Payment Providers
+GET {{NEXT_PUBLIC_API_BASE_URL}}/payments/providers
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Get Payment Provider
+GET {{NEXT_PUBLIC_API_BASE_URL}}/payments/providers/{{providerId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Update Payment Provider
+PATCH {{NEXT_PUBLIC_API_BASE_URL}}/payments/providers/{{providerId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "keyId": "rzp_test_updated",
+  "keySecret": "new_secret"
+}
+
+###
+# @name Delete Payment Provider
+DELETE {{NEXT_PUBLIC_API_BASE_URL}}/payments/providers/{{providerId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Activate Payment Provider
+POST {{NEXT_PUBLIC_API_BASE_URL}}/payments/providers/{{providerId}}/activate
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
 
 ### ----------------- MEMBERS ------------------
 

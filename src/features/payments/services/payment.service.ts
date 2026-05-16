@@ -8,11 +8,12 @@ import {
   PaymentMethod,
 } from "@prisma/client";
 
-import {
-  createRazorpayOrder,
-  verifyPaymentSignature,
-} from "./razorpay.service";
+import { verifyPaymentSignature } from "./razorpay.service";
+import { getActiveProvider } from "./payment-provider.service";
+import { decrypt } from "@src/shared/lib/crypto";
 import { env } from "@src/env";
+import Razorpay from "razorpay";
+import { PaymentError } from "@src/shared/errors";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -136,6 +137,39 @@ export interface RazorpayOptions {
 export async function createPaymentOrder(input: CreateOrderInput) {
   const amountInPaise = Math.round(input.amount * 100);
 
+  const provider = await getActiveProvider(input.associationId, "RAZORPAY");
+
+  let keyId: string;
+  let keySecret: string;
+
+  if (provider) {
+    keyId = provider.keyId;
+    keySecret = decrypt(provider.encryptedKeySecret);
+  } else {
+    keyId = env.RAZORPAY_KEY_ID ?? "";
+    keySecret = env.RAZORPAY_KEY_SECRET ?? "";
+
+    if (!keyId || !keySecret) {
+      throw new Error("No payment provider configured and no env vars set");
+    }
+  }
+
+  let razorpayClient;
+  try {
+    razorpayClient = new Razorpay({
+      key_id: keyId,
+      key_secret: keySecret,
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw new PaymentError(
+      error?.error?.description || "Payment failed",
+      error?.error?.code,
+      error?.statusCode,
+    );
+  }
+
   // Create pending transaction first
   const transaction = await prisma.paymentTransaction.create({
     data: {
@@ -150,15 +184,27 @@ export async function createPaymentOrder(input: CreateOrderInput) {
   });
 
   // Create Razorpay order
-  const razorpayOrder = await createRazorpayOrder({
-    amountInPaise,
-    receipt: transaction.id,
-    notes: {
-      transactionId: transaction.id,
-      userId: input.userId,
-      associationId: input.associationId,
-    },
-  });
+  let razorpayOrder;
+
+  try {
+    razorpayOrder = await razorpayClient.orders.create({
+      amount: amountInPaise,
+      currency: "INR",
+      receipt: transaction.id,
+      notes: {
+        transactionId: transaction.id,
+        userId: input.userId,
+        associationId: input.associationId,
+      },
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw new PaymentError(
+      error?.error?.description || "Payment failed",
+      error?.error?.code,
+      error?.statusCode,
+    );
+  }
 
   // Link Razorpay order ID to our transaction
   await prisma.paymentTransaction.update({
@@ -173,7 +219,7 @@ export async function createPaymentOrder(input: CreateOrderInput) {
     order_id: razorpayOrder.id,
     amount: amountInPaise,
     currency: "INR",
-    key: env.RAZORPAY_KEY_ID,
+    key: keyId,
   };
 
   return options;
@@ -193,18 +239,6 @@ export async function createPaymentOrder(input: CreateOrderInput) {
  * 5. Writes audit logs
  */
 export async function verifyAndCompletePayment(input: VerifyAndCompleteInput) {
-  // 1. Verify signature
-  const isValid = verifyPaymentSignature({
-    razorpayOrderId: input.razorpayOrderId,
-    razorpayPaymentId: input.razorpayPaymentId,
-    razorpaySignature: input.razorpaySignature,
-  });
-
-  if (!isValid) {
-    throw new Error("Invalid Razorpay payment signature");
-  }
-
-  // 2. Find the pending transaction
   const transaction = await prisma.paymentTransaction.findUnique({
     where: { razorpayOrderId: input.razorpayOrderId },
   });
@@ -216,15 +250,35 @@ export async function verifyAndCompletePayment(input: VerifyAndCompleteInput) {
   }
 
   if (transaction.status === PaymentStatus.COMPLETED) {
-    // Already processed (idempotent)
     return transaction;
   }
 
-  // 3. Complete the transaction inside a DB transaction
+  const provider = await getActiveProvider(
+    transaction.associationId,
+    "RAZORPAY",
+  );
+
+  let keySecret: string | undefined;
+  if (provider) {
+    keySecret = decrypt(provider.encryptedKeySecret);
+  }
+
+  const isValid = verifyPaymentSignature(
+    {
+      razorpayOrderId: input.razorpayOrderId,
+      razorpayPaymentId: input.razorpayPaymentId,
+      razorpaySignature: input.razorpaySignature,
+    },
+    keySecret,
+  );
+
+  if (!isValid) {
+    throw new Error("Invalid Razorpay payment signature");
+  }
+
   return prisma.$transaction(async (tx) => {
     const now = new Date();
 
-    // Mark completed
     const updatedTransaction = await tx.paymentTransaction.update({
       where: { id: transaction.id },
       data: {
@@ -236,7 +290,6 @@ export async function verifyAndCompletePayment(input: VerifyAndCompleteInput) {
       },
     });
 
-    // Allocate to contribution periods
     await allocatePaymentToContributions(
       tx,
       transaction.id,
@@ -244,16 +297,14 @@ export async function verifyAndCompletePayment(input: VerifyAndCompleteInput) {
       Number(transaction.amount),
     );
 
-    // Create ledger entry
     await createLedgerEntry(
       tx,
       transaction.id,
       Number(transaction.amount),
       "Online payment via Razorpay",
-      transaction.userId, // createdBy = payer for online
+      transaction.userId,
     );
 
-    // Audit log
     await tx.auditLog.create({
       data: {
         associationId: transaction.associationId,

@@ -1,3 +1,4 @@
+import * as crypto from "crypto";
 import {
   PrismaClient,
   Prisma,
@@ -82,6 +83,23 @@ const ASSOCIATIONS = [
   },
 ];
 
+export const encrypt = (plain: string): string => {
+  const iv = crypto.randomBytes(16);
+  const KEY = Buffer.from(process.env.FIELD_ENCRYPTION_KEY!, "hex");
+  const cipher = crypto.createCipheriv("aes-256-gcm", KEY, iv);
+  const encrypted = Buffer.concat([
+    cipher.update(plain, "utf8"),
+    cipher.final(),
+  ]);
+
+  const tag = cipher.getAuthTag();
+
+  return [
+    iv.toString("hex"),
+    tag.toString("hex"),
+    encrypted.toString("hex"),
+  ].join(":");
+};
 // -----------------------------------------------------------------------------
 // SEED ASSOCIATION
 // -----------------------------------------------------------------------------
@@ -90,6 +108,9 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
   console.log(`\n--- Seeding ${data.name} ---`);
 
   const password = await hashPassword(process.env.PASSWORD!);
+  const hashRazorpayKey = process.env.RAZORPAY_KEY_SECRET!;
+  const hashRazorpayWebhook = process.env.RAZORPAY_WEBHOOK_SECRET!;
+  const hashRazorpayKeyId = process.env.RAZORPAY_KEY_ID!;
 
   // ---------------------------------------------------------------------------
   // ASSOCIATION
@@ -120,17 +141,17 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
       {
         associationId: association.id,
         description: "Regular Member",
-        lavel: 1,
+        level: 1,
       },
       {
         associationId: association.id,
         description: "Executive Member",
-        lavel: 2,
+        level: 2,
       },
       {
         associationId: association.id,
         description: "Honorary Member",
-        lavel: 3,
+        level: 3,
       },
     ],
   });
@@ -145,6 +166,7 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
       name: "Standard Membership",
       description: "Default membership plan",
       amount: new Prisma.Decimal(500),
+      currency: "INR",
       billingCycle: "MONTHLY",
       features: {
         voting: true,
@@ -169,6 +191,10 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
 
   const users: Record<UserRole, any> = {} as any;
 
+  const memberTypes = await prisma.memberType.findMany({
+    where: { associationId: association.id },
+  });
+
   for (const role of roles) {
     const user = await prisma.user.create({
       data: {
@@ -183,6 +209,7 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
         membershipNumber: `${data.short.toUpperCase()}-${role}`,
         imageUrl: "https://placehold.co/300x300",
         mfaEnabled: false,
+        memberTypeId: memberTypes[0]?.id,
 
         subscription:
           role === UserRole.MEMBER
@@ -269,6 +296,10 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
         role === UserRole.SUPER_ADMIN
           ? RsvpStatus.ACCEPTED
           : RsvpStatus.PENDING,
+      rsvpNote:
+        role === UserRole.SUPER_ADMIN ? "Confirmed attendance" : undefined,
+      rsvpAt: role === UserRole.SUPER_ADMIN ? new Date() : undefined,
+      notifiedAt: new Date(),
     })),
   });
 
@@ -336,11 +367,18 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
         moduleId: trainingModule.id,
         userId: users[UserRole.MEMBER].id,
         status: TrainingAssignmentStatus.ASSIGNED,
+        assignedAt: new Date(),
+        dueDate: new Date("2026-12-31"),
+        assignedById: users[UserRole.SUPER_ADMIN].id,
       },
       {
         moduleId: trainingModule.id,
         userId: users[UserRole.SECRETARY].id,
         status: TrainingAssignmentStatus.IN_PROGRESS,
+        assignedAt: new Date(),
+        dueDate: new Date("2026-12-31"),
+        startedAt: new Date(),
+        assignedById: users[UserRole.SUPER_ADMIN].id,
       },
     ],
   });
@@ -455,6 +493,7 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
       receiptUrl: "https://example.com/receipt.pdf",
       invoiceUrl: "https://example.com/invoice.pdf",
       paidAt: new Date(),
+      paymentDate: new Date(),
       notes: "Membership payment",
       createdById: users[UserRole.FINANCE].id,
       verifiedById: users[UserRole.SUPER_ADMIN].id,
@@ -575,6 +614,43 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
       description: "Receipt PDF download failing",
       status: ComplaintStatus.OPEN,
       priority: "HIGH",
+      assignedToId: users[UserRole.SECRETARY].id,
+    },
+  });
+
+  // ---------------------------------------------------------------------------
+  // PAYMENT PROVIDER
+  // ---------------------------------------------------------------------------
+
+  await prisma.paymentProvider.create({
+    data: {
+      associationId: association.id,
+      provider: "RAZORPAY",
+      keyId: hashRazorpayKeyId,
+      encryptedKeySecret: hashRazorpayKey,
+      encryptedWebhookSecret: hashRazorpayWebhook,
+      isActive: true,
+    },
+  });
+
+  // ---------------------------------------------------------------------------
+  // AUDIT LOG
+  // ---------------------------------------------------------------------------
+
+  await prisma.auditLog.create({
+    data: {
+      associationId: association.id,
+      actorId: users[UserRole.SUPER_ADMIN].id,
+      action: "CREATE",
+      resourceType: "Association",
+      resourceId: association.id,
+      newValues: {
+        name: data.name,
+        slug: data.slug,
+      },
+      ipAddress: "127.0.0.1",
+      userAgent: "seed-script",
+      traceId: `${data.short}-trace-001`,
     },
   });
 
@@ -608,6 +684,36 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
 async function main() {
   console.log("\n--- Cleaning Database ---");
 
+  await prisma.announcementRead.deleteMany();
+  await prisma.meetingMinutes.deleteMany();
+  await prisma.agendaItem.deleteMany();
+  await prisma.meetingAttendee.deleteMany();
+  await prisma.meeting.deleteMany();
+  await prisma.trainingCompletion.deleteMany();
+  await prisma.trainingAssignment.deleteMany();
+  await prisma.trainingModule.deleteMany();
+  await prisma.announcement.deleteMany();
+  await prisma.consentReceipt.deleteMany();
+  await prisma.dsarResponse.deleteMany();
+  await prisma.dsarTicket.deleteMany();
+  await prisma.paymentWebhookEvent.deleteMany();
+  await prisma.paymentAllocation.deleteMany();
+  await prisma.contributionPeriod.deleteMany();
+  await prisma.ledgerLine.deleteMany();
+  await prisma.ledgerEntry.deleteMany();
+  await prisma.paymentTransaction.deleteMany();
+  await prisma.notification.deleteMany();
+  await prisma.complaint.deleteMany();
+  await prisma.complianceCheck.deleteMany();
+  await prisma.paymentProvider.deleteMany();
+  await prisma.auditLog.deleteMany();
+  await prisma.subscription.deleteMany();
+  await prisma.subscriptionPlan.deleteMany();
+  await prisma.memberType.deleteMany();
+  await prisma.pushToken.deleteMany();
+  await prisma.refreshToken.deleteMany();
+  await prisma.verificationCode.deleteMany();
+  await prisma.user.deleteMany();
   await prisma.association.deleteMany();
 
   for (const association of ASSOCIATIONS) {

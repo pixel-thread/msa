@@ -6,16 +6,21 @@ export const env = createEnv({
     DATABASE_URL: z.url(),
     UPSTASH_REDIS_REST_URL: z.url(),
     UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
-    FIELD_ENCRYPTION_KEY: z.string().length(64),
+    FIELD_ENCRYPTION_KEY: z
+      .string()
+      .regex(
+        /^[0-9a-fA-F]{64}$/,
+        "FIELD_ENCRYPTION_KEY must be a 32-byte hex key",
+      ),
     CRON_SECRET: z.string().min(32),
     BLOB_READ_WRITE_TOKEN: z.string().optional(),
     RESEND_API_KEY: z.string().startsWith("re_").optional(),
     NODE_ENV: z.enum(["development", "test", "production"]),
 
-    // Razorpay
-    RAZORPAY_KEY_ID: z.string().min(1),
-    RAZORPAY_KEY_SECRET: z.string().min(1),
-    RAZORPAY_WEBHOOK_SECRET: z.string().min(1),
+    // Razorpay (optional - use database providers instead)
+    RAZORPAY_KEY_ID: z.string().min(1).optional(),
+    RAZORPAY_KEY_SECRET: z.string().min(1).optional(),
+    RAZORPAY_WEBHOOK_SECRET: z.string().min(1).optional(),
     ALLOWED_ORIGINS: z
       .array(z.url())
       .transform((origins) => origins.join(","))

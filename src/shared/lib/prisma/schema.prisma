@@ -133,6 +133,15 @@ enum ContributionStatus {
   @@map("contribution_status")
 }
 
+enum PaymentProviderType {
+  RAZORPAY
+  STRIPE
+  PAYU
+  CASHFREE
+
+  @@map("payment_provider_type")
+}
+
 enum PaymentGateway {
   RAZORPAY
   MANUAL
@@ -255,6 +264,7 @@ model Association {
   complaints          Complaint[]
   complianceChecks    ComplianceCheck[]
   memberTypes         MemberType[]
+  paymentProviders    PaymentProvider[]
 
   @@index([slug])
   @@index([isActive])
@@ -1008,4 +1018,27 @@ model MemberType {
   @@index([level])
   @@unique([associationId, level])
   @@map("member_types")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PAYMENT PROVIDERS (Multi-Tenant)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model PaymentProvider {
+  id                   String   @id @default(uuid())
+  associationId        String
+  provider             PaymentProviderType
+  keyId                String
+  encryptedKeySecret   String
+  encryptedWebhookSecret String?
+  isActive             Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  association          Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+
+  @@unique([associationId, provider])
+  @@index([associationId])
+  @@index([associationId, isActive])
+  @@map("payment_providers")
 }

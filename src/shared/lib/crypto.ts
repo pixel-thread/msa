@@ -1,16 +1,22 @@
 import * as crypto from "crypto";
 import { env } from "@src/env";
 
+const ALGORITHM = "aes-256-gcm";
+
 const KEY = Buffer.from(env.FIELD_ENCRYPTION_KEY, "hex");
 
 export const encrypt = (plain: string): string => {
   const iv = crypto.randomBytes(16);
-  const cipher = crypto.createCipheriv("aes-256-gcm", KEY, iv);
+
+  const cipher = crypto.createCipheriv(ALGORITHM, KEY, iv);
+
   const encrypted = Buffer.concat([
     cipher.update(plain, "utf8"),
     cipher.final(),
   ]);
+
   const tag = cipher.getAuthTag();
+
   return [
     iv.toString("hex"),
     tag.toString("hex"),
@@ -19,13 +25,34 @@ export const encrypt = (plain: string): string => {
 };
 
 export const decrypt = (ciphertext: string): string => {
-  const [ivHex, tagHex, encHex] = ciphertext.split(":");
-  if (!ivHex || !tagHex || !encHex) return ciphertext;
+  console.log("decrypt input:", ciphertext);
 
-  const iv = Buffer.from(ivHex, "hex");
-  const tag = Buffer.from(tagHex, "hex");
-  const enc = Buffer.from(encHex, "hex");
-  const dec = crypto.createDecipheriv("aes-256-gcm", KEY, iv);
-  dec.setAuthTag(tag);
-  return Buffer.concat([dec.update(enc), dec.final()]).toString("utf8");
+  const parts = ciphertext.split(":");
+
+  if (parts.length !== 3) {
+    throw new Error(`Invalid 2 encrypted value format`);
+  }
+
+  const [ivHex, tagHex, encHex] = parts;
+
+  try {
+    const decipher = crypto.createDecipheriv(
+      ALGORITHM,
+      KEY,
+      Buffer.from(ivHex, "hex"),
+    );
+
+    decipher.setAuthTag(Buffer.from(tagHex, "hex"));
+
+    const decrypted = Buffer.concat([
+      decipher.update(Buffer.from(encHex, "hex")),
+      decipher.final(),
+    ]);
+
+    return decrypted.toString("utf8");
+  } catch (error) {
+    console.error(error);
+
+    throw new Error("Failed to decrypt value");
+  }
 };

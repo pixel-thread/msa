@@ -52,3 +52,15 @@ export class TooManyRequestsError extends AppError {
     super("TOO_MANY_REQUESTS", message, 429, details);
   }
 }
+
+export class PaymentError extends Error {
+  code: string;
+  statusCode: number;
+
+  constructor(message: string, code = "PAYMENT_ERROR", statusCode = 400) {
+    super(message);
+
+    this.code = code;
+    this.statusCode = statusCode;
+  }
+}
