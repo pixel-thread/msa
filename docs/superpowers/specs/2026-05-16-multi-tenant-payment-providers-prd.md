@@ -58,7 +58,7 @@ Introduce a **PaymentProvider** model that stores per-association payment gatewa
 
 ```prisma
 model PaymentProvider {
-  id                      String    @id @default(cuid())
+  id                      String    @id @default(uuid())
   associationId          String
   provider               String    // "razorpay" | "stripe" | "payu" | "cashfree"
   keyId                  String    // Public key - safe to expose
