@@ -33,24 +33,18 @@ export const GET = withAssociation(
       data: result.announcements,
       meta: result.pagination,
     });
-  }
+  },
 );
 
 export const POST = withAssociation(
   { body: CreateAnnouncementSchema },
   async (association, { body }, request) => {
+    await withRole(request, UserRole.SECRETARY);
     if (!body) {
       throw new ForbiddenError("Invalid request body");
     }
 
     const userId = request.headers.get("x-user-id")!;
-    const user = await withRole(request, UserRole.MEMBER);
-
-    if (!hasHighRoleAccess(user.role)) {
-      throw new ForbiddenError(
-        "Only high role users can create announcements"
-      );
-    }
 
     const isPublishing = body.status === AnnouncementStatus.PUBLISHED;
 
@@ -62,15 +56,14 @@ export const POST = withAssociation(
         publishedAt: body.publishedAt
           ? new Date(body.publishedAt)
           : isPublishing
-          ? new Date()
-          : undefined,
-        expiresAt: body.expiresAt
-          ? new Date(body.expiresAt)
-          : undefined,
+            ? new Date()
+            : undefined,
+        expiresAt: body.expiresAt ? new Date(body.expiresAt) : undefined,
       },
       sendNotification: isPublishing,
     });
 
     return SuccessResponse({ data: announcement }, 201);
-  }
+  },
 );
+

@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { prisma } from "../lib/prisma";
+import { prisma } from "@lib/prisma";
 
 type Props = {
   where: Prisma.UserWhereUniqueInput;
@@ -13,6 +13,7 @@ export async function getUniqueUser({ where }: Props) {
       email: true,
       name: true,
       role: true,
+      status: true,
     },
   });
 }
