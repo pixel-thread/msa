@@ -308,7 +308,9 @@ model User {
   consentReceipts       ConsentReceipt[]
   trainingCompletions   TrainingCompletion[]
   complaints            Complaint[]
-trainingAssignments TrainingAssignment[]
+  trainingAssignments   TrainingAssignment[]
+  memberTypeId          String?
+  memberType            MemberType?          @relation(fields: [memberTypeId], references: [id])
 
   @@unique([associationId, email])
   @@unique([associationId, membershipNumber])
@@ -339,8 +341,11 @@ model SubscriptionPlan {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  association   Association    @relation(fields: [associationId], references: [id], onDelete: Cascade)
+association   Association    @relation(fields: [associationId], references: [id], onDelete: Cascade)
   subscriptions Subscription[]
+
+  memberTypeId String?
+  memberType   MemberType? @relation(fields: [memberTypeId], references: [id])
 
   @@unique([associationId, name])
   @@index([associationId])
@@ -851,7 +856,7 @@ model TrainingModule {
   updatedAt        DateTime             @updatedAt
   association      Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
   completions      TrainingCompletion[]
-assignments TrainingAssignment[]
+  assignments      TrainingAssignment[]
 
   @@unique([associationId, title])
   @@index([associationId])
@@ -910,11 +915,9 @@ model TrainingAssignment {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([moduleId, userId])
-
   @@index([userId])
   @@index([moduleId])
   @@index([status])
-
   @@map("training_assignments")
 }
 
@@ -995,10 +998,13 @@ model ComplianceCheck {
 model MemberType {
   id          String @id @default(uuid())
   description String
-  lavel       Int
+  level       Int
 
-  associationId   String
-  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  associationId     String
+  association       Association        @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  users             User[]
+  subscriptionPlans SubscriptionPlan[]
+
+  @@unique([associationId, level])
   @@map("member_types")
 }
-
