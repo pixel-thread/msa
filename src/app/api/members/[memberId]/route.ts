@@ -6,9 +6,7 @@ import { withRole } from "@src/shared/api/with-role";
 import { UserRole } from "@prisma/client";
 import z from "zod";
 
-const ParamSchema = z.object({
-  memberId: z.string().cuid(),
-});
+const ParamSchema = z.object({ memberId: z.uuid() });
 
 export const GET = withAssociation(
   { params: ParamSchema },
@@ -83,9 +81,15 @@ export const PATCH = withAssociation(
         ...(body.name && { name: body.name }),
         ...(body.mobile && { mobile: body.mobile }),
         ...(body.designation && { designation: body.designation }),
-        ...(body.dateOfJoiningGovt && { dateOfJoiningGovt: body.dateOfJoiningGovt }),
-        ...(body.dateOfJoiningMfsa && { dateOfJoiningMfsa: body.dateOfJoiningMfsa }),
-        ...(body.membershipNumber && { membershipNumber: body.membershipNumber }),
+        ...(body.dateOfJoiningGovt && {
+          dateOfJoiningGovt: body.dateOfJoiningGovt,
+        }),
+        ...(body.dateOfJoiningMfsa && {
+          dateOfJoiningMfsa: body.dateOfJoiningMfsa,
+        }),
+        ...(body.membershipNumber && {
+          membershipNumber: body.membershipNumber,
+        }),
       },
     });
 
@@ -100,5 +104,5 @@ export const PATCH = withAssociation(
         dateOfJoiningMfsa: user.dateOfJoiningMfsa,
       },
     });
-  }
+  },
 );

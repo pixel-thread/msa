@@ -1,5 +1,9 @@
 import { z } from "zod";
 import { DsarRequestType, DsarStatus } from "@prisma/client";
+import {
+  pageNumberValidation,
+  pageSizeValidiaiton,
+} from "@src/shared/validators/common";
 
 export const SubmitDsarSchema = z.object({
   requestType: z.enum(DsarRequestType),
@@ -23,8 +27,8 @@ export const RespondDsarSchema = z.object({
 });
 
 export const DsarQuerySchema = z.object({
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().default(10),
+  page: pageNumberValidation,
+  limit: pageSizeValidiaiton,
   status: z.enum(DsarStatus).optional(),
   requestType: z.enum(DsarRequestType).optional(),
   userId: z.string().optional(),

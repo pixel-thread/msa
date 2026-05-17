@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { pageSizeValidiaiton } from "../common";
+import { pageNumberValidation, pageSizeValidiaiton } from "../common";
 
 export const LogIngestSchema = z.object({
   level: z.enum(["info", "warn", "error", "debug"]),
@@ -22,7 +22,7 @@ export const LogBatchSchema = z.object({
 export type LogBatchInput = z.infer<typeof LogBatchSchema>;
 
 export const LogQuerySchema = z.object({
-  page: pageSizeValidiaiton,
+  page: pageNumberValidation,
   limit: pageSizeValidiaiton,
   level: z.enum(["info", "warn", "error", "debug"]).default("error").optional(),
   search: z.string().optional(),

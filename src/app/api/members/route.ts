@@ -5,9 +5,10 @@ import { withRole } from "@src/shared/api/with-role";
 import { getMembers } from "@src/features/members/services/getMembers";
 import z from "zod";
 import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
+import { pageNumberValidation } from "@src/shared/validators/common";
 
 const QuerySchema = z.object({
-  page: z.coerce.number().positive().max(100).optional().default(1).catch(1),
+  page: pageNumberValidation,
 });
 export const GET = withAssociation(
   { query: QuerySchema },

@@ -6,8 +6,8 @@ export const pageSizeValidiaiton = z.coerce
   .min(1)
   .max(1000)
   .positive()
-  .default(1)
-  .catch(1)
+  .default(10)
+  .catch(10)
   .optional();
 
 export const pageNumberValidation = z.coerce
