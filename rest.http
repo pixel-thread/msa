@@ -1085,11 +1085,78 @@ Authorization: Bearer {{TOKEN}}
   "action": "unpublish"
 }
 
-### ----------------- USER ------------------
-
+### ----------------- LOGS ------------------
 
 ###
-# @name list user invoices 
+# @name Get Logs (with pagination)
+GET {{NEXT_PUBLIC_API_BASE_URL}}/logs?page=1&limit=20
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Get Logs (filtered by level)
+GET {{NEXT_PUBLIC_API_BASE_URL}}/logs?level=error&page=1&limit=10
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Get Logs (search by message)
+GET {{NEXT_PUBLIC_API_BASE_URL}}/logs?search=payment&page=1&limit=20
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Get Logs (date range filter)
+GET {{NEXT_PUBLIC_API_BASE_URL}}/logs?startDate=2026-05-01T00:00:00Z&endDate=2026-05-17T23:59:59Z&page=1&limit=50
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Get Logs (frontend only)
+GET {{NEXT_PUBLIC_API_BASE_URL}}/logs?isBackend=false&page=1&limit=20&startDate=2026-2-1&endDate=2026-5-20
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Ingest Log
+POST {{NEXT_PUBLIC_API_BASE_URL}}/logs
+Content-Type: application/json
+
+{
+  "level": "error",
+  "message": "Something went wrong",
+  "context": {
+    "userId": "{{userId}}",
+    "action": "payment.process"
+  }
+}
+
+###
+# @name Batch Ingest Logs
+POST {{NEXT_PUBLIC_API_BASE_URL}}/logs/batch
+Content-Type: application/json
+
+{
+  "logs": [
+    {
+      "level": "error",
+      "message": "Payment failed",
+      "context": { "userId": "{{userId}}" }
+    },
+    {
+      "level": "warn",
+      "message": "Slow query detected",
+      "context": { "duration": 2500 }
+    },
+    {
+      "level": "info",
+      "message": "User logged in",
+      "context": { "userId": "{{userId}}" }
+    }
+  ]
+}
+
+### ----------------- USER ------------------ 
 GET {{NEXT_PUBLIC_API_BASE_URL}}/user/invoices
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}

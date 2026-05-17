@@ -1042,3 +1042,12 @@ model PaymentProvider {
   @@index([associationId, isActive])
   @@map("payment_providers")
 }
+
+model Log {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  type      String   // Stores 'error', 'warn', etc.
+  message   String   // Stores the main error message
+  content   Json     // Stores the context/metadata natively as JSON
+  isBackend Boolean @default(false)
+  createdAt DateTime @default(now())
+}
