@@ -12,7 +12,7 @@ import { ConflictError, NotFoundError } from "@src/shared/errors";
 import z from "zod";
 
 const ParamsSchema = z.object({
-  associationId: z.string().cuid(),
+  associationId: z.string().uuid(),
 });
 
 export const GET = withValidation(

@@ -8,7 +8,7 @@ import { SuccessResponse } from "@src/shared/utils";
 import z from "zod";
 
 const ParamsSchema = z.object({
-  associationId: z.string().cuid(),
+  associationId: z.string().uuid(),
 });
 
 export const POST = withValidation(
