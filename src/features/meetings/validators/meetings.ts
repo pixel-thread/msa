@@ -1,5 +1,9 @@
 import { z } from "zod";
 import { MeetingType, MeetingStatus } from "@prisma/client";
+import {
+  pageNumberValidation,
+  pageSizeValidiaiton,
+} from "@src/shared/validators/common";
 
 export const agendaItemSchema = z.object({
   title: z
@@ -52,17 +56,8 @@ export const MeetingQuerySchema = z.object({
   status: z
     .enum(MeetingStatus, { message: "Invalid meeting status" })
     .optional(),
-  page: z.coerce
-    .number({ message: "Page must be a number" })
-    .int({ message: "Page must be an integer" })
-    .positive({ message: "Page must be a positive number" })
-    .default(1),
-  limit: z.coerce
-    .number({ message: "Limit must be a number" })
-    .int({ message: "Limit must be an integer" })
-    .min(1, "Limit must be at least 1")
-    .max(100, "Limit cannot exceed 100")
-    .default(20),
+  page: pageNumberValidation,
+  limit: pageSizeValidiaiton,
 });
 
 export type CreateMeetingInput = z.infer<typeof CreateMeetingSchema>;

@@ -1,3 +1,4 @@
+import { pageSizeValidiaiton } from "@src/shared/validators/common";
 import { z } from "zod";
 
 export const ComplianceCheckStatusEnum = z.enum([
@@ -21,7 +22,8 @@ export const ComplianceCheckTypeEnum = z.enum([
   "AUDIT_LOG_INTEGRITY",
 ]);
 
-export type ComplianceCheckType = (typeof ComplianceCheckTypeEnum)[keyof typeof ComplianceCheckTypeEnum];
+export type ComplianceCheckType =
+  (typeof ComplianceCheckTypeEnum)[keyof typeof ComplianceCheckTypeEnum];
 
 export const ALL_CHECK_TYPES: string[] = [
   "CONSENT_COVERAGE",
@@ -35,21 +37,23 @@ export const ALL_CHECK_TYPES: string[] = [
 ];
 
 export const TriggerComplianceCheckSchema = z.object({
-  checkTypes: z
-    .array(ComplianceCheckTypeEnum)
-    .min(1)
-    .optional(),
+  checkTypes: z.array(ComplianceCheckTypeEnum).min(1).optional(),
 });
 
-export type TriggerComplianceCheckInput = z.infer<typeof TriggerComplianceCheckSchema>;
+export type TriggerComplianceCheckInput = z.infer<
+  typeof TriggerComplianceCheckSchema
+>;
 
 export const ComplianceCheckQuerySchema = z.object({
-  page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(20),
+  page: pageSizeValidiaiton,
+  limit: pageSizeValidiaiton,
   checkType: ComplianceCheckTypeEnum.optional(),
   status: ComplianceCheckStatusEnum.optional(),
-  fromDate: z.string().datetime().optional(),
-  toDate: z.string().datetime().optional(),
+  fromDate: z.coerce.date().optional(),
+  toDate: z.coerce.date().optional(),
 });
 
-export type ComplianceCheckQueryInput = z.infer<typeof ComplianceCheckQuerySchema>;
+export type ComplianceCheckQueryInput = z.infer<
+  typeof ComplianceCheckQuerySchema
+>;
+

@@ -3,7 +3,10 @@ import { withRole } from "@src/shared/api/with-role";
 import { SuccessResponse } from "@src/shared/utils/responses";
 import { UserRole } from "@prisma/client";
 import { processAgendaOperations } from "@feature/meetings/services/processAgendaOperations";
-import { AgendaOperationSchema } from "@feature/meetings/validators/agenda-items";
+import {
+  AgendaOperationSchema,
+  CreateAgendaItemSchema,
+} from "@feature/meetings/validators/agenda-items";
 import { z } from "zod";
 import { ForbiddenError } from "@src/shared/errors";
 import { findUniqueMeeting } from "@src/features/meetings";
@@ -27,18 +30,9 @@ export const GET = withAssociation(
 
     const agenda = meeting.agendaItems;
 
-    return SuccessResponse({
-      data: agenda,
-      meta: { total: meeting.attendees.length },
-    });
+    return SuccessResponse({ data: agenda });
   },
 );
-
-const CreateAgendaItemSchema = z.object({
-  title: z.string().min(1),
-  description: z.string().optional(),
-  order: z.number().int().optional(),
-});
 
 export const POST = withAssociation(
   { params: ParamsSchema, body: CreateAgendaItemSchema },
@@ -50,6 +44,7 @@ export const POST = withAssociation(
     }
 
     let order = body.order;
+
     if (order === undefined) {
       const count = await prisma.agendaItem.count({
         where: { meetingId: params!.meetingId },

@@ -7,25 +7,23 @@ import { createModule, findManyModules } from "@feature/training/services";
 import { CreateTrainingModuleSchema } from "@feature/training/validators/training";
 import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
 
-export const GET = withAssociation(
-  {},
-  async (association, _, request) => {
-    const user = await withRole(request, UserRole.MEMBER);
-    
-    // Admins and DPOs see all, members see only active ones and those required for their role
-    const isManager = hasHighRoleAccess(user.role) || user.role.includes(UserRole.DPO);
-    const isActive = isManager ? undefined : true;
-    const role = isManager ? undefined : user.role;
+export const GET = withAssociation({}, async (association, _, request) => {
+  const user = await withRole(request, UserRole.MEMBER);
 
-    const modules = await findManyModules({
-      associationId: association.id,
-      isActive,
-      role,
-    });
+  // Admins and DPOs see all, members see only active ones and those required for their role
+  const isManager =
+    hasHighRoleAccess(user.role) || user.role.includes(UserRole.DPO);
+  const isActive = isManager ? undefined : true;
+  const role = isManager ? undefined : user.role;
 
-    return SuccessResponse({ data: modules });
-  },
-);
+  const modules = await findManyModules({
+    associationId: association.id,
+    isActive,
+    role,
+  });
+
+  return SuccessResponse({ data: modules });
+});
 
 export const POST = withAssociation(
   { body: CreateTrainingModuleSchema },
@@ -36,12 +34,12 @@ export const POST = withAssociation(
 
     const user = await withRole(request, UserRole.DPO); // DPO or higher
 
-    const module = await createModule({
+    const trainingModule = await createModule({
       associationId: association.id,
       actorId: user.id,
       data: body,
     });
 
-    return SuccessResponse({ data: module }, 201);
+    return SuccessResponse({ data: trainingModule }, 201);
   },
 );

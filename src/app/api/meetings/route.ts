@@ -14,6 +14,7 @@ export const GET = withAssociation(
   { query: MeetingQuerySchema },
   async (association, { query }, request) => {
     const user = await withRole(request, UserRole.SECRETARY);
+
     if (!query) {
       throw new ForbiddenError("Invalid query parameters");
     }
@@ -27,7 +28,7 @@ export const GET = withAssociation(
         role: user.role,
         associationId: association.id,
         filters: { type, status },
-        pagination: { page, limit },
+        pagination: { page: page ?? 1, limit: limit ?? 10 },
       });
 
       return SuccessResponse({
@@ -41,7 +42,7 @@ export const GET = withAssociation(
       userId: userId,
       associationId: association.id,
       filters: { status: MeetingStatus.SCHEDULED },
-      pagination: { page, limit },
+      pagination: { page: page ?? 1, limit: limit ?? 10 },
     });
 
     return SuccessResponse({

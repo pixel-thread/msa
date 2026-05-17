@@ -87,16 +87,10 @@ export const POST = withAssociation(
         recommendations: result.recommendations as Prisma.InputJsonValue,
       }));
 
-    const savedChecks = await prisma.complianceCheck.createMany({
+    await prisma.complianceCheck.createMany({
       data: checksData as Prisma.ComplianceCheckCreateManyArgs["data"],
     });
 
-    return SuccessResponse(
-      {
-        data: results,
-        meta: { saved: savedChecks.count },
-      },
-      201,
-    );
+    return SuccessResponse({ data: results }, 201);
   },
 );

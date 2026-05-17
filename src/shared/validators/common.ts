@@ -9,3 +9,12 @@ export const pageSizeValidiaiton = z.coerce
   .default(1)
   .catch(1)
   .optional();
+
+export const pageNumberValidation = z.coerce
+  .number("Page size must be a number")
+  .min(1)
+  .max(1000)
+  .positive()
+  .default(1)
+  .catch(1)
+  .optional();
