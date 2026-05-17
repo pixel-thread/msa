@@ -9,6 +9,8 @@ import {
   updateProvider,
   deleteProvider,
 } from "@src/features/payments/services/payment-provider.service";
+import { NextResponse } from "next/server";
+import { NotFoundError } from "@src/shared/errors";
 
 export const GET = withAssociation(
   { params: ProviderIdParamSchema },
@@ -16,9 +18,7 @@ export const GET = withAssociation(
     const provider = await getProviderById(params!.providerId, association.id);
 
     if (!provider) {
-      return new Response(JSON.stringify({ error: "Provider not found" }), {
-        status: 404,
-      });
+      throw new NotFoundError("Provider not found");
     }
 
     return SuccessResponse({ data: provider });
@@ -43,6 +43,6 @@ export const DELETE = withAssociation(
   { params: ProviderIdParamSchema },
   async (association, { params }) => {
     await deleteProvider(params!.providerId, association.id);
-    return new Response(null, { status: 204 });
+    return NextResponse.json(null, { status: 204 });
   },
 );

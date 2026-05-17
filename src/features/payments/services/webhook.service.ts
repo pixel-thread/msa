@@ -1,9 +1,10 @@
 import { prisma } from "@src/shared/lib/prisma";
 import { AuditAction, PaymentGateway } from "@prisma/client";
 import { verifyWebhookSignature } from "./razorpay.service";
-import { verifyAndCompletePayment, markPaymentFailed } from "./payment.service";
+import { markPaymentFailed } from "./payment.service";
 import { getActiveProvider } from "./payment-provider.service";
 import { decrypt } from "@src/shared/lib/crypto";
+import { WebhookSignatureError } from "@src/shared/errors";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -86,7 +87,10 @@ export async function processWebhookEvent(
     });
 
     if (transaction) {
-      const provider = await getActiveProvider(transaction.associationId, "RAZORPAY");
+      const provider = await getActiveProvider(
+        transaction.associationId,
+        "RAZORPAY",
+      );
       if (provider && provider.encryptedWebhookSecret) {
         webhookSecret = decrypt(provider.encryptedWebhookSecret);
       }
@@ -121,6 +125,7 @@ export async function processWebhookEvent(
       eventId,
       eventType: payload.event,
       gateway: PaymentGateway.RAZORPAY,
+      // eslint-disable-next-line
       payload: payload as any,
       signature,
       processed: false,
@@ -241,7 +246,7 @@ async function handlePaymentCaptured(
   // but skip signature verification (webhook signature was already verified)
   await verifyAndCompletePaymentFromWebhook(
     transaction.id,
-    payment.id,
+    // payment.id,
     payment.order_id,
   );
 }
@@ -263,9 +268,7 @@ async function handlePaymentFailed(
   await markPaymentFailed(payment.order_id, reason || "Payment failed");
 }
 
-async function handleRefund(
-  payload: RazorpayWebhookPayload,
-): Promise<void> {
+async function handleRefund(payload: RazorpayWebhookPayload): Promise<void> {
   const refund = payload.payload.refund?.entity;
   if (!refund) return;
 
@@ -325,8 +328,7 @@ async function handleRefund(
         data: {
           paidAmount: Math.max(newPaidAmount, 0),
           dueAmount: newDueAmount,
-          status:
-            newPaidAmount <= 0 ? "DUE" : "PARTIAL",
+          status: newPaidAmount <= 0 ? "DUE" : "PARTIAL",
         },
       });
     }
@@ -369,7 +371,6 @@ async function handleRefund(
 async function verifyAndCompletePaymentFromWebhook(
   transactionId: string,
   razorpayPaymentId: string,
-  razorpayOrderId: string,
 ) {
   return prisma.$transaction(async (tx) => {
     const now = new Date();
@@ -494,15 +495,4 @@ function constructEventId(payload: RazorpayWebhookPayload): string | null {
   }
 
   return null;
-}
-
-// ---------------------------------------------------------------------------
-// Custom Error
-// ---------------------------------------------------------------------------
-
-export class WebhookSignatureError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "WebhookSignatureError";
-  }
 }

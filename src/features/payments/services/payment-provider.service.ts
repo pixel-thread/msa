@@ -1,6 +1,7 @@
 import { prisma } from "@src/shared/lib/prisma";
-import { encrypt, decrypt } from "@src/shared/lib/crypto";
+import { encrypt } from "@src/shared/lib/crypto";
 import { PaymentProviderType } from "@prisma/client";
+import { NotFoundError } from "@src/shared/errors";
 
 export interface UpsertProviderInput {
   associationId: string;
@@ -128,13 +129,21 @@ export async function setActiveProvider(
   });
 
   if (!provider) {
-    throw new Error("Provider not found");
+    throw new NotFoundError("Provider not found");
   }
 
   await prisma.paymentProvider.updateMany({
     where: {
       associationId,
       provider: provider.provider,
+      id: { not: providerId },
+    },
+    data: { isActive: false },
+  });
+
+  await prisma.paymentProvider.updateMany({
+    where: {
+      associationId,
       id: { not: providerId },
     },
     data: { isActive: false },
@@ -158,7 +167,7 @@ export async function updateProvider(
   });
 
   if (!provider) {
-    throw new Error("Provider not found");
+    throw new NotFoundError("Provider not found");
   }
 
   const updateData: Record<string, unknown> = {};
@@ -198,7 +207,7 @@ export async function deleteProvider(
   });
 
   if (!provider) {
-    throw new Error("Provider not found");
+    throw new NotFoundError("Provider not found");
   }
 
   await prisma.paymentProvider.delete({

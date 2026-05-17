@@ -64,3 +64,10 @@ export class PaymentError extends Error {
     this.statusCode = statusCode;
   }
 }
+
+export class WebhookSignatureError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "WebhookSignatureError";
+  }
+}

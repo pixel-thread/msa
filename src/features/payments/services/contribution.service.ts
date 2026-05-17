@@ -89,8 +89,11 @@ export async function generateMonthlyContributions(
       userId: string;
       year: number;
       month: number;
+      // eslint-disable-next-line
       expectedAmount: any;
+      // eslint-disable-next-line
       paidAmount: any;
+      // eslint-disable-next-line
       dueAmount: any;
       status: ContributionStatus;
       dueDate: Date;

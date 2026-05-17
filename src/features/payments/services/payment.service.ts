@@ -13,7 +13,11 @@ import { getActiveProvider } from "./payment-provider.service";
 import { decrypt } from "@src/shared/lib/crypto";
 import { env } from "@src/env";
 import Razorpay from "razorpay";
-import { PaymentError } from "@src/shared/errors";
+import {
+  BadRequestError,
+  NotFoundError,
+  PaymentError,
+} from "@src/shared/errors";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -150,7 +154,9 @@ export async function createPaymentOrder(input: CreateOrderInput) {
     keySecret = env.RAZORPAY_KEY_SECRET ?? "";
 
     if (!keyId || !keySecret) {
-      throw new Error("No payment provider configured and no env vars set");
+      throw new NotFoundError(
+        "No payment provider configured and no env vars set",
+      );
     }
   }
 
@@ -244,7 +250,7 @@ export async function verifyAndCompletePayment(input: VerifyAndCompleteInput) {
   });
 
   if (!transaction) {
-    throw new Error(
+    throw new NotFoundError(
       `No transaction found for Razorpay order: ${input.razorpayOrderId}`,
     );
   }
@@ -273,7 +279,7 @@ export async function verifyAndCompletePayment(input: VerifyAndCompleteInput) {
   );
 
   if (!isValid) {
-    throw new Error("Invalid Razorpay payment signature");
+    throw new BadRequestError("Invalid Razorpay payment signature");
   }
 
   return prisma.$transaction(async (tx) => {
