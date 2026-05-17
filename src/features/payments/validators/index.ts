@@ -2,7 +2,7 @@ import { z } from "zod";
 import { PaymentMethod, ContributionStatus } from "@prisma/client";
 import {
   pageNumberValidation,
-  pageSizeValidiaiton,
+  pageSizeValidation,
 } from "@src/shared/validators/common";
 
 // ---------------------------------------------------------------------------
@@ -61,7 +61,7 @@ export const WaiveContributionSchema = z.object({
 
 export const PaymentHistoryQuerySchema = z.object({
   page: pageNumberValidation,
-  pageSize: pageSizeValidiaiton,
+  pageSize: pageSizeValidation,
 });
 
 export const ContributionReportQuerySchema = z.object({
@@ -97,7 +97,7 @@ export const GetTransactionsQuerySchema = z.object({
   startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),
   page: pageNumberValidation,
-  pageSize: pageSizeValidiaiton,
+  pageSize: pageSizeValidation,
 });
 
 export const CollectionReportQuerySchema = z.object({

@@ -1,20 +1,23 @@
 import z from "zod";
 
 export const uuidValidiation = z.uuid("Invalid ID");
-export const pageSizeValidiaiton = z.coerce
-  .number("Page size must be a number")
-  .min(1)
-  .max(1000)
-  .positive()
-  .default(10)
-  .catch(10)
-  .optional();
+
+export const pageSizeValidation = z.coerce
+  .number({
+    error: "Page size must be a number",
+  })
+  .int("Page size must be an integer")
+  .min(1, "Minimum page size is 1")
+  .max(50, "Maximum page size is 100")
+  .positive("Page size must be positive")
+  .catch(10);
 
 export const pageNumberValidation = z.coerce
-  .number("Page size must be a number")
-  .min(1)
-  .max(1000)
-  .positive()
-  .default(1)
-  .catch(1)
-  .optional();
+  .number({
+    error: "Page number must be a number",
+  })
+  .int("Page number must be an integer")
+  .min(1, "Minimum page number is 1")
+  .max(1000, "Maximum page number is 1000")
+  .positive("Page number must be positive")
+  .catch(1);

@@ -1,6 +1,6 @@
 import {
   pageNumberValidation,
-  pageSizeValidiaiton,
+  pageSizeValidation,
   uuidValidiation,
 } from "@src/shared/validators/common";
 import z from "zod";
@@ -9,7 +9,7 @@ export const LedgerRouteParams = z.object({ memberId: uuidValidiation });
 
 export const LedgerQueryParams = z.object({
   page: pageNumberValidation,
-  pageSize: pageSizeValidiaiton,
+  pageSize: pageSizeValidation,
 });
 
 export const CreateLedgerLineSchema = z.object({

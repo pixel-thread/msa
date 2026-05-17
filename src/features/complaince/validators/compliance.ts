@@ -1,6 +1,6 @@
 import {
   pageNumberValidation,
-  pageSizeValidiaiton,
+  pageSizeValidation,
 } from "@src/shared/validators/common";
 import { z } from "zod";
 
@@ -49,7 +49,7 @@ export type TriggerComplianceCheckInput = z.infer<
 
 export const ComplianceCheckQuerySchema = z.object({
   page: pageNumberValidation,
-  limit: pageSizeValidiaiton,
+  limit: pageSizeValidation,
   checkType: ComplianceCheckTypeEnum.optional(),
   status: ComplianceCheckStatusEnum.optional(),
   fromDate: z.coerce.date().optional(),

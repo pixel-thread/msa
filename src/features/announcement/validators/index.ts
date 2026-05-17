@@ -6,7 +6,7 @@ import {
 } from "@prisma/client";
 import {
   pageNumberValidation,
-  pageSizeValidiaiton,
+  pageSizeValidation,
 } from "@src/shared/validators/common";
 
 export const CreateAnnouncementSchema = z.object({
@@ -37,7 +37,7 @@ export const UpdateAnnouncementSchema = z.object({
 
 export const AnnouncementQuerySchema = z.object({
   page: pageNumberValidation,
-  limit: pageSizeValidiaiton,
+  limit: pageSizeValidation,
   status: z.enum(AnnouncementStatus).optional(),
   priority: z.enum(AnnouncementPriority).optional(),
   search: z.string().optional(),
