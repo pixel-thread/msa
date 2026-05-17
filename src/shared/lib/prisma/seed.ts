@@ -63,6 +63,14 @@ async function hashPassword(password: string) {
   return bcrypt.hash(password, 12);
 }
 
+function buildUserEmail(role: UserRole, association: string) {
+  return `${role.toLowerCase()}@${association}.org`;
+}
+
+function buildUserName(role: UserRole, association: string) {
+  return `${association.toUpperCase()} ${role.replaceAll("_", " ")}`;
+}
+
 export const encrypt = (plain: string): string => {
   const iv = crypto.randomBytes(16);
   const KEY = Buffer.from(
@@ -91,7 +99,7 @@ const getRandomElement = <T>(arr: T[]): T =>
 // SCALE SEEDING FUNCTION
 // -----------------------------------------------------------------------------
 async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
-  console.log(`\n--- Seeding ${data.name} (Bulk Target ~1,000 Per Node) ---`);
+  console.log(`\n--- Seeding ${data.name} ---`);
 
   const basePassword = await hashPassword(
     process.env.PASSWORD || "securepassword123",
@@ -107,7 +115,7 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     data: {
       slug: data.slug,
       name: data.name,
-      description: `${data.name} corporate engine portal.`,
+      description: `${data.name} official association portal`,
       state: "Meghalaya",
       country: "IN",
       timezone: "Asia/Kolkata",
@@ -115,7 +123,7 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
       primaryColor: data.primaryColor,
       secondaryColor: data.secondaryColor,
       contactEmail: `contact@${data.short}.org`,
-      contactPhone: "3642224111",
+      contactPhone: "9876543210",
     },
   });
 
@@ -138,7 +146,7 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     createdMemberTypes.push(mt);
   }
 
-  // 3. Subscription Plans (Generate ~5 distinct tier structures)
+  // 3. Subscription Plans
   const subscriptionPlans = [];
   for (let i = 1; i <= 5; i++) {
     const sp = await prisma.subscriptionPlan.create({
@@ -155,9 +163,9 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     subscriptionPlans.push(sp);
   }
 
-  // 4. Users (Scale up to 1,000 Base records across assigned operational access roles)
-  console.log("-> Generating 1,000 User Accounts...");
-  const userRolesList = [
+  // 4. ROLE-BASED USERS (for easy login testing)
+  console.log("-> Creating role-based users for login testing...");
+  const roles = [
     UserRole.SUPER_ADMIN,
     UserRole.PRESIDENT,
     UserRole.SECRETARY,
@@ -166,26 +174,56 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     UserRole.MEMBER,
   ];
 
-  // To handle dependencies, we generate arrays in batches
+  const roleUsers: Record<UserRole, any> = {} as any;
+
+  for (const role of roles) {
+    const user = await prisma.user.create({
+      data: {
+        associationId: association.id,
+        email: buildUserEmail(role, data.short),
+        name: buildUserName(role, data.short),
+        mobile: "9999999999",
+        designation: `${role} Designation`,
+        role: [role],
+        password: basePassword,
+        status: UserStatus.ACTIVE,
+        membershipNumber: `${data.short.toUpperCase()}-${role}`,
+        imageUrl: "https://placehold.co/300x300",
+        mfaEnabled: false,
+        memberTypeId: createdMemberTypes[0]?.id,
+        subscription:
+          role === UserRole.MEMBER
+            ? {
+                create: {
+                  planId: subscriptionPlans[0].id,
+                  status: "ACTIVE",
+                  endDate: new Date("2027-01-01"),
+                },
+              }
+            : undefined,
+      },
+    });
+    roleUsers[role] = user;
+    console.log(`   ✓ ${role}: ${user.email}`);
+  }
+
+  // 5. BULK USERS (1,000 records for load testing)
+  console.log("-> Generating 1,000 bulk user accounts...");
   const usersToInsert: Prisma.UserCreateManyInput[] = [];
   for (let i = 1; i <= 1000; i++) {
-    const activeRole =
-      i <= 20
-        ? getRandomElement(userRolesList.filter((r) => r !== UserRole.MEMBER))
-        : UserRole.MEMBER;
     usersToInsert.push({
       associationId: association.id,
-      email: `${activeRole.toLowerCase()}.${i}@${data.short}portal.org`,
-      name: `${data.short.toUpperCase()} Officer Block ${i}`,
+      email: `member.${i}@${data.short}portal.org`,
+      name: `${data.short.toUpperCase()} Member ${i}`,
       mobile: `9${String(i).padStart(9, "0")}`,
-      designation: `${activeRole} Designation`,
-      role: [activeRole],
+      designation: "Member Designation",
+      role: [UserRole.MEMBER],
       password: basePassword,
       status: UserStatus.ACTIVE,
-      membershipNumber: `${data.short.toUpperCase()}-REG-${String(i).padStart(5, "0")}`,
+      membershipNumber: `${data.short.toUpperCase()}-BULK-${String(i).padStart(5, "0")}`,
       imageUrl: "https://placehold.co/300x300",
       mfaEnabled: false,
-      memberTypeId: getRandomElement(createdMemberTypes).id,
+      memberTypeId: createdMemberTypes[0]?.id,
     });
   }
   await prisma.user.createMany({ data: usersToInsert });
@@ -194,47 +232,68 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     where: { associationId: association.id },
     select: { id: true, role: true, name: true },
   });
-  const superAdminUser =
-    allUsers.find((u) => u.role.includes(UserRole.SUPER_ADMIN)) || allUsers[0];
-  const financeUser =
-    allUsers.find((u) => u.role.includes(UserRole.FINANCE)) || allUsers[0];
-  const secretaryUser =
-    allUsers.find((u) => u.role.includes(UserRole.SECRETARY)) || allUsers[0];
-  const dpoUser =
-    allUsers.find((u) => u.role.includes(UserRole.DPO)) || allUsers[0];
 
-  // 5. Dependent Subscriptions (Generate 1,000 rows matching records)
-  console.log("-> Building Subscriptions mapping data array...");
-  await prisma.subscription.createMany({
-    data: allUsers.map((u, i) => ({
-      userId: u.id,
-      planId: subscriptionPlans[i % subscriptionPlans.length].id,
-      status: "ACTIVE",
-      endDate: new Date("2027-12-31"),
-    })),
-  });
+  // Role user references for bulk seeding
+  const superAdminUser = roleUsers[UserRole.SUPER_ADMIN];
+  const financeUser = roleUsers[UserRole.FINANCE];
+  const secretaryUser = roleUsers[UserRole.SECRETARY];
+  const dpoUser = roleUsers[UserRole.DPO];
+  const memberUser = roleUsers[UserRole.MEMBER];
 
-  // 6. Security Infrastructure Logs (1,000 rows mapping tokens)
-  console.log(
-    "-> Generating Token allocations (1,000 Push & 1,000 Refresh tokens)...",
-  );
+  // 6. Push Tokens (for role users)
+  for (const role of roles) {
+    await prisma.pushToken.create({
+      data: {
+        userId: roleUsers[role].id,
+        token: `${data.short}-${role.toLowerCase()}-push-token`,
+      },
+    });
+  }
+
+  // 7. Bulk Push Tokens
+  console.log("-> Generating bulk push tokens...");
   await prisma.pushToken.createMany({
     data: allUsers.map((u, i) => ({
       userId: u.id,
-      token: `tok-push-routing-str-${i}-${u.id}`,
+      token: `tok-push-bulk-${i}-${u.id}`,
     })),
   });
+
+  // 8. Refresh Tokens (for role users)
+  for (const role of roles) {
+    await prisma.refreshToken.create({
+      data: {
+        userId: roleUsers[role].id,
+        token: `${data.short}-${role.toLowerCase()}-refresh-token`,
+        expiresAt: new Date("2027-01-01"),
+      },
+    });
+  }
+
+  // 9. Bulk Refresh Tokens
+  console.log("-> Generating bulk refresh tokens...");
   await prisma.refreshToken.createMany({
     data: allUsers.map((u, i) => ({
       userId: u.id,
-      token: `tok-refresh-routing-str-${i}-${u.id}`,
+      token: `tok-refresh-bulk-${i}-${u.id}`,
       expiresAt: new Date("2028-01-01"),
     })),
   });
 
-  // 7. Security verification records
+  // 10. Verification Codes
+  await prisma.verificationCode.create({
+    data: {
+      userId: memberUser.id,
+      code: "123456",
+      type: "EMAIL_VERIFICATION",
+      expiresAt: new Date(Date.now() + 1000 * 60 * 10),
+    },
+  });
+
+  // 11. Bulk Verification Codes
+  console.log("-> Generating bulk verification codes...");
   await prisma.verificationCode.createMany({
-    data: allUsers.slice(0, 1000).map((u, i) => ({
+    data: allUsers.slice(0, 500).map((u) => ({
       userId: u.id,
       code: String(100000 + Math.floor(Math.random() * 899999)),
       type: "EMAIL_VERIFICATION",
@@ -242,8 +301,21 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     })),
   });
 
-  // 8. Meetings Management Cluster (Scale to 1,000 rows across timeline records)
-  console.log("-> Processing 1,000 distinct Assembly Meetings profiles...");
+  // 12. Meeting (for role users)
+  console.log("-> Creating meetings...");
+  const meeting = await prisma.meeting.create({
+    data: {
+      associationId: association.id,
+      title: `${data.short.toUpperCase()} Annual General Meeting`,
+      type: MeetingType.GENERAL_MEETING,
+      status: MeetingStatus.SCHEDULED,
+      scheduledAt: new Date("2026-06-15T10:00:00Z"),
+      venue: "Shillong Convention Hall",
+      createdById: superAdminUser.id,
+    },
+  });
+
+  // 13. Bulk Meetings
   const meetingsToInsert: Prisma.MeetingCreateManyInput[] = [];
   for (let i = 1; i <= 1000; i++) {
     meetingsToInsert.push({
@@ -265,15 +337,35 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     select: { id: true },
   });
 
-  // 9. Meeting Attendees Matrix mapping
-  console.log("-> Connecting 1,000 Attendee Matrix tracking slots...");
+  // 14. Meeting Attendees (role users)
+  await prisma.meetingAttendee.createMany({
+    data: roles.map((role) => ({
+      meetingId: meeting.id,
+      userId: roleUsers[role].id,
+      attendeeRole: AttendeeRole.REQUIRED,
+      rsvpStatus:
+        role === UserRole.SUPER_ADMIN
+          ? RsvpStatus.ACCEPTED
+          : RsvpStatus.PENDING,
+      rsvpNote:
+        role === UserRole.SUPER_ADMIN ? "Confirmed attendance" : undefined,
+      rsvpAt: role === UserRole.SUPER_ADMIN ? new Date() : undefined,
+      notifiedAt: new Date(),
+    })),
+  });
+
+  // 15. Bulk Meeting Attendees
+  console.log("-> Generating bulk meeting attendees...");
+  const bulkUsers = allUsers.filter(
+    (u) => !roles.some((r) => roleUsers[r]?.id === u.id),
+  );
   const meetingAttendeeData = [];
   for (let i = 0; i < 1000; i++) {
-    const meeting = allMeetings[i % allMeetings.length];
-    const user = allUsers[i % allUsers.length];
+    const m = allMeetings[i % allMeetings.length];
+    const u = bulkUsers[i % bulkUsers.length];
     meetingAttendeeData.push({
-      meetingId: meeting.id,
-      userId: user.id,
+      meetingId: m.id,
+      userId: u.id,
       attendeeRole: AttendeeRole.REQUIRED,
       rsvpStatus: i % 3 === 0 ? RsvpStatus.ACCEPTED : RsvpStatus.PENDING,
       notifiedAt: new Date(),
@@ -281,8 +373,26 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
   }
   await prisma.meetingAttendee.createMany({ data: meetingAttendeeData });
 
-  // 10. Agendas mapping data nodes
-  console.log("-> Compiling 1,000 structural tracking Agenda items...");
+  // 16. Agenda Items
+  await prisma.agendaItem.createMany({
+    data: [
+      {
+        meetingId: meeting.id,
+        order: 1,
+        title: "Opening Remarks",
+        description: "President speech",
+      },
+      {
+        meetingId: meeting.id,
+        order: 2,
+        title: "Financial Report",
+        description: "Annual financial report",
+      },
+    ],
+  });
+
+  // 17. Bulk Agenda Items
+  console.log("-> Generating bulk agenda items...");
   await prisma.agendaItem.createMany({
     data: Array.from({ length: 1000 }).map((_, i) => ({
       meetingId: getRandomElement(allMeetings).id,
@@ -293,8 +403,23 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     })),
   });
 
-  // 11. Minutes documentation tracking logs
-  console.log("-> Finalizing 1,000 Corporate Action Meeting Protocols...");
+  // 18. Meeting Minutes
+  await prisma.meetingMinutes.create({
+    data: {
+      meetingId: meeting.id,
+      agendaPoint: "Financial Report",
+      decision: "Budget approved unanimously",
+      actionItems: [
+        {
+          assignee: financeUser.name,
+          task: "Prepare next quarter report",
+        },
+      ],
+    },
+  });
+
+  // 19. Bulk Meeting Minutes
+  console.log("-> Generating bulk meeting minutes...");
   await prisma.meetingMinutes.createMany({
     data: allMeetings.map((m, i) => ({
       meetingId: m.id,
@@ -310,10 +435,20 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     })),
   });
 
-  // 12. Training Infrastructure Modules (Generate 1,000 modules across parameters)
-  console.log(
-    "-> Launching 1,000 Educational Curriculum Compliance profiles...",
-  );
+  // 20. Training Module
+  console.log("-> Creating training modules...");
+  const trainingModule = await prisma.trainingModule.create({
+    data: {
+      associationId: association.id,
+      title: "Data Privacy Training",
+      description: "Mandatory compliance training",
+      content: "Training content goes here",
+      durationMinutes: 45,
+      requiredForRoles: [UserRole.MEMBER, UserRole.SECRETARY],
+    },
+  });
+
+  // 21. Bulk Training Modules
   const trainingModulesToInsert: Prisma.TrainingModuleCreateManyInput[] = [];
   for (let i = 1; i <= 1000; i++) {
     trainingModulesToInsert.push({
@@ -333,14 +468,35 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     select: { id: true },
   });
 
-  // 13. Training assignments
-  console.log(
-    "-> Mapping 1,000 Training Curriculum compliance task matrices...",
-  );
+  // 22. Training Assignments (role users)
+  await prisma.trainingAssignment.createMany({
+    data: [
+      {
+        moduleId: trainingModule.id,
+        userId: memberUser.id,
+        status: TrainingAssignmentStatus.ASSIGNED,
+        assignedAt: new Date(),
+        dueDate: new Date("2026-12-31"),
+        assignedById: superAdminUser.id,
+      },
+      {
+        moduleId: trainingModule.id,
+        userId: secretaryUser.id,
+        status: TrainingAssignmentStatus.IN_PROGRESS,
+        assignedAt: new Date(),
+        dueDate: new Date("2026-12-31"),
+        startedAt: new Date(),
+        assignedById: superAdminUser.id,
+      },
+    ],
+  });
+
+  // 23. Bulk Training Assignments
+  console.log("-> Generating bulk training assignments...");
   const trainingAssignmentData = [];
   for (let i = 0; i < 1000; i++) {
     const module = allTrainingModules[i % allTrainingModules.length];
-    const user = allUsers[i % allUsers.length];
+    const user = bulkUsers[i % bulkUsers.length];
     trainingAssignmentData.push({
       moduleId: module.id,
       userId: user.id,
@@ -355,14 +511,24 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
   }
   await prisma.trainingAssignment.createMany({ data: trainingAssignmentData });
 
-  // 14. Training completions logs mapping
-  console.log("-> Signing off 1,000 dynamic Training Certificate records...");
+  // 24. Training Completion (role user)
+  await prisma.trainingCompletion.create({
+    data: {
+      moduleId: trainingModule.id,
+      userId: secretaryUser.id,
+      scorePercent: new Prisma.Decimal(95),
+      certificateUrl: "https://example.com/certificate.pdf",
+    },
+  });
+
+  // 25. Bulk Training Completions
+  console.log("-> Generating bulk training completions...");
   const trainingCompletionData = [];
   for (let i = 0; i < 1000; i++) {
     const moduleIdx = Math.floor(i / 10) % allTrainingModules.length;
-    const userIdx = i % allUsers.length;
+    const userIdx = i % bulkUsers.length;
     const module = allTrainingModules[moduleIdx];
-    const user = allUsers[userIdx];
+    const user = bulkUsers[userIdx];
     trainingCompletionData.push({
       moduleId: module.id,
       userId: user.id,
@@ -372,8 +538,24 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
   }
   await prisma.trainingCompletion.createMany({ data: trainingCompletionData });
 
-  // 15. System Announcements Broadcasting node
-  console.log("-> Dispatching 1,000 Broadcast System bulletins...");
+  // 26. Announcement
+  console.log("-> Creating announcements...");
+  const announcement = await prisma.announcement.create({
+    data: {
+      associationId: association.id,
+      authorId: roleUsers[UserRole.PRESIDENT].id,
+      title: "Annual Conference 2026",
+      summary: "Conference scheduled next month",
+      content: "Detailed conference information here",
+      status: AnnouncementStatus.PUBLISHED,
+      priority: AnnouncementPriority.HIGH,
+      targetRoles: [UserRole.MEMBER],
+      publishedAt: new Date(),
+      isPinned: true,
+    },
+  });
+
+  // 27. Bulk Announcements
   const announcementsToInsert: Prisma.AnnouncementCreateManyInput[] = [];
   for (let i = 1; i <= 1000; i++) {
     announcementsToInsert.push({
@@ -401,25 +583,43 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     select: { id: true },
   });
 
-  // 16. Announcement tracking metrics matrices
-  console.log(
-    "-> Populating 1,000 structural Data Analytics Read verification markers...",
-  );
+  // 28. Announcement Read (role user)
+  await prisma.announcementRead.create({
+    data: {
+      announcementId: announcement.id,
+      userId: memberUser.id,
+    },
+  });
+
+  // 29. Bulk Announcement Reads
+  console.log("-> Generating bulk announcement reads...");
   const announcementReadData = [];
   for (let i = 0; i < 1000; i++) {
-    const announcement = allAnnouncements[i % allAnnouncements.length];
-    const user = allUsers[i % allUsers.length];
+    const a = allAnnouncements[i % allAnnouncements.length];
+    const u = bulkUsers[i % bulkUsers.length];
     announcementReadData.push({
-      announcementId: announcement.id,
-      userId: user.id,
+      announcementId: a.id,
+      userId: u.id,
     });
   }
   await prisma.announcementRead.createMany({ data: announcementReadData });
 
-  // 17. Security Consent telemetry logs
-  console.log(
-    "-> Documenting 1,000 Individual User Identity Privacy Consents logs...",
-  );
+  // 30. Consent Receipt (role user)
+  console.log("-> Creating consent receipts...");
+  await prisma.consentReceipt.create({
+    data: {
+      associationId: association.id,
+      userId: memberUser.id,
+      purpose: ConsentPurpose.PAYMENTS,
+      status: ConsentStatus.GRANTED,
+      ipAddress: "127.0.0.1",
+      userAgent: "seed-script",
+      channel: "web",
+    },
+  });
+
+  // 31. Bulk Consent Receipts
+  console.log("-> Generating bulk consent receipts...");
   await prisma.consentReceipt.createMany({
     data: Array.from({ length: 1000 }).map((_, i) => ({
       associationId: association.id,
@@ -433,10 +633,22 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     })),
   });
 
-  // 18. Data Privacy compliance records tickets
-  console.log(
-    "-> Recording 1,000 regulatory DSAR processing requests tickets...",
-  );
+  // 32. DSAR Ticket (role user)
+  console.log("-> Creating DSAR tickets...");
+  const dsarTicket = await prisma.dsarTicket.create({
+    data: {
+      associationId: association.id,
+      userId: memberUser.id,
+      assignedToId: dpoUser.id,
+      ticketNumber: `${data.short.toUpperCase()}-DSAR-001`,
+      requestType: DsarRequestType.ACCESS,
+      requestedData: ["Profile", "Payments"],
+      description: "Need all personal data",
+      status: DsarStatus.IN_PROGRESS,
+    },
+  });
+
+  // 33. Bulk DSAR Tickets
   const dsarTicketsToInsert: Prisma.DsarTicketCreateManyInput[] = [];
   for (let i = 1; i <= 1000; i++) {
     dsarTicketsToInsert.push({
@@ -458,10 +670,20 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     select: { id: true },
   });
 
-  // 19. Privacy requests processing exports responses logs
-  console.log("-> Packaging 1,000 data delivery exports confirmation items...");
+  // 34. DSAR Response (role user ticket)
+  await prisma.dsarResponse.create({
+    data: {
+      dsarTicketId: dsarTicket.id,
+      responseType: "ACCESS_EXPORT",
+      deliveryMethod: "secure_download",
+      notes: "Data exported successfully",
+    },
+  });
+
+  // 35. Bulk DSAR Responses
+  console.log("-> Generating bulk DSAR responses...");
   await prisma.dsarResponse.createMany({
-    data: allDsarTickets.map((t, i) => ({
+    data: allDsarTickets.map((t) => ({
       dsarTicketId: t.id,
       responseType: "SECURE_ARCHIVE_EXPORT_DISPATCH",
       deliveryMethod: "encrypted_object_download_delivery",
@@ -470,8 +692,33 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     })),
   });
 
-  // 20. Finance Billing Modules (1,000 Payment entries)
-  console.log("-> Logging 1,000 historical Payment Transactions tokens...");
+  // 36. Payment Transaction (role user)
+  console.log("-> Creating payment transactions...");
+  const payment = await prisma.paymentTransaction.create({
+    data: {
+      associationId: association.id,
+      userId: memberUser.id,
+      amount: new Prisma.Decimal(500),
+      currency: "INR",
+      gateway: PaymentGateway.RAZORPAY,
+      status: PaymentStatus.COMPLETED,
+      method: PaymentMethod.UPI,
+      referenceNumber: `${data.short}-payment-ref`,
+      receiptNumber: `${data.short}-receipt-001`,
+      razorpayOrderId: `${data.short}-order-id`,
+      razorpayPaymentId: `${data.short}-payment-id`,
+      razorpaySignature: "signature",
+      receiptUrl: "https://example.com/receipt.pdf",
+      invoiceUrl: "https://example.com/invoice.pdf",
+      paidAt: new Date(),
+      paymentDate: new Date(),
+      notes: "Membership payment",
+      createdById: financeUser.id,
+      verifiedById: superAdminUser.id,
+    },
+  });
+
+  // 37. Bulk Payment Transactions
   const paymentsToInsert: Prisma.PaymentTransactionCreateManyInput[] = [];
   for (let i = 1; i <= 1000; i++) {
     paymentsToInsert.push({
@@ -502,10 +749,24 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     select: { id: true },
   });
 
-  // 21. Contribution cycles monitoring tracking layers
-  console.log(
-    "-> Adjusting 1,000 monthly user membership Account Status monitors...",
-  );
+  // 38. Contribution Period (role user)
+  console.log("-> Creating contribution periods...");
+  const contributionPeriod = await prisma.contributionPeriod.create({
+    data: {
+      associationId: association.id,
+      userId: memberUser.id,
+      year: 2026,
+      month: 5,
+      expectedAmount: new Prisma.Decimal(500),
+      paidAmount: new Prisma.Decimal(500),
+      dueAmount: new Prisma.Decimal(0),
+      status: ContributionStatus.PAID,
+      dueDate: new Date("2026-05-31"),
+    },
+  });
+
+  // 39. Bulk Contribution Periods
+  console.log("-> Generating bulk contribution periods...");
   const contributionPeriodData = [];
   const usedContributionKeys = new Set<string>();
   for (let i = 0; i < 1000; i++) {
@@ -533,10 +794,17 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     select: { id: true },
   });
 
-  // 22. Financial transaction attribution links
-  console.log(
-    "-> Allocating 1,000 specific Transaction Attribution records...",
-  );
+  // 40. Payment Allocation (role user)
+  await prisma.paymentAllocation.create({
+    data: {
+      paymentTransactionId: payment.id,
+      contributionPeriodId: contributionPeriod.id,
+      allocatedAmount: new Prisma.Decimal(500),
+    },
+  });
+
+  // 41. Bulk Payment Allocations
+  console.log("-> Generating bulk payment allocations...");
   const paymentAllocationData = [];
   const allocCount = Math.min(allPayments.length, allPeriods.length, 1000);
   for (let i = 0; i < allocCount; i++) {
@@ -548,10 +816,24 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
   }
   await prisma.paymentAllocation.createMany({ data: paymentAllocationData });
 
-  // 23. Webhooks telemetry logs mapping nodes
-  console.log(
-    "-> Tracking 1,000 Payment Gateway Webhook integration objects...",
-  );
+  // 42. Payment Webhook Event
+  console.log("-> Creating payment webhook events...");
+  await prisma.paymentWebhookEvent.create({
+    data: {
+      eventId: `${data.short}-event-001`,
+      eventType: "payment.captured",
+      gateway: PaymentGateway.RAZORPAY,
+      payload: {
+        success: true,
+      },
+      signature: "webhook-signature",
+      processed: true,
+      processedAt: new Date(),
+    },
+  });
+
+  // 43. Bulk Payment Webhook Events
+  console.log("-> Generating bulk webhook events...");
   await prisma.paymentWebhookEvent.createMany({
     data: Array.from({ length: 1000 }).map((_, i) => ({
       eventId: `evt_rzp_telemetry_id_string_${i}_${data.short}`,
@@ -564,10 +846,38 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     })),
   });
 
-  // 24. Corporate Accounting General Ledger books
-  console.log(
-    "-> Generating 1,000 Corporate Accounting General Ledger headers...",
-  );
+  // 44. Ledger Entry (role user)
+  console.log("-> Creating ledger entries...");
+  const ledgerEntry = await prisma.ledgerEntry.create({
+    data: {
+      paymentTransactionId: payment.id,
+      description: "Membership fee ledger entry",
+      approvalStatus: "APPROVED",
+      createdById: financeUser.id,
+      approvedById: superAdminUser.id,
+    },
+  });
+
+  // 45. Ledger Lines (role user)
+  await prisma.ledgerLine.createMany({
+    data: [
+      {
+        ledgerEntryId: ledgerEntry.id,
+        accountId: "cash-account",
+        isDebit: true,
+        amount: new Prisma.Decimal(500),
+      },
+      {
+        ledgerEntryId: ledgerEntry.id,
+        accountId: "membership-income",
+        isDebit: false,
+        amount: new Prisma.Decimal(500),
+      },
+    ],
+  });
+
+  // 46. Bulk Ledger Entries
+  console.log("-> Generating bulk ledger entries...");
   await prisma.ledgerEntry.createMany({
     data: allPayments.map((p, i) => ({
       paymentTransactionId: p.id,
@@ -581,10 +891,8 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     select: { id: true },
   });
 
-  // 25. Double-entry Ledger accounting balance line entries
-  console.log(
-    "-> Posting 2,000 balanced Double-entry transactional debit/credit tracking lines...",
-  );
+  // 47. Bulk Ledger Lines
+  console.log("-> Generating bulk ledger lines...");
   const ledgerLines: Prisma.LedgerLineCreateManyInput[] = [];
   for (let i = 0; i < allLedgerEntries.length; i++) {
     const entryId = allLedgerEntries[i].id;
@@ -605,10 +913,25 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
   }
   await prisma.ledgerLine.createMany({ data: ledgerLines });
 
-  // 26. Push Notifications history logs
-  console.log(
-    "-> Buffering 1,000 user messaging Dispatch System notifications logs...",
-  );
+  // 48. Notification (role user)
+  console.log("-> Creating notifications...");
+  await prisma.notification.create({
+    data: {
+      associationId: association.id,
+      userId: memberUser.id,
+      title: "Payment Successful",
+      body: "Your membership payment was successful",
+      type: NotificationType.SYSTEM,
+      route: "/payments",
+      entityId: payment.id,
+      isRead: false,
+      isReceived: true,
+      receivedAt: new Date(),
+    },
+  });
+
+  // 49. Bulk Notifications
+  console.log("-> Generating bulk notifications...");
   await prisma.notification.createMany({
     data: Array.from({ length: 1000 }).map((_, i) => ({
       associationId: association.id,
@@ -624,8 +947,22 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     })),
   });
 
-  // 27. Support ticketing systems logging
-  console.log("-> Registering 1,000 Operations Help Desk ticket queries...");
+  // 50. Complaint (role user)
+  console.log("-> Creating complaints...");
+  await prisma.complaint.create({
+    data: {
+      associationId: association.id,
+      userId: memberUser.id,
+      title: "Unable to download receipt",
+      description: "Receipt PDF download failing",
+      status: ComplaintStatus.OPEN,
+      priority: "HIGH",
+      assignedToId: secretaryUser.id,
+    },
+  });
+
+  // 51. Bulk Complaints
+  console.log("-> Generating bulk complaints...");
   const complaintsToInsert: Prisma.ComplaintCreateManyInput[] = [];
   for (let i = 1; i <= 1000; i++) {
     complaintsToInsert.push({
@@ -641,7 +978,8 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
   }
   await prisma.complaint.createMany({ data: complaintsToInsert });
 
-  // 28. Cryptographic Gateway integration profiles configuration mapping
+  // 52. Payment Provider
+  console.log("-> Creating payment provider...");
   await prisma.paymentProvider.create({
     data: {
       associationId: association.id,
@@ -653,29 +991,27 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     },
   });
 
-  // 29. Compliance Auditing telemetry logs
-  console.log(
-    "-> Generating 1,000 deep structural compliance assessment check telemetry rows...",
-  );
-  const complianceChecksToInsert: Prisma.ComplianceCheckCreateManyInput[] = [];
-  for (let i = 1; i <= 1000; i++) {
-    complianceChecksToInsert.push({
+  // 53. Audit Log (role user)
+  console.log("-> Creating audit logs...");
+  await prisma.auditLog.create({
+    data: {
       associationId: association.id,
-      checkType: "REGULATORY_SYSTEM_DATA_INTEGRITY_AUDIT",
-      status: ComplianceCheckStatus.PASSED,
-      score: 90 + (i % 11),
-      message:
-        "Data system validation checks matching architecture specifications.",
-      details: { automatedVerificationCodeRun: true, operationalCheckIdx: i },
-      recommendations: { routineLogRotationIntervalDays: 30 },
-    });
-  }
-  await prisma.complianceCheck.createMany({ data: complianceChecksToInsert });
+      actorId: superAdminUser.id,
+      action: "CREATE",
+      resourceType: "Association",
+      resourceId: association.id,
+      newValues: {
+        name: data.name,
+        slug: data.slug,
+      },
+      ipAddress: "127.0.0.1",
+      userAgent: "seed-script",
+      traceId: `${data.short}-trace-001`,
+    },
+  });
 
-  // 30. Security Transactional Audit trail logs
-  console.log(
-    "-> Writing 1,000 Cryptographic Operations System Audit Trail telemetry rows...",
-  );
+  // 54. Bulk Audit Logs
+  console.log("-> Generating bulk audit logs...");
   const auditsToInsert: Prisma.AuditLogCreateManyInput[] = [];
   for (let i = 1; i <= 1000; i++) {
     auditsToInsert.push({
@@ -695,9 +1031,47 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
   }
   await prisma.auditLog.createMany({ data: auditsToInsert });
 
-  console.log(
-    `\n✓ ${data.name} fully scaled database configuration setup seeded successfully.`,
-  );
+  // 55. Compliance Check
+  console.log("-> Creating compliance checks...");
+  await prisma.complianceCheck.create({
+    data: {
+      associationId: association.id,
+      checkType: "GDPR_CHECK",
+      status: ComplianceCheckStatus.PASSED,
+      score: 96,
+      message: "Association compliant",
+      details: {
+        encryption: true,
+      },
+      recommendations: {
+        rotateKeys: true,
+      },
+    },
+  });
+
+  // 56. Bulk Compliance Checks
+  console.log("-> Generating bulk compliance checks...");
+  const complianceChecksToInsert: Prisma.ComplianceCheckCreateManyInput[] = [];
+  for (let i = 1; i <= 1000; i++) {
+    complianceChecksToInsert.push({
+      associationId: association.id,
+      checkType: "REGULATORY_SYSTEM_DATA_INTEGRITY_AUDIT",
+      status: ComplianceCheckStatus.PASSED,
+      score: 90 + (i % 11),
+      message:
+        "Data system validation checks matching architecture specifications.",
+      details: { automatedVerificationCodeRun: true, operationalCheckIdx: i },
+      recommendations: { routineLogRotationIntervalDays: 30 },
+    });
+  }
+  await prisma.complianceCheck.createMany({ data: complianceChecksToInsert });
+
+  console.log(`\n✓ ${data.name} seeded successfully`);
+  console.log(`\n   Login credentials for ${data.short.toUpperCase()}:`);
+  console.log(`   Password: ${process.env.PASSWORD || "securepassword123"}`);
+  for (const role of roles) {
+    console.log(`   ${role}: ${roleUsers[role].email}`);
+  }
 }
 
 // -----------------------------------------------------------------------------

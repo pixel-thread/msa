@@ -4,7 +4,6 @@ import {
   type NextProxy as NextMiddleware,
   type NextRequest,
 } from "next/server";
-import { handleApiErrors } from "../api";
 import { AppErrorResponse, getTraceId } from "../utils";
 import { normalizeUnknownError } from "../errors";
 

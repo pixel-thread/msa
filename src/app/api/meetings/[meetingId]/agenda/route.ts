@@ -9,9 +9,7 @@ import { ForbiddenError } from "@src/shared/errors";
 import { findUniqueMeeting } from "@src/features/meetings";
 import { prisma } from "@src/shared/lib/prisma";
 
-const ParamsSchema = z.object({
-  meetingId: z.string("Invalid meeting ID"),
-});
+const ParamsSchema = z.object({ meetingId: z.string("Invalid meeting ID") });
 
 export const GET = withAssociation(
   { params: ParamsSchema },
@@ -44,17 +42,17 @@ const CreateAgendaItemSchema = z.object({
 
 export const POST = withAssociation(
   { params: ParamsSchema, body: CreateAgendaItemSchema },
-  async (association, { params, body }, request) => {
+  async (_association, { params, body }, request) => {
     await withRole(request, UserRole.SECRETARY);
 
     if (!body) {
       throw new ForbiddenError("Invalid request body");
     }
-    
+
     let order = body.order;
     if (order === undefined) {
       const count = await prisma.agendaItem.count({
-        where: { meetingId: params!.meetingId }
+        where: { meetingId: params!.meetingId },
       });
       order = count + 1;
     }
@@ -65,7 +63,7 @@ export const POST = withAssociation(
         title: body.title,
         description: body.description,
         order,
-      }
+      },
     });
 
     return SuccessResponse({

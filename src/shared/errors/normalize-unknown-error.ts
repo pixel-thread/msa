@@ -8,6 +8,7 @@ import {
 } from "./classes/http-errors";
 import { Prisma } from "@prisma/client";
 import { JWTClaimValidationFailed, JOSEError } from "jose/errors";
+import { logger } from "../logger";
 
 /**
  * Type guard to check if an error is a Prisma-specific error
@@ -33,6 +34,7 @@ const isJwtError = (error: unknown): error is JWTClaimValidationFailed => {
 
 export const normalizeUnknownError = (error: unknown): AppError => {
   const isProd = env.NODE_ENV === "production";
+  console.error("Error:", { error });
 
   if (isJwtError(error) || error instanceof UnauthorizedError) {
     return new UnauthorizedError(error.message);

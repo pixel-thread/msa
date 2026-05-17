@@ -4,7 +4,7 @@ import { createAssociation } from "@src/features/associations/services/createAss
 import { findManyAssociation } from "@src/features/associations/services/findManyAssociation";
 import { findFirstAssociation } from "@src/features/associations/services/findFirstAssociation";
 import { SuccessResponse } from "@src/shared/utils";
-import { UserRole, type Association } from "@prisma/client";
+import type { UserRole, Association } from "@prisma/client";
 import { ConflictError } from "@src/shared/errors";
 import type { CreateAssociationInput } from "@src/features/associations/validators/associations";
 import { withRole } from "@src/shared/api/with-role";
