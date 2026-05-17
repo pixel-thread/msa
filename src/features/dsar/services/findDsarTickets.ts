@@ -1,5 +1,6 @@
 import { prisma } from "@src/shared/lib/prisma";
 import { DsarRequestType, DsarStatus } from "@prisma/client";
+import { buildPagination } from "@src/shared/utils/build-pagination";
 
 interface FindDsarTicketsProps {
   associationId: string;
@@ -65,11 +66,6 @@ export async function findDsarTickets({
 
   return {
     tickets,
-    pagination: {
-      total,
-      page: pagination.page,
-      limit: pagination.limit,
-      totalPages: Math.ceil(total / pagination.limit),
-    },
+    pagination: buildPagination(total, pagination.page, pagination.limit),
   };
 }

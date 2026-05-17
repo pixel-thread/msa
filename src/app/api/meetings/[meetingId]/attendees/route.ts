@@ -46,7 +46,6 @@ export const GET = withAssociation(
 
     return SuccessResponse({
       data: meeting.attendees,
-      meta: { total: meeting.attendees.length },
     });
   },
 );

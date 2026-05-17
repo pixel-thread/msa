@@ -18,10 +18,9 @@ export const GET = withAssociation(
       prisma.ledgerEntry.findMany({
         include: {
           lines: true,
-          createdBy: true,
-          approvedBy: true,
+          paymentTransaction: true,
         },
-        orderBy: { transactionDate: "desc" },
+        orderBy: { createdAt: "desc" },
         skip,
         take: pageSize,
       }),
@@ -35,6 +34,7 @@ export const GET = withAssociation(
         pageSize,
         total,
         totalPages: Math.ceil(total / pageSize),
+        hasMore: page < Math.ceil(total / pageSize),
       },
     });
   }
@@ -52,18 +52,14 @@ export const POST = withAssociation(
 
     const entry = await prisma.ledgerEntry.create({
       data: {
-        referenceNumber: `LEDGER-${Date.now()}`,
         description: body.description,
-        transactionDate: new Date(body.transactionDate),
-        category: body.category,
-        paymentId: body.paymentId,
         createdById: userId,
+        paymentTransactionId: body.paymentId || null,
         lines: {
           create: body.lines.map((line) => ({
-            debitAccountId: line.debitAccountId,
-            creditAccountId: line.creditAccountId,
+            accountId: line.debitAccountId,
+            isDebit: true,
             amount: line.amount,
-            narration: line.narration,
           })),
         },
       },

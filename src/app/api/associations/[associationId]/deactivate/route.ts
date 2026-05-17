@@ -11,30 +11,38 @@ const ParamsSchema = z.object({
   associationId: z.string().cuid(),
 });
 
-export const POST = withValidation({ params: ParamsSchema }, async (req, _ctx, { params }) => {
-  await withRole(req, UserRole.SUPER_ADMIN);
+export const POST = withValidation(
+  { params: ParamsSchema },
+  async (req, _ctx, { params }) => {
+    await withRole(req, UserRole.SUPER_ADMIN);
 
-  const userId = req.headers.get("x-user-id");
+    const userId = req.headers.get("x-user-id");
 
-  if (!userId) {
-    throw new UnauthorizedError("Unauthorized");
-  }
+    if (!userId) {
+      throw new UnauthorizedError("Unauthorized");
+    }
 
-  const isAssociationExist = await findUniqueAssociation({
-    where: { id: params?.associationId },
-  });
+    const associationId = params?.associationId;
+    if (!associationId) {
+      throw new UnauthorizedError("Association ID is required");
+    }
 
-  if (!isAssociationExist) {
-    throw new Error("Association not found");
-  }
+    const isAssociationExist = await findUniqueAssociation({
+      where: { id: associationId },
+    });
 
-  const updatedAssociation = await updateAssociation({
-    where: { id: params?.associationId },
-    data: { isActive: false },
-  });
+    if (!isAssociationExist) {
+      throw new Error("Association not found");
+    }
 
-  return SuccessResponse({
-    data: updatedAssociation,
-    message: "Association deactivated successfully",
-  });
-});
+    const updatedAssociation = await updateAssociation({
+      where: { id: associationId },
+      data: { isActive: false },
+    });
+
+    return SuccessResponse({
+      data: updatedAssociation,
+      message: "Association deactivated successfully",
+    });
+  },
+);

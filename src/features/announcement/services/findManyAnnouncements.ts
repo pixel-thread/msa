@@ -1,6 +1,7 @@
 import { prisma } from "@lib/prisma";
 import { AnnouncementStatus, AnnouncementPriority } from "@prisma/client";
 import { Prisma } from "@prisma/client";
+import { buildPagination } from "@src/shared/utils/build-pagination";
 
 interface FindManyAnnouncementsProps {
   associationId: string;
@@ -59,11 +60,6 @@ export async function findManyAnnouncements({
 
   return {
     announcements,
-    pagination: {
-      page,
-      limit,
-      total,
-      totalPages: Math.ceil(total / limit),
-    },
+    pagination: buildPagination(total, page, limit),
   };
 }

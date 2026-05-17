@@ -10,7 +10,7 @@ interface CreateModuleProps {
 
 export async function createModule({ associationId, actorId, data }: CreateModuleProps) {
   return await prisma.$transaction(async (tx) => {
-    const module = await tx.trainingModule.create({
+    const trainingModule = await tx.trainingModule.create({
       data: {
         associationId,
         ...data,
@@ -23,7 +23,7 @@ export async function createModule({ associationId, actorId, data }: CreateModul
         actorId,
         action: AuditAction.TRAINING_MODULE_CREATE,
         resourceType: "TrainingModule",
-        resourceId: module.id,
+        resourceId: trainingModule.id,
         newValues: data as Prisma.InputJsonValue,
       },
     });
@@ -43,7 +43,7 @@ export async function createModule({ associationId, actorId, data }: CreateModul
       if (usersToAssign.length > 0) {
         await tx.trainingAssignment.createMany({
           data: usersToAssign.map((user) => ({
-            moduleId: module.id,
+            moduleId: trainingModule.id,
             userId: user.id,
             assignedById: actorId,
             status: "ASSIGNED",
@@ -52,6 +52,6 @@ export async function createModule({ associationId, actorId, data }: CreateModul
       }
     }
 
-    return module;
+    return trainingModule;
   });
 }

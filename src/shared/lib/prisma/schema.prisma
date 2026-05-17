@@ -265,6 +265,7 @@ model Association {
   complianceChecks    ComplianceCheck[]
   memberTypes         MemberType[]
   paymentProviders    PaymentProvider[]
+  accounts            Account[]
 
   @@index([slug])
   @@index([isActive])
@@ -774,6 +775,24 @@ model LedgerLine {
 
   @@index([ledgerEntryId])
   @@map("ledger_lines")
+}
+
+model Account {
+  id            String   @id @default(uuid())
+  associationId String
+  code          String
+  name          String
+  type          String
+  description   String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+
+  @@index([associationId])
+  @@index([code])
+  @@map("accounts")
 }
 
 enum NotificationType {

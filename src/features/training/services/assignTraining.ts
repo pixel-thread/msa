@@ -44,11 +44,11 @@ export async function assignTraining({
   assignedById,
 }: AssignTrainingProps) {
   return await prisma.$transaction(async (tx) => {
-    const module = await tx.trainingModule.findFirst({
+    const trainingModule = await tx.trainingModule.findFirst({
       where: { id: moduleId, associationId },
     });
 
-    if (!module) {
+    if (!trainingModule) {
       throw new Error("Training module not found");
     }
 
@@ -60,7 +60,7 @@ export async function assignTraining({
       throw new Error("User not found");
     }
 
-    const hasMatchingRole = module.requiredForRoles.some((role) =>
+    const hasMatchingRole = trainingModule.requiredForRoles.some((role) =>
       user.role.includes(role)
     );
 
@@ -116,11 +116,11 @@ export async function bulkAssignTraining({
   assignedById,
 }: BulkAssignTrainingProps) {
   return await prisma.$transaction(async (tx) => {
-    const module = await tx.trainingModule.findFirst({
+    const trainingModule = await tx.trainingModule.findFirst({
       where: { id: moduleId, associationId },
     });
 
-    if (!module) {
+    if (!trainingModule) {
       throw new Error("Training module not found");
     }
 
@@ -139,7 +139,7 @@ export async function bulkAssignTraining({
     const skippedUsers: string[] = [];
 
     for (const user of users) {
-      const hasMatchingRole = module.requiredForRoles.some((role) =>
+      const hasMatchingRole = trainingModule.requiredForRoles.some((role) =>
         user.role.includes(role)
       );
 

@@ -571,7 +571,7 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
         "Complete detailed parameters documentation block concerning policy modification deployments across regional networks.",
       status: AnnouncementStatus.PUBLISHED,
       priority:
-        i % 4 === 0 ? AnnouncementPriority.HIGH : AnnouncementPriority.STANDARD,
+        i % 4 === 0 ? AnnouncementPriority.HIGH : AnnouncementPriority.NORMAL,
       targetRoles: [UserRole.MEMBER],
       publishedAt: new Date(),
       isPinned: i % 10 === 0,

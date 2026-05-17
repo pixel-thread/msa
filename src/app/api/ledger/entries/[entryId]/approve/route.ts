@@ -15,7 +15,6 @@ export const POST = withAssociation({}, async (association, _, request, { params
     data: {
       approvalStatus: ApprovalStatus.APPROVED,
       approvedById: userId,
-      approvedAt: new Date(),
     },
   });
 

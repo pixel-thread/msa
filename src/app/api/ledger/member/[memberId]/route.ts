@@ -11,15 +11,12 @@ export const GET = withAssociation({}, async (association, _, request, { params 
 
   const memberLedger = await prisma.ledgerEntry.findMany({
     where: {
-      createdBy: {
-        id: memberId,
-        associationId: association.id,
-      },
+      createdById: memberId,
     },
     include: {
       lines: true,
     },
-    orderBy: { transactionDate: "desc" },
+    orderBy: { createdAt: "desc" },
   });
 
   return SuccessResponse({ data: memberLedger });

@@ -10,3 +10,14 @@ export const LedgerQueryParams = z.object({
   page: pageSizeValidiaiton,
   pageSize: pageSizeValidiaiton,
 });
+
+export const CreateLedgerLineSchema = z.object({
+  debitAccountId: z.string(),
+  amount: z.number(),
+});
+
+export const CreateLedgerEntrySchema = z.object({
+  description: z.string(),
+  paymentId: z.string().optional(),
+  lines: z.array(CreateLedgerLineSchema),
+});

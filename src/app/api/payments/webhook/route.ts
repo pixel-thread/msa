@@ -3,8 +3,8 @@ import { AuditAction } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
 import {
   processWebhookEvent,
-  WebhookSignatureError,
 } from "@feature/payments/services/webhook.service";
+import { WebhookSignatureError } from "@src/shared/errors";
 
 /**
  * POST /api/payments/webhook

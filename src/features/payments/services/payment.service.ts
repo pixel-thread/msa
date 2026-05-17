@@ -7,6 +7,7 @@ import {
   AuditAction,
   PaymentMethod,
 } from "@prisma/client";
+import { buildPagination } from "@src/shared/utils/build-pagination";
 
 import { verifyPaymentSignature } from "./razorpay.service";
 import { getActiveProvider } from "./payment-provider.service";
@@ -685,12 +686,7 @@ export async function getAllTransactions(
 
   return {
     transactions,
-    pagination: {
-      page: validPage,
-      pageSize: validPageSize,
-      total,
-      totalPages: Math.ceil(total / validPageSize),
-    },
+    pagination: buildPagination(total, validPage, validPageSize),
   };
 }
 

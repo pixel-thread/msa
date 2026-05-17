@@ -24,9 +24,9 @@ export const GET = withAssociation({}, async (association, _, request, { params 
     throw new ForbiddenError("Not authorized to view these payments");
   }
 
-  const payments = await prisma.payment.findMany({
+  const payments = await prisma.paymentTransaction.findMany({
     where: {
-      subscriptionId,
+      userId: subscription.userId,
       associationId: association.id,
     },
     orderBy: {

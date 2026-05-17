@@ -1,6 +1,7 @@
 import { withAssociation } from "@src/shared/api/with-association";
 import { withRole } from "@src/shared/api/with-role";
 import { SuccessResponse } from "@src/shared/utils/responses";
+import { buildPagination } from "@src/shared/utils/build-pagination";
 import { UserRole } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
 import { PaymentHistoryQuerySchema } from "@src/features/payments/validators";
@@ -15,7 +16,7 @@ export const GET = withAssociation(
     const skip = (page - 1) * pageSize;
 
     const [payments, total] = await Promise.all([
-      prisma.payment.findMany({
+      prisma.paymentTransaction.findMany({
         where: {
           userId,
           associationId: association.id,
@@ -24,7 +25,7 @@ export const GET = withAssociation(
         skip,
         take: pageSize,
       }),
-      prisma.payment.count({
+      prisma.paymentTransaction.count({
         where: {
           userId,
           associationId: association.id,
@@ -34,12 +35,7 @@ export const GET = withAssociation(
 
     return SuccessResponse({
       data: payments,
-      meta: {
-        page,
-        pageSize,
-        total,
-        totalPages: Math.ceil(total / pageSize),
-      },
+      meta: buildPagination(total, page, pageSize),
     });
   },
 );
