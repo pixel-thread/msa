@@ -15,6 +15,14 @@ export const withSecurityHeaders: MiddlewareFn = async (req, next, _event) => {
   headers.set("Referrer-Policy", "origin-when-cross-origin");
   headers.set("X-Permitted-Cross-Domain-Policies", "none");
 
+  // Global security headers
+  headers.set(
+    "Permissions-Policy",
+    "camera=(), microphone=(), geolocation=()",
+  );
+  headers.set("Cross-Origin-Opener-Policy", "same-origin");
+  headers.set("Cross-Origin-Resource-Policy", "same-origin");
+
   // CSP
   const csp = [
     "default-src 'self'",
@@ -27,6 +35,16 @@ export const withSecurityHeaders: MiddlewareFn = async (req, next, _event) => {
   ].join("; ");
 
   headers.set("Content-Security-Policy", csp);
+
+  // Authenticated API responses must never be cached by browsers or proxies
+  const isAuthenticatedRequest = req.headers.has("x-user-id");
+  if (isAuthenticatedRequest) {
+    headers.set(
+      "Cache-Control",
+      "no-store, no-cache, must-revalidate, private",
+    );
+    headers.set("Pragma", "no-cache");
+  }
 
   return response;
 };
