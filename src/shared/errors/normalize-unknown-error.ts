@@ -8,7 +8,6 @@ import {
 } from "./classes/http-errors";
 import { Prisma } from "@prisma/client";
 import { JWTClaimValidationFailed, JOSEError } from "jose/errors";
-import Razorpay from "razorpay";
 
 /**
  * Type guard to check if an error is a Prisma-specific error
@@ -36,7 +35,7 @@ export const normalizeUnknownError = (error: unknown): AppError => {
   const isProd = env.NODE_ENV === "production";
 
   if (isJwtError(error) || error instanceof UnauthorizedError) {
-    return new UnauthorizedError("Authentication required");
+    return new UnauthorizedError(error.message);
   }
 
   if (error instanceof ZodError) {
