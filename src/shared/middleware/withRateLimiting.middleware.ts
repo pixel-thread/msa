@@ -10,6 +10,52 @@ const isProd = env.NODE_ENV === "production";
 
 /**
  * ----------------------------------------------------------------------------
+ * Rate Limit Configuration
+ * ----------------------------------------------------------------------------
+ */
+
+type Duration = `${number} ${"s" | "m" | "h" | "d"}`;
+
+const GLOBAL_LIMIT: { requests: number; window: Duration } = {
+  requests: 100,
+  window: "1 m",
+};
+
+const routeLimits: Record<
+  string,
+  { requests: number; window: Duration } | "skip"
+> = {
+  "/auth/*": { requests: 5, window: "1 m" },
+  "/health": "skip",
+  "/favicon.ico": "skip",
+};
+
+/**
+ * ----------------------------------------------------------------------------
+ * Route Matching
+ * ----------------------------------------------------------------------------
+ */
+
+type RouteMatch =
+  | { type: "skip" }
+  | { type: "limit"; config: { requests: number; window: Duration } };
+
+const matchRoute = (pathname: string): RouteMatch => {
+  for (const [pattern, config] of Object.entries(routeLimits)) {
+    if (pattern.endsWith("/*")) {
+      const prefix = pattern.slice(0, -1);
+      if (pathname.startsWith(prefix)) {
+        return config === "skip" ? { type: "skip" } : { type: "limit", config };
+      }
+    } else if (pathname === pattern) {
+      return config === "skip" ? { type: "skip" } : { type: "limit", config };
+    }
+  }
+  return { type: "limit", config: GLOBAL_LIMIT };
+};
+
+/**
+ * ----------------------------------------------------------------------------
  * Redis / Upstash Singleton
  * ----------------------------------------------------------------------------
  */
@@ -21,14 +67,30 @@ const redis = isProd
     })
   : null;
 
-const ratelimit = isProd
-  ? new Ratelimit({
-      redis: redis!,
-      limiter: Ratelimit.slidingWindow(100, "1 m"),
-      analytics: true,
-      prefix: "ratelimit:v1",
-    })
-  : null;
+const limiterCache = new Map<string, Ratelimit>();
+
+const getLimiter = (config: {
+  requests: number;
+  window: Duration;
+}): Ratelimit | null => {
+  if (!isProd || !redis) return null;
+
+  const key = `${config.requests}:${config.window}`;
+
+  if (!limiterCache.has(key)) {
+    limiterCache.set(
+      key,
+      new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(config.requests, config.window),
+        analytics: true,
+        prefix: `ratelimit:${key}`,
+      }),
+    );
+  }
+
+  return limiterCache.get(key)!;
+};
 
 /**
  * ----------------------------------------------------------------------------
@@ -43,7 +105,6 @@ type LocalRecord = {
 
 const localStore = new Map<string, LocalRecord>();
 
-// Cleanup expired local records every minute
 if (!isProd) {
   setInterval(() => {
     const now = Date.now();
@@ -63,19 +124,8 @@ if (!isProd) {
  */
 
 const WINDOW_MS = 60_000;
-const LOCAL_LIMIT = 100;
 
 const getClientIp = (request: Request): string => {
-  /**
-   * IMPORTANT:
-   * Only trust headers injected by your infrastructure/CDN.
-   *
-   * Examples:
-   * - Cloudflare: cf-connecting-ip
-   * - Vercel: x-forwarded-for
-   * - Nginx: x-real-ip
-   */
-
   const cfIp = request.headers.get("cf-connecting-ip");
 
   if (cfIp) {
@@ -97,7 +147,10 @@ const getClientIp = (request: Request): string => {
   return "unknown";
 };
 
-const checkLocalRateLimit = (identifier: string) => {
+const checkLocalRateLimit = (
+  identifier: string,
+  config: { requests: number; window: Duration },
+) => {
   const now = Date.now();
 
   let record = localStore.get(identifier);
@@ -114,36 +167,30 @@ const checkLocalRateLimit = (identifier: string) => {
   localStore.set(identifier, record);
 
   return {
-    success: record.count <= LOCAL_LIMIT,
-    limit: LOCAL_LIMIT,
-    remaining: Math.max(0, LOCAL_LIMIT - record.count),
+    success: record.count <= config.requests,
+    limit: config.requests,
+    remaining: Math.max(0, config.requests - record.count),
     reset: record.reset,
   };
 };
 
-const checkRateLimit = async (identifier: string) => {
-  /**
-   * Production: Upstash Redis
-   * Development: In-memory simulation
-   */
-
-  if (!isProd || !ratelimit) {
-    return checkLocalRateLimit(identifier);
+const checkRateLimit = async (
+  identifier: string,
+  config: { requests: number; window: Duration },
+) => {
+  if (!isProd || !redis) {
+    return checkLocalRateLimit(identifier, config);
   }
 
   try {
-    return await ratelimit.limit(identifier);
-  } catch (error) {
-    /**
-     * FAIL-OPEN STRATEGY
-     *
-     * If Upstash is unavailable:
-     * - allow request
-     * - log incident
-     *
-     * Prevents total API outage.
-     */
+    const limiter = getLimiter(config);
 
+    if (!limiter) {
+      return checkLocalRateLimit(identifier, config);
+    }
+
+    return await limiter.limit(identifier);
+  } catch (error) {
     logger.error("Rate limiter unavailable", {
       error,
       identifier,
@@ -168,52 +215,25 @@ export const withRateLimiting: MiddlewareFn = async (request, next) => {
   const traceId = getTraceId(request);
 
   try {
-    /**
-     * ----------------------------------------------------------------------------
-     * Skip Rate Limiting For Certain Routes
-     * ----------------------------------------------------------------------------
-     */
-
     const url = new URL(request.url);
 
-    const skippedPaths = ["/health", "/favicon.ico"];
+    const match = matchRoute(url.pathname);
 
-    if (skippedPaths.includes(url.pathname)) {
+    if (match.type === "skip") {
       return await next(request);
     }
 
-    /**
-     * ----------------------------------------------------------------------------
-     * Resolve Identifier
-     * ----------------------------------------------------------------------------
-     *
-     * Prefer authenticated user IDs when available.
-     * Fallback to IP address.
-     */
-
     const clientIp = getClientIp(request);
-
-    // Example:
-    // const userId = request.user?.id;
-
-    // const identifier = userId
-    //   ? `user:${userId}`
-    //   : `ip:${clientIp}`;
 
     const identifier = `ip:${clientIp}`;
 
-    /**
-     * ----------------------------------------------------------------------------
-     * Apply Rate Limit
-     * ----------------------------------------------------------------------------
-     */
-
-    const result = await checkRateLimit(identifier);
+    const result = await checkRateLimit(identifier, match.config);
 
     if (!result.success) {
       logger.warn("Rate limit exceeded", {
         identifier,
         traceId,
+        route: url.pathname,
       });
 
       throw new TooManyRequestsError(
@@ -221,19 +241,7 @@ export const withRateLimiting: MiddlewareFn = async (request, next) => {
       );
     }
 
-    /**
-     * ----------------------------------------------------------------------------
-     * Continue Middleware Chain
-     * ----------------------------------------------------------------------------
-     */
-
     const response = await next(request);
-
-    /**
-     * ----------------------------------------------------------------------------
-     * Standard Rate Limit Headers
-     * ----------------------------------------------------------------------------
-     */
 
     response.headers.set("RateLimit-Limit", String(result.limit));
 
