@@ -42,18 +42,6 @@ const formatMessage = (
   return `[${level.toUpperCase()}] ${message}${context ? ` ${safeStringify(context)}` : ""}`;
 };
 
-const flushServer = async (batch: QueuedLog[]) => {
-  const { createLogsBatch } = await import("../services/logs");
-  await createLogsBatch({
-    data: batch.map((l) => ({
-      type: l.level,
-      message: l.message,
-      content: l.context ?? {},
-      isBackend: true,
-    })),
-  });
-};
-
 const flushClient = async (batch: QueuedLog[]) => {
   await fetch(`${env.NEXT_PUBLIC_API_BASE_URL}/logs/batch`, {
     method: "POST",
@@ -69,11 +57,7 @@ const flush = async () => {
   const batch = queue.splice(0, BATCH_SIZE);
 
   try {
-    if (isServer) {
-      await flushServer(batch);
-    } else {
-      await flushClient(batch);
-    }
+    await flushClient(batch);
   } catch {
     queue.unshift(...batch);
   } finally {

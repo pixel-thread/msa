@@ -44,7 +44,10 @@ export const GET = withAssociation(
       pagination: { page, limit },
     });
 
-    return SuccessResponse({ data: result.meetings, meta: result.pagination });
+    return SuccessResponse({
+      data: result.meetings,
+      meta: result.pagination,
+    });
   },
 );
 

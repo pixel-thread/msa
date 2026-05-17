@@ -24,7 +24,7 @@ export interface PaginationMeta {
   hasMore: boolean;
 }
 
-export type ResponseMeta = PaginationMeta | Record<string, unknown>;
+export type ResponseMeta = PaginationMeta;
 
 export interface SuccessEnvelope<T> {
   success: true;

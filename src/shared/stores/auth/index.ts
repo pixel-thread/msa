@@ -3,7 +3,7 @@
 import { create } from "zustand";
 
 import http from "@src/shared/utils/http";
-import type { UserRole } from "@prisma/client";
+import type { UserRole } from "@src/shared/lib/prisma/types";
 
 export interface AuthUser {
   id: string;

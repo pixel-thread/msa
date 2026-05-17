@@ -1,4 +1,4 @@
-import { Meeting } from "@prisma/client";
+import type { Meeting } from "@src/shared/lib/prisma/types";
 import { formatDate } from "@src/shared/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@src/shared/components/ui/badge";

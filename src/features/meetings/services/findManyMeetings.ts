@@ -1,5 +1,6 @@
 import { prisma } from "@lib/prisma";
 import { MeetingType, MeetingStatus, Prisma, UserRole } from "@prisma/client";
+import { buildPagination } from "@src/shared/utils/build-pagination";
 import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
 
 interface FindManyMeetingsProps {
@@ -58,11 +59,6 @@ export async function findManyMeetings({
 
   return {
     meetings,
-    pagination: {
-      page,
-      limit,
-      total,
-      totalPages: Math.ceil(total / limit),
-    },
+    pagination: buildPagination(total, page, limit),
   };
 }

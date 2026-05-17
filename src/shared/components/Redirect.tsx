@@ -4,7 +4,14 @@ import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { useAuthStore } from "../stores/auth";
-import { UserRole } from "@prisma/client";
+
+type UserRole =
+  | "SUPER_ADMIN"
+  | "PRESIDENT"
+  | "SECRETARY"
+  | "FINANCE"
+  | "DPO"
+  | "MEMBER";
 
 type PropsT = {
   children: React.ReactNode;
