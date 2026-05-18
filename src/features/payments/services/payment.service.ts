@@ -753,8 +753,11 @@ export async function getFinancialStats(associationId: string) {
   ]);
 
   return {
-    totalCollectedMonth: Number(monthTotal._sum.amount || 0),
-    pendingDuesAmount: Number(duesSum._sum.dueAmount || 0),
-    pendingDuesCount: uniqueUsersWithDues.length,
+    stats: {
+      totalCollectedMonth: Number(monthTotal._sum.amount || 0),
+      pendingDuesAmount: Number(duesSum._sum.dueAmount || 0),
+      pendingDuesCount: uniqueUsersWithDues.length,
+    },
+    pagination: buildPagination(uniqueUsersWithDues.length, 1),
   };
 }

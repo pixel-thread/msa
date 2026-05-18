@@ -2,127 +2,124 @@
 
 import * as React from "react"
 
-import { NavDocuments } from "@src/shared/components/nav-documents"
 import { NavMain } from "@src/shared/components/nav-main"
-import { NavSecondary } from "@src/shared/components/nav-secondary"
+import { NavProjects } from "@src/shared/components/nav-projects"
 import { NavUser } from "@src/shared/components/nav-user"
+import { TeamSwitcher } from "@src/shared/components/team-switcher"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
+  SidebarRail,
 } from "@src/shared/components/ui/sidebar"
-import { LayoutDashboardIcon, ListIcon, ChartBarIcon, FolderIcon, UsersIcon, CameraIcon, FileTextIcon, Settings2Icon, CircleHelpIcon, SearchIcon, DatabaseIcon, FileChartColumnIcon, FileIcon, CommandIcon } from "lucide-react"
+import { GalleryVerticalEndIcon, AudioLinesIcon, TerminalIcon, TerminalSquareIcon, BotIcon, BookOpenIcon, Settings2Icon, FrameIcon, PieChartIcon, MapIcon } from "lucide-react"
 
+// This is sample data.
 const data = {
   user: {
     name: "shadcn",
     email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
-  navMain: [
+  teams: [
     {
-      title: "Dashboard",
-      url: "#",
-      icon: (
-        <LayoutDashboardIcon
+      name: "Acme Inc",
+      logo: (
+        <GalleryVerticalEndIcon
         />
       ),
+      plan: "Enterprise",
     },
     {
-      title: "Lifecycle",
-      url: "#",
-      icon: (
-        <ListIcon
+      name: "Acme Corp.",
+      logo: (
+        <AudioLinesIcon
         />
       ),
+      plan: "Startup",
     },
     {
-      title: "Analytics",
-      url: "#",
-      icon: (
-        <ChartBarIcon
+      name: "Evil Corp.",
+      logo: (
+        <TerminalIcon
         />
       ),
-    },
-    {
-      title: "Projects",
-      url: "#",
-      icon: (
-        <FolderIcon
-        />
-      ),
-    },
-    {
-      title: "Team",
-      url: "#",
-      icon: (
-        <UsersIcon
-        />
-      ),
+      plan: "Free",
     },
   ],
-  navClouds: [
+  navMain: [
     {
-      title: "Capture",
+      title: "Playground",
+      url: "#",
       icon: (
-        <CameraIcon
+        <TerminalSquareIcon
         />
       ),
       isActive: true,
-      url: "#",
       items: [
         {
-          title: "Active Proposals",
+          title: "History",
           url: "#",
         },
         {
-          title: "Archived",
+          title: "Starred",
+          url: "#",
+        },
+        {
+          title: "Settings",
           url: "#",
         },
       ],
     },
     {
-      title: "Proposal",
+      title: "Models",
+      url: "#",
       icon: (
-        <FileTextIcon
+        <BotIcon
         />
       ),
-      url: "#",
       items: [
         {
-          title: "Active Proposals",
+          title: "Genesis",
           url: "#",
         },
         {
-          title: "Archived",
+          title: "Explorer",
+          url: "#",
+        },
+        {
+          title: "Quantum",
           url: "#",
         },
       ],
     },
     {
-      title: "Prompts",
+      title: "Documentation",
+      url: "#",
       icon: (
-        <FileTextIcon
+        <BookOpenIcon
         />
       ),
-      url: "#",
       items: [
         {
-          title: "Active Proposals",
+          title: "Introduction",
           url: "#",
         },
         {
-          title: "Archived",
+          title: "Get Started",
+          url: "#",
+        },
+        {
+          title: "Tutorials",
+          url: "#",
+        },
+        {
+          title: "Changelog",
           url: "#",
         },
       ],
     },
-  ],
-  navSecondary: [
     {
       title: "Settings",
       url: "#",
@@ -130,46 +127,48 @@ const data = {
         <Settings2Icon
         />
       ),
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: (
-        <CircleHelpIcon
-        />
-      ),
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: (
-        <SearchIcon
-        />
-      ),
+      items: [
+        {
+          title: "General",
+          url: "#",
+        },
+        {
+          title: "Team",
+          url: "#",
+        },
+        {
+          title: "Billing",
+          url: "#",
+        },
+        {
+          title: "Limits",
+          url: "#",
+        },
+      ],
     },
   ],
-  documents: [
+  projects: [
     {
-      name: "Data Library",
+      name: "Design Engineering",
       url: "#",
       icon: (
-        <DatabaseIcon
+        <FrameIcon
         />
       ),
     },
     {
-      name: "Reports",
+      name: "Sales & Marketing",
       url: "#",
       icon: (
-        <FileChartColumnIcon
+        <PieChartIcon
         />
       ),
     },
     {
-      name: "Word Assistant",
+      name: "Travel",
       url: "#",
       icon: (
-        <FileIcon
+        <MapIcon
         />
       ),
     },
@@ -178,30 +177,18 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:p-1.5!"
-            >
-              <a href="#">
-                <CommandIcon className="size-5!" />
-                <span className="text-base font-semibold">Acme Inc.</span>
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
       </SidebarFooter>
+      <SidebarRail />
     </Sidebar>
   )
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,29 +25,59 @@ import {
   FormMessage,
 } from "@src/shared/components/ui/form";
 import {
-  ForgotPasswordSchema,
-  type ForgotPasswordInput,
+  ResetPasswordSchema,
+  type ResetPasswordInput,
 } from "@src/features/auth/validators";
-import { useForgotPassword } from "@src/features/auth/hooks";
+import { useResetPassword } from "@src/features/auth/hooks";
 
-export default function ForgotPasswordPage() {
+export default function ResetPasswordPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
   const [isSuccess, setIsSuccess] = useState(false);
-  const forgotPasswordMutation = useForgotPassword();
+  const resetPasswordMutation = useResetPassword();
 
-  const form = useForm<ForgotPasswordInput>({
-    resolver: zodResolver(ForgotPasswordSchema),
+  const form = useForm<ResetPasswordInput>({
+    resolver: zodResolver(ResetPasswordSchema),
     defaultValues: {
-      email: "",
+      token: token || "",
+      password: "",
     },
   });
 
-  const onSubmit = async (values: ForgotPasswordInput) => {
+  const onSubmit = async (values: ResetPasswordInput) => {
     try {
-      await forgotPasswordMutation.mutateAsync(values);
+      await resetPasswordMutation.mutateAsync(values);
       setIsSuccess(true);
     } catch {
     }
   };
+
+  if (!token) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-canvas px-4 py-24">
+        <Card className="w-full max-w-md rounded-xl border-hairline bg-surface-card">
+          <CardHeader className="space-y-3">
+            <CardTitle className="text-2xl font-normal tracking-tight text-ink">
+              Invalid Reset Link
+            </CardTitle>
+            <CardDescription className="text-body text-base">
+              The password reset link is invalid or has expired. Please request
+              a new one.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link
+              href="/forgot-password"
+              className="text-sm font-medium text-primary hover:text-primary-active"
+            >
+              Request new reset link
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (isSuccess) {
     return (
@@ -54,11 +85,11 @@ export default function ForgotPasswordPage() {
         <Card className="w-full max-w-md rounded-xl border-hairline bg-surface-card">
           <CardHeader className="space-y-3">
             <CardTitle className="text-2xl font-normal tracking-tight text-ink">
-              Check your email
+              Password Reset Successful
             </CardTitle>
             <CardDescription className="text-body text-base">
-              We've sent you a password reset link. Please check your inbox and
-              follow the instructions to reset your password.
+              Your password has been reset successfully. You can now sign in
+              with your new password.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -66,7 +97,7 @@ export default function ForgotPasswordPage() {
               href="/sign-in"
               className="text-sm font-medium text-primary hover:text-primary-active"
             >
-              Back to sign in
+              Go to sign in
             </Link>
           </CardContent>
         </Card>
@@ -79,11 +110,10 @@ export default function ForgotPasswordPage() {
       <Card className="w-full max-w-md rounded-xl border-hairline bg-surface-card">
         <CardHeader className="space-y-3">
           <CardTitle className="text-2xl font-normal tracking-tight text-ink">
-            Forgot your password?
+            Reset your password
           </CardTitle>
           <CardDescription className="text-body text-base">
-            Enter your email address and we'll send you a link to reset your
-            password
+            Enter your new password below
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -92,27 +122,35 @@ export default function ForgotPasswordPage() {
               onSubmit={form.handleSubmit(onSubmit)}
               className="space-y-5"
             >
-              {forgotPasswordMutation.isError && (
+              {resetPasswordMutation.isError && (
                 <Alert variant="destructive">
                   <AlertDescription>
-                    {forgotPasswordMutation.error?.message ||
-                      "Failed to send reset email"}
+                    {resetPasswordMutation.error?.message ||
+                      "Password reset failed"}
                   </AlertDescription>
                 </Alert>
               )}
 
               <FormField
                 control={form.control}
-                name="email"
+                name="token"
+                render={({ field }) => (
+                  <input type="hidden" {...field} />
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-body-strong text-sm font-medium">
-                      Email
+                      New Password
                     </FormLabel>
                     <FormControl>
                       <Input
-                        type="email"
-                        placeholder="Email address"
+                        type="password"
+                        placeholder="New password"
                         className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
                         {...field}
                       />
@@ -125,11 +163,11 @@ export default function ForgotPasswordPage() {
               <Button
                 type="submit"
                 className="h-11 w-full rounded-full bg-primary px-5 text-base font-semibold text-on-primary hover:bg-primary-active disabled:bg-primary-disabled"
-                disabled={forgotPasswordMutation.isPending}
+                disabled={resetPasswordMutation.isPending}
               >
-                {forgotPasswordMutation.isPending
-                  ? "Sending..."
-                  : "Send reset link"}
+                {resetPasswordMutation.isPending
+                  ? "Resetting..."
+                  : "Reset password"}
               </Button>
 
               <div className="text-center">

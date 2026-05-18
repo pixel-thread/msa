@@ -3,205 +3,274 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useAuthStore } from "@src/shared/stores/auth";
+import { Button } from "@src/shared/components/ui/button";
+import { Input } from "@src/shared/components/ui/input";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@src/shared/components/ui/card";
+import { Alert, AlertDescription } from "@src/shared/components/ui/alert";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@src/shared/components/ui/form";
+import {
+  SignInSchema,
+  type SignInInput,
+  VerifySignInSchema,
+  type VerifySignInInput,
+} from "@src/features/auth/validators";
+import { useSignIn, useVerifyMfa } from "@src/features/auth/hooks";
 
 export default function SignInPage() {
   const router = useRouter();
-  const { signIn, isLoading } = useAuthStore();
+  const signInMutation = useSignIn();
+  const [mfaTempToken, setMfaTempToken] = useState<string | null>(null);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [mfaRequired, setMfaRequired] = useState(false);
+  const form = useForm<SignInInput>({
+    resolver: zodResolver(SignInSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-
+  const onSubmit = async (values: SignInInput) => {
     try {
-      const result = await signIn(email, password);
+      const result = await signInMutation.mutateAsync(values);
 
-      if (result.mfaRequired) {
-        setMfaRequired(true);
+      if (result.data?.mfaRequired) {
+        setMfaTempToken(result.data.tempToken || null);
       } else {
         router.push("/dashboard");
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Sign in failed");
+    } catch {
     }
   };
 
-  if (mfaRequired) {
-    return <MfaVerify email={email} onBack={() => setMfaRequired(false)} />;
+  if (mfaTempToken) {
+    return (
+      <MfaVerify
+        onBack={() => setMfaTempToken(null)}
+        tempToken={mfaTempToken}
+      />
+    );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
-      <div className="w-full max-w-md space-y-8">
-        <div>
-          <h2 className="text-center text-3xl font-bold tracking-tight text-gray-900">
+    <div className="flex min-h-screen items-center justify-center bg-canvas px-4 py-24">
+      <Card className="w-full max-w-md rounded-xl border-hairline bg-surface-card">
+        <CardHeader className="space-y-3">
+          <CardTitle className="text-2xl font-normal tracking-tight text-ink">
             Sign in to your account
-          </h2>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="-space-y-px rounded-md shadow-sm">
-            <div>
-              <input
-                type="email"
-                required
-                className="relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <input
-                type="password"
-                required
-                className="relative block w-full rounded-b-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {error && (
-            <div className="text-red-600 text-sm text-center">{error}</div>
-          )}
-
-          <div className="flex items-center justify-between">
-            <div className="text-sm">
-              <Link
-                href="/forgot-password"
-                className="font-medium text-indigo-600 hover:text-indigo-500"
-              >
-                Forgot password?
-              </Link>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="group relative flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity50"
-          >
-            {isLoading ? "Signing in..." : "Sign in"}
-          </button>
-
-          <p className="text-center text-sm text-gray-600">
-            Don't have an account?{" "}
-            <Link
-              href="/sign-up"
-              className="font-medium text-indigo-600 hover:text-indigo-500"
+          </CardTitle>
+          <CardDescription className="text-body text-base">
+            Enter your email and password to continue
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-5"
             >
-              Sign up
-            </Link>
-          </p>
-        </form>
-      </div>
+              {signInMutation.isError && (
+                <Alert variant="destructive">
+                  <AlertDescription>
+                    {signInMutation.error?.message || "Sign in failed"}
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-body-strong text-sm font-medium">
+                      Email
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="Email address"
+                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-body-strong text-sm font-medium">
+                      Password
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Password"
+                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex justify-end">
+                <Link
+                  href="/forgot-password"
+                  className="text-sm font-medium text-primary hover:text-primary-active"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+
+              <Button
+                type="submit"
+                className="h-11 w-full rounded-full bg-primary px-5 text-base font-semibold text-on-primary hover:bg-primary-active disabled:bg-primary-disabled"
+                disabled={signInMutation.isPending}
+              >
+                {signInMutation.isPending ? "Signing in..." : "Sign in"}
+              </Button>
+
+              <p className="text-center text-sm text-body">
+                Don't have an account?{" "}
+                <Link
+                  href="/sign-up"
+                  className="font-medium text-primary hover:text-primary-active"
+                >
+                  Sign up
+                </Link>
+              </p>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </div>
   );
 }
 
-function MfaVerify({ email, onBack }: { email: string; onBack: () => void }) {
+function MfaVerify({
+  onBack,
+  tempToken,
+}: {
+  onBack: () => void;
+  tempToken: string;
+}) {
   const router = useRouter();
-  const { verifyMfa, resendMfaCode, isLoading } = useAuthStore();
+  const verifyMfaMutation = useVerifyMfa();
 
-  const [code, setCode] = useState("");
-  const [error, setError] = useState("");
-  const [resendLoading, setResendLoading] = useState(false);
-  const [resendSuccess, setResendSuccess] = useState(false);
+  const form = useForm<VerifySignInInput>({
+    resolver: zodResolver(VerifySignInSchema),
+    defaultValues: {
+      code: "",
+      mfa_temp_token: tempToken,
+    },
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-
+  const onSubmit = async (values: VerifySignInInput) => {
     try {
-      await verifyMfa(code);
+      await verifyMfaMutation.mutateAsync(values);
       router.push("/dashboard");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Verification failed");
-    }
-  };
-
-  const handleResend = async () => {
-    setResendLoading(true);
-    setError("");
-    try {
-      await resendMfaCode();
-      setResendSuccess(true);
-      setTimeout(() => setResendSuccess(false), 3000);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to resend code");
-    } finally {
-      setResendLoading(false);
+    } catch {
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
-      <div className="w-full max-w-md space-y-8">
-        <div>
-          <h2 className="text-center text-3xl font-bold tracking-tight text-gray-900">
+    <div className="flex min-h-screen items-center justify-center bg-canvas px-4 py-24">
+      <Card className="w-full max-w-md rounded-xl border-hairline bg-surface-card">
+        <CardHeader className="space-y-3">
+          <CardTitle className="text-2xl font-normal tracking-tight text-ink">
             Two-Factor Authentication
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          </CardTitle>
+          <CardDescription className="text-body text-base">
             Enter the 6-digit code sent to your email
-          </p>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="-space-y-px rounded-md shadow-sm">
-            <div>
-              <input
-                type="text"
-                required
-                maxLength={6}
-                className="relative block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3 text-center text-2xl tracking-widest"
-                placeholder="000000"
-                value={code}
-                onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-5"
+            >
+              {verifyMfaMutation.isError && (
+                <Alert variant="destructive">
+                  <AlertDescription>
+                    {verifyMfaMutation.error?.message ||
+                      "Verification failed"}
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <FormField
+                control={form.control}
+                name="code"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-body-strong text-sm font-medium">
+                      Verification Code
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        maxLength={6}
+                        className="h-12 rounded-md border-hairline bg-canvas text-center text-2xl tracking-widest text-ink placeholder:text-muted focus-visible:border-primary"
+                        placeholder="000000"
+                        {...field}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value.replace(/\D/g, "").slice(0, 6),
+                          )
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-          </div>
 
-          {error && (
-            <div className="text-red-600 text-sm text-center">{error}</div>
-          )}
+              <Button
+                type="submit"
+                className="h-11 w-full rounded-full bg-primary px-5 text-base font-semibold text-on-primary hover:bg-primary-active disabled:bg-primary-disabled"
+                disabled={
+                  verifyMfaMutation.isPending ||
+                  form.getValues("code").length !== 6
+                }
+              >
+                {verifyMfaMutation.isPending ? "Verifying..." : "Verify"}
+              </Button>
 
-          {resendSuccess && (
-            <div className="text-green-600 text-sm text-center">Code resent successfully!</div>
-          )}
-
-          <button
-            type="submit"
-            disabled={isLoading || code.length !== 6}
-            className="group relative flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50"
-          >
-            {isLoading ? "Verifying..." : "Verify"}
-          </button>
-
-          <div className="flex flex-col gap-2">
-            <button
-              type="button"
-              onClick={handleResend}
-              disabled={resendLoading}
-              className="text-sm text-indigo-600 hover:text-indigo-500 disabled:opacity-50"
-            >
-              {resendLoading ? "Sending..." : "Resend code"}
-            </button>
-            <button
-              type="button"
-              onClick={onBack}
-              className="text-sm text-gray-600 hover:text-gray-500"
-            >
-              Back to sign in
-            </button>
-          </div>
-        </form>
-      </div>
+              <div className="flex flex-col gap-2 text-center">
+                <button
+                  type="button"
+                  onClick={onBack}
+                  className="text-sm text-body hover:text-body-strong"
+                >
+                  Back to sign in
+                </button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

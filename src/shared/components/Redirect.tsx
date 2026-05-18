@@ -77,7 +77,7 @@ export const Redirect = ({ children }: PropsT) => {
       // If the route requires authentication and the user is not authenticated
       if (currentRoute.needAuth && !isAuthenticated) {
         // Redirect the user to the signin page and include the current path as a `redirect` query parameter
-        router.replace(`/signin?redirect=${encodeURIComponent(pathName)}`);
+        router.replace(`/sign-in?redirect=${encodeURIComponent(pathName)}`);
         return; // Exit the logic as redirection is in progress
       }
 

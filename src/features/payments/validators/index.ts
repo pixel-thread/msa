@@ -100,6 +100,7 @@ export const GetTransactionsQuerySchema = z.object({
 });
 
 export const CollectionReportQuerySchema = z.object({
+  page: pageNumberValidation,
   year: z.coerce.number().int().min(2020).max(2100).optional(),
   month: z.coerce.number().int().min(1).max(12).optional(),
   status: z.enum(ContributionStatus).optional(),

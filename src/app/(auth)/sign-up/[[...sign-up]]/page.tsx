@@ -1,128 +1,184 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useAuthStore } from "@src/shared/stores/auth";
+import { Button } from "@src/shared/components/ui/button";
+import { Input } from "@src/shared/components/ui/input";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@src/shared/components/ui/card";
+import { Alert, AlertDescription } from "@src/shared/components/ui/alert";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@src/shared/components/ui/form";
+import { SignUpSchema, type SignUpInput } from "@src/features/auth/validators";
+import { useSignUp } from "@src/features/auth/hooks";
 
 export default function SignUpPage() {
   const router = useRouter();
-  const { signUp, isLoading } = useAuthStore();
+  const signUpMutation = useSignUp();
 
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+  const form = useForm<SignUpInput>({
+    resolver: zodResolver(SignUpSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
   });
-  const [error, setError] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
-    if (formData.password.length < 8) {
-      setError("Password must be at least 8 characters");
-      return;
-    }
-
+  const onSubmit = async (values: SignUpInput) => {
     try {
-      await signUp(formData.email, formData.password, formData.name);
-      router.push("/dashboard");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Sign up failed");
+      await signUpMutation.mutateAsync(values);
+      router.push("/sign-in");
+    } catch {
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
-      <div className="w-full max-w-md space-y-8">
-        <div>
-          <h2 className="text-center text-3xl font-bold tracking-tight text-gray-900">
+    <div className="flex min-h-screen items-center justify-center bg-canvas px-4 py-24">
+      <Card className="w-full max-w-md rounded-xl border-hairline bg-surface-card">
+        <CardHeader className="space-y-3">
+          <CardTitle className="text-2xl font-normal tracking-tight text-ink">
             Create your account
-          </h2>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div>
-              <input
-                type="text"
-                name="name"
-                required
-                className="relative block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3"
-                placeholder="Full name"
-                value={formData.name}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <input
-                type="email"
-                name="email"
-                required
-                className="relative block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3"
-                placeholder="Email address"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <input
-                type="password"
-                name="password"
-                required
-                className="relative block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <input
-                type="password"
-                name="confirmPassword"
-                required
-                className="relative block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3"
-                placeholder="Confirm password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-
-          {error && (
-            <div className="text-red-600 text-sm text-center">{error}</div>
-          )}
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="group relative flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50"
-          >
-            {isLoading ? "Creating account..." : "Sign up"}
-          </button>
-
-          <p className="text-center text-sm text-gray-600">
-            Already have an account?{" "}
-            <Link
-              href="/sign-in"
-              className="font-medium text-indigo-600 hover:text-indigo-500"
+          </CardTitle>
+          <CardDescription className="text-body text-base">
+            Fill in your details to get started
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-5"
             >
-              Sign in
-            </Link>
-          </p>
-        </form>
-      </div>
+              {signUpMutation.isError && (
+                <Alert variant="destructive">
+                  <AlertDescription>
+                    {signUpMutation.error?.message || "Sign up failed"}
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-body-strong text-sm font-medium">
+                      Full Name
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Full name"
+                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-body-strong text-sm font-medium">
+                      Email
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="Email address"
+                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-body-strong text-sm font-medium">
+                      Password
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Password"
+                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-body-strong text-sm font-medium">
+                      Confirm Password
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Confirm password"
+                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button
+                type="submit"
+                className="h-11 w-full rounded-full bg-primary px-5 text-base font-semibold text-on-primary hover:bg-primary-active disabled:bg-primary-disabled"
+                disabled={signUpMutation.isPending}
+              >
+                {signUpMutation.isPending
+                  ? "Creating account..."
+                  : "Sign up"}
+              </Button>
+
+              <p className="text-center text-sm text-body">
+                Already have an account?{" "}
+                <Link
+                  href="/sign-in"
+                  className="font-medium text-primary hover:text-primary-active"
+                >
+                  Sign in
+                </Link>
+              </p>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

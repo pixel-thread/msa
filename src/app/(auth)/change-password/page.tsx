@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,25 +25,28 @@ import {
   FormMessage,
 } from "@src/shared/components/ui/form";
 import {
-  ForgotPasswordSchema,
-  type ForgotPasswordInput,
+  ChangePasswordSchema,
+  type ChangePasswordInput,
 } from "@src/features/auth/validators";
-import { useForgotPassword } from "@src/features/auth/hooks";
+import { useChangePassword } from "@src/features/auth/hooks";
 
-export default function ForgotPasswordPage() {
+export default function ChangePasswordPage() {
+  const router = useRouter();
   const [isSuccess, setIsSuccess] = useState(false);
-  const forgotPasswordMutation = useForgotPassword();
+  const changePasswordMutation = useChangePassword();
 
-  const form = useForm<ForgotPasswordInput>({
-    resolver: zodResolver(ForgotPasswordSchema),
+  const form = useForm<ChangePasswordInput>({
+    resolver: zodResolver(ChangePasswordSchema),
     defaultValues: {
-      email: "",
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
     },
   });
 
-  const onSubmit = async (values: ForgotPasswordInput) => {
+  const onSubmit = async (values: ChangePasswordInput) => {
     try {
-      await forgotPasswordMutation.mutateAsync(values);
+      await changePasswordMutation.mutateAsync(values);
       setIsSuccess(true);
     } catch {
     }
@@ -54,20 +58,20 @@ export default function ForgotPasswordPage() {
         <Card className="w-full max-w-md rounded-xl border-hairline bg-surface-card">
           <CardHeader className="space-y-3">
             <CardTitle className="text-2xl font-normal tracking-tight text-ink">
-              Check your email
+              Password Changed
             </CardTitle>
             <CardDescription className="text-body text-base">
-              We've sent you a password reset link. Please check your inbox and
-              follow the instructions to reset your password.
+              Your password has been changed successfully. Please sign in again
+              with your new password.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Link
-              href="/sign-in"
-              className="text-sm font-medium text-primary hover:text-primary-active"
+            <Button
+              className="h-11 w-full rounded-full bg-primary px-5 text-base font-semibold text-on-primary hover:bg-primary-active"
+              onClick={() => router.push("/sign-in")}
             >
-              Back to sign in
-            </Link>
+              Go to sign in
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -79,11 +83,10 @@ export default function ForgotPasswordPage() {
       <Card className="w-full max-w-md rounded-xl border-hairline bg-surface-card">
         <CardHeader className="space-y-3">
           <CardTitle className="text-2xl font-normal tracking-tight text-ink">
-            Forgot your password?
+            Change your password
           </CardTitle>
           <CardDescription className="text-body text-base">
-            Enter your email address and we'll send you a link to reset your
-            password
+            Enter your current password and a new password
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -92,27 +95,69 @@ export default function ForgotPasswordPage() {
               onSubmit={form.handleSubmit(onSubmit)}
               className="space-y-5"
             >
-              {forgotPasswordMutation.isError && (
+              {changePasswordMutation.isError && (
                 <Alert variant="destructive">
                   <AlertDescription>
-                    {forgotPasswordMutation.error?.message ||
-                      "Failed to send reset email"}
+                    {changePasswordMutation.error?.message ||
+                      "Password change failed"}
                   </AlertDescription>
                 </Alert>
               )}
 
               <FormField
                 control={form.control}
-                name="email"
+                name="currentPassword"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-body-strong text-sm font-medium">
-                      Email
+                      Current Password
                     </FormLabel>
                     <FormControl>
                       <Input
-                        type="email"
-                        placeholder="Email address"
+                        type="password"
+                        placeholder="Current password"
+                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="newPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-body-strong text-sm font-medium">
+                      New Password
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="New password"
+                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-body-strong text-sm font-medium">
+                      Confirm New Password
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Confirm new password"
                         className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
                         {...field}
                       />
@@ -125,11 +170,11 @@ export default function ForgotPasswordPage() {
               <Button
                 type="submit"
                 className="h-11 w-full rounded-full bg-primary px-5 text-base font-semibold text-on-primary hover:bg-primary-active disabled:bg-primary-disabled"
-                disabled={forgotPasswordMutation.isPending}
+                disabled={changePasswordMutation.isPending}
               >
-                {forgotPasswordMutation.isPending
-                  ? "Sending..."
-                  : "Send reset link"}
+                {changePasswordMutation.isPending
+                  ? "Changing..."
+                  : "Change password"}
               </Button>
 
               <div className="text-center">

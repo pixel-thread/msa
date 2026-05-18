@@ -1,6 +1,6 @@
 import { prisma } from "@src/shared/lib/prisma";
 import { encrypt } from "@src/shared/lib/crypto";
-import { PaymentProviderType, Prisma } from "@prisma/client";
+import { PaymentProviderType } from "@prisma/client";
 import { NotFoundError } from "@src/shared/errors";
 
 export interface UpsertProviderInput {
