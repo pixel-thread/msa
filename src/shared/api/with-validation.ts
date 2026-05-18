@@ -52,7 +52,7 @@ const parseNextRequestBody = async <TBody>(
 
   if (!result.success) {
     throw new ValidationError(
-      "Invalid input",
+      result.error.issues[0].message,
       formatZodIssues(result.error.issues),
     );
   }
@@ -70,7 +70,7 @@ const parseNextRequestQuery = <TQuery>(
 
   if (!result.success) {
     throw new ValidationError(
-      "Invalid query parameters",
+      result.error.issues[0].message,
       formatZodIssues(result.error.issues),
     );
   }
@@ -90,7 +90,7 @@ const parseRouteParams = async <
 
   if (!result.success) {
     throw new ValidationError(
-      "Invalid route parameters",
+      result.error.issues[0].message,
       formatZodIssues(result.error.issues),
     );
   }

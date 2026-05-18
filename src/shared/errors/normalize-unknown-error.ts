@@ -44,7 +44,7 @@ export const normalizeUnknownError = (error: unknown): AppError => {
   }
 
   if (error instanceof ZodError) {
-    return new ValidationError("Invalid input", error.issues);
+    return new ValidationError(error.message, error.issues);
   }
 
   if (error instanceof PaymentError) {

@@ -30,9 +30,18 @@ export const AdminUserApproveParamsSchema = z.object({
 });
 
 export const AdminUserApproveSchema = z.object({
-  memberTypeId: uuidValidiation,
-  role: z.enum(UserRole).default("MEMBER").optional(),
-  dateOfJoiningGovt: z.coerce.date().default(new Date()).optional(),
-  dateOfJoiningMfsa: z.coerce.date().default(new Date()).optional(),
-  status: z.enum($Enums.UserStatus).default("ACTIVE").optional(),
+  memberTypeId: z.uuid("Invalid member type"),
+  role: z.enum(UserRole, "Invalid role").default("MEMBER").optional(),
+  dateOfJoiningGovt: z.coerce
+    .date("Invalid date")
+    .default(new Date())
+    .optional(),
+  dateOfJoiningMfsa: z.coerce
+    .date("Invalid date")
+    .default(new Date())
+    .optional(),
+  status: z
+    .enum($Enums.UserStatus, "Invalid User status")
+    .default("ACTIVE")
+    .optional(),
 });
