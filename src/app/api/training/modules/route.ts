@@ -10,7 +10,6 @@ import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
 export const GET = withAssociation({}, async (association, _, request) => {
   const user = await withRole(request, UserRole.MEMBER);
 
-  // Admins and DPOs see all, members see only active ones and those required for their role
   const isManager =
     hasHighRoleAccess(user.role) || user.role.includes(UserRole.DPO);
   const isActive = isManager ? undefined : true;
@@ -22,7 +21,10 @@ export const GET = withAssociation({}, async (association, _, request) => {
     role,
   });
 
-  return SuccessResponse({ data: modules });
+  return SuccessResponse({
+    data: modules.trainingModules,
+    meta: modules.pagination,
+  });
 });
 
 export const POST = withAssociation(

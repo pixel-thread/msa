@@ -1,4 +1,5 @@
 import z from "zod";
+import { PAGE_SIZE } from "../constants";
 
 export const uuidValidiation = z.uuid("Invalid ID");
 
@@ -10,7 +11,7 @@ export const pageSizeValidation = z.coerce
   .min(1, "Minimum page size is 1")
   .max(50, "Maximum page size is 100")
   .positive("Page size must be positive")
-  .catch(10);
+  .catch(PAGE_SIZE);
 
 export const pageNumberValidation = z.coerce
   .number({

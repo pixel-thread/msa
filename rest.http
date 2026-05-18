@@ -617,7 +617,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Get All Training Completions
-POST {{NEXT_PUBLIC_API_BASE_URL}}/training/completions
+GET {{NEXT_PUBLIC_API_BASE_URL}}/training/completions
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 

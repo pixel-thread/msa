@@ -3,25 +3,42 @@ import { withRole } from "@src/shared/api/with-role";
 import { SuccessResponse } from "@utils/responses";
 import { ForbiddenError } from "@src/shared/errors";
 import { UserRole } from "@prisma/client";
-import { findManyCompletions, adminRecordCompletion } from "@feature/training/services";
+import {
+  findManyCompletions,
+  adminRecordCompletion,
+} from "@feature/training/services";
 import { AdminRecordCompletionSchema } from "@feature/training/validators/training";
+import { pageNumberValidation } from "@src/shared/validators/common";
+import z from "zod";
+
+const GetAllCompletionsQuerySchema = z.object({
+  page: pageNumberValidation,
+});
 
 export const GET = withAssociation(
-  {},
-  async (association, _, request) => {
+  { query: GetAllCompletionsQuerySchema },
+  async (association, { query }, request) => {
     await withRole(request, UserRole.SECRETARY);
 
+    const page = query?.page || 1;
+
     const { searchParams } = new URL(request.url);
+
     const moduleId = searchParams.get("moduleId") || undefined;
+
     const userId = searchParams.get("userId") || undefined;
 
-    const completions = await findManyCompletions({
+    const data = await findManyCompletions({
       associationId: association.id,
       moduleId,
       userId,
+      page,
     });
 
-    return SuccessResponse({ data: completions });
+    return SuccessResponse({
+      data: data.completions,
+      meta: data.pagination,
+    });
   },
 );
 

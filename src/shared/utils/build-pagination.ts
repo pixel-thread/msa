@@ -1,15 +1,17 @@
+import { PAGE_SIZE } from "../constants";
 import { PaginationMeta } from "../types";
 
 export const buildPagination = (
   total: number,
   page: number,
-  pageSize: number,
+  pageSize?: number,
 ): PaginationMeta => {
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const size = pageSize || PAGE_SIZE;
+  const totalPages = Math.max(1, Math.ceil(total / size));
 
   return {
     page,
-    pageSize,
+    pageSize: size,
     total,
     totalPages,
     hasMore: page < totalPages,

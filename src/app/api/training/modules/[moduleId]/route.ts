@@ -5,11 +5,10 @@ import { ForbiddenError, NotFoundError } from "@src/shared/errors";
 import { UserRole } from "@prisma/client";
 import { findUniqueModule, updateModule } from "@feature/training/services";
 import { UpdateTrainingModuleSchema } from "@feature/training/validators/training";
-import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
 import { z } from "zod";
 
 const TrainingParamsSchema = z.object({
-  moduleId: z.string().uuid("Invalid module ID"),
+  moduleId: z.uuid("Invalid module ID"),
 });
 
 export const GET = withAssociation(
@@ -21,16 +20,16 @@ export const GET = withAssociation(
     await withRole(request, UserRole.MEMBER);
     const { moduleId } = params;
 
-    const module = await findUniqueModule({
+    const trainingmodule = await findUniqueModule({
       associationId: association.id,
       moduleId,
     });
 
-    if (!module) {
+    if (!trainingmodule) {
       throw new NotFoundError("Training module not found");
     }
 
-    return SuccessResponse({ data: module });
+    return SuccessResponse({ data: trainingmodule });
   },
 );
 
@@ -47,13 +46,13 @@ export const PATCH = withAssociation(
     const { moduleId } = params;
     const user = await withRole(request, UserRole.DPO);
 
-    const module = await updateModule({
+    const trainingModule = await updateModule({
       associationId: association.id,
       moduleId,
       actorId: user.id,
       data: body,
     });
 
-    return SuccessResponse({ data: module });
+    return SuccessResponse({ data: trainingModule });
   },
 );

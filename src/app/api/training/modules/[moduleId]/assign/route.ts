@@ -3,26 +3,31 @@ import { withRole } from "@src/shared/api/with-role";
 import { SuccessResponse } from "@utils/responses";
 import { ForbiddenError, BadRequestError } from "@src/shared/errors";
 import { UserRole } from "@prisma/client";
-import { 
-  assignTraining, 
-  bulkAssignTraining, 
+import {
+  assignTraining,
+  bulkAssignTraining,
   removeTrainingAssignment,
   bulkRemoveTrainingAssignment,
-  getTrainingAssignments
+  getTrainingAssignments,
 } from "@feature/training/services";
-import { AssignTrainingSchema, BulkAssignTrainingSchema } from "@feature/training/validators/training";
+import {
+  AssignTrainingSchema,
+  BulkAssignTrainingSchema,
+} from "@feature/training/validators/training";
 import { z } from "zod";
 
 const TrainingParamsSchema = z.object({
-  moduleId: z.string().uuid("Invalid module ID"),
+  moduleId: z.uuid("Invalid module ID"),
 });
 
 const RemoveAssignSchema = z.object({
-  userId: z.string().uuid("Invalid user ID"),
+  userId: z.uuid("Invalid user ID"),
 });
 
 const BulkRemoveAssignSchema = z.object({
-  userIds: z.array(z.string().uuid("Invalid user ID")).min(1, "At least one user is required"),
+  userIds: z
+    .array(z.uuid("Invalid user ID"))
+    .min(1, "At least one user is required"),
 });
 
 export const GET = withAssociation(
@@ -167,3 +172,4 @@ export const PATCH = withAssociation(
     }
   },
 );
+
