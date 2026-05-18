@@ -10,7 +10,6 @@ import {
 // ---------------------------------------------------------------------------
 
 export const CreateOrderSchema = z.object({
-  amount: z.number().positive("Amount must be positive"),
   notes: z.string().optional(),
 });
 
