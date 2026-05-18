@@ -1,10 +1,22 @@
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import {
+  Geist,
+  Geist_Mono,
+  Inter,
+  Outfit,
+  Instrument_Serif,
+} from "next/font/google";
 import { AppProviders } from "@src/shared/providers/AppProviders";
 import "./globals.css";
 import { cn } from "@src/shared/lib/utils";
 import { Suspense } from "react";
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
+const instrumentSerifHeading = Instrument_Serif({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-heading",
+});
+
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-sans" });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +42,8 @@ export default function RootLayout({
         geistSans.variable,
         geistMono.variable,
         "font-sans",
-        geist.variable,
+        outfit.variable,
+        instrumentSerifHeading.variable,
       )}
     >
       <body className="min-h-full flex flex-col">

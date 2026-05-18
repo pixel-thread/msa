@@ -54,8 +54,7 @@ export default function SignInPage() {
       } else {
         router.push("/dashboard");
       }
-    } catch {
-    }
+    } catch {}
   };
 
   if (mfaTempToken) {
@@ -80,10 +79,7 @@ export default function SignInPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-5"
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               {signInMutation.isError && (
                 <Alert variant="destructive">
                   <AlertDescription>
@@ -152,7 +148,7 @@ export default function SignInPage() {
               </Button>
 
               <p className="text-center text-sm text-body">
-                Don't have an account?{" "}
+                Don&#39;t have an account?{" "}
                 <Link
                   href="/sign-up"
                   className="font-medium text-primary hover:text-primary-active"
@@ -190,8 +186,7 @@ function MfaVerify({
     try {
       await verifyMfaMutation.mutateAsync(values);
       router.push("/dashboard");
-    } catch {
-    }
+    } catch {}
   };
 
   return (
@@ -207,15 +202,11 @@ function MfaVerify({
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-5"
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               {verifyMfaMutation.isError && (
                 <Alert variant="destructive">
                   <AlertDescription>
-                    {verifyMfaMutation.error?.message ||
-                      "Verification failed"}
+                    {verifyMfaMutation.error?.message || "Verification failed"}
                   </AlertDescription>
                 </Alert>
               )}
