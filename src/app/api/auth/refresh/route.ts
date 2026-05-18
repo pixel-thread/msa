@@ -16,6 +16,7 @@ export const POST = withValidation(
   { body: RefreshTokenSchema },
   async (request, _, { body }) => {
     const bodyToken = body?.token;
+
     const refreshCookie =
       request.cookies.get("refresh_token")?.value || bodyToken;
 
