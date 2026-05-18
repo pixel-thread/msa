@@ -1,5 +1,4 @@
 import { UserRole } from "@prisma/client";
-import { findUniqueMemberType } from "@src/features/member-type";
 import { updateUser } from "@src/features/user/services";
 import {
   AdminUserApproveParamsSchema,
