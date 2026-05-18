@@ -11,11 +11,8 @@ import { getFinancialStats } from "@feature/payments/services/payment.service";
  *
  * Role: FINANCE+
  */
-export const GET = withAssociation(
-  {},
-  async (association, _, request) => {
-    await withRole(request, UserRole.FINANCE);
-    const stats = await getFinancialStats(association.id);
-    return SuccessResponse({ data: stats });
-  },
-);
+export const GET = withAssociation({}, async (association, _, request) => {
+  await withRole(request, UserRole.FINANCE);
+  const data = await getFinancialStats(association.id);
+  return SuccessResponse({ data: data.stats, meta: data.pagination });
+});

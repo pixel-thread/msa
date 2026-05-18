@@ -3,22 +3,44 @@ import { withRole } from "@src/shared/api/with-role";
 import { SuccessResponse } from "@src/shared/utils/responses";
 import { UserRole } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
+import { z } from "zod";
+import { pageNumberValidation } from "@src/shared/validators/common";
+import { PAGE_SIZE } from "@src/shared/constants";
+import { buildPagination } from "@src/shared/utils/build-pagination";
 
-export const GET = withAssociation({}, async (association, _, request) => {
-  await withRole(request, UserRole.MEMBER);
-  const userId = request.headers.get("x-user-id")!;
-
-  const subscription = await prisma.subscription.findFirst({
-    where: {
-      userId,
-    },
-    include: {
-      plan: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-
-  return SuccessResponse({ data: subscription });
+const MySubscriptionQuerySchema = z.object({
+  page: pageNumberValidation,
 });
+export const GET = withAssociation(
+  { query: MySubscriptionQuerySchema },
+  async (_association, { query }, request) => {
+    const page = query?.page || 1;
+    await withRole(request, UserRole.MEMBER);
+
+    const userId = request.headers.get("x-user-id")!;
+
+    const [plans, total] = await prisma.$transaction([
+      prisma.subscription.findFirst({
+        where: {
+          userId,
+        },
+        include: {
+          plan: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: PAGE_SIZE,
+        skip: (page - 1) * PAGE_SIZE,
+      }),
+      prisma.subscription.count({
+        where: { userId },
+      }),
+    ]);
+
+    return SuccessResponse({
+      data: plans,
+      meta: buildPagination(total, page),
+    });
+  },
+);

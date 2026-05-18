@@ -10,7 +10,11 @@ export const GET = withAssociation(
   async (association, { query }, request) => {
     await withRole(request, UserRole.FINANCE);
     // Ensure query is at least an empty object if undefined
-    const result = await getAllTransactions(association.id, query || {});
+    const result = await getAllTransactions(
+      association.id,
+      // eslint-disable-next-line
+      (query as any) || {},
+    );
     return SuccessResponse({
       data: result.transactions,
       meta: result.pagination,
