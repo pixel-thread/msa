@@ -1,6 +1,6 @@
 import { prisma } from "@src/shared/lib/prisma";
 import { encrypt } from "@src/shared/lib/crypto";
-import { PaymentProviderType } from "@prisma/client";
+import { PaymentProviderType, Prisma } from "@prisma/client";
 import { NotFoundError } from "@src/shared/errors";
 
 export interface UpsertProviderInput {
@@ -202,7 +202,8 @@ export async function deleteProvider(
   providerId: string,
   associationId: string,
 ): Promise<void> {
-  const provider = await prisma.paymentProvider.findFirst({
+  console.log(providerId, associationId);
+  const provider = await prisma.paymentProvider.findUnique({
     where: { id: providerId, associationId },
   });
 

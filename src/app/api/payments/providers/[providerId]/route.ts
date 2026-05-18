@@ -9,12 +9,14 @@ import {
   updateProvider,
   deleteProvider,
 } from "@src/features/payments/services/payment-provider.service";
-import { NextResponse } from "next/server";
 import { NotFoundError } from "@src/shared/errors";
+import { withRole } from "@src/shared/api/with-role";
+import { UserRole } from "@prisma/client";
 
 export const GET = withAssociation(
   { params: ProviderIdParamSchema },
-  async (association, { params }) => {
+  async (association, { params }, req) => {
+    await withRole(req, UserRole.PRESIDENT);
     const provider = await getProviderById(params!.providerId, association.id);
 
     if (!provider) {
@@ -27,7 +29,8 @@ export const GET = withAssociation(
 
 export const PATCH = withAssociation(
   { params: ProviderIdParamSchema, body: UpdatePaymentProviderSchema },
-  async (association, { body, params }) => {
+  async (association, { body, params }, req) => {
+    await withRole(req, UserRole.PRESIDENT);
     const result = await updateProvider(params!.providerId, association.id, {
       keyId: body?.keyId,
       keySecret: body?.keySecret,
@@ -41,8 +44,12 @@ export const PATCH = withAssociation(
 
 export const DELETE = withAssociation(
   { params: ProviderIdParamSchema },
-  async (association, { params }) => {
+  async (association, { params }, req) => {
+    await withRole(req, UserRole.PRESIDENT);
     await deleteProvider(params!.providerId, association.id);
-    return NextResponse.json(null, { status: 204 });
+    return SuccessResponse({
+      data: null,
+      message: "Provider deleted successfully",
+    });
   },
 );

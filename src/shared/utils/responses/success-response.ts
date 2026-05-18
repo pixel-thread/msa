@@ -4,7 +4,7 @@ import type { ResponseMeta, SuccessEnvelope } from "@src/shared/types";
 
 export function SuccessResponse<T>(
   { data, meta, message }: { data: T; meta?: ResponseMeta; message?: string },
-  status: 200 | 201 = 200,
+  status: 200 | 201 | 204 = 200,
 ): NextResponse<SuccessEnvelope<T>> {
   return NextResponse.json(
     {

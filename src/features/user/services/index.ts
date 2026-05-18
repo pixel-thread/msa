@@ -36,6 +36,7 @@ export async function getUser(where: Prisma.UserWhereUniqueInput) {
     },
   });
 }
+
 type GetUserInvoicesProps = {
   where: Prisma.PaymentTransactionWhereInput;
 };
@@ -80,4 +81,12 @@ export async function getUserInvoice({ where }: GetUserInvoiceProps) {
       allocations: { include: { contributionPeriod: true } },
     },
   });
+}
+
+type GetUsersProps = {
+  where: Prisma.UserWhereInput;
+};
+
+export async function getUsers(props: GetUsersProps) {
+  return await prisma.user.findMany(props);
 }
