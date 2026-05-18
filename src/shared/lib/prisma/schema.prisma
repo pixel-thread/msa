@@ -1069,4 +1069,5 @@ model Log {
   content   Json     // Stores the context/metadata natively as JSON
   isBackend Boolean @default(false)
   createdAt DateTime @default(now())
+  @@map("logs")
 }

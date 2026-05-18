@@ -2,6 +2,7 @@ import { ZodError } from "zod";
 import { env } from "@src/env";
 import { AppError } from "./classes/base";
 import {
+  NotFoundError,
   PaymentError,
   UnauthorizedError,
   ValidationError,
@@ -36,6 +37,10 @@ export const normalizeUnknownError = (error: unknown): AppError => {
 
   if (isJwtError(error) || error instanceof UnauthorizedError) {
     return new UnauthorizedError(error.message);
+  }
+
+  if (error instanceof NotFoundError) {
+    return new NotFoundError(error.message);
   }
 
   if (error instanceof ZodError) {

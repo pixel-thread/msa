@@ -26,7 +26,7 @@ export class ForbiddenError extends AppError {
 
 export class NotFoundError extends AppError {
   constructor(resource: string) {
-    super("NOT_FOUND", `${resource} not found`, 404);
+    super("NOT_FOUND", `${resource}`, 404);
   }
 }
 
