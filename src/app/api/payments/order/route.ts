@@ -35,7 +35,7 @@ export const POST = withAssociation(
     });
 
     if (!plan) {
-      throw new NotFoundError("Plan not found for member type");
+      throw new NotFoundError("Plan not found under this member Group");
     }
 
     const orderDetails = await createPaymentOrder({
