@@ -2,10 +2,21 @@ import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import { Avatar, AvatarFallback } from "@components/ui/avatar";
 import { getInitials } from "../utils/helper/get-initials";
-import { Members } from "../types";
+import { PendingActionsCell } from "@src/features/members/components/cells/pending-actions-cell";
+import { User } from "@prisma/client";
 
-export function usePendingMemberColumns() {
-  const columns: ColumnDef<Members>[] = [
+interface UsePendingMemberColumnsOptions {
+  onAccept: (member: User) => void;
+  onReject: (memberId: string) => void;
+  isRejecting: boolean;
+}
+
+export function usePendingMemberColumns({
+  onAccept,
+  onReject,
+  isRejecting,
+}: UsePendingMemberColumnsOptions) {
+  const columns: ColumnDef<User>[] = [
     {
       accessorKey: "name",
       header: "Member",
@@ -40,6 +51,18 @@ export function usePendingMemberColumns() {
     {
       accessorKey: "status",
       header: "Status",
+    },
+    {
+      accessorKey: "actions",
+      header: "Actions",
+      cell: ({ row }) => (
+        <PendingActionsCell
+          member={row.original}
+          onAccept={onAccept}
+          onReject={onReject}
+          isRejecting={isRejecting}
+        />
+      ),
     },
   ];
   return { columns };

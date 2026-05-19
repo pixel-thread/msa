@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import http from "@src/shared/utils/http";
-import { Members } from "../types";
+import { User } from "@prisma/client";
 import { UserStatus } from "@prisma/client";
 
 interface UseMembersOptions {
@@ -14,7 +14,7 @@ export function useMembers(options: UseMembersOptions = {}) {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["members", page, status],
     queryFn: () =>
-      http.get<Members[]>(`/members?page=${page}&status=${status}`),
+      http.get<User[]>(`/members?page=${page}&status=${status}`),
   });
 
   return {

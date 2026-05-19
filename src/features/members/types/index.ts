@@ -18,12 +18,14 @@ export type Member = {
   };
 };
 
-export type Members = {
+export type MemberListItem = {
   id: string;
   name: string;
   email: string;
   role: UserRole[];
-  status: "ACTIVE";
+  status: Status;
   membershipNumber: number | null;
   createdAt: string;
 };
+
+export type Members = MemberListItem;

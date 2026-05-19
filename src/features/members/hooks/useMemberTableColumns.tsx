@@ -1,64 +1,24 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Avatar, AvatarFallback } from "@src/shared/components/ui/avatar";
 import { formatDate } from "@src/shared/utils";
-import Link from "next/link";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@src/shared/components/ui/select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuCheckboxItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@src/shared/components/ui/dropdown-menu";
-import { Button } from "@src/shared/components/ui/button";
-import { ChevronDown } from "lucide-react";
-import { useUpdateMemberStatus } from "./useUpdateMemberStatus";
-import { useUpdateMemberRole } from "./useUpdateMemberRole";
-import { getInitials } from "../utils/helper/get-initials";
 import { User } from "@prisma/client";
-import { ROLES, STATUSES } from "../utils/constants";
-import { getStatusBadge } from "../utils/helper/get-status-badge";
+import { RoleCell } from "@src/features/members/components/cells/role-cell";
+import { StatusCell } from "@src/features/members/components/cells/status-cell";
+import { NameCell } from "@src/features/members/components/cells/name-cell";
 
-type Member = User;
+interface UseMemberTableColumnsOptions {
+  onRoleChange: (memberId: string, role: string, action: "add" | "remove") => void;
+  onStatusChange: (memberId: string, status: string) => void;
+}
 
-export const useMemberTableColumns = (): { columns: ColumnDef<Member>[] } => {
-  const updateStatus = useUpdateMemberStatus();
-  const updateRole = useUpdateMemberRole();
-
-  const columns: ColumnDef<Member>[] = [
+export const useMemberTableColumns = ({
+  onRoleChange,
+  onStatusChange,
+}: UseMemberTableColumnsOptions): { columns: ColumnDef<User>[] } => {
+  const columns: ColumnDef<User>[] = [
     {
       accessorKey: "name",
       header: "Member",
-      cell: ({ row }) => {
-        const member = row.original;
-        return (
-          <Link
-            className="flex items-center gap-3 text-left hover:underline"
-            href={`/members/${member.id}`}
-          >
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="text-xs bg-muted">
-                {getInitials(member.name)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col">
-              <span className="text-sm font-medium">{member.name}</span>
-              {member.membershipNumber && (
-                <span className="text-xs text-muted-foreground">
-                  {member.membershipNumber}
-                </span>
-              )}
-            </div>
-          </Link>
-        );
-      },
+      cell: ({ row }) => <NameCell member={row.original} />,
     },
     {
       accessorKey: "email",
@@ -72,76 +32,16 @@ export const useMemberTableColumns = (): { columns: ColumnDef<Member>[] } => {
     {
       accessorKey: "role",
       header: "Role",
-      cell: ({ row }) => {
-        const member = row.original;
-        const roles = Array.isArray(member.role) ? member.role : [member.role];
-
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-8 w-40 justify-between border-hairline"
-              >
-                <span className="truncate">
-                  {roles.length > 0 ? roles.join(", ") : "No role"}
-                </span>
-                <ChevronDown className="ml-1 h-3 w-3 shrink-0 opacity-50" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-50">
-              <DropdownMenuLabel>Select Roles</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {ROLES.map((role) => (
-                <DropdownMenuCheckboxItem
-                  key={role}
-                  checked={roles.includes(role)}
-                  onCheckedChange={(checked) => {
-                    updateRole.mutate({
-                      memberId: member.id,
-                      role,
-                      action: checked ? "add" : "remove",
-                    });
-                  }}
-                >
-                  {role}
-                </DropdownMenuCheckboxItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
-      },
+      cell: ({ row }) => (
+        <RoleCell member={row.original} onRoleChange={onRoleChange} />
+      ),
     },
     {
       accessorKey: "status",
       header: "Status",
-      cell: ({ row }) => {
-        const member = row.original;
-
-        return (
-          <Select
-            value={member.status}
-            onValueChange={(newStatus) => {
-              updateStatus.mutate({
-                memberId: member.id,
-                status: newStatus,
-              });
-            }}
-          >
-            <SelectTrigger className="h-8 w-35 border-hairline">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {STATUSES.map((status) => (
-                <SelectItem key={status} value={status}>
-                  {getStatusBadge(status)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        );
-      },
+      cell: ({ row }) => (
+        <StatusCell member={row.original} onStatusChange={onStatusChange} />
+      ),
     },
     {
       accessorKey: "createdAt",
