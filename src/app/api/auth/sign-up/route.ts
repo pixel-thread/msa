@@ -1,5 +1,3 @@
-import { z } from "zod";
-
 import { prisma } from "@src/shared/lib/prisma";
 import { withValidation } from "@src/shared/api";
 import {
@@ -14,23 +12,12 @@ import {
 } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
 import { env } from "@src/env";
-import { passwordValidation } from "@src/shared/lib/validations/auth";
-
-const SignUpSchema = z.object({
-  email: z.email("Invalid email address"),
-  password: passwordValidation,
-  name: z.string().min(1, "Name is required"),
-  association_slug: z
-    .enum(["mfsa", "mpsa", "mpsc"], "invalid association")
-    .optional(),
-});
-
-type SignUpBody = z.infer<typeof SignUpSchema>;
+import { SignUpInput, SignUpSchema } from "@src/features/auth/validators";
 
 export const POST = withValidation(
   { body: SignUpSchema },
   async (_req, _ctx, { body }) => {
-    const { email, password, name, association_slug } = body as SignUpBody;
+    const { email, password, name, association_slug } = body as SignUpInput;
 
     const passwordValidation = validatePasswordStrength(password);
 
