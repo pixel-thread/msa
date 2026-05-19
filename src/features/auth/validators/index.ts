@@ -6,9 +6,12 @@ export const SignUpSchema = z
     name: z.string().min(1, "Name is required"),
     email: z.email("Invalid email address"),
     password: passwordValidation,
-    confirmPassword: z.string(),
+    confirm_password: passwordValidation,
+    association_slug: z
+      .enum(["mfsa", "mpsa", "mpsc"], "invalid association")
+      .optional(),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine((data) => data.password === data.confirm_password, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });
@@ -52,9 +55,9 @@ export type ForgotPasswordInput = z.infer<typeof ForgotPasswordSchema>;
 
 export const ChangePasswordSchema = z
   .object({
-    currentPassword: z.string().min(1, "Current password is required"),
+    currentPassword: passwordValidation,
     newPassword: passwordValidation,
-    confirmPassword: z.string(),
+    confirmPassword: passwordValidation,
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords do not match",

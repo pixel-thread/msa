@@ -93,7 +93,7 @@ export default function MeetingDetailPage() {
   };
 
   useEffect(() => {
-    setEditOpen(searchParams.get("edit") === "true");
+    // setEditOpen(searchParams.get("edit") === "true");
   }, [searchParams]);
 
   if (isLoading) {

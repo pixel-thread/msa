@@ -42,6 +42,10 @@ const navMain = [
         title: "All Members",
         url: "/dashboard/members",
       },
+      {
+        title: "Pending Members",
+        url: "/dashboard/members/pending",
+      },
     ],
   },
   {
