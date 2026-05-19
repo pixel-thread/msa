@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import http from "@src/shared/utils/http";
 
-interface Attendee {
+export interface Attendee {
   id: string;
   userId: string;
   user: {
@@ -14,14 +14,14 @@ interface Attendee {
   attendeeRole: string;
 }
 
-interface AgendaItem {
+export interface AgendaItem {
   id: string;
   title: string;
   duration: number;
   order: number;
 }
 
-interface MeetingDetail {
+export interface MeetingDetail {
   id: string;
   title: string;
   description: string | null;

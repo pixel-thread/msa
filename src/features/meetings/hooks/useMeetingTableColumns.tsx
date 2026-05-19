@@ -1,8 +1,19 @@
-import type { Meeting } from "@src/shared/lib/prisma/types";
-import { formatDate } from "@src/shared/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@src/shared/components/ui/badge";
-import { useRouter } from "next/navigation";
+import { formatDate } from "@src/shared/utils";
+import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@src/shared/components/ui/dropdown-menu";
+import { Button } from "@src/shared/components/ui/button";
+import { MoreHorizontal, Pencil, Trash2, Eye } from "lucide-react";
+import { useMeetings } from "../hooks";
+import type { Meeting } from "../types";
 
 const getStatusBadge = (status: string) => {
   const variants: Record<
@@ -10,60 +21,129 @@ const getStatusBadge = (status: string) => {
     "default" | "secondary" | "destructive" | "outline"
   > = {
     SCHEDULED: "default",
-    COMPLETED: "secondary",
+    IN_PROGRESS: "secondary",
+    COMPLETED: "outline",
     CANCELLED: "destructive",
   };
   return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
 };
 
-export const useMeetingTableColumns = (): { columns: ColumnDef<Meeting>[] } => {
-  const router = useRouter();
+const getTypeBadge = (type: string) => {
+  const variants: Record<string, "default" | "secondary" | "outline"> = {
+    GENERAL_MEETING: "default",
+    EC_MEETING: "secondary",
+    SPECIAL_MEETING: "outline",
+  };
+  return <Badge variant={variants[type] || "outline"}>{type.replace("_", " ")}</Badge>;
+};
+
+export const useMeetingTableColumns = (): {
+  columns: ColumnDef<Meeting>[];
+  deleteMeeting: (id: string) => void;
+  isDeleting: boolean;
+} => {
+  const { deleteMeeting, isDeleting } = useMeetings();
+
   const columns: ColumnDef<Meeting>[] = [
     {
       accessorKey: "title",
-      header: "Meeting Title",
+      header: "Title",
       cell: ({ row }) => {
+        const meeting = row.original;
         return (
-          <button
-            className="text-left font-medium hover:underline text-primary"
-            onClick={() =>
-              router?.push(`/dashboard/meetings/${row.original.id}`)
-            }
+          <Link
+            className="text-sm font-medium text-ink hover:underline"
+            href={`/dashboard/meetings/${meeting.id}`}
           >
-            {row.original.title}
-          </button>
+            {meeting.title}
+          </Link>
         );
       },
     },
     {
       accessorKey: "type",
-      header: "Meeting Type",
-      cell: ({ row }) => (
-        <Badge variant="outline" className="text-xs">
-          {row.original.type}
-        </Badge>
-      ),
+      header: "Type",
+      cell: ({ row }) => getTypeBadge(row.original.type),
     },
     {
       accessorKey: "status",
-      header: "Meeting Status",
+      header: "Status",
       cell: ({ row }) => getStatusBadge(row.original.status),
     },
     {
       accessorKey: "scheduledAt",
-      header: "Meeting date",
-      cell: ({ row }) => formatDate(row.original.scheduledAt),
+      header: "Scheduled",
+      cell: ({ row }) => (
+        <span className="text-sm text-body">
+          {formatDate(row.original.scheduledAt)}
+        </span>
+      ),
     },
     {
       accessorKey: "venue",
       header: "Venue",
       cell: ({ row }) => (
-        <span className="text-muted-foreground text-sm">
-          {row.original.venue || "-"}
+        <span className="text-sm text-body">
+          {row.original.venue || "Not set"}
         </span>
       ),
     },
+    {
+      accessorKey: "_count",
+      header: "Attendees",
+      cell: ({ row }) => (
+        <span className="text-sm text-body">
+          {row.original._count?.attendees || 0}
+        </span>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => {
+        const meeting = row.original;
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href={`/dashboard/meetings/${meeting.id}`}>
+                  <Eye className="mr-2 h-4 w-4" />
+                  View Details
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/dashboard/meetings/${meeting.id}?edit=true`}>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Edit
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-destructive focus:text-destructive"
+                onClick={() => {
+                  if (confirm("Are you sure you want to delete this meeting?")) {
+                    deleteMeeting(meeting.id);
+                  }
+                }}
+                disabled={isDeleting}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
   ];
 
-  return { columns };
+  return { columns, deleteMeeting, isDeleting };
 };

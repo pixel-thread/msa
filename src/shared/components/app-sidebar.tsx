@@ -14,7 +14,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@src/shared/components/ui/sidebar"
-import { GalleryVerticalEndIcon, UsersIcon, LayoutDashboardIcon, Settings2Icon } from "lucide-react"
+import { GalleryVerticalEndIcon, UsersIcon, LayoutDashboardIcon, Settings2Icon, CalendarDaysIcon } from "lucide-react"
 import { useAuthStore } from "@src/shared/stores/auth"
 
 const getInitials = (name: string) => {
@@ -41,6 +41,18 @@ const navMain = [
       {
         title: "All Members",
         url: "/dashboard/members",
+      },
+    ],
+  },
+  {
+    title: "Meetings",
+    url: "/dashboard/meetings",
+    icon: <CalendarDaysIcon />,
+    isActive: true,
+    items: [
+      {
+        title: "All Meetings",
+        url: "/dashboard/meetings",
       },
     ],
   },

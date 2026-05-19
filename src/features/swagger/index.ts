@@ -10,6 +10,7 @@ import { associationPaths } from "./paths/associations";
 import { notificationPaths } from "./paths/notifications";
 import { userPaths } from "./paths/user";
 import { paymentPaths } from "./paths/payments";
+import { memberTypePaths } from "./paths/member-type";
 
 export const openApiSpec = {
   openapi: "3.0.0",
@@ -52,6 +53,7 @@ export const openApiSpec = {
     ...notificationPaths,
     ...userPaths,
     ...paymentPaths,
+    ...memberTypePaths,
   },
 };
 
@@ -67,3 +69,4 @@ export { associationPaths } from "./paths/associations";
 export { notificationPaths } from "./paths/notifications";
 export { userPaths } from "./paths/user";
 export { paymentPaths } from "./paths/payments";
+export { memberTypePaths } from "./paths/member-type";

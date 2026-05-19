@@ -61,10 +61,15 @@ export const POST = withValidation(
         email,
         associationId: targetAssociationId,
       },
+      include: {
+        association: true,
+      },
     });
 
     if (existingUser) {
-      throw new ConflictError("User already exists with this email");
+      throw new ConflictError(
+        `This email is already under ${existingUser.association.name}. Please use another email`,
+      );
     }
 
     const hashedPassword = await hashPassword(password);

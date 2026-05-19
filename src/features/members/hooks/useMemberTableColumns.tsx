@@ -50,12 +50,13 @@ const getStatusBadge = (status: string) => {
     ACTIVE: "default",
     INACTIVE: "secondary",
     SUSPENDED: "destructive",
+    PENDING: "outline",
   };
   return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
 };
 
 const ROLES = ["MEMBER", "DPO", "FINANCE", "SECRETARY", "PRESIDENT", "SUPER_ADMIN"] as const;
-const STATUSES = ["ACTIVE", "INACTIVE", "SUSPENDED"] as const;
+const STATUSES = ["ACTIVE", "INACTIVE", "SUSPENDED", "PENDING"] as const;
 
 export const useMemberTableColumns = (): { columns: ColumnDef<Member>[] } => {
   const updateStatus = useUpdateMemberStatus();
