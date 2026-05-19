@@ -42,7 +42,7 @@ export const POST = withValidation(
     }
 
     if (user.status !== "ACTIVE") {
-      throw new UnauthorizedError("User not found or inactive");
+      throw new UnauthorizedError("User not found");
     }
 
     const isPasswordValid = await verifyPassword(
