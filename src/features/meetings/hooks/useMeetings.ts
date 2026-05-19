@@ -137,16 +137,3 @@ export function useMeetingAttendees(meetingId: string | null) {
     isRemoving: removeAttendeeMutation.isPending,
   };
 }
-
-export function useMembers() {
-  const { data, isLoading } = useQuery({
-    queryKey: ["members-all"],
-    queryFn: async () => http.get<Member[]>("/members?limit=100"),
-    select: (data) => data.data,
-  });
-
-  return {
-    members: data ?? [],
-    isLoading,
-  };
-}

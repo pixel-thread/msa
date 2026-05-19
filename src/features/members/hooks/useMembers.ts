@@ -1,30 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
 import http from "@src/shared/utils/http";
-import type { PaginationMeta } from "@src/shared/types";
-import type { Member } from "./useMemberTableColumns";
+import { Members } from "../types";
+import { UserStatus } from "@prisma/client";
 
 interface UseMembersOptions {
   page?: number;
+  status?: UserStatus;
 }
 
 export function useMembers(options: UseMembersOptions = {}) {
-  const { page = 1 } = options;
+  const { page = 1, status = "ACTIVE" } = options;
 
-  const { data, isLoading, error, refetch } = useQuery<{
-    data: Member[];
-    meta: PaginationMeta;
-  }>({
-    queryKey: ["members", page],
-    queryFn: async () => {
-      const res = await http.get<Member[]>(`/members?page=${page}`);
-      if (!res.success) {
-        throw new Error(res.message || "Failed to fetch members");
-      }
-      return {
-        data: res.data ?? [],
-        meta: res.meta!,
-      };
-    },
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ["members", page, status],
+    queryFn: () =>
+      http.get<Members[]>(`/members?page=${page}&status=${status}`),
   });
 
   return {

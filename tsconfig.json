@@ -25,6 +25,7 @@
       "@lib/*":["./src/shared/lib/*"],
       "@validator/*":["./src/shared/validators/*"],
       "@sharedType/*":["./src/shared/types/*"],
+      "@components/*":["./src/shared/components/*"],
       "@store/*":["./src/shared/stores/*"],
       "@errors/*":["./src/shared/errors/*"],
       "@config/*":["./src/shared/config/*"],

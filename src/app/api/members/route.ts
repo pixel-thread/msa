@@ -1,6 +1,6 @@
 import { withAssociation } from "@src/shared/api/with-association";
 import { SuccessResponse } from "@src/shared/utils/responses";
-import { UserRole } from "@prisma/client";
+import { UserRole, UserStatus } from "@prisma/client";
 import { withRole } from "@src/shared/api/with-role";
 import { getMembers } from "@src/features/members/services/getMembers";
 import z from "zod";
@@ -9,7 +9,7 @@ import { pageNumberValidation } from "@src/shared/validators/common";
 
 const QuerySchema = z.object({
   page: pageNumberValidation,
-  status: z.string().optional(),
+  status: z.nativeEnum(UserStatus).optional(),
 });
 export const GET = withAssociation(
   { query: QuerySchema },

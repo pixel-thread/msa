@@ -956,50 +956,6 @@ Authorization: Bearer {{TOKEN}}
   "reason": "Reinstated"
 }
 
-@memberTypeId=REPLACE_WITH_MEMBER_TYPE_ID
-
-### ----------------- MEMBER TYPES ------------------
-
-###
-# @name List Member Types
-GET {{NEXT_PUBLIC_API_BASE_URL}}/member-types
-Content-Type: application/json
-Authorization: Bearer {{TOKEN}}
-
-###
-# @name Create Member Type
-POST {{NEXT_PUBLIC_API_BASE_URL}}/member-types
-Content-Type: application/json
-Authorization: Bearer {{TOKEN}}
-
-{
-  "description": "Regular Member",
-  "level": 1
-}
-
-###
-# @name Get Member Type
-GET {{NEXT_PUBLIC_API_BASE_URL}}/member-types/{{memberTypeId}}
-Content-Type: application/json
-Authorization: Bearer {{TOKEN}}
-
-###
-# @name Update Member Type
-PATCH {{NEXT_PUBLIC_API_BASE_URL}}/member-types/{{memberTypeId}}
-Content-Type: application/json
-Authorization: Bearer {{TOKEN}}
-
-{
-  "description": "Updated Member Description",
-  "level": 2
-}
-
-###
-# @name Delete Member Type
-DELETE {{NEXT_PUBLIC_API_BASE_URL}}/member-types/{{memberTypeId}}
-Content-Type: application/json
-Authorization: Bearer {{TOKEN}}
-
 ### ----------------- HEALTH ------------------
 
 ###

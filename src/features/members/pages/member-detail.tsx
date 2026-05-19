@@ -1,10 +1,8 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
 
-import { DashboardLayout } from "@src/shared/components/dashboard-layout";
-import { useMemberDetail } from "@src/features/members/hooks/useMemberDetail";
+import { useMember } from "@src/features/members/hooks/useMember";
 import {
   Card,
   CardHeader,
@@ -16,58 +14,22 @@ import { Button } from "@src/shared/components/ui/button";
 import { Avatar, AvatarFallback } from "@src/shared/components/ui/avatar";
 import { Separator } from "@src/shared/components/ui/separator";
 import { formatDate } from "@src/shared/utils";
-import {
-  ArrowLeft,
-  Mail,
-  Phone,
-  Calendar,
-  Hash,
-  Briefcase,
-  Shield,
-  CreditCard,
-} from "lucide-react";
+import { Mail, Phone, Calendar, Hash, Briefcase } from "lucide-react";
+import { getInitials } from "../utils/helper/get-initials";
+import { getStatusBadge } from "../utils/helper/get-status-badge";
 
-const getInitials = (name: string) => {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-};
-
-const getStatusBadge = (status: string) => {
-  const variants: Record<
-    string,
-    "default" | "secondary" | "destructive" | "outline"
-  > = {
-    ACTIVE: "default",
-    INACTIVE: "secondary",
-    SUSPENDED: "destructive",
-  };
-  return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
-};
-
-export default function MemberDetailPage() {
+export function MemberDetailPage() {
   const params = useParams();
   const router = useRouter();
   const memberId = params.memberId as string;
 
-  const { member, isLoading, error } = useMemberDetail(memberId);
+  const { member, isLoading, error } = useMember(memberId);
 
   if (isLoading) {
     return (
-      <DashboardLayout
-        breadcrumbs={[
-          { href: "/dashboard", label: "Dashboard" },
-          { href: "/dashboard/members", label: "Members" },
-          { label: "Loading..." },
-        ]}
-      >
-        <div className="flex items-center justify-center py-24">
-          <p className="text-body">Loading member details...</p>
-        </div>
-      </DashboardLayout>
+      <div className="flex items-center justify-center py-24">
+        <p className="text-body">Loading member details...</p>
+      </div>
     );
   }
 

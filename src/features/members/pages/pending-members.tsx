@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
 import { DataTable } from "@src/shared/components/data-table";
-import { Input } from "@src/shared/components/ui/input";
 import {
   Pagination,
   PaginationContent,
@@ -15,124 +14,58 @@ import {
   PaginationPrevious,
 } from "@src/shared/components/ui/pagination";
 import { Button } from "@src/shared/components/ui/button";
-import { usePendingMembers } from "@src/features/members/hooks/usePendingMembers";
-import { useUpdateMemberStatus } from "@src/features/members/hooks/useUpdateMemberStatus";
-import { useMemberTableColumns } from "@src/features/members/hooks/useMemberTableColumns";
-import { Badge } from "@src/shared/components/ui/badge";
-import { Avatar, AvatarFallback } from "@src/shared/components/ui/avatar";
-import { formatDate } from "@src/shared/utils";
-import Link from "next/link";
 import { Check, X } from "lucide-react";
+import { useMembers } from "../hooks/useMembers";
+import { usePendingMemberColumns } from "../hooks/usePendingMemberColumns";
+import { ColumnDef } from "@tanstack/react-table";
+import { Members } from "../types";
+import { ApproveMemberDialog } from "../components/approve-member-dialog";
+import { useRejectMember } from "../hooks/useRejectMember";
 
-const getInitials = (name: string) => {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-};
-
-export default function PendingMembersPage() {
+export function PendingMembersPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
-  const [search, setSearch] = useState("");
+  const { columns: pendingColumns } = usePendingMemberColumns();
+  const [selectedMember, setSelectedMember] = useState<Members | null>(null);
+  const rejectMember = useRejectMember();
 
-  const { pendingMembers, meta, isLoading } = usePendingMembers({ page: currentPage });
-  const updateStatus = useUpdateMemberStatus();
+  const {
+    members: pendingMembers,
+    meta,
+    isLoading,
+  } = useMembers({
+    page: currentPage,
+    status: "PENDING",
+  });
 
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", String(page));
-    router.push(`/dashboard/members/pending?${params.toString()}`);
+    router.push(`/members/pending?${params.toString()}`);
   };
 
-  const handleAccept = (memberId: string) => {
-    updateStatus.mutate({
-      memberId,
-      status: "ACTIVE",
-    });
+  const handleAccept = (member: Members) => {
+    setSelectedMember(member);
   };
 
   const handleReject = (memberId: string) => {
-    updateStatus.mutate({
-      memberId,
-      status: "INACTIVE",
-    });
+    rejectMember.mutate({ memberId });
   };
 
-  const filteredMembers = search
-    ? pendingMembers.filter(
-        (m) =>
-          m.name.toLowerCase().includes(search.toLowerCase()) ||
-          m.email.toLowerCase().includes(search.toLowerCase()),
-      )
-    : pendingMembers;
-
-  const columns = [
-    {
-      accessorKey: "name",
-      header: "Member",
-      cell: ({ row }: { row: { original: (typeof pendingMembers)[0] } }) => {
-        const member = row.original;
-        return (
-          <Link
-            className="flex items-center gap-3 text-left hover:underline"
-            href={`/dashboard/members/${member.id}`}
-          >
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="text-xs bg-muted">
-                {getInitials(member.name)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col">
-              <span className="text-sm font-medium">{member.name}</span>
-              {member.membershipNumber && (
-                <span className="text-xs text-muted-foreground">
-                  {member.membershipNumber}
-                </span>
-              )}
-            </div>
-          </Link>
-        );
-      },
-    },
-    {
-      accessorKey: "email",
-      header: "Email",
-      cell: ({ row }: { row: { original: (typeof pendingMembers)[0] } }) => (
-        <span className="text-muted-foreground text-sm">
-          {row.original.email}
-        </span>
-      ),
-    },
-    {
-      accessorKey: "status",
-      header: "Status",
-      cell: () => <Badge variant="outline">PENDING</Badge>,
-    },
-    {
-      accessorKey: "createdAt",
-      header: "Requested",
-      cell: ({ row }: { row: { original: (typeof pendingMembers)[0] } }) => (
-        <span className="text-right text-muted-foreground text-sm block ml-auto">
-          {formatDate(row.original.createdAt)}
-        </span>
-      ),
-    },
+  const columns: ColumnDef<Members>[] = [
+    ...pendingColumns,
     {
       accessorKey: "actions",
       header: "Actions",
-      cell: ({ row }: { row: { original: (typeof pendingMembers)[0] } }) => {
+      cell: ({ row }) => {
         const member = row.original;
         return (
           <div className="flex items-center gap-2">
             <Button
               size="sm"
               variant="default"
-              onClick={() => handleAccept(member.id)}
-              disabled={updateStatus.isPending}
+              onClick={() => handleAccept(member)}
             >
               <Check className="h-4 w-4 mr-1" />
               Accept
@@ -141,7 +74,7 @@ export default function PendingMembersPage() {
               size="sm"
               variant="outline"
               onClick={() => handleReject(member.id)}
-              disabled={updateStatus.isPending}
+              disabled={rejectMember.isPending}
             >
               <X className="h-4 w-4 mr-1" />
               Reject
@@ -165,16 +98,11 @@ export default function PendingMembersPage() {
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        <Input
-          placeholder="Search pending members..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm h-11 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
-        />
-      </div>
-
-      <DataTable loading={isLoading} data={filteredMembers} columns={columns} />
+      <DataTable
+        loading={isLoading}
+        data={pendingMembers ?? []}
+        columns={columns}
+      />
 
       {meta && meta.totalPages > 1 && (
         <div className="flex items-center justify-between">
@@ -249,6 +177,16 @@ export default function PendingMembersPage() {
           </Pagination>
         </div>
       )}
+
+      <ApproveMemberDialog
+        member={selectedMember}
+        open={!!selectedMember}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedMember(null);
+          }
+        }}
+      />
     </>
   );
 }

@@ -1,10 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
 import { DataTable } from "@src/shared/components/data-table";
-import { Input } from "@src/shared/components/ui/input";
 import {
   Pagination,
   PaginationContent,
@@ -21,7 +19,6 @@ export default function MembersPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
-  const [search, setSearch] = useState("");
 
   const { members, meta, isLoading } = useMembers({ page: currentPage });
   const { columns } = useMemberTableColumns();
@@ -29,16 +26,8 @@ export default function MembersPage() {
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", String(page));
-    router.push(`/dashboard/members?${params.toString()}`);
+    router.push(`/members?${params.toString()}`);
   };
-
-  const filteredMembers = search
-    ? members.filter(
-        (m) =>
-          m.name.toLowerCase().includes(search.toLowerCase()) ||
-          m.email.toLowerCase().includes(search.toLowerCase()),
-      )
-    : members;
 
   return (
     <>
@@ -53,16 +42,7 @@ export default function MembersPage() {
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        <Input
-          placeholder="Search members..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm h-11 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
-        />
-      </div>
-
-      <DataTable loading={isLoading} data={filteredMembers} columns={columns} />
+      <DataTable loading={isLoading} data={members} columns={columns} />
 
       {meta && meta.totalPages > 1 && (
         <div className="flex items-center justify-between">
@@ -79,6 +59,7 @@ export default function MembersPage() {
             <span className="font-medium text-body-strong">{meta.total}</span>{" "}
             members
           </p>
+
           <Pagination>
             <PaginationContent>
               <PaginationItem>
@@ -125,7 +106,9 @@ export default function MembersPage() {
 
               <PaginationItem>
                 <PaginationNext
-                  onClick={() => handlePageChange(meta.page + 1)}
+                  onClick={() =>
+                    meta.hasMore && handlePageChange(meta.page + 1)
+                  }
                   className={
                     meta.page >= meta.totalPages
                       ? "pointer-events-none opacity-50"

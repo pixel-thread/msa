@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 
-import { NavMain } from "@src/shared/components/nav-main"
-import { NavUser } from "@src/shared/components/nav-user"
+import { NavMain } from "@src/shared/components/nav-main";
+import { NavUser } from "@src/shared/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -13,18 +13,15 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@src/shared/components/ui/sidebar"
-import { GalleryVerticalEndIcon, UsersIcon, LayoutDashboardIcon, Settings2Icon, CalendarDaysIcon } from "lucide-react"
-import { useAuthStore } from "@src/shared/stores/auth"
-
-const getInitials = (name: string) => {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2)
-}
+} from "@src/shared/components/ui/sidebar";
+import {
+  GalleryVerticalEndIcon,
+  UsersIcon,
+  LayoutDashboardIcon,
+  Settings2Icon,
+  CalendarDaysIcon,
+} from "lucide-react";
+import { useAuthStore } from "@src/shared/stores/auth";
 
 const navMain = [
   {
@@ -34,29 +31,29 @@ const navMain = [
   },
   {
     title: "Members",
-    url: "/dashboard/members",
+    url: "/members",
     icon: <UsersIcon />,
     isActive: true,
     items: [
       {
         title: "All Members",
-        url: "/dashboard/members",
+        url: "/members",
       },
       {
         title: "Pending Members",
-        url: "/dashboard/members/pending",
+        url: "/members/pending",
       },
     ],
   },
   {
     title: "Meetings",
-    url: "/dashboard/meetings",
+    url: "/meetings",
     icon: <CalendarDaysIcon />,
     isActive: true,
     items: [
       {
         title: "All Meetings",
-        url: "/dashboard/meetings",
+        url: "/meetings",
       },
     ],
   },
@@ -75,22 +72,22 @@ const navMain = [
       },
     ],
   },
-]
+];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user, fetchUser } = useAuthStore()
+  const { user, fetchUser } = useAuthStore();
 
   React.useEffect(() => {
     if (!user) {
-      fetchUser()
+      fetchUser();
     }
-  }, [user, fetchUser])
+  }, [user, fetchUser]);
 
   const sidebarUser = {
     name: user?.name || "User",
     email: user?.email || "",
     avatar: "",
-  }
+  };
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -120,5 +117,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

@@ -1,5 +1,4 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@src/shared/components/ui/badge";
 import { Avatar, AvatarFallback } from "@src/shared/components/ui/avatar";
 import { formatDate } from "@src/shared/utils";
 import Link from "next/link";
@@ -22,41 +21,12 @@ import { Button } from "@src/shared/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import { useUpdateMemberStatus } from "./useUpdateMemberStatus";
 import { useUpdateMemberRole } from "./useUpdateMemberRole";
+import { getInitials } from "../utils/helper/get-initials";
+import { User } from "@prisma/client";
+import { ROLES, STATUSES } from "../utils/constants";
+import { getStatusBadge } from "../utils/helper/get-status-badge";
 
-export interface Member {
-  id: string;
-  name: string;
-  email: string;
-  role: string[];
-  status: string;
-  membershipNumber: string | null;
-  createdAt: string;
-}
-
-const getInitials = (name: string) => {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-};
-
-const getStatusBadge = (status: string) => {
-  const variants: Record<
-    string,
-    "default" | "secondary" | "destructive" | "outline"
-  > = {
-    ACTIVE: "default",
-    INACTIVE: "secondary",
-    SUSPENDED: "destructive",
-    PENDING: "outline",
-  };
-  return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
-};
-
-const ROLES = ["MEMBER", "DPO", "FINANCE", "SECRETARY", "PRESIDENT", "SUPER_ADMIN"] as const;
-const STATUSES = ["ACTIVE", "INACTIVE", "SUSPENDED", "PENDING"] as const;
+type Member = User;
 
 export const useMemberTableColumns = (): { columns: ColumnDef<Member>[] } => {
   const updateStatus = useUpdateMemberStatus();
@@ -71,7 +41,7 @@ export const useMemberTableColumns = (): { columns: ColumnDef<Member>[] } => {
         return (
           <Link
             className="flex items-center gap-3 text-left hover:underline"
-            href={`/dashboard/members/${member.id}`}
+            href={`/members/${member.id}`}
           >
             <Avatar className="h-8 w-8">
               <AvatarFallback className="text-xs bg-muted">
@@ -112,7 +82,7 @@ export const useMemberTableColumns = (): { columns: ColumnDef<Member>[] } => {
               <Button
                 variant="outline"
                 size="sm"
-                className="h-8 w-[160px] justify-between border-hairline"
+                className="h-8 w-40 justify-between border-hairline"
               >
                 <span className="truncate">
                   {roles.length > 0 ? roles.join(", ") : "No role"}
@@ -120,7 +90,7 @@ export const useMemberTableColumns = (): { columns: ColumnDef<Member>[] } => {
                 <ChevronDown className="ml-1 h-3 w-3 shrink-0 opacity-50" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-[200px]">
+            <DropdownMenuContent align="start" className="w-50">
               <DropdownMenuLabel>Select Roles</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {ROLES.map((role) => (
@@ -159,7 +129,7 @@ export const useMemberTableColumns = (): { columns: ColumnDef<Member>[] } => {
               });
             }}
           >
-            <SelectTrigger className="h-8 w-[140px] border-hairline">
+            <SelectTrigger className="h-8 w-35 border-hairline">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
