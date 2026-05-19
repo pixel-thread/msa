@@ -36,7 +36,7 @@ export default function SignUpPage() {
       name: "",
       email: "",
       password: "",
-      confirmPassword: "",
+      confirm_password: "",
     },
   });
 
@@ -44,8 +44,7 @@ export default function SignUpPage() {
     try {
       await signUpMutation.mutateAsync(values);
       router.push("/sign-in");
-    } catch {
-    }
+    } catch {}
   };
 
   return (
@@ -61,10 +60,7 @@ export default function SignUpPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-5"
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               {signUpMutation.isError && (
                 <Alert variant="destructive">
                   <AlertDescription>
@@ -137,7 +133,7 @@ export default function SignUpPage() {
 
               <FormField
                 control={form.control}
-                name="confirmPassword"
+                name="confirm_password"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-body-strong text-sm font-medium">
@@ -161,9 +157,7 @@ export default function SignUpPage() {
                 className="h-11 w-full rounded-full bg-primary px-5 text-base font-semibold text-on-primary hover:bg-primary-active disabled:bg-primary-disabled"
                 disabled={signUpMutation.isPending}
               >
-                {signUpMutation.isPending
-                  ? "Creating account..."
-                  : "Sign up"}
+                {signUpMutation.isPending ? "Creating account..." : "Sign up"}
               </Button>
 
               <p className="text-center text-sm text-body">
