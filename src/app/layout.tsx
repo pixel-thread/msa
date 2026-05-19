@@ -10,13 +10,9 @@ import "./globals.css";
 import { cn } from "@src/shared/lib/utils";
 import { Suspense } from "react";
 
-const instrumentSerifHeading = Instrument_Serif({
-  subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-heading",
-});
+const instrumentSerifHeading = Instrument_Serif({subsets:['latin'],weight:['400'],variable:'--font-heading'});
 
-const outfit = Outfit({ subsets: ["latin"], variable: "--font-sans" });
+const outfit = Outfit({subsets:['latin'],variable:'--font-sans'});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
