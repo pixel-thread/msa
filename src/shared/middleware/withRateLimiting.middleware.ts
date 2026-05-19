@@ -16,9 +16,13 @@ const isProd = env.NODE_ENV === "production";
 
 type Duration = `${number} ${"s" | "m" | "h" | "d"}`;
 
+type RouteMatch =
+  | { type: "skip" }
+  | { type: "limit"; config: { requests: number; window: Duration } };
+
 const GLOBAL_LIMIT: { requests: number; window: Duration } = {
-  requests: 100,
-  window: "1 m",
+  requests: 5,
+  window: "3 s",
 };
 
 const routeLimits: Record<
@@ -28,6 +32,8 @@ const routeLimits: Record<
   "/auth/*": { requests: 5, window: "1 m" },
   "/health": "skip",
   "/favicon.ico": "skip",
+  "/api/*": GLOBAL_LIMIT,
+  "/*": "skip",
 };
 
 /**
@@ -35,10 +41,6 @@ const routeLimits: Record<
  * Route Matching
  * ----------------------------------------------------------------------------
  */
-
-type RouteMatch =
-  | { type: "skip" }
-  | { type: "limit"; config: { requests: number; window: Duration } };
 
 const matchRoute = (pathname: string): RouteMatch => {
   for (const [pattern, config] of Object.entries(routeLimits)) {
@@ -229,6 +231,8 @@ export const withRateLimiting: MiddlewareFn = async (request, next) => {
 
     const result = await checkRateLimit(identifier, match.config);
 
+    const response = await next(request);
+
     if (!result.success) {
       logger.warn("Rate limit exceeded", {
         identifier,
@@ -240,8 +244,6 @@ export const withRateLimiting: MiddlewareFn = async (request, next) => {
         "Too many requests. Please try again later.",
       );
     }
-
-    const response = await next(request);
 
     response.headers.set("RateLimit-Limit", String(result.limit));
 
