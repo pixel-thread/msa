@@ -21,8 +21,8 @@ type RouteMatch =
   | { type: "limit"; config: { requests: number; window: Duration } };
 
 const GLOBAL_LIMIT: { requests: number; window: Duration } = {
-  requests: 5,
-  window: "3 s",
+  requests: 20,
+  window: "1 s",
 };
 
 const routeLimits: Record<
