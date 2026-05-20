@@ -277,29 +277,29 @@ model Association {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model User {
-  id                   String        @id @default(uuid())
-  associationId        String // ★ Every user belongs to one association
-  email                String
-  name                 String
-  mobile               String? // Encrypted (AES-256-GCM)
-  designation          String? // Encrypted (AES-256-GCM)
-  role                 UserRole[]
-  status               UserStatus    @default(INACTIVE)
-  dateOfJoiningGovt    DateTime?
-  dateOfJoiningMfsa    DateTime?
-  membershipNumber     String?
-  overallConsentStatus ConsentStatus @default(GRANTED)
-  dataRetentionUntil   DateTime      @default(dbgenerated("(NOW() + INTERVAL '7 years')"))
-  failedLoginAttempts  Int           @default(0)
-  lockedUntil          DateTime?
-  imageUrl             String?
-  password             String?
-  passwordResetToken   String?
-  passwordResetExpires DateTime?
-  mfaEnabled           Boolean       @default(false)
-  deletedAt            DateTime?
-  createdAt            DateTime      @default(now())
-  updatedAt            DateTime      @updatedAt
+  id                       String        @id @default(uuid())
+  associationId            String // ★ Every user belongs to one association
+  email                    String
+  name                     String
+  mobile                   String? // Encrypted (AES-256-GCM)
+  designation              String? // Encrypted (AES-256-GCM)
+  role                     UserRole[]
+  status                   UserStatus    @default(INACTIVE)
+  dateOfJoiningGovt        DateTime?
+  dateOfJoiningAssociation DateTime?
+  membershipNumber         String?
+  overallConsentStatus     ConsentStatus @default(GRANTED)
+  dataRetentionUntil       DateTime      @default(dbgenerated("(NOW() + INTERVAL '7 years')"))
+  failedLoginAttempts      Int           @default(0)
+  lockedUntil              DateTime?
+  imageUrl                 String?
+  password                 String?
+  passwordResetToken       String?
+  passwordResetExpires     DateTime?
+  mfaEnabled               Boolean       @default(false)
+  deletedAt                DateTime?
+  createdAt                DateTime      @default(now())
+  updatedAt                DateTime      @updatedAt
 
   association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
 
@@ -334,26 +334,66 @@ model User {
   @@map("users")
 }
 
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model MembershipApplication {
+  id              String            @id @default(uuid())
+  email           String
+  phone           String
+  associationSlug String
+  firstName       String?
+  lastName        String
+  dateOfBirth     DateTime
+  age             Int
+  gender          String
+  address         String?
+  city            String?
+  state           String?
+  country         String?
+  postalCode      String?
+  
+  // Track where the applicant stands in the vetting pipeline
+  status          ApplicationStatus @default(PENDING)
+  rejectionReason String?           // Helpful if an admin denies their sign-up
+  reviewedAt      DateTime?
+  reviewedBy      String?           // ID of the admin who approved/rejected them
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@unique([email, associationSlug])
+  @@unique([phone, associationSlug])
+  @@index([email])
+  @@index([phone])
+  @@index([associationSlug])
+  @@index([status]) // Added an index since your admins will filter by status often
+  @@map("membership_applications")
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // SUBSCRIPTIONS
 // ─────────────────────────────────────────────────────────────────────────────
 
 model SubscriptionPlan {
   id            String   @id @default(uuid())
-  associationId String 
+  associationId String
   name          String
   description   String?
   isActive      Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  association   Association   @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+
   versions      SubscriptionPlanVersion[]
   subscriptions Subscription[]
 
-  memberTypeId  String?
-  memberType    MemberType?   @relation(fields: [memberTypeId], references: [id])
+  memberTypeId String?
+  memberType   MemberType? @relation(fields: [memberTypeId], references: [id])
 
   @@unique([associationId, name])
   @@index([associationId])
@@ -361,23 +401,23 @@ model SubscriptionPlan {
 }
 
 model SubscriptionPlanVersion {
-  id                 String           @id @default(uuid())
-  planId             String
-  
-  amount             Decimal          @db.Decimal(10, 2)
-  currency           String           @default("INR")
-  billingCycle       String           @default("MONTHLY")
-  features           Json
-  description        String?
-  
-  effectiveFrom      DateTime         @default(now())
-  effectiveTo        DateTime?
-  
-  createdAt          DateTime         @default(now())
+  id     String @id @default(uuid())
+  planId String
 
-  plan               SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
-  subscriptions      Subscription[]
-  billingHistory     SubscriptionBillingHistory[]
+  amount       Decimal @db.Decimal(10, 2)
+  currency     String  @default("INR")
+  billingCycle String  @default("MONTHLY")
+  features     Json
+  description  String?
+
+  effectiveFrom DateTime  @default(now())
+  effectiveTo   DateTime?
+
+  createdAt DateTime @default(now())
+
+  plan           SubscriptionPlan             @relation(fields: [planId], references: [id], onDelete: Cascade)
+  subscriptions  Subscription[]
+  billingHistory SubscriptionBillingHistory[]
 
   @@index([planId])
   @@map("subscription_plan_versions")
@@ -385,7 +425,7 @@ model SubscriptionPlanVersion {
 
 model Subscription {
   id            String    @id @default(uuid())
-  userId        String    @unique 
+  userId        String    @unique
   planId        String
   planVersionId String
   status        String    @default("ACTIVE")
@@ -397,10 +437,10 @@ model Subscription {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  user          User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  plan          SubscriptionPlan        @relation(fields: [planId], references: [id])
-  planVersion   SubscriptionPlanVersion @relation(fields: [planVersionId], references: [id])
-  
+  user        User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan        SubscriptionPlan        @relation(fields: [planId], references: [id])
+  planVersion SubscriptionPlanVersion @relation(fields: [planVersionId], references: [id])
+
   billingHistory SubscriptionBillingHistory[]
 
   @@index([status])
@@ -409,18 +449,18 @@ model Subscription {
 }
 
 model SubscriptionBillingHistory {
-  id             String       @id @default(uuid())
+  id             String   @id @default(uuid())
   subscriptionId String
   planVersionId  String
-  amountCharged  Decimal      @db.Decimal(10, 2)
-  status         String       @default("PENDING")
+  amountCharged  Decimal  @db.Decimal(10, 2)
+  status         String   @default("PENDING")
   periodStart    DateTime
   periodEnd      DateTime
   dueDate        DateTime
-  createdAt      DateTime     @default(now())
+  createdAt      DateTime @default(now())
 
-  subscription   Subscription            @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
-  planVersion    SubscriptionPlanVersion @relation(fields: [planVersionId], references: [id])
+  subscription Subscription            @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  planVersion  SubscriptionPlanVersion @relation(fields: [planVersionId], references: [id])
 
   @@index([subscriptionId])
   @@map("subscription_billing_history")
@@ -1067,7 +1107,7 @@ model ComplianceCheck {
 }
 
 model MemberType {
-  id          String @id @default(uuid())
+  id          String  @id @default(uuid())
   description String?
   level       Int
 
@@ -1076,8 +1116,8 @@ model MemberType {
   users             User[]
   subscriptionPlans SubscriptionPlan[]
 
-  @@index([level])
   @@unique([associationId, level])
+  @@index([level])
   @@map("member_types")
 }
 
@@ -1086,17 +1126,17 @@ model MemberType {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model PaymentProvider {
-  id                   String   @id @default(uuid())
-  associationId        String
-  provider             PaymentProviderType
-  keyId                String
-  encryptedKeySecret   String
+  id                     String              @id @default(uuid())
+  associationId          String
+  provider               PaymentProviderType
+  keyId                  String
+  encryptedKeySecret     String
   encryptedWebhookSecret String?
-  isActive             Boolean  @default(true)
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  isActive               Boolean             @default(true)
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
 
-  association          Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
 
   @@unique([associationId, provider])
   @@index([associationId])
@@ -1106,10 +1146,11 @@ model PaymentProvider {
 
 model Log {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  type      String   // Stores 'error', 'warn', etc.
-  message   String   // Stores the main error message
-  content   Json     // Stores the context/metadata natively as JSON
-  isBackend Boolean @default(false)
+  type      String // Stores 'error', 'warn', etc.
+  message   String // Stores the main error message
+  content   Json // Stores the context/metadata natively as JSON
+  isBackend Boolean  @default(false)
   createdAt DateTime @default(now())
+
   @@map("logs")
 }

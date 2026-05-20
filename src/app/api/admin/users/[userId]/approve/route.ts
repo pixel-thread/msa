@@ -46,7 +46,7 @@ export const POST = withValidation(
         status: "ACTIVE",
         memberType: { connect: { id: memberTypeId } },
         dateOfJoiningGovt: body?.dateOfJoiningGovt,
-        dateOfJoiningMfsa: body?.dateOfJoiningMfsa,
+        dateOfJoiningAssociation: new Date(),
       },
     });
 

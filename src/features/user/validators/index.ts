@@ -29,19 +29,13 @@ export const AdminUserApproveParamsSchema = z.object({
   userId: uuidValidiation,
 });
 
-export const AdminUserApproveSchema = z.object({
-  memberTypeId: z.uuid("Invalid member type"),
-  role: z.enum(UserRole, "Invalid role").default("MEMBER").optional(),
-  dateOfJoiningGovt: z.coerce
-    .date("Invalid date")
-    .default(new Date())
-    .optional(),
-  dateOfJoiningMfsa: z.coerce
-    .date("Invalid date")
-    .default(new Date())
-    .optional(),
-  status: z
-    .enum($Enums.UserStatus, "Invalid User status")
-    .default("ACTIVE")
-    .optional(),
-});
+export const AdminUserApproveSchema = z
+  .object({
+    memberTypeId: z.uuid("Invalid member type"),
+    role: z.enum(UserRole, "Invalid role").default("MEMBER").optional(),
+    dateOfJoiningGovt: z.coerce
+      .date("Invalid date")
+      .default(new Date())
+      .optional(),
+  })
+  .strict();
