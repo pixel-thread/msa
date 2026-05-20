@@ -1,9 +1,9 @@
 import { UserRole } from "@prisma/client";
-import { rejectMembershipApplication } from "@src/features/membership-application/services";
+import { rejectMembershipApplication } from "@src/features/membership-applications/services";
 import {
   MembershipApplicationParamsSchema,
   RejectApplicationSchema,
-} from "@src/features/membership-application/validators";
+} from "@src/features/membership-applications/validators";
 import { withValidation } from "@src/shared/api";
 import { withRole } from "@src/shared/api/with-role";
 import { NotFoundError } from "@src/shared/errors";

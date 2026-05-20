@@ -6,8 +6,8 @@ import { env } from "@src/env";
 import {
   MembershipApplicationInput,
   MembershipApplicationSchema,
-} from "@src/features/membership-application/validators";
-import { createMembershipApplication } from "@src/features/membership-application/services";
+} from "@src/features/membership-applications/validators";
+import { createMembershipApplication } from "@src/features/membership-applications/services";
 
 export const POST = withValidation(
   { body: MembershipApplicationSchema },

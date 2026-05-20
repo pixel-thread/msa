@@ -1,6 +1,6 @@
 import { UserRole } from "@prisma/client";
-import { getMembershipApplications } from "@src/features/membership-application/services";
-import { GetMembershipApplicationsQuerySchema } from "@src/features/membership-application/validators";
+import { getMembershipApplications } from "@src/features/membership-applications/services";
+import { GetMembershipApplicationsQuerySchema } from "@src/features/membership-applications/validators";
 import { withAssociation } from "@src/shared/api/with-association";
 import { withRole } from "@src/shared/api/with-role";
 import { SuccessResponse } from "@src/shared/utils";

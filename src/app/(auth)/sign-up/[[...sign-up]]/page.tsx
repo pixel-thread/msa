@@ -25,7 +25,7 @@ import {
 import {
   MembershipApplicationSchema,
   type MembershipApplicationInput,
-} from "@src/features/membership-application/validators";
+} from "@src/features/membership-applications/validators";
 import { useSignUp } from "@src/features/auth/hooks";
 import { logger } from "@src/shared/logger";
 import { env } from "@src/env";

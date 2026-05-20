@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 
 import http from "@src/shared/utils/http";
-import { type MembershipApplicationInput } from "@src/features/membership-application/validators";
+import { type MembershipApplicationInput } from "@src/features/membership-applications/validators";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
