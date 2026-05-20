@@ -6,6 +6,7 @@ function Spinner({ className, ...props }: React.ComponentProps<"svg">) {
   return (
     <HugeiconsIcon
       icon={Loading03Icon}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       strokeWidth={"2" as any}
       role="status"
       aria-label="Loading"
