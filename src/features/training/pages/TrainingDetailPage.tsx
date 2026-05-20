@@ -1,10 +1,11 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Clock, BookOpen, ArrowLeft, CheckCircle, FileText, ExternalLink, Award, Users } from "lucide-react";
-import { useTrainingModule, useMyCompletions } from "../hooks";
+import { Clock, BookOpen, ArrowLeft, CheckCircle, FileText, ExternalLink, Award, Users, Search } from "lucide-react";
+import { useTrainingModule, useMyCompletions, useModuleAssignedUsers } from "../hooks";
 import { useAuthStore } from "@src/shared/stores/auth";
 import { RecordCompletionSchema, type RecordCompletionInput } from "../validators/training";
 import { Button } from "@src/shared/components/ui/button";
@@ -18,7 +19,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@src/shared/components/ui/form";
-import { useMemo } from "react";
+import { DataTable } from "@src/shared/components/data-table";
+import { CompleteAssignmentDialog, ManageAssigneesDialog } from "../components";
+import type { AssignedUserWithCompletion } from "../types";
+import type { TrainingModuleListItem } from "../types";
+import { ColumnDef } from "@tanstack/react-table";
+import { formatDate } from "@src/shared/utils";
 import { UserRole } from "@prisma/client";
 
 export function TrainingDetailPage() {
@@ -36,6 +42,8 @@ export function TrainingDetailPage() {
 
   const { module, isLoading: isModuleLoading } = useTrainingModule(moduleId);
   const { completions: myCompletions, recordSelfCompletion, isCompleting, isLoading: isCompletionsLoading } = useMyCompletions();
+  const { assignedUsers, isLoading: isAssignedLoading, completeAssignment, isCompleting: isCompletingAssignment } =
+    useModuleAssignedUsers(isSecretaryOrAdmin ? moduleId : null);
 
   const isCompleted = useMemo(() => {
     return myCompletions.some((c) => c.moduleId === moduleId);
@@ -44,6 +52,143 @@ export function TrainingDetailPage() {
   const completionDetails = useMemo(() => {
     return myCompletions.find((c) => c.moduleId === moduleId);
   }, [myCompletions, moduleId]);
+
+  const [search, setSearch] = useState("");
+  const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<AssignedUserWithCompletion | null>(null);
+  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+
+  const filteredUsers = useMemo(() => {
+    const query = search.toLowerCase().trim();
+    if (!query) return assignedUsers;
+    return assignedUsers.filter(
+      (u) =>
+        u.user?.name?.toLowerCase().includes(query) ||
+        u.user?.email?.toLowerCase().includes(query)
+    );
+  }, [assignedUsers, search]);
+
+  const handleComplete = (data: { userId: string; scorePercent?: number }) => {
+    completeAssignment(data);
+  };
+
+  const columns: ColumnDef<AssignedUserWithCompletion>[] = [
+    {
+      accessorKey: "user.name",
+      header: "Member",
+      cell: ({ row }) => {
+        const u = row.original.user;
+        return (
+          <div className="flex flex-col">
+            <span className="text-sm font-semibold text-ink">{u?.name || "Unknown User"}</span>
+            <span className="text-xs text-muted-foreground">{u?.email}</span>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = row.original.status;
+        const isCompleted = status === "COMPLETED";
+        return (
+          <Badge
+            className={
+              isCompleted
+                ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800 flex items-center gap-1"
+                : "bg-surface-secondary text-body border-hairline"
+            }
+          >
+            {isCompleted ? (
+              <>
+                <CheckCircle className="h-3 w-3" />
+                Completed
+              </>
+            ) : (
+              status
+            )}
+          </Badge>
+        );
+      },
+    },
+    {
+      accessorKey: "completion.scorePercent",
+      header: "Points",
+      cell: ({ row }) => {
+        const score = row.original.completion?.scorePercent;
+        return (
+          <span className="text-sm text-body">
+            {score !== null && score !== undefined ? (
+              <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-medium">
+                <Award className="h-3.5 w-3.5" />
+                {score} pts
+              </span>
+            ) : (
+              <span className="text-muted-foreground">—</span>
+            )}
+          </span>
+        );
+      },
+    },
+    {
+      accessorKey: "assignedAt",
+      header: "Assigned",
+      cell: ({ row }) => {
+        const assignedAt = row.original.assignedAt;
+        return (
+          <span className="text-sm text-body">
+            {assignedAt ? formatDate(assignedAt) : "N/A"}
+          </span>
+        );
+      },
+    },
+    {
+      accessorKey: "completion.completedAt",
+      header: "Completed",
+      cell: ({ row }) => {
+        const completedAt = row.original.completion?.completedAt;
+        return (
+          <span className="text-sm text-body">
+            {completedAt ? formatDate(completedAt) : "—"}
+          </span>
+        );
+      },
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => {
+        const assignment = row.original;
+        const isCompleted = assignment.status === "COMPLETED";
+
+        return (
+          <Button
+            variant={isCompleted ? "outline" : "default"}
+            size="sm"
+            disabled={isCompleted}
+            onClick={() => {
+              setSelectedUser(assignment);
+              setCompleteDialogOpen(true);
+            }}
+            className="h-9 rounded-full text-xs font-semibold"
+          >
+            {isCompleted ? (
+              <>
+                <CheckCircle className="mr-1.5 h-3.5 w-3.5" />
+                Done
+              </>
+            ) : (
+              <>
+                <Award className="mr-1.5 h-3.5 w-3.5" />
+                Mark Complete
+              </>
+            )}
+          </Button>
+        );
+      },
+    },
+  ];
 
   const form = useForm({
     resolver: zodResolver(RecordCompletionSchema),
@@ -71,7 +216,7 @@ export function TrainingDetailPage() {
     );
   };
 
-  if (isModuleLoading || isCompletionsLoading) {
+  if (isModuleLoading || isCompletionsLoading || isAssignedLoading) {
     return <div className="py-24 text-center text-body">Loading training module details...</div>;
   }
 
@@ -106,14 +251,20 @@ export function TrainingDetailPage() {
         </div>
 
         {isSecretaryOrAdmin && (
-          <Button
-            onClick={() => router.push(`/training/modules/${moduleId}/assigned-users`)}
-            variant="outline"
-            className="h-10 rounded-full border-hairline px-4 text-sm font-semibold flex items-center gap-2 hover:bg-canvas/50"
-          >
-            <Users className="h-4 w-4" />
-            View Assigned Users
-          </Button>
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-muted flex items-center gap-1.5">
+              <Users className="h-4 w-4" />
+              {assignedUsers.length} user{assignedUsers.length !== 1 ? "s" : ""} assigned
+            </div>
+            <Button
+              onClick={() => setAssignDialogOpen(true)}
+              variant="outline"
+              className="h-10 rounded-full border-hairline px-4 text-sm font-semibold flex items-center gap-2 hover:bg-canvas/50"
+            >
+              <Users className="h-4 w-4" />
+              Assign Users
+            </Button>
+          </div>
         )}
       </div>
 
@@ -227,6 +378,49 @@ export function TrainingDetailPage() {
           </div>
         </div>
       </div>
+
+      {isSecretaryOrAdmin && (
+        <div className="mt-10 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-ink flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Assigned Users
+            </h2>
+          </div>
+
+          <div className="relative max-w-sm">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            <Input
+              placeholder="Search assigned users..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="h-10 rounded-md border-hairline bg-canvas pl-10 text-ink placeholder:text-muted focus-visible:border-primary"
+            />
+          </div>
+
+          <DataTable loading={isAssignedLoading} data={filteredUsers} columns={columns} />
+        </div>
+      )}
+
+      {selectedUser && (
+        <CompleteAssignmentDialog
+          open={completeDialogOpen}
+          onOpenChange={setCompleteDialogOpen}
+          userId={selectedUser.userId}
+          userName={selectedUser.user.name}
+          moduleId={moduleId}
+          onComplete={handleComplete}
+          isCompleting={isCompletingAssignment}
+        />
+      )}
+
+      {module && (
+        <ManageAssigneesDialog
+          open={assignDialogOpen}
+          onOpenChange={setAssignDialogOpen}
+          module={module as TrainingModuleListItem}
+        />
+      )}
     </div>
   );
 }

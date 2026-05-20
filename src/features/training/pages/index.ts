@@ -4,4 +4,3 @@ export { MyCompletionsPage } from "./MyCompletionsPage";
 export { TrainingDetailPage } from "./TrainingDetailPage";
 export { AdminCompletionsPage } from "./AdminCompletionsPage";
 export { AdminModulesPage } from "./AdminModulesPage";
-export { AssignedUsersPage } from "./AssignedUsersPage";
