@@ -16,6 +16,7 @@ export function MembershipApplicationsPage() {
   const currentPage = Number(searchParams.get("page")) || 1;
   const [selectedApplication, setSelectedApplication] =
     useState<MembershipApplicationListItem | null>(null);
+
   const rejectApplication = useRejectApplication();
 
   const { applications, pagination, isLoading } = useMembershipApplications({
