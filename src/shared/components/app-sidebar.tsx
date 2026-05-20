@@ -21,6 +21,8 @@ import {
   Settings2Icon,
   CalendarDaysIcon,
   CreditCardIcon,
+  BookOpenIcon,
+  WalletIcon,
 } from "lucide-react";
 import { useAuthStore } from "@src/shared/stores/auth";
 
@@ -59,6 +61,18 @@ const navMain = [
     ],
   },
   {
+    title: "Training",
+    url: "/training",
+    icon: <BookOpenIcon />,
+    isActive: true,
+    items: [
+      {
+        title: "Portal",
+        url: "/training",
+      },
+    ],
+  },
+  {
     title: "Subscriptions",
     url: "/subscriptions/plans",
     icon: <CreditCardIcon />,
@@ -71,6 +85,22 @@ const navMain = [
       {
         title: "History",
         url: "/subscriptions/my",
+      },
+    ],
+  },
+  {
+    title: "Payments",
+    url: "/payments",
+    icon: <WalletIcon />,
+    isActive: true,
+    items: [
+      {
+        title: "All Payments",
+        url: "/payments",
+      },
+      {
+        title: "Contributions",
+        url: "/payments/contributions",
       },
     ],
   },
@@ -106,6 +136,61 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     avatar: "",
   };
 
+  const dynamicNavMain = React.useMemo(() => {
+    const roles = user?.role || [];
+    const isDpoOrAdmin = roles.some((role: string) =>
+      ["DPO", "SUPER_ADMIN"].includes(role)
+    );
+    const isSecretaryOrAdmin = roles.some((role: string) =>
+      ["SECRETARY", "PRESIDENT", "SUPER_ADMIN"].includes(role)
+    );
+    const isFinanceOrAdmin = roles.some((role: string) =>
+      ["FINANCE", "SUPER_ADMIN", "PRESIDENT", "SECRETARY"].includes(role)
+    );
+
+    return navMain
+      .map((item) => {
+        if (item.title === "Training") {
+          const subItems = [
+            {
+              title: "Active Courses",
+              url: "/training",
+            },
+            {
+              title: "My Completions",
+              url: "/training/my-completions",
+            },
+          ];
+
+          if (isSecretaryOrAdmin) {
+            subItems.push({
+              title: "Completions Logs",
+              url: "/training/completions",
+            });
+          }
+
+          if (isDpoOrAdmin) {
+            subItems.push({
+              title: "Manage Modules",
+              url: "/training/modules",
+            });
+          }
+
+          return {
+            ...item,
+            items: subItems,
+          };
+        }
+        return item;
+      })
+      .filter((item) => {
+        if (item.title === "Payments") {
+          return isFinanceOrAdmin;
+        }
+        return true;
+      });
+  }, [user]);
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -127,7 +212,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={navMain} />
+        <NavMain items={dynamicNavMain} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={sidebarUser} />

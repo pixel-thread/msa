@@ -13,7 +13,7 @@ import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
 export const GET = withAssociation(
   { query: MeetingQuerySchema },
   async (association, { query }, request) => {
-    const user = await withRole(request, UserRole.SECRETARY);
+    const user = await withRole(request, UserRole.MEMBER);
 
     if (!query) {
       throw new ForbiddenError("Invalid query parameters");

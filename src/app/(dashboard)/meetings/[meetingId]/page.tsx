@@ -27,11 +27,15 @@ import {
   FileText,
   Clock,
   Pencil,
+  Trash2,
+  ClipboardList,
 } from "lucide-react";
 import { EditMeetingDialog } from "@src/features/meetings/components/EditMeetingDialog";
+import { DeleteMeetingDialog } from "@src/features/meetings/components/DeleteMeetingDialog";
 import { ManageAttendeesDialog } from "@src/features/meetings/components/ManageAttendeesDialog";
 import type { AssignAttendeeInput } from "@src/features/meetings/validators";
 import { useMembers } from "@src/features/members/hooks/useMembers";
+import Link from "next/link";
 
 const getStatusBadge = (status: string) => {
   const variants: Record<
@@ -76,6 +80,7 @@ export default function MeetingDetailPage() {
   const meetingId = params.meetingId as string;
   const [editOpen, setEditOpen] = useState(searchParams.get("edit") === "true");
   const [manageAttendeesOpen, setManageAttendeesOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const { meeting, isLoading, error } = useMeetingDetail(meetingId);
   const { members } = useMembers();
@@ -143,13 +148,31 @@ export default function MeetingDetailPage() {
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <Link href={`/meetings/${meetingId}/minutes`}>
+            <Button
+              variant="outline"
+              className="h-11 rounded-full border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
+            >
+              <ClipboardList className="mr-2 h-4 w-4" />
+              Minutes
+            </Button>
+          </Link>
+          <Link href={`/meetings/${meetingId}/assign`}>
+            <Button
+              variant="outline"
+              className="h-11 rounded-full border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
+            >
+              <Users className="mr-2 h-4 w-4" />
+              Manage Attendees
+            </Button>
+          </Link>
           <Button
             variant="outline"
-            onClick={() => setManageAttendeesOpen(true)}
-            className="h-11 rounded-full border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
+            onClick={() => setDeleteOpen(true)}
+            className="h-11 rounded-full border-hairline bg-canvas px-5 text-sm font-medium text-red-600 hover:bg-red-50 hover:border-red-200"
           >
-            <Users className="mr-2 h-4 w-4" />
-            Manage Attendees
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete
           </Button>
           <Button
             onClick={() => setEditOpen(true)}
@@ -322,6 +345,13 @@ export default function MeetingDetailPage() {
         onRemoveAttendee={handleRemoveAttendee}
         isAdding={isAdding}
         isRemoving={isRemoving}
+      />
+
+      <DeleteMeetingDialog
+        meeting={meeting}
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        onSuccess={() => router.push("/meetings")}
       />
     </>
   );

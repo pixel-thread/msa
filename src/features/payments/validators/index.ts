@@ -128,3 +128,11 @@ export const UpdatePaymentProviderSchema = z.object({
 export const ProviderIdParamSchema = z.object({
   providerId: z.uuid("Invalid provider ID"),
 });
+
+export const UserPaymentsParamsSchema = z.object({
+  userId: z.uuid("Invalid user ID"),
+});
+
+export const UserContributionsParamsSchema = z.object({
+  userId: z.uuid("Invalid user ID"),
+});

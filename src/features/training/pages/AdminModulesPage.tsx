@@ -1,0 +1,146 @@
+"use client";
+
+import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { UserRole } from "@prisma/client";
+import { useAuthStore } from "@src/shared/stores/auth";
+import { DataTable } from "@src/shared/components/data-table";
+import { Button } from "@src/shared/components/ui/button";
+import { Input } from "@src/shared/components/ui/input";
+import { Plus, Search, ShieldAlert, ArrowLeft } from "lucide-react";
+
+import { useTrainingModules, useModuleTableColumns } from "../hooks";
+import { CreateModuleDialog, EditModuleDialog, ManageAssigneesDialog } from "../components";
+import type { TrainingModuleListItem } from "../types";
+
+export function AdminModulesPage() {
+  const router = useRouter();
+  const { user } = useAuthStore();
+  const userRoles = user?.role || [];
+
+  const isDpoOrAdmin = userRoles.includes(UserRole.DPO) || userRoles.includes(UserRole.SUPER_ADMIN);
+
+  const [search, setSearch] = useState("");
+  const [createOpen, setCreateOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [assigneesOpen, setAssigneesOpen] = useState(false);
+  const [selectedModule, setSelectedModule] = useState<TrainingModuleListItem | null>(null);
+
+  const {
+    modules: allModules,
+    isLoading: isModulesLoading,
+    updateModule,
+  } = useTrainingModules();
+
+  const { columns: moduleColumns } = useModuleTableColumns({
+    onEdit: (mod) => {
+      setSelectedModule(mod);
+      setEditOpen(true);
+    },
+    onManageAssignees: (mod) => {
+      setSelectedModule(mod);
+      setAssigneesOpen(true);
+    },
+    onToggleActive: (mod) => {
+      updateModule({
+        moduleId: mod.id,
+        data: { isActive: !mod.isActive },
+      });
+    },
+  });
+
+  const filteredModules = useMemo(() => {
+    const query = search.toLowerCase().trim();
+    if (!query) return allModules;
+    return allModules.filter(
+      (m) =>
+        m.title.toLowerCase().includes(query) ||
+        m.description?.toLowerCase().includes(query)
+    );
+  }, [allModules, search]);
+
+  if (!isDpoOrAdmin) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 px-4 text-center">
+        <div className="h-16 w-16 bg-destructive/10 text-destructive flex items-center justify-center rounded-full mb-6">
+          <ShieldAlert className="h-8 w-8" />
+        </div>
+        <h2 className="text-2xl font-semibold text-ink mb-2">Access Denied</h2>
+        <p className="text-body max-w-md mb-8">
+          You do not have the required permissions to view the training modules management panel.
+        </p>
+        <Button
+          onClick={() => router.push("/training")}
+          className="h-11 rounded-full bg-primary px-6 font-semibold text-on-primary hover:bg-primary-active flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to My Training
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
+            Manage Training Modules
+          </h1>
+          <p className="mt-1 text-base text-body">
+            Create, edit, activate/deactivate, and assign training modules to members.
+          </p>
+        </div>
+
+        <Button
+          onClick={() => router.push("/training")}
+          variant="outline"
+          className="h-11 rounded-full border-hairline px-5 text-sm font-semibold flex items-center gap-2 hover:bg-canvas/50"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Training Portal
+        </Button>
+      </div>
+
+      <div className="flex items-center justify-between gap-4 mb-6">
+        <div className="relative max-w-sm flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+          <Input
+            placeholder="Search training modules..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-11 rounded-md border-hairline bg-canvas pl-10 text-ink placeholder:text-muted focus-visible:border-primary"
+          />
+        </div>
+
+        <Button
+          onClick={() => setCreateOpen(true)}
+          className="h-11 rounded-full bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-active"
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          Create Module
+        </Button>
+      </div>
+
+      <DataTable
+        loading={isModulesLoading}
+        data={filteredModules}
+        columns={moduleColumns}
+      />
+
+      <CreateModuleDialog open={createOpen} onOpenChange={setCreateOpen} />
+
+      <EditModuleDialog
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        module={selectedModule}
+      />
+
+      <ManageAssigneesDialog
+        open={assigneesOpen}
+        onOpenChange={setAssigneesOpen}
+        module={selectedModule}
+      />
+    </>
+  );
+}

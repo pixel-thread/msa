@@ -34,7 +34,11 @@ const getTypeBadge = (type: string) => {
     EC_MEETING: "secondary",
     SPECIAL_MEETING: "outline",
   };
-  return <Badge variant={variants[type] || "outline"}>{type.replace("_", " ")}</Badge>;
+  return (
+    <Badge variant={variants[type] || "outline"}>
+      {type.replace("_", " ")}
+    </Badge>
+  );
 };
 
 export const useMeetingTableColumns = (): {
@@ -53,7 +57,7 @@ export const useMeetingTableColumns = (): {
         return (
           <Link
             className="text-sm font-medium text-ink hover:underline"
-            href={`/dashboard/meetings/${meeting.id}`}
+            href={`/meetings/${meeting.id}`}
           >
             {meeting.title}
           </Link>
@@ -129,7 +133,9 @@ export const useMeetingTableColumns = (): {
               <DropdownMenuItem
                 className="text-destructive focus:text-destructive"
                 onClick={() => {
-                  if (confirm("Are you sure you want to delete this meeting?")) {
+                  if (
+                    confirm("Are you sure you want to delete this meeting?")
+                  ) {
                     deleteMeeting(meeting.id);
                   }
                 }}
