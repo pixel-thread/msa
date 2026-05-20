@@ -862,7 +862,7 @@ model User {
   role                 UserRole      @default(MEMBER)
   status               UserStatus    @default(ACTIVE)
   dateOfJoiningGovt    DateTime?
-  dateOfJoiningMfsa    DateTime?
+  dateOfJoiningAssociation    DateTime?
   membershipNumber     String?
   overallConsentStatus ConsentStatus @default(GRANTED)
   dataRetentionUntil   DateTime      @default(dbgenerated("(NOW() + INTERVAL '7 years')"))
@@ -1492,7 +1492,7 @@ export const OnboardingSchema = z.object({
     .string()
     .datetime()
     .refine((d) => new Date(d) < new Date(), "Cannot be in the future"),
-  dateOfJoiningMfsa: z
+  dateOfJoiningAssociation: z
     .string()
     .datetime()
     .refine((d) => new Date(d) < new Date(), "Cannot be in the future"),
@@ -1676,7 +1676,7 @@ export async function assignAttendees(
 
 - Google OAuth + email/password via Clerk
 - Clerk webhook `user.created` creates `User` in DB with `associationId` resolved from `x-association-slug`
-- Post-signup `/onboarding` collects `dateOfJoiningGovt`, `dateOfJoiningMfsa`, `mobile`, `designation`
+- Post-signup `/onboarding` collects `dateOfJoiningGovt`, `dateOfJoiningAssociation`, `mobile`, `designation`
 - `membershipNumber` auto-generated as `{SLUG}-{YEAR}-{SEQUENCE}` (e.g., `MFSA-2026-0042`)
 - Same person can hold membership in both MFSA and MPSA via separate `User` rows — `@@unique([associationId, email])`
 
