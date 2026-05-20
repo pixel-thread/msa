@@ -36,42 +36,9 @@ import { ManageAttendeesDialog } from "@src/features/meetings/components/ManageA
 import type { AssignAttendeeInput } from "@src/features/meetings/validators";
 import { useMembers } from "@src/features/members/hooks/useMembers";
 import Link from "next/link";
-
-const getStatusBadge = (status: string) => {
-  const variants: Record<
-    string,
-    "default" | "secondary" | "destructive" | "outline"
-  > = {
-    SCHEDULED: "default",
-    IN_PROGRESS: "secondary",
-    COMPLETED: "outline",
-    CANCELLED: "destructive",
-  };
-  return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
-};
-
-const getTypeBadge = (type: string) => {
-  const variants: Record<string, "default" | "secondary" | "outline"> = {
-    GENERAL_MEETING: "default",
-    EC_MEETING: "secondary",
-    SPECIAL_MEETING: "outline",
-  };
-  return (
-    <Badge variant={variants[type] || "outline"}>
-      {type.replace("_", " ")}
-    </Badge>
-  );
-};
-
-const getRsvpBadge = (status: string | null) => {
-  if (!status) return <Badge variant="outline">Pending</Badge>;
-  const variants: Record<string, "default" | "secondary" | "destructive"> = {
-    ACCEPTED: "default",
-    DECLINED: "destructive",
-    PENDING: "secondary",
-  };
-  return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
-};
+import { getTypeBadge } from "@src/shared/utils/helper/get-type-badge";
+import { getStatusBadge } from "@src/shared/utils/helper/get-status-badge";
+import { getRsvpBadge } from "@src/shared/utils/helper/get-rsvp-badge";
 
 export default function MeetingDetailPage() {
   const params = useParams();

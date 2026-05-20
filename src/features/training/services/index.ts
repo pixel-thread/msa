@@ -6,3 +6,5 @@ export * from "./recordCompletion";
 export * from "./findManyCompletions";
 export * from "./findUserCompletions";
 export * from "./assignTraining";
+export * from "./findUserAssignments";
+export * from "./completeAssignment";

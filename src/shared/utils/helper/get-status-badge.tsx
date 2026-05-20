@@ -5,10 +5,10 @@ export const getStatusBadge = (status: string) => {
     string,
     "default" | "secondary" | "destructive" | "outline"
   > = {
-    ACTIVE: "default",
-    INACTIVE: "secondary",
-    SUSPENDED: "destructive",
-    PENDING: "outline",
+    SCHEDULED: "default",
+    IN_PROGRESS: "secondary",
+    COMPLETED: "outline",
+    CANCELLED: "destructive",
   };
   return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
 };

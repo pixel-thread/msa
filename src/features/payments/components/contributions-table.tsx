@@ -9,42 +9,20 @@ import {
   TableHeader,
   TableRow,
 } from "@src/shared/components/ui/table";
-import { Badge } from "@src/shared/components/ui/badge";
 import { ContributionPeriod } from "../types";
+import { getMonthName } from "@src/shared/utils/helper/get-month-name";
+import { formattedAmount } from "@src/shared/utils";
+import { getStatusBadge } from "@src/shared/utils/helper/get-status-badge";
 
 interface ContributionsTableProps {
   contributions: ContributionPeriod[];
   isLoading: boolean;
 }
 
-export function ContributionsTable({ contributions, isLoading }: ContributionsTableProps) {
-  const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-      PAID: "default",
-      DUE: "secondary",
-      PARTIAL: "outline",
-      WAIVED: "secondary",
-      OVERDUE: "destructive",
-    };
-    return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
-  };
-
-  const formatAmount = (amount: number, currency: string = "INR") => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const getMonthName = (month: number) => {
-    const months = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-    ];
-    return months[month - 1] || "";
-  };
-
+export function ContributionsTable({
+  contributions,
+  isLoading,
+}: ContributionsTableProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-24">
@@ -98,17 +76,17 @@ export function ContributionsTable({ contributions, isLoading }: ContributionsTa
             </TableCell>
             <TableCell>
               <span className="text-sm">
-                {formatAmount(cp.expectedAmount)}
+                {formattedAmount(cp.expectedAmount)}
               </span>
             </TableCell>
             <TableCell>
               <span className="text-sm text-green-600">
-                {formatAmount(cp.paidAmount)}
+                {formattedAmount(cp.paidAmount)}
               </span>
             </TableCell>
             <TableCell>
               <span className="text-sm text-red-600">
-                {formatAmount(cp.dueAmount)}
+                {formattedAmount(cp.dueAmount)}
               </span>
             </TableCell>
             <TableCell>{getStatusBadge(cp.status)}</TableCell>

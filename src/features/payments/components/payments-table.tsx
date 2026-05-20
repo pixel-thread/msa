@@ -11,6 +11,9 @@ import {
 } from "@src/shared/components/ui/table";
 import { Badge } from "@src/shared/components/ui/badge";
 import { PaymentTransaction } from "../types";
+import { getMethodBadge } from "@src/shared/utils/helper/get-method-badge";
+import { formatDate, formattedAmount } from "@src/shared/utils";
+import { getStatusBadge } from "@src/shared/utils/helper/get-status-badge";
 
 interface PaymentsTableProps {
   payments: PaymentTransaction[];
@@ -18,42 +21,6 @@ interface PaymentsTableProps {
 }
 
 export function PaymentsTable({ payments, isLoading }: PaymentsTableProps) {
-  const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-      COMPLETED: "default",
-      PENDING: "secondary",
-      FAILED: "destructive",
-      REFUNDED: "outline",
-      WAIVED: "secondary",
-    };
-    return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
-  };
-
-  const getMethodBadge = (method: string | null) => {
-    if (!method) return null;
-    return (
-      <Badge variant="outline" className="capitalize">
-        {method.toLowerCase().replace("_", " ")}
-      </Badge>
-    );
-  };
-
-  const formatAmount = (amount: number, currency: string = "INR") => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-  };
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-24">
@@ -114,7 +81,7 @@ export function PaymentsTable({ payments, isLoading }: PaymentsTableProps) {
             </TableCell>
             <TableCell>
               <span className="text-sm font-medium">
-                {formatAmount(tx.amount, tx.currency)}
+                {formattedAmount(tx.amount, tx.currency)}
               </span>
             </TableCell>
             <TableCell>{getStatusBadge(tx.status)}</TableCell>
@@ -129,7 +96,10 @@ export function PaymentsTable({ payments, isLoading }: PaymentsTableProps) {
                 href={`/payments/${tx.id}`}
                 className="text-xs text-primary hover:underline"
               >
-                {tx.referenceNumber || tx.receiptNumber || tx.razorpayPaymentId || tx.id.slice(0, 8)}
+                {tx.referenceNumber ||
+                  tx.receiptNumber ||
+                  tx.razorpayPaymentId ||
+                  tx.id.slice(0, 8)}
               </Link>
             </TableCell>
           </TableRow>

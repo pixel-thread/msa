@@ -9,10 +9,11 @@ import {
   CardTitle,
   CardContent,
 } from "@src/shared/components/ui/card";
-import { Badge } from "@src/shared/components/ui/badge";
 import { Separator } from "@src/shared/components/ui/separator";
 import { ArrowLeft, User, CreditCard } from "lucide-react";
 import Link from "next/link";
+import { getStatusBadge } from "@src/shared/utils/helper/get-status-badge";
+import { formatDate, formattedAmount } from "@src/shared/utils";
 
 export function PaymentDetailPage() {
   const params = useParams();
@@ -43,36 +44,6 @@ export function PaymentDetailPage() {
       </div>
     );
   }
-
-  const formatAmount = (amount: number, currency: string = "INR") => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return "-";
-    return new Date(dateStr).toLocaleDateString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-      COMPLETED: "default",
-      PENDING: "secondary",
-      FAILED: "destructive",
-      REFUNDED: "outline",
-      WAIVED: "secondary",
-    };
-    return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
-  };
 
   return (
     <>
@@ -109,7 +80,7 @@ export function PaymentDetailPage() {
                 <div>
                   <p className="text-xs font-medium text-muted">Amount</p>
                   <p className="text-lg font-medium text-ink mt-1">
-                    {formatAmount(payment.amount, payment.currency)}
+                    {formattedAmount(payment.amount, payment.currency)}
                   </p>
                 </div>
 
@@ -123,7 +94,9 @@ export function PaymentDetailPage() {
                 <div>
                   <p className="text-xs font-medium text-muted">Method</p>
                   <p className="text-sm text-ink mt-1 capitalize">
-                    {payment.method ? payment.method.toLowerCase().replace("_", " ") : "-"}
+                    {payment.method
+                      ? payment.method.toLowerCase().replace("_", " ")
+                      : "-"}
                   </p>
                 </div>
 
@@ -139,28 +112,36 @@ export function PaymentDetailPage() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <p className="text-xs font-medium text-muted">Reference Number</p>
+                  <p className="text-xs font-medium text-muted">
+                    Reference Number
+                  </p>
                   <p className="text-sm text-ink mt-1">
                     {payment.referenceNumber || "-"}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted">Receipt Number</p>
+                  <p className="text-xs font-medium text-muted">
+                    Receipt Number
+                  </p>
                   <p className="text-sm text-ink mt-1">
                     {payment.receiptNumber || "-"}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted">Razorpay Payment ID</p>
+                  <p className="text-xs font-medium text-muted">
+                    Razorpay Payment ID
+                  </p>
                   <p className="text-sm text-ink mt-1 font-mono text-xs">
                     {payment.razorpayPaymentId || "-"}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted">Razorpay Order ID</p>
+                  <p className="text-xs font-medium text-muted">
+                    Razorpay Order ID
+                  </p>
                   <p className="text-sm text-ink mt-1 font-mono text-xs">
                     {payment.razorpayOrderId || "-"}
                   </p>
@@ -224,13 +205,16 @@ export function PaymentDetailPage() {
                       className="flex items-center justify-between text-sm"
                     >
                       <span className="text-muted">
-                        {new Date(alloc.contributionPeriod.year, alloc.contributionPeriod.month - 1).toLocaleDateString("en-IN", {
+                        {new Date(
+                          alloc.contributionPeriod.year,
+                          alloc.contributionPeriod.month - 1,
+                        ).toLocaleDateString("en-IN", {
                           month: "short",
                           year: "numeric",
                         })}
                       </span>
                       <span className="font-medium">
-                        {formatAmount(alloc.allocatedAmount)}
+                        {formattedAmount(alloc.allocatedAmount)}
                       </span>
                     </div>
                   ))}
@@ -258,7 +242,7 @@ export function PaymentDetailPage() {
                 <div>
                   <p className="text-xs font-medium text-muted">Paid At</p>
                   <p className="text-sm text-ink mt-1">
-                    {formatDate(payment.paidAt)}
+                    {formatDate(payment.paidAt || "")}
                   </p>
                 </div>
                 <div>

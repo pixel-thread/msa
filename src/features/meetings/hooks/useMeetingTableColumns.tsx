@@ -1,5 +1,4 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@src/shared/components/ui/badge";
 import { formatDate } from "@src/shared/utils";
 import Link from "next/link";
 import {
@@ -14,32 +13,8 @@ import { Button } from "@src/shared/components/ui/button";
 import { MoreHorizontal, Pencil, Trash2, Eye } from "lucide-react";
 import { useMeetings } from "../hooks";
 import type { Meeting } from "../types";
-
-const getStatusBadge = (status: string) => {
-  const variants: Record<
-    string,
-    "default" | "secondary" | "destructive" | "outline"
-  > = {
-    SCHEDULED: "default",
-    IN_PROGRESS: "secondary",
-    COMPLETED: "outline",
-    CANCELLED: "destructive",
-  };
-  return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
-};
-
-const getTypeBadge = (type: string) => {
-  const variants: Record<string, "default" | "secondary" | "outline"> = {
-    GENERAL_MEETING: "default",
-    EC_MEETING: "secondary",
-    SPECIAL_MEETING: "outline",
-  };
-  return (
-    <Badge variant={variants[type] || "outline"}>
-      {type.replace("_", " ")}
-    </Badge>
-  );
-};
+import { getTypeBadge } from "@src/shared/utils/helper/get-type-badge";
+import { getStatusBadge } from "@src/shared/utils/helper/get-status-badge";
 
 export const useMeetingTableColumns = (): {
   columns: ColumnDef<Meeting>[];

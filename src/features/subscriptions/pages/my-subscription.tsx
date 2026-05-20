@@ -11,7 +11,7 @@ import {
 } from "@src/shared/components/ui/card";
 import { Badge } from "@src/shared/components/ui/badge";
 import { Separator } from "@src/shared/components/ui/separator";
-import { formatDate } from "@src/shared/utils";
+import { formatDate, formattedAmount } from "@src/shared/utils";
 import {
   Table,
   TableBody,
@@ -22,6 +22,9 @@ import {
 } from "@src/shared/components/ui/table";
 import { SubscriptionsPagination } from "@src/features/subscriptions/components/subscriptions-pagination";
 import { CreditCard, Clock, Receipt, AlertCircle } from "lucide-react";
+import { getStatusBadge } from "@src/shared/utils/helper/get-status-badge";
+import { getMonthName } from "@src/shared/utils/helper/get-month-name";
+import { getMethodBadge } from "@src/shared/utils/helper/get-method-badge";
 
 interface PaymentAllocation {
   id: string;
@@ -91,49 +94,6 @@ export function MySubscriptionPage() {
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", String(page));
     router.push(`/subscriptions/my?${params.toString()}`);
-  };
-
-  const getStatusBadge = (status: string) => {
-    const variants: Record<
-      string,
-      "default" | "secondary" | "destructive" | "outline"
-    > = {
-      COMPLETED: "default",
-      PENDING: "secondary",
-      FAILED: "destructive",
-      REFUNDED: "outline",
-      WAIVED: "secondary",
-    };
-    return (
-      <Badge variant={variants[status] || "outline"}>
-        {status}
-      </Badge>
-    );
-  };
-
-  const getMethodBadge = (method: string | null) => {
-    if (!method) return null;
-    return (
-      <Badge variant="outline" className="capitalize">
-        {method.toLowerCase().replace("_", " ")}
-      </Badge>
-    );
-  };
-
-  const formattedAmount = (amount: number, currency: string = "INR") => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const getMonthName = (month: number) => {
-    const months = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-    ];
-    return months[month - 1] || "";
   };
 
   if (isLoading) {
@@ -252,12 +212,8 @@ export function MySubscriptionPage() {
                           {formattedAmount(tx.amount, tx.currency)}
                         </span>
                       </TableCell>
-                      <TableCell>
-                        {getStatusBadge(tx.status)}
-                      </TableCell>
-                      <TableCell>
-                        {getMethodBadge(tx.method)}
-                      </TableCell>
+                      <TableCell>{getStatusBadge(tx.status)}</TableCell>
+                      <TableCell>{getMethodBadge(tx.method)}</TableCell>
                       <TableCell>
                         <Badge variant="outline" className="capitalize">
                           {tx.gateway.toLowerCase()}
@@ -285,7 +241,10 @@ export function MySubscriptionPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         <span className="text-xs text-muted-foreground">
-                          {tx.referenceNumber || tx.receiptNumber || tx.razorpayPaymentId || "-"}
+                          {tx.referenceNumber ||
+                            tx.receiptNumber ||
+                            tx.razorpayPaymentId ||
+                            "-"}
                         </span>
                       </TableCell>
                     </TableRow>

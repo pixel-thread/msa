@@ -55,3 +55,26 @@ export interface TrainingCompletionItem {
   };
 }
 
+export interface AssignedUserWithCompletion {
+  id: string;
+  moduleId: string;
+  userId: string;
+  status: string;
+  assignedAt: string;
+  dueDate: string | null;
+  startedAt: string | null;
+  completedAt: string | null;
+  notes: string | null;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string[];
+  };
+  completion: {
+    id: string;
+    scorePercent: number | null;
+    completedAt: string;
+  } | null;
+}
+

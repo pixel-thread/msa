@@ -1,6 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@src/shared/components/ui/badge";
 import { formatDate } from "@src/shared/utils";
+import { getStatusBadge } from "@src/shared/utils/helper/get-status-badge";
 
 interface DashboardMeeting {
   id: string;
@@ -13,20 +14,13 @@ interface DashboardMeeting {
   };
 }
 
-const getStatusBadge = (status: string) => {
-  const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-    SCHEDULED: "default",
-    COMPLETED: "secondary",
-    CANCELLED: "destructive",
-  };
-  return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
-};
-
 const baseColumns: ColumnDef<DashboardMeeting>[] = [
   {
     accessorKey: "title",
     header: "Title",
-    cell: ({ row }) => <span className="font-medium">{row.original.title}</span>,
+    cell: ({ row }) => (
+      <span className="font-medium">{row.original.title}</span>
+    ),
   },
   {
     accessorKey: "type",
@@ -62,7 +56,10 @@ const baseColumns: ColumnDef<DashboardMeeting>[] = [
   },
 ];
 
-export const useDashboardMeetingColumns = (): { columns: ColumnDef<DashboardMeeting>[] } => {
+export const useDashboardMeetingColumns = (): {
+  columns: ColumnDef<DashboardMeeting>[];
+} => {
   const columns: ColumnDef<DashboardMeeting>[] = [...baseColumns];
   return { columns };
 };
+

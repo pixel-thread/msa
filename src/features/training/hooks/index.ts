@@ -4,3 +4,4 @@ export * from "./useTrainingCompletions";
 export * from "./useModuleTableColumns";
 export * from "./useCompletionTableColumns";
 export * from "./usePortalModuleTableColumns";
+export * from "./useModuleAssignedUsers";

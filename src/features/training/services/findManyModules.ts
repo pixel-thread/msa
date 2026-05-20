@@ -8,6 +8,7 @@ interface FindManyModulesProps {
   role?: UserRole[];
   isActive?: boolean;
   page?: number;
+  userId?: string;
 }
 
 export async function findManyModules({
@@ -39,6 +40,6 @@ export async function findManyModules({
 
   return {
     trainingModules,
-    pagination: buildPagination(total, 1),
+    pagination: buildPagination(total, page, PAGE_SIZE),
   };
 }

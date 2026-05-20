@@ -27,8 +27,17 @@ import {
   SelectValue,
 } from "@src/shared/components/ui/select";
 import { Label } from "@src/shared/components/ui/label";
-import { ArrowLeft, CalendarDays, CreditCard, AlertCircle, Receipt } from "lucide-react";
+import {
+  ArrowLeft,
+  CalendarDays,
+  CreditCard,
+  AlertCircle,
+  Receipt,
+} from "lucide-react";
 import Link from "next/link";
+import { formattedAmount } from "@src/shared/utils";
+import { getStatusBadge } from "@src/shared/utils/helper/get-status-badge";
+import { getMonthName } from "@src/shared/utils/helper/get-month-name";
 
 export function UserContributionsPage() {
   const params = useParams();
@@ -47,35 +56,10 @@ export function UserContributionsPage() {
     toMonth: toMonth !== "all" ? parseInt(toMonth, 10) : undefined,
   });
 
-  const formatAmount = (amount: number, currency: string = "INR") => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const getMonthName = (month: number) => {
-    const months = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-    ];
-    return months[month - 1] || "";
-  };
-
-  const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-      PAID: "default",
-      DUE: "secondary",
-      PARTIAL: "outline",
-      WAIVED: "secondary",
-      OVERDUE: "destructive",
-    };
-    return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
-  };
-
   const currentYear = new Date().getFullYear();
+
   const years = Array.from({ length: 6 }, (_, i) => currentYear - 5 + i);
+
   const months = [
     { value: "1", label: "January" },
     { value: "2", label: "February" },
@@ -143,7 +127,9 @@ export function UserContributionsPage() {
           </h1>
           <p className="mt-1 text-base text-body">
             Monthly contribution breakdown
-            {user.email && <span className="ml-2 text-muted">({user.email})</span>}
+            {user.email && (
+              <span className="ml-2 text-muted">({user.email})</span>
+            )}
           </p>
         </div>
       </div>
@@ -155,9 +141,11 @@ export function UserContributionsPage() {
               <div className="flex items-center gap-3">
                 <CreditCard className="h-5 w-5 text-muted" />
                 <div>
-                  <p className="text-xs font-medium text-muted">Total Expected</p>
+                  <p className="text-xs font-medium text-muted">
+                    Total Expected
+                  </p>
                   <p className="text-lg font-medium text-ink mt-1">
-                    {formatAmount(summary.totalExpected)}
+                    {formattedAmount(summary.totalExpected)}
                   </p>
                 </div>
               </div>
@@ -171,7 +159,7 @@ export function UserContributionsPage() {
                 <div>
                   <p className="text-xs font-medium text-muted">Total Paid</p>
                   <p className="text-lg font-medium text-green-600 mt-1">
-                    {formatAmount(summary.totalPaid)}
+                    {formattedAmount(summary.totalPaid)}
                   </p>
                 </div>
               </div>
@@ -185,7 +173,7 @@ export function UserContributionsPage() {
                 <div>
                   <p className="text-xs font-medium text-muted">Total Due</p>
                   <p className="text-lg font-medium text-red-600 mt-1">
-                    {formatAmount(summary.totalDue)}
+                    {formattedAmount(summary.totalDue)}
                   </p>
                 </div>
               </div>
@@ -278,8 +266,12 @@ export function UserContributionsPage() {
             </Select>
           </div>
 
-          <Button onClick={applyFilters} className="h-9">Apply</Button>
-          <Button variant="outline" onClick={resetFilters} className="h-9">Reset</Button>
+          <Button onClick={applyFilters} className="h-9">
+            Apply
+          </Button>
+          <Button variant="outline" onClick={resetFilters} className="h-9">
+            Reset
+          </Button>
         </div>
       </div>
 
@@ -321,17 +313,17 @@ export function UserContributionsPage() {
                     </TableCell>
                     <TableCell>
                       <span className="text-sm">
-                        {formatAmount(cp.expectedAmount)}
+                        {formattedAmount(cp.expectedAmount)}
                       </span>
                     </TableCell>
                     <TableCell>
                       <span className="text-sm text-green-600">
-                        {formatAmount(cp.paidAmount)}
+                        {formattedAmount(cp.paidAmount)}
                       </span>
                     </TableCell>
                     <TableCell>
                       <span className="text-sm text-red-600">
-                        {formatAmount(cp.dueAmount)}
+                        {formattedAmount(cp.dueAmount)}
                       </span>
                     </TableCell>
                     <TableCell>{getStatusBadge(cp.status)}</TableCell>
@@ -353,7 +345,7 @@ export function UserContributionsPage() {
                               variant="secondary"
                               className="text-xs"
                             >
-                              {formatAmount(alloc.allocatedAmount)}
+                              {formattedAmount(alloc.allocatedAmount)}
                             </Badge>
                           ))}
                         </div>

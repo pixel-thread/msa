@@ -44,3 +44,11 @@ const formatter = new Intl.DateTimeFormat("en-US", {
 
 export const formatDate = (date: string | Date) =>
   formatter.format(new Date(date));
+
+export const formattedAmount = (amount: number, currency: string = "INR") => {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};

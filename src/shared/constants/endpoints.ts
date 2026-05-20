@@ -99,6 +99,9 @@ export const trainingEndpoints = {
   complete: (id: string) => `/training/modules/${id}/complete`,
   myCompletions: '/training/my-completions',
   completions: '/training/completions',
+  assignedUsers: (id: string) => `/training/modules/${id}/assigned-users`,
+  completeAssignment: (moduleId: string, userId: string) =>
+    `/training/modules/${moduleId}/assignments/${userId}/complete`,
 } as const;
 
 export const apiEndpoints = {
