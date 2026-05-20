@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,39 +22,52 @@ import {
   FormLabel,
   FormMessage,
 } from "@src/shared/components/ui/form";
-import { SignUpSchema, type SignUpInput } from "@src/features/auth/validators";
+import {
+  MembershipApplicationSchema,
+  type MembershipApplicationInput,
+} from "@src/features/membership-application/validators";
 import { useSignUp } from "@src/features/auth/hooks";
+import { logger } from "@src/shared/logger";
+import { env } from "@src/env";
 
 export default function SignUpPage() {
-  const router = useRouter();
   const signUpMutation = useSignUp();
 
-  const form = useForm<SignUpInput>({
-    resolver: zodResolver(SignUpSchema),
+  const form = useForm<MembershipApplicationInput>({
+    resolver: zodResolver(MembershipApplicationSchema),
     defaultValues: {
-      name: "",
       email: "",
-      password: "",
-      confirm_password: "",
+      phone: "",
+      firstName: "",
+      lastName: "",
+      dateOfBirth: "",
+      age: 18,
+      gender: "MALE",
+      address: "",
+      city: "",
+      state: "",
+      country: "IN",
+      postalCode: "",
+      associationSlug: env.NEXT_PUBLIC_ASSOCIATION_SLUG,
     },
   });
 
-  const onSubmit = async (values: SignUpInput) => {
+  const onSubmit = async (values: MembershipApplicationInput) => {
     try {
       await signUpMutation.mutateAsync(values);
-      router.push("/sign-in");
     } catch {}
   };
 
+  logger.debug("signUpMutation", form.formState.errors);
   return (
     <div className="flex min-h-screen items-center justify-center bg-canvas px-4 py-24">
       <Card className="w-full max-w-md rounded-xl border-hairline bg-surface-card">
         <CardHeader className="space-y-3">
           <CardTitle className="text-2xl font-normal tracking-tight text-ink">
-            Create your account
+            Membership Application
           </CardTitle>
           <CardDescription className="text-body text-base">
-            Fill in your details to get started
+            Fill in your details to apply for membership
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -64,22 +76,42 @@ export default function SignUpPage() {
               {signUpMutation.isError && (
                 <Alert variant="destructive">
                   <AlertDescription>
-                    {signUpMutation.error?.message || "Sign up failed"}
+                    {signUpMutation.error?.message || "Application failed"}
                   </AlertDescription>
                 </Alert>
               )}
 
               <FormField
                 control={form.control}
-                name="name"
+                name="firstName"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-body-strong text-sm font-medium">
-                      Full Name
+                      First Name
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Full name"
+                        placeholder="First name"
+                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-body-strong text-sm font-medium">
+                      Last Name
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Last name"
                         className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
                         {...field}
                       />
@@ -112,16 +144,16 @@ export default function SignUpPage() {
 
               <FormField
                 control={form.control}
-                name="password"
+                name="phone"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-body-strong text-sm font-medium">
-                      Password
+                      Phone
                     </FormLabel>
                     <FormControl>
                       <Input
-                        type="password"
-                        placeholder="Password"
+                        type="tel"
+                        placeholder="Phone number"
                         className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
                         {...field}
                       />
@@ -133,16 +165,15 @@ export default function SignUpPage() {
 
               <FormField
                 control={form.control}
-                name="confirm_password"
+                name="dateOfBirth"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-body-strong text-sm font-medium">
-                      Confirm Password
+                      Date of Birth
                     </FormLabel>
                     <FormControl>
                       <Input
-                        type="password"
-                        placeholder="Confirm password"
+                        type="date"
                         className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
                         {...field}
                       />
@@ -152,12 +183,165 @@ export default function SignUpPage() {
                 )}
               />
 
+              <FormField
+                control={form.control}
+                name="age"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-body-strong text-sm font-medium">
+                      Age
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Age"
+                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                        {...field}
+                        onChange={(e) =>
+                          field.onChange(parseInt(e.target.value, 10))
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="gender"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-body-strong text-sm font-medium">
+                      Gender
+                    </FormLabel>
+                    <FormControl>
+                      <select
+                        className="h-12 w-full rounded-md border border-hairline bg-canvas px-3 text-ink focus-visible:border-primary"
+                        {...field}
+                      >
+                        <option value="MALE">Male</option>
+                        <option value="FEMALE">Female</option>
+                        <option value="OTHER">Other</option>
+                      </select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-body-strong text-sm font-medium">
+                      Address
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Address"
+                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-body-strong text-sm font-medium">
+                        City
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="City"
+                          className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="state"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-body-strong text-sm font-medium">
+                        State
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="State"
+                          className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="country"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-body-strong text-sm font-medium">
+                        Country
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Country"
+                          className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="postalCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-body-strong text-sm font-medium">
+                        Postal Code
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Postal code"
+                          className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               <Button
                 type="submit"
                 className="h-11 w-full rounded-full bg-primary px-5 text-base font-semibold text-on-primary hover:bg-primary-active disabled:bg-primary-disabled"
                 disabled={signUpMutation.isPending}
               >
-                {signUpMutation.isPending ? "Creating account..." : "Sign up"}
+                {signUpMutation.isPending
+                  ? "Submitting application..."
+                  : "Submit Application"}
               </Button>
 
               <p className="text-center text-sm text-body">

@@ -13,11 +13,29 @@ export const userPaths = {
               type: "object",
               required: ["name", "mobile"],
               properties: {
-                name: { type: "string", minLength: 1, description: "Full name" },
-                mobile: { type: "number", description: "Mobile number (10 digits)" },
-                designation: { type: "string", description: "Designation/job title" },
-                dateOfJoiningGovt: { type: "string", format: "date-time", description: "Date of joining government service" },
-                dateOfJoiningMfsa: { type: "string", format: "date-time", description: "Date of joining MFSA" },
+                name: {
+                  type: "string",
+                  minLength: 1,
+                  description: "Full name",
+                },
+                mobile: {
+                  type: "number",
+                  description: "Mobile number (10 digits)",
+                },
+                designation: {
+                  type: "string",
+                  description: "Designation/job title",
+                },
+                dateOfJoiningGovt: {
+                  type: "string",
+                  format: "date-time",
+                  description: "Date of joining government service",
+                },
+                dateOfJoiningAssociation: {
+                  type: "string",
+                  format: "date-time",
+                  description: "Date of joining MFSA",
+                },
               },
             },
           },
@@ -46,3 +64,4 @@ export const userPaths = {
     },
   },
 };
+

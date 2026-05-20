@@ -91,8 +91,14 @@ export const memberPaths = {
                       membershipNumber: { type: "string" },
                       designation: { type: "string" },
                       mobile: { type: "string" },
-                      dateOfJoiningGovt: { type: "string", format: "date-time" },
-                      dateOfJoiningMfsa: { type: "string", format: "date-time" },
+                      dateOfJoiningGovt: {
+                        type: "string",
+                        format: "date-time",
+                      },
+                      dateOfJoiningAssociation: {
+                        type: "string",
+                        format: "date-time",
+                      },
                       createdAt: { type: "string", format: "date-time" },
                       hasPaid: { type: "boolean" },
                       lastPaymentDate: { type: "string", format: "date-time" },
@@ -134,7 +140,14 @@ export const memberPaths = {
               properties: {
                 role: {
                   type: "string",
-                  enum: ["SUPER_ADMIN", "PRESIDENT", "SECRETARY", "FINANCE", "DPO", "MEMBER"],
+                  enum: [
+                    "SUPER_ADMIN",
+                    "PRESIDENT",
+                    "SECRETARY",
+                    "FINANCE",
+                    "DPO",
+                    "MEMBER",
+                  ],
                   description: "Role to add to the member",
                 },
               },
@@ -186,7 +199,14 @@ export const memberPaths = {
               properties: {
                 role: {
                   type: "string",
-                  enum: ["SUPER_ADMIN", "PRESIDENT", "SECRETARY", "FINANCE", "DPO", "MEMBER"],
+                  enum: [
+                    "SUPER_ADMIN",
+                    "PRESIDENT",
+                    "SECRETARY",
+                    "FINANCE",
+                    "DPO",
+                    "MEMBER",
+                  ],
                   description: "Role to remove from the member",
                 },
               },
@@ -269,3 +289,4 @@ export const memberPaths = {
     },
   },
 };
+

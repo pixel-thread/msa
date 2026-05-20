@@ -1,0 +1,94 @@
+"use client";
+
+import { useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+
+import { DataTable } from "@src/shared/components/data-table";
+import { useMembershipApplications } from "../hooks/useMembershipApplications";
+import { useMembershipApplicationColumns } from "../hooks/useMembershipApplicationColumns";
+import { ApplicationReviewDialog } from "../components/application-review-dialog";
+import { useRejectApplication } from "../hooks/useRejectApplication";
+import { MembershipApplicationListItem } from "../types";
+
+export function MembershipApplicationsPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentPage = Number(searchParams.get("page")) || 1;
+  const [selectedApplication, setSelectedApplication] =
+    useState<MembershipApplicationListItem | null>(null);
+  const rejectApplication = useRejectApplication();
+
+  const { applications, pagination, isLoading } = useMembershipApplications({
+    page: currentPage,
+    status: "PENDING",
+  });
+
+  const handlePageChange = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", String(page));
+    router.push(`/members/applications?${params.toString()}`);
+  };
+
+  const { columns } = useMembershipApplicationColumns({
+    onReview: setSelectedApplication,
+    onReject: (applicationId: string) =>
+      rejectApplication.mutate({
+        applicationId,
+        rejectionReason: "Application rejected by admin",
+      }),
+    isRejecting: rejectApplication.isPending,
+  });
+
+  return (
+    <>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
+            Membership Applications
+          </h1>
+          <p className="mt-1 text-base text-body">
+            Review and manage new membership applications
+          </p>
+        </div>
+      </div>
+
+      <DataTable loading={isLoading} data={applications} columns={columns} />
+
+      {pagination && (
+        <div className="flex items-center justify-between px-2 py-4">
+          <p className="text-sm text-muted-foreground">
+            Showing {(pagination.page - 1) * pagination.pageSize + 1} to{" "}
+            {Math.min(pagination.page * pagination.pageSize, pagination.total)}{" "}
+            of {pagination.total} applications
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
+              disabled={pagination.page <= 1}
+              onClick={() => handlePageChange(pagination.page - 1)}
+            >
+              Previous
+            </button>
+            <button
+              className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
+              disabled={pagination.page >= pagination.totalPages}
+              onClick={() => handlePageChange(pagination.page + 1)}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+
+      <ApplicationReviewDialog
+        application={selectedApplication}
+        open={!!selectedApplication}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedApplication(null);
+          }
+        }}
+      />
+    </>
+  );
+}

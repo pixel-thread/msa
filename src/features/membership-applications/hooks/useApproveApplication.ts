@@ -2,31 +2,34 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import http from "@src/shared/utils/http";
 import { toast } from "sonner";
 
-interface ApproveMemberData {
+interface ApproveApplicationData {
   applicationId: string;
   memberTypeId: string;
   role?: string;
   dateOfJoiningGovt?: Date;
 }
 
-export function useApproveMember() {
+export function useApproveApplication() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: ApproveMemberData) =>
+    mutationFn: (data: ApproveApplicationData) =>
       http.post(`/admin/membership-applications/${data.applicationId}/approve`, {
         memberTypeId: data.memberTypeId,
         role: data.role,
         dateOfJoiningGovt: data.dateOfJoiningGovt,
       }),
-    onSuccess: (data) => {
-      if (data.success) {
-        toast.success(data.message);
-        queryClient.invalidateQueries({ queryKey: ["members"] });
+    onSuccess: (response) => {
+      if (response.success) {
+        toast.success(response.message);
         queryClient.invalidateQueries({ queryKey: ["membership-applications"] });
+        queryClient.invalidateQueries({ queryKey: ["members"] });
         return;
       }
-      toast.error(data.message);
+      toast.error(response.message);
+    },
+    onError: (error: { message?: string }) => {
+      toast.error(error.message || "Failed to approve application");
     },
   });
 }

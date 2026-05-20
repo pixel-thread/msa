@@ -72,3 +72,30 @@ export function hashOTP(code: string): string {
   return hashToken(code);
 }
 
+export function generateRandomPassword(length: number = 16): string {
+  const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const lowercase = "abcdefghijklmnopqrstuvwxyz";
+  const digits = "0123456789";
+  const special = "!@#$%^&*()_+-=";
+  const all = uppercase + lowercase + digits + special;
+
+  let password = "";
+
+  password += uppercase[crypto.randomInt(0, uppercase.length)];
+  password += lowercase[crypto.randomInt(0, lowercase.length)];
+  password += digits[crypto.randomInt(0, digits.length)];
+  password += special[crypto.randomInt(0, special.length)];
+
+  for (let i = password.length; i < length; i++) {
+    password += all[crypto.randomInt(0, all.length)];
+  }
+
+  const chars = password.split("");
+  for (let i = chars.length - 1; i > 0; i--) {
+    const j = crypto.randomInt(0, i + 1);
+    [chars[i], chars[j]] = [chars[j], chars[i]];
+  }
+
+  return chars.join("");
+}
+

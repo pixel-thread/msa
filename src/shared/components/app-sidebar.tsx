@@ -41,8 +41,8 @@ const navMain = [
         url: "/members",
       },
       {
-        title: "Pending Members",
-        url: "/members/pending",
+        title: "Membership Applicants",
+        url: "/members/applications",
       },
     ],
   },

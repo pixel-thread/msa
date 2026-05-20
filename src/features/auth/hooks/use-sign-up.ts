@@ -1,17 +1,22 @@
 import { useMutation } from "@tanstack/react-query";
 
 import http from "@src/shared/utils/http";
-import { SignUpSchema, type SignUpInput } from "@src/features/auth/validators";
+import { type MembershipApplicationInput } from "@src/features/membership-application/validators";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export function useSignUp() {
+  const router = useRouter();
   return useMutation({
-    mutationFn: async (data: SignUpInput) => {
-      const result = SignUpSchema.parse(data);
-      return http.post("/auth/sign-up", {
-        name: result.name,
-        email: result.email,
-        password: result.password,
-      });
+    mutationFn: async (data: MembershipApplicationInput) =>
+      http.post("/auth/sign-up", data),
+    onSuccess: (data) => {
+      if (data.success) {
+        router.push("/sign-in");
+        toast.success(data.message);
+        return;
+      }
+      toast.error(data.message);
     },
   });
 }

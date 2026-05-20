@@ -1,100 +1,78 @@
 import { prisma } from "@src/shared/lib/prisma";
 import { withValidation } from "@src/shared/api";
-import {
-  hashPassword,
-  validatePasswordStrength,
-} from "@src/shared/lib/password";
-import { sendWelcomeEmail } from "@src/shared/lib/email";
-import {
-  BadRequestError,
-  ConflictError,
-  ValidationError,
-} from "@src/shared/errors";
+import { ConflictError } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
 import { env } from "@src/env";
-import { SignUpInput, SignUpSchema } from "@src/features/auth/validators";
+import {
+  MembershipApplicationInput,
+  MembershipApplicationSchema,
+} from "@src/features/membership-application/validators";
+import { createMembershipApplication } from "@src/features/membership-application/services";
 
 export const POST = withValidation(
-  { body: SignUpSchema },
+  { body: MembershipApplicationSchema },
   async (_req, _ctx, { body }) => {
-    const { email, password, name, association_slug } = body as SignUpInput;
+    const {
+      email,
+      phone,
+      associationSlug,
+      firstName,
+      lastName,
+      dateOfBirth,
+      age,
+      gender,
+      address,
+      city,
+      state,
+      country,
+      postalCode,
+    } = body as MembershipApplicationInput;
 
-    const passwordValidation = validatePasswordStrength(password);
+    const [association, user] = await Promise.all([
+      prisma.association.findFirst({
+        where: { slug: associationSlug || env.NEXT_PUBLIC_ASSOCIATION_SLUG },
+        select: { id: true, name: true },
+      }),
 
-    if (!passwordValidation.valid) {
-      throw new ValidationError(passwordValidation.errors[0]);
-    }
+      prisma.user.findFirst({
+        where: { email },
+        select: { id: true, status: true },
+      }),
+    ]);
 
-    const targetAssociationSlug = association_slug;
-    let targetAssociationId: string | null = null;
+    if (!association) throw new ConflictError("Association not found");
 
-    if (!targetAssociationId) {
-      const defaultAssociation = await prisma.association.findFirst({
-        where: {
-          slug: targetAssociationSlug || env.NEXT_PUBLIC_ASSOCIATION_SLUG,
-        },
-        select: { id: true },
-      });
+    if (user && user.status === "ACTIVE")
+      throw new ConflictError("An Active User already exist with this email");
 
-      if (!defaultAssociation) {
-        throw new BadRequestError("No active associations found");
-      }
-
-      targetAssociationId = defaultAssociation.id;
-    }
-
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        email,
-        associationId: targetAssociationId,
-      },
-      include: {
-        association: true,
-      },
+    const application = await createMembershipApplication({
+      email,
+      phone,
+      associationSlug: associationSlug || env.NEXT_PUBLIC_ASSOCIATION_SLUG,
+      firstName,
+      lastName,
+      dateOfBirth: new Date(dateOfBirth),
+      age,
+      gender,
+      address,
+      city,
+      state,
+      country,
+      postalCode,
     });
 
-    if (existingUser) {
-      throw new ConflictError(
-        `This email is already under ${existingUser.association.name}. Please use another email`,
-      );
-    }
-
-    const hashedPassword = await hashPassword(password);
-
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        name,
-        associationId: targetAssociationId,
-        role: ["MEMBER"],
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        associationId: true,
-      },
-    });
-
-    const response = SuccessResponse(
+    return SuccessResponse(
       {
-        message: "Account created Successfully, waiting for approval",
+        message:
+          "Application submitted successfully. Your membership request is pending approval.",
         data: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
+          id: application.id,
+          email: application.email,
+          status: application.status,
+          createdAt: application.createdAt,
         },
       },
       201,
     );
-
-    if (env.NODE_ENV === "production") {
-      await sendWelcomeEmail(user.email, user.name);
-    }
-
-    return response;
   },
 );

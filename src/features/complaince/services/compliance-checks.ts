@@ -97,9 +97,9 @@ async function checkConsentCoverage(
     recommendations:
       status !== "PASSED"
         ? [
-            "Send reminder communications to members about consent requirements",
-            "Review consent collection process during onboarding",
-          ]
+          "Send reminder communications to members about consent requirements",
+          "Review consent collection process during onboarding",
+        ]
         : [],
     checkedAt: new Date(),
   };
@@ -159,9 +159,9 @@ async function checkDsarSlaCompliance(
     recommendations:
       breached > 0 || atRisk > 0
         ? [
-            "Prioritize DSAR tickets approaching deadline",
-            "Review DSAR response process for bottlenecks",
-          ]
+          "Prioritize DSAR tickets approaching deadline",
+          "Review DSAR response process for bottlenecks",
+        ]
         : [],
     checkedAt: new Date(),
   };
@@ -210,9 +210,9 @@ async function checkDataRetention(
     recommendations:
       expiredActive > 0
         ? [
-            "Run anonymization cron job",
-            "Review data retention policy enforcement",
-          ]
+          "Run anonymization cron job",
+          "Review data retention policy enforcement",
+        ]
         : [],
     checkedAt: new Date(),
   };
@@ -274,9 +274,9 @@ async function checkPiiEncryption(
     recommendations:
       issues.length > 0
         ? [
-            "Verify encryption middleware is active",
-            "Check FIELD_ENCRYPTION_KEY configuration",
-          ]
+          "Verify encryption middleware is active",
+          "Check FIELD_ENCRYPTION_KEY configuration",
+        ]
         : [],
     checkedAt: new Date(),
   };
@@ -347,7 +347,7 @@ async function checkMemberDataCompleteness(
       mobile: true,
       designation: true,
       dateOfJoiningGovt: true,
-      dateOfJoiningMfsa: true,
+      dateOfJoiningAssociation: true,
       membershipNumber: true,
     },
   });
@@ -371,7 +371,7 @@ async function checkMemberDataCompleteness(
     mobile: users.filter((u) => u.mobile).length,
     designation: users.filter((u) => u.designation).length,
     dateOfJoiningGovt: users.filter((u) => u.dateOfJoiningGovt).length,
-    dateOfJoiningMfsa: users.filter((u) => u.dateOfJoiningMfsa).length,
+    dateOfJoiningAssociation: users.filter((u) => u.dateOfJoiningAssociation).length,
     membershipNumber: users.filter((u) => u.membershipNumber).length,
   };
 
@@ -472,8 +472,8 @@ async function checkAuditLogIntegrity(
   const integrityScore =
     recentLogs.length > 0
       ? ((recentLogs.length - logsWithNullTrace - logsWithNullActor) /
-          recentLogs.length) *
-        100
+        recentLogs.length) *
+      100
       : 100;
 
   let status: ComplianceCheckStatus = "PASSED";
