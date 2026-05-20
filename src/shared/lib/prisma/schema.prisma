@@ -278,11 +278,11 @@ model Association {
 
 model User {
   id                       String        @id @default(uuid())
-  associationId            String // ★ Every user belongs to one association
+  associationId            String 
   email                    String
   name                     String
-  mobile                   String? // Encrypted (AES-256-GCM)
-  designation              String? // Encrypted (AES-256-GCM)
+  mobile                   String? 
+  designation              String? 
   role                     UserRole[]
   status                   UserStatus    @default(ACTIVE)
   dateOfJoiningGovt        DateTime?
@@ -349,14 +349,13 @@ model MembershipApplication {
   lastName        String
   dateOfBirth     DateTime
   age             Int
-  gender          String
+  gender          String?
   address         String?
   city            String?
   state           String?
   country         String?
   postalCode      String?
   
-  // Track where the applicant stands in the vetting pipeline
   status          ApplicationStatus @default(PENDING)
   rejectionReason String?           // Helpful if an admin denies their sign-up
   reviewedAt      DateTime?

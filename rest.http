@@ -22,10 +22,12 @@ Content-Type: application/json
 
 {
   "email": "super_admin@mfsa.org",
-  "password": "{{PASSWORD}}",
-  "confirm_password": "{{PASSWORD}}",
-  "name": "Test User",
-  "associationId": "{{associationsId}}"
+  "firstName":"super_admin",
+  "lastName":"super_adminl",
+  "dateOfBirth":"12-12-2024",
+  "age":18,
+  "gender":"MALE",
+  "associationSlug": "mfsa"
 }
 
 ###
