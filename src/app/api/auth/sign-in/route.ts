@@ -81,9 +81,11 @@ export const POST = withValidation(
 
     if (user.mfaEnabled) {
       const otp = generateOTP(env.OTP_LENGTH);
+
       const hashedOTP = hashToken(otp);
 
       const otpExpiry = new Date();
+
       otpExpiry.setMinutes(otpExpiry.getMinutes() + 5);
 
       await createVerificationCode({
@@ -98,6 +100,7 @@ export const POST = withValidation(
       if (env.NODE_ENV === "development") {
         logger.debug(`OTP: ${otp}`);
       }
+
       if (env.NODE_ENV === "production") {
         await sendVerificationEmail(user.email, otp, "LOGIN_MFA");
       }
@@ -124,10 +127,13 @@ export const POST = withValidation(
     }
 
     const accessToken = await signAccessToken(user.id);
+
     const refreshToken = await signRefreshToken(user.id);
+
     const hashedRefreshToken = hashToken(refreshToken);
 
     const refreshTokenExpiry = new Date();
+
     refreshTokenExpiry.setDate(refreshTokenExpiry.getDate() + 7);
 
     await createRefreshToken({
