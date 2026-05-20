@@ -6,7 +6,7 @@ import { z } from "zod";
 
 const OnboardingSchema = z.object({
   dateOfJoiningGovt: z.string().datetime().refine((d) => new Date(d) < new Date(), "Cannot be in the future"),
-  dateOfJoiningMfsa: z.string().datetime().refine((d) => new Date(d) < new Date(), "Cannot be in the future"),
+  dateOfJoiningAssociation: z.string().datetime().refine((d) => new Date(d) < new Date(), "Cannot be in the future"),
   mobile: z.string().regex(/^[6-9]\d{9}$/, "Valid Indian mobile number required"),
   designation: z.string().min(2).max(100).trim(),
 });
@@ -31,7 +31,7 @@ export const POST = withAssociation(
       },
       data: {
         dateOfJoiningGovt: new Date(body.dateOfJoiningGovt),
-        dateOfJoiningMfsa: new Date(body.dateOfJoiningMfsa),
+        dateOfJoiningAssociation: new Date(body.dateOfJoiningAssociation),
         mobile: body.mobile,
         designation: body.designation,
       },
@@ -45,7 +45,7 @@ export const POST = withAssociation(
         designation: user.designation,
         mobile: user.mobile,
         dateOfJoiningGovt: user.dateOfJoiningGovt,
-        dateOfJoiningMfsa: user.dateOfJoiningMfsa,
+        dateOfJoiningAssociation: user.dateOfJoiningAssociation,
       },
       message: "Onboarding completed successfully",
     });

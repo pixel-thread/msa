@@ -28,7 +28,7 @@ export const GET = withAssociation(
         designation: true,
         mobile: true,
         dateOfJoiningGovt: true,
-        dateOfJoiningMfsa: true,
+        dateOfJoiningAssociation: true,
         createdAt: true,
         updatedAt: true,
         _count: {
@@ -57,7 +57,7 @@ const AdminOnboardingSchema = z.object({
     .optional(),
   designation: z.string().optional(),
   dateOfJoiningGovt: z.coerce.date().optional(),
-  dateOfJoiningMfsa: z.coerce.date().optional(),
+  dateOfJoiningAssociation: z.coerce.date().optional(),
   membershipNumber: z.string().optional(),
 });
 
@@ -84,8 +84,8 @@ export const PATCH = withAssociation(
         ...(body.dateOfJoiningGovt && {
           dateOfJoiningGovt: body.dateOfJoiningGovt,
         }),
-        ...(body.dateOfJoiningMfsa && {
-          dateOfJoiningMfsa: body.dateOfJoiningMfsa,
+        ...(body.dateOfJoiningAssociation && {
+          dateOfJoiningAssociation: body.dateOfJoiningAssociation,
         }),
         ...(body.membershipNumber && {
           membershipNumber: body.membershipNumber,
@@ -101,7 +101,7 @@ export const PATCH = withAssociation(
         designation: user.designation,
         membershipNumber: user.membershipNumber,
         dateOfJoiningGovt: user.dateOfJoiningGovt,
-        dateOfJoiningMfsa: user.dateOfJoiningMfsa,
+        dateOfJoiningAssociation: user.dateOfJoiningAssociation,
       },
     });
   },

@@ -10,7 +10,7 @@ export type Member = {
   designation: null | string;
   mobile: null | number;
   dateOfJoiningGovt: string;
-  dateOfJoiningMfsa: string;
+  dateOfJoiningAssociation: string;
   createdAt: Date;
   updatedAt: Date;
   _count: {

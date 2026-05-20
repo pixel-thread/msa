@@ -44,7 +44,7 @@ export const POST = withValidation(
         mobile: body?.mobile,
         designation: body?.designation,
         dateOfJoiningGovt: body?.dateOfJoiningGovt,
-        dateOfJoiningMfsa: body?.dateOfJoiningMfsa,
+        dateOfJoiningAssociation: body?.dateOfJoiningAssociation,
       },
     });
 

@@ -11,7 +11,7 @@ export const UpdateUserSchema = z.object({
     .regex(/^[0-9]+$/, "Should contain only number"),
   designation: z.string(),
   dateOfJoiningGovt: z.coerce.date(),
-  dateOfJoiningMfsa: z.coerce.date(),
+  dateOfJoiningAssociation: z.coerce.date(),
 });
 
 export const AdminGetUserQuerySchema = z.object({

@@ -5,7 +5,7 @@ export const OnboardingSchema = z.object({
     .string()
     .datetime()
     .refine((d) => new Date(d) < new Date(), "Cannot be in the future"),
-  dateOfJoiningMfsa: z
+  dateOfJoiningAssociation: z
     .string()
     .datetime()
     .refine((d) => new Date(d) < new Date(), "Cannot be in the future"),
@@ -16,3 +16,4 @@ export const OnboardingSchema = z.object({
 });
 
 export type OnboardingInput = z.infer<typeof OnboardingSchema>;
+

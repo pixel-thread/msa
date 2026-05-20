@@ -16,7 +16,7 @@ export async function updateUser({ where, data }: Props) {
       email: true,
       designation: true,
       dateOfJoiningGovt: true,
-      dateOfJoiningMfsa: true,
+      dateOfJoiningAssociation: true,
     },
   });
 }
@@ -31,7 +31,7 @@ export async function getUser(where: Prisma.UserWhereUniqueInput) {
       email: true,
       designation: true,
       dateOfJoiningGovt: true,
-      dateOfJoiningMfsa: true,
+      dateOfJoiningAssociation: true,
       mfaEnabled: true,
     },
   });

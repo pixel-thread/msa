@@ -27,8 +27,8 @@ export function DatesCard({ member }: DatesCardProps) {
             <div>
               <p className="text-xs font-medium text-muted">Joined MFSA</p>
               <p className="text-sm text-ink">
-                {member.dateOfJoiningMfsa
-                  ? formatDate(member.dateOfJoiningMfsa)
+                {member.dateOfJoiningAssociation
+                  ? formatDate(member.dateOfJoiningAssociation)
                   : "Not set"}
               </p>
             </div>

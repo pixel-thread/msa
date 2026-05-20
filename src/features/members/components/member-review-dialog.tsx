@@ -38,7 +38,6 @@ import { CalendarIcon } from "lucide-react";
 import { useMemberTypes } from "@src/features/members/hooks/useMemberTypes";
 import { useApproveMember } from "@src/features/members/hooks/useApproveMember";
 import { useRejectMember } from "@src/features/members/hooks/useRejectMember";
-import { User } from "@prisma/client";
 import { ROLES } from "../utils/constants";
 import { MemberListItem } from "../types";
 
@@ -46,7 +45,6 @@ const MemberReviewSchema = z.object({
   memberTypeId: z.string().min(1, "Member type is required"),
   role: z.string(),
   dateOfJoiningGovt: z.date().optional(),
-  dateOfJoiningMfsa: z.date().optional(),
 });
 
 type MemberReviewForm = z.infer<typeof MemberReviewSchema>;
@@ -79,11 +77,10 @@ export function MemberReviewDialog({
 
     approveMember.mutate(
       {
-        memberId: member.id,
+        applicationId: member.id,
         memberTypeId: data.memberTypeId,
         role: data.role,
         dateOfJoiningGovt: data.dateOfJoiningGovt,
-        dateOfJoiningMfsa: data.dateOfJoiningMfsa,
       },
       { onSuccess: () => onOpenChange(false) },
     );
@@ -91,7 +88,15 @@ export function MemberReviewDialog({
 
   const handleReject = () => {
     if (!member) return;
-    rejectMember.mutate({ memberId: member.id });
+    const reason = prompt("Please provide a reason for rejection:");
+    if (!reason || reason.trim().length < 10) {
+      alert("Rejection reason must be at least 10 characters");
+      return;
+    }
+    rejectMember.mutate(
+      { applicationId: member.id, rejectionReason: reason.trim() },
+      { onSuccess: () => onOpenChange(false) },
+    );
   };
 
   React.useEffect(() => {
@@ -100,7 +105,6 @@ export function MemberReviewDialog({
         memberTypeId: "",
         role: "MEMBER",
         dateOfJoiningGovt: undefined,
-        dateOfJoiningMfsa: undefined,
       });
     }
   }, [open, form]);
@@ -132,7 +136,7 @@ export function MemberReviewDialog({
                     <SelectContent>
                       {memberTypes.map((type) => (
                         <SelectItem key={type.id} value={type.id}>
-                          {type.level}
+                          Level {type.level}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -167,83 +171,43 @@ export function MemberReviewDialog({
               )}
             />
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="dateOfJoiningGovt"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Date of Joining Govt</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground",
-                            )}
-                          >
-                            {field.value ? (
-                              formatDate(field.value.toISOString())
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={(date) => field.onChange(date)}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="dateOfJoiningMfsa"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Date of Joining MFSA</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground",
-                            )}
-                          >
-                            {field.value ? (
-                              formatDate(field.value.toISOString())
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={(date) => field.onChange(date)}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="dateOfJoiningGovt"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Date of Joining Govt</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground",
+                          )}
+                        >
+                          {field.value ? (
+                            formatDate(field.value.toISOString())
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={(date) => field.onChange(date)}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <DialogFooter className="gap-2 sm:gap-0">
               <Button

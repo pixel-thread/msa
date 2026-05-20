@@ -523,7 +523,7 @@ Authorization: Bearer {{TOKEN}}
   "mobile": "9876543210",
   "designation": "Executive Member",
   "dateOfJoiningGovt": "2015-01-01",
-  "dateOfJoiningMfsa": "2020-01-01"
+  "dateOfJoiningAssociation": "2020-01-01"
 }
 
 ### ----------------- NOTIFICATIONS ------------------
