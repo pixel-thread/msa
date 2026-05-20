@@ -14,7 +14,6 @@ export const GET = withAssociation({}, async (_association, _params, req) => {
   if (process.env.NODE_ENV === "production") {
     const cachedUser = await getAuthCachedUser(userId);
     if (cachedUser) {
-      console.log("User fetched from cache");
       return SuccessResponse({
         message: "User fetched successfully",
         data: cachedUser,
