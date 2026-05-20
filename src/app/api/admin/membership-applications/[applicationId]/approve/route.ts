@@ -34,7 +34,8 @@ export const POST = withValidation(
     });
 
     return SuccessResponse({
-      message: "Application approved successfully. User account has been created.",
+      message:
+        "Application approved successfully. User account has been created.",
       data: {
         user: result.user,
         application: {

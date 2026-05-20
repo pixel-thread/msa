@@ -21,6 +21,7 @@ export const POST = withValidation(
     await withRole(req, UserRole.SECRETARY);
 
     const userId = req.headers.get("x-user-id");
+
     if (!userId) {
       throw new NotFoundError("User not found");
     }

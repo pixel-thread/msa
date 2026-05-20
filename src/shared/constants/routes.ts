@@ -14,6 +14,9 @@ export const PUBLIC_ROUTES = [
   "/forgot-password",
   "/reset-password",
   "/forbidden",
+  "/members",
+  "/membership-applications",
+  "/*",
 ] as const;
 
 /**

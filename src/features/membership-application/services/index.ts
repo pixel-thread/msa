@@ -159,6 +159,7 @@ export async function approveMembershipApplication({
   }
 
   const randomPassword = generateRandomPassword();
+
   const hashedPassword = await hashPassword(randomPassword);
 
   const user = await prisma.user.create({
