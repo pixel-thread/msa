@@ -10,7 +10,12 @@ import { Input } from "@src/shared/components/ui/input";
 import { Plus, Search, ShieldAlert, ArrowLeft } from "lucide-react";
 
 import { useTrainingModules, useModuleTableColumns } from "../hooks";
-import { CreateModuleDialog, EditModuleDialog, ManageAssigneesDialog } from "../components";
+import {
+  CreateModuleDialog,
+  EditModuleDialog,
+  ManageAssigneesDialog,
+  ViewAssignedUsersDialog,
+} from "../components";
 import type { TrainingModuleListItem } from "../types";
 
 export function AdminModulesPage() {
@@ -18,13 +23,17 @@ export function AdminModulesPage() {
   const { user } = useAuthStore();
   const userRoles = user?.role || [];
 
-  const isDpoOrAdmin = userRoles.includes(UserRole.DPO) || userRoles.includes(UserRole.SUPER_ADMIN);
+  const isDpoOrAdmin =
+    userRoles.includes(UserRole.DPO) ||
+    userRoles.includes(UserRole.SUPER_ADMIN);
 
   const [search, setSearch] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [assigneesOpen, setAssigneesOpen] = useState(false);
-  const [selectedModule, setSelectedModule] = useState<TrainingModuleListItem | null>(null);
+  const [viewAssignedUsersOpen, setViewAssignedUsersOpen] = useState(false);
+  const [selectedModule, setSelectedModule] =
+    useState<TrainingModuleListItem | null>(null);
 
   const {
     modules: allModules,
@@ -47,6 +56,10 @@ export function AdminModulesPage() {
         data: { isActive: !mod.isActive },
       });
     },
+    onViewAssignedUsers: (mod) => {
+      setSelectedModule(mod);
+      setViewAssignedUsersOpen(true);
+    },
   });
 
   const filteredModules = useMemo(() => {
@@ -55,7 +68,7 @@ export function AdminModulesPage() {
     return allModules.filter(
       (m) =>
         m.title.toLowerCase().includes(query) ||
-        m.description?.toLowerCase().includes(query)
+        m.description?.toLowerCase().includes(query),
     );
   }, [allModules, search]);
 
@@ -67,7 +80,8 @@ export function AdminModulesPage() {
         </div>
         <h2 className="text-2xl font-semibold text-ink mb-2">Access Denied</h2>
         <p className="text-body max-w-md mb-8">
-          You do not have the required permissions to view the training modules management panel.
+          You do not have the required permissions to view the training modules
+          management panel.
         </p>
         <Button
           onClick={() => router.push("/training")}
@@ -88,7 +102,8 @@ export function AdminModulesPage() {
             Manage Training Modules
           </h1>
           <p className="mt-1 text-base text-body">
-            Create, edit, activate/deactivate, and assign training modules to members.
+            Create, edit, activate/deactivate, and assign training modules to
+            members.
           </p>
         </div>
 
@@ -140,6 +155,13 @@ export function AdminModulesPage() {
         open={assigneesOpen}
         onOpenChange={setAssigneesOpen}
         module={selectedModule}
+      />
+
+      <ViewAssignedUsersDialog
+        open={viewAssignedUsersOpen}
+        onOpenChange={setViewAssignedUsersOpen}
+        moduleId={selectedModule?.id ?? ""}
+        moduleTitle={selectedModule?.title ?? ""}
       />
     </>
   );

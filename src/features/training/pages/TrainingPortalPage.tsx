@@ -9,7 +9,11 @@ import { Button } from "@src/shared/components/ui/button";
 import { Search, BookOpen, ShieldAlert } from "lucide-react";
 import { DataTable } from "@src/shared/components/data-table";
 
-import { useTrainingModules, useMyCompletions, usePortalModuleTableColumns } from "../hooks";
+import {
+  useTrainingModules,
+  useMyCompletions,
+  usePortalModuleTableColumns,
+} from "../hooks";
 
 export function TrainingPortalPage() {
   const router = useRouter();
@@ -17,19 +21,29 @@ export function TrainingPortalPage() {
   const userRoles = user?.role || [];
 
   // Admins can see the admin portal link
-  const isAdminUser = userRoles.some(role => 
-    ([UserRole.DPO, UserRole.SECRETARY, UserRole.PRESIDENT, UserRole.SUPER_ADMIN] as UserRole[]).includes(role)
+  const isAdminUser = userRoles.some((role) =>
+    (
+      [
+        UserRole.DPO,
+        UserRole.SECRETARY,
+        UserRole.PRESIDENT,
+        UserRole.SUPER_ADMIN,
+      ] as UserRole[]
+    ).includes(role),
   );
 
   const adminUrl = useMemo(() => {
-    const isDpoOrAdmin = userRoles.some(role => ([UserRole.DPO, UserRole.SUPER_ADMIN] as UserRole[]).includes(role));
+    const isDpoOrAdmin = userRoles.some((role) =>
+      ([UserRole.DPO, UserRole.SUPER_ADMIN] as UserRole[]).includes(role),
+    );
     return isDpoOrAdmin ? "/training/modules" : "/training/completions";
   }, [userRoles]);
 
   const [search, setSearch] = useState("");
 
   const { modules, isLoading: isModulesLoading } = useTrainingModules();
-  const { completions: myCompletions, isLoading: isCompletionsLoading } = useMyCompletions();
+  const { completions: myCompletions, isLoading: isCompletionsLoading } =
+    useMyCompletions();
 
   // Filter modules that are active (assigned/available to members)
   const filteredModules = useMemo(() => {
@@ -39,7 +53,7 @@ export function TrainingPortalPage() {
     return activeMods.filter(
       (m) =>
         m.title.toLowerCase().includes(query) ||
-        m.description?.toLowerCase().includes(query)
+        m.description?.toLowerCase().includes(query),
     );
   }, [modules, search]);
 
@@ -50,7 +64,7 @@ export function TrainingPortalPage() {
   const { columns } = usePortalModuleTableColumns({
     completedModuleIds,
     onView: (module) => {
-      router.push(`/training/trainingdetail/${module.id}`);
+      router.push(`/training/modules/${module.id}`);
     },
   });
 

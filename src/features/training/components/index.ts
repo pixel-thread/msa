@@ -4,3 +4,4 @@ export * from "./ManageAssigneesDialog";
 export * from "./AdminRecordCompletionDialog";
 export * from "./ViewModuleDialog";
 export * from "./CompleteAssignmentDialog";
+export * from "./ViewAssignedUsersDialog";

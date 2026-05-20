@@ -24,6 +24,7 @@ import {
   ManageAssigneesDialog,
   AdminRecordCompletionDialog,
   ViewModuleDialog,
+  ViewAssignedUsersDialog,
 } from "../components";
 import type { TrainingModuleListItem } from "../types";
 
@@ -55,6 +56,7 @@ export function TrainingPage() {
   const [assigneesOpen, setAssigneesOpen] = useState(false);
   const [recordOpen, setRecordOpen] = useState(false);
   const [viewOpen, setViewOpen] = useState(false);
+  const [viewAssignedUsersOpen, setViewAssignedUsersOpen] = useState(false);
 
   // Hook invocations
   const {
@@ -88,6 +90,10 @@ export function TrainingPage() {
         moduleId: mod.id,
         data: { isActive: !mod.isActive },
       });
+    },
+    onViewAssignedUsers: (mod) => {
+      setSelectedModule(mod);
+      setViewAssignedUsersOpen(true);
     },
   });
 
@@ -330,6 +336,13 @@ export function TrainingPage() {
         onOpenChange={setViewOpen}
         module={selectedModule}
         isCompleted={selectedModule ? completedModuleIds.has(selectedModule.id) : false}
+      />
+
+      <ViewAssignedUsersDialog
+        open={viewAssignedUsersOpen}
+        onOpenChange={setViewAssignedUsersOpen}
+        moduleId={selectedModule?.id ?? ""}
+        moduleTitle={selectedModule?.title ?? ""}
       />
     </>
   );

@@ -9,15 +9,16 @@ import {
   DropdownMenuTrigger,
 } from "@src/shared/components/ui/dropdown-menu";
 import { Button } from "@src/shared/components/ui/button";
-import { MoreHorizontal, Pencil, Users, ToggleLeft, ToggleRight } from "lucide-react";
+import { MoreHorizontal, Pencil, Users, ToggleLeft, ToggleRight, Eye } from "lucide-react";
 import type { TrainingModuleListItem } from "../types";
 
 export const useModuleTableColumns = (options: {
   onEdit: (module: TrainingModuleListItem) => void;
   onManageAssignees: (module: TrainingModuleListItem) => void;
   onToggleActive: (module: TrainingModuleListItem) => void;
+  onViewAssignedUsers: (module: TrainingModuleListItem) => void;
 }): { columns: ColumnDef<TrainingModuleListItem>[] } => {
-  const { onEdit, onManageAssignees, onToggleActive } = options;
+  const { onEdit, onManageAssignees, onToggleActive, onViewAssignedUsers } = options;
 
   const columns: ColumnDef<TrainingModuleListItem>[] = [
     {
@@ -98,6 +99,10 @@ export const useModuleTableColumns = (options: {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => onViewAssignedUsers(module)}>
+                <Eye className="mr-2 h-4 w-4" />
+                View Assigned Users
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onEdit(module)}>
                 <Pencil className="mr-2 h-4 w-4" />
                 Edit Module
