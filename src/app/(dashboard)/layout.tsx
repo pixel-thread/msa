@@ -6,12 +6,7 @@ export default function DashboardRootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <DashboardLayout
-      breadcrumbs={[
-        { href: "/dashboard", label: "Dashboard" },
-        { label: "Overview" },
-      ]}
-    >
+    <DashboardLayout breadcrumbs={[{ href: "/dashboard", label: "Dashboard" }]}>
       {children}
     </DashboardLayout>
   );

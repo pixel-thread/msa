@@ -110,6 +110,10 @@ const navMain = [
     icon: <Settings2Icon />,
     items: [
       {
+        title: "Member Types",
+        url: "/member-types",
+      },
+      {
         title: "General",
         url: "#",
       },
