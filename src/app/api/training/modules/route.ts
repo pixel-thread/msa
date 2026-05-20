@@ -15,12 +15,23 @@ export const GET = withAssociation({}, async (association, _, request) => {
   const isActive = isManager ? undefined : true;
   const role = isManager ? undefined : user.role;
 
+  if (hasHighRoleAccess(user.role)) {
+    const modules = await findManyModules({
+      associationId: association.id,
+      isActive,
+      role,
+    });
+    return SuccessResponse({
+      data: modules.trainingModules,
+      meta: modules.pagination,
+    });
+  }
+
   const modules = await findManyModules({
     associationId: association.id,
     isActive,
     role,
   });
-
   return SuccessResponse({
     data: modules.trainingModules,
     meta: modules.pagination,
