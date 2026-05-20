@@ -18,18 +18,26 @@ export const POST = withAssociation(
     if (!body) {
       throw new ValidationError("Invalid request body");
     }
-    let plan;
-    plan = await prisma.subscriptionPlan.findUnique({
+
+    const plan = await prisma.subscriptionPlan.findUnique({
       where: {
         id: body.planId,
         associationId: association.id,
         isActive: true,
       },
+      include: {
+        versions: {
+          where: { effectiveTo: null },
+          take: 1,
+        },
+      },
     });
 
-    if (!plan) {
-      throw new NotFoundError("Plan not found");
+    if (!plan || plan.versions.length === 0) {
+      throw new NotFoundError("Plan not found or has no active version");
     }
+
+    const activeVersion = plan.versions[0];
 
     const existing = await prisma.subscription.findUnique({
       where: { userId: user.id },
@@ -41,7 +49,7 @@ export const POST = withAssociation(
 
     const startDate = new Date();
     const endDate = new Date();
-    if (plan.billingCycle === "YEARLY") {
+    if (activeVersion.billingCycle === "YEARLY") {
       endDate.setFullYear(endDate.getFullYear() + 1);
     } else {
       endDate.setMonth(endDate.getMonth() + 1);
@@ -51,6 +59,7 @@ export const POST = withAssociation(
       where: { userId: user.id },
       update: {
         planId: plan.id,
+        planVersionId: activeVersion.id,
         status: "ACTIVE",
         startDate,
         endDate,
@@ -61,9 +70,22 @@ export const POST = withAssociation(
       create: {
         userId: user.id,
         planId: plan.id,
+        planVersionId: activeVersion.id,
         status: "ACTIVE",
         startDate,
         endDate,
+      },
+    });
+
+    await prisma.subscriptionBillingHistory.create({
+      data: {
+        subscriptionId: subscription.id,
+        planVersionId: activeVersion.id,
+        amountCharged: activeVersion.amount,
+        status: "PENDING",
+        periodStart: startDate,
+        periodEnd: endDate,
+        dueDate: startDate,
       },
     });
 

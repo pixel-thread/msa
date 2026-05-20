@@ -32,16 +32,24 @@ export const POST = withAssociation(
         memberTypeId: typeId,
         isActive: true,
       },
+      include: {
+        versions: {
+          where: { effectiveTo: null },
+          take: 1,
+        },
+      },
     });
 
-    if (!plan) {
+    if (!plan || plan.versions.length === 0) {
       throw new NotFoundError("Plan not found under this member Group");
     }
+
+    const activeVersion = plan.versions[0];
 
     const orderDetails = await createPaymentOrder({
       associationId: association.id,
       userId: user?.id,
-      amount: parseInt(plan.amount.toFixed(2)),
+      amount: parseInt(activeVersion.amount.toFixed(2)),
       notes: body!.notes,
     });
 

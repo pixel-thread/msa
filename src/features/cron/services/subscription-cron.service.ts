@@ -36,7 +36,7 @@ export async function expireOverdueSubscriptions(
         status: "ACTIVE",
         endDate: { lt: now },
       },
-      select: { id: true, userId: true },
+      select: { id: true, userId: true, planVersionId: true },
       take: 100,
     });
 

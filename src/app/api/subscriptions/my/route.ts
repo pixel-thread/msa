@@ -19,13 +19,14 @@ export const GET = withAssociation(
 
     const userId = request.headers.get("x-user-id")!;
 
-    const [plans, total] = await prisma.$transaction([
-      prisma.subscription.findFirst({
+    const [subscriptions, total] = await prisma.$transaction([
+      prisma.subscription.findMany({
         where: {
           userId,
         },
         include: {
           plan: true,
+          planVersion: true,
         },
         orderBy: {
           createdAt: "desc",
@@ -39,7 +40,7 @@ export const GET = withAssociation(
     ]);
 
     return SuccessResponse({
-      data: plans,
+      data: subscriptions,
       meta: buildPagination(total, page),
     });
   },

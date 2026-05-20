@@ -154,10 +154,20 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
         associationId: association.id,
         name: `Tier ${i} Membership`,
         description: `Plan Tier Option Level ${i}`,
-        amount: new Prisma.Decimal(500 * i),
-        currency: "INR",
-        billingCycle: i % 2 === 0 ? "YEARLY" : "MONTHLY",
-        features: { voting: i > 1, newsletter: true, premiumEvents: i > 3 },
+        versions: {
+          create: {
+            amount: new Prisma.Decimal(500 * i),
+            currency: "INR",
+            billingCycle: i % 2 === 0 ? "YEARLY" : "MONTHLY",
+            features: { voting: i > 1, newsletter: true, premiumEvents: i > 3 },
+            description: `Plan Tier Option Level ${i}`,
+          },
+        },
+      },
+      include: {
+        versions: {
+          take: 1,
+        },
       },
     });
     subscriptionPlans.push(sp);
@@ -196,6 +206,7 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
             ? {
                 create: {
                   planId: subscriptionPlans[0].id,
+                  planVersionId: subscriptionPlans[0].versions[0].id,
                   status: "ACTIVE",
                   endDate: new Date("2027-01-01"),
                 },

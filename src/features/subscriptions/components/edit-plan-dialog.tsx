@@ -75,10 +75,10 @@ export function EditPlanDialog({
       form.reset({
         name: plan.name,
         description: plan.description || "",
-        amount: plan.amount,
-        currency: plan.currency,
-        billingCycle: plan.billingCycle,
-        features: plan.features || {},
+        amount: plan.activeVersion?.amount ?? 0,
+        currency: plan.activeVersion?.currency ?? "INR",
+        billingCycle: (plan.activeVersion?.billingCycle ?? "YEARLY") as "MONTHLY" | "YEARLY",
+        features: (plan.activeVersion?.features as Record<string, unknown>) || {},
         memberTypeId: plan.memberTypeId || "",
       });
     }

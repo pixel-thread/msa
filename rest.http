@@ -21,8 +21,9 @@ POST {{NEXT_PUBLIC_API_BASE_URL}}/auth/sign-up
 Content-Type: application/json
 
 {
-  "email": "test@gmail.com",
+  "email": "super_admin@mfsa.org",
   "password": "{{PASSWORD}}",
+  "confirm_password": "{{PASSWORD}}",
   "name": "Test User",
   "associationId": "{{associationsId}}"
 }
@@ -313,11 +314,13 @@ Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "name": "Membership",
+  "name": "Membership 4",
   "description": "Full access to all association benefits",
-  "amount": 5000,
+  "amount": 3000,
   "currency": "INR",
   "billingCycle": "YEARLY",
+  "memberTypeId":"6bdb2968-1212-4830-ad9a-a4565eeea249",
+  "effectiveTo":"2023-12-31",
   "features": {
     "events": true,
     "voting": true

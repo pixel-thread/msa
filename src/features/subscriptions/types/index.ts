@@ -1,19 +1,28 @@
 type BillCycle = "MONTHLY" | "YEARLY";
 
+export type SubscriptionPlanVersion = {
+  id: string;
+  planId: string;
+  amount: number;
+  currency: string;
+  billingCycle: BillCycle;
+  features: Record<string, unknown>;
+  description: string | null;
+  effectiveFrom: string;
+  effectiveTo: string | null;
+  createdAt: string;
+};
+
 export type SubscriptionPlan = {
   id: string;
   associationId: string;
   name: string;
   description: string | null;
-  amount: number;
-  currency: string;
-  billingCycle: BillCycle;
-  features: Record<string, unknown>;
   isActive: boolean;
-  effectiveFrom: string;
   createdAt: string;
   updatedAt: string;
   memberTypeId: string | null;
+  activeVersion?: SubscriptionPlanVersion;
 };
 
 export type SubscriptionPlanListItem = {
@@ -32,6 +41,7 @@ export type Subscription = {
   id: string;
   userId: string;
   planId: string;
+  planVersionId: string;
   status: string;
   startDate: string;
   endDate: string;
@@ -41,4 +51,5 @@ export type Subscription = {
   createdAt: string;
   updatedAt: string;
   plan?: SubscriptionPlan;
+  planVersion?: SubscriptionPlanVersion;
 };

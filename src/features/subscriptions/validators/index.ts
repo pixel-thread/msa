@@ -8,7 +8,8 @@ export const CreateSubscriptionPlanSchema = z.object({
   billingCycle: z.enum(["MONTHLY", "YEARLY"]).default("YEARLY"),
   features: z.record(z.string(), z.any()).default({}),
   memberTypeId: z.uuid().min(1).optional(),
-  isActive: z.boolean().default(false),
+  isActive: z.boolean().default(true),
+  effectiveTo: z.coerce.date().transform((v) => new Date(v)),
 });
 export type CreateSubscriptionPlanInput = z.infer<
   typeof CreateSubscriptionPlanSchema
@@ -22,3 +23,10 @@ export const WaiveSubscriptionSchema = z.object({
   subscriptionId: z.uuid(),
   reason: z.string().min(1),
 });
+
+export const UpgradeSubscriptionSchema = z.object({
+  planId: z.uuid(),
+});
+export type UpgradeSubscriptionInput = z.infer<
+  typeof UpgradeSubscriptionSchema
+>;

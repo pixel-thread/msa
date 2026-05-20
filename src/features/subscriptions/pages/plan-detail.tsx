@@ -45,11 +45,17 @@ export function PlanDetailPage() {
     );
   }
 
+  const amount = plan.activeVersion?.amount ?? 0;
+  const currency = plan.activeVersion?.currency ?? "INR";
+  const billingCycle = plan.activeVersion?.billingCycle ?? "MONTHLY";
+  const features = plan.activeVersion?.features as Record<string, unknown> | undefined;
+  const effectiveFrom = plan.activeVersion?.effectiveFrom ?? plan.createdAt;
+
   const formattedAmount = new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: plan.currency,
+    currency,
     maximumFractionDigits: 0,
-  }).format(plan.amount);
+  }).format(amount);
 
   return (
     <>
@@ -97,19 +103,19 @@ export function PlanDetailPage() {
                 <div>
                   <p className="text-xs font-medium text-muted">Billing Cycle</p>
                   <p className="text-sm text-ink mt-1 capitalize">
-                    {plan.billingCycle.toLowerCase()}
+                    {billingCycle.toLowerCase()}
                   </p>
                 </div>
 
                 <div>
                   <p className="text-xs font-medium text-muted">Currency</p>
-                  <p className="text-sm text-ink mt-1">{plan.currency}</p>
+                  <p className="text-sm text-ink mt-1">{currency}</p>
                 </div>
 
                 <div>
                   <p className="text-xs font-medium text-muted">Effective From</p>
                   <p className="text-sm text-ink mt-1">
-                    {formatDate(plan.effectiveFrom)}
+                    {formatDate(effectiveFrom)}
                   </p>
                 </div>
               </div>
@@ -125,9 +131,9 @@ export function PlanDetailPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {plan.features && Object.keys(plan.features).length > 0 ? (
+              {features && Object.keys(features).length > 0 ? (
                 <ul className="space-y-2">
-                  {Object.entries(plan.features).map(([key, value]) => (
+                  {Object.entries(features).map(([key, value]) => (
                     <li key={key} className="text-sm text-ink">
                       <span className="font-medium">{key}:</span>{" "}
                       {String(value)}

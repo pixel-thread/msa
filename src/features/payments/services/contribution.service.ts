@@ -55,7 +55,7 @@ export async function generateMonthlyContributions(
     },
     include: {
       subscription: {
-        include: { plan: true },
+        include: { plan: true, planVersion: true },
       },
     },
   });
@@ -66,9 +66,9 @@ export async function generateMonthlyContributions(
   const dueDate = new Date(year, month, 0); // day 0 of next month = last day
 
   const data = activeMembers
-    .filter((m) => m.subscription?.plan)
+    .filter((m) => m.subscription?.planVersion)
     .map((member) => {
-      const expectedAmount = member.subscription!.plan.amount;
+      const expectedAmount = member.subscription!.planVersion.amount;
 
       return {
         associationId,

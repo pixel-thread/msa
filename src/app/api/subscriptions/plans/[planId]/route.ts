@@ -4,7 +4,8 @@ import { SuccessResponse } from "@src/shared/utils/responses";
 import { UserRole } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
 import { z } from "zod";
-import { ValidationError } from "@src/shared/errors";
+import { ValidationError, NotFoundError } from "@src/shared/errors";
+import { Prisma } from "@prisma/client";
 
 const UpdatePlanSchema = z.object({
   name: z.string().min(1).optional(),
@@ -14,7 +15,6 @@ const UpdatePlanSchema = z.object({
   billingCycle: z.enum(["MONTHLY", "YEARLY"]).optional(),
   features: z.record(z.string(), z.any()).optional(),
   isActive: z.boolean().optional(),
-  effectiveFrom: z.string().datetime().optional(),
   memberTypeId: z.uuid().optional().nullable(),
 });
 
@@ -29,12 +29,57 @@ export const PATCH = withAssociation(
 
     const { planId } = (await params) as { planId: string };
 
+    const priceFields = ["amount", "currency", "billingCycle", "features"];
+    const hasPriceChange = priceFields.some(
+      (field) => body[field as keyof typeof body] !== undefined,
+    );
+
+    if (hasPriceChange) {
+      const currentVersion = await prisma.subscriptionPlanVersion.findFirst({
+        where: { planId, effectiveTo: null },
+      });
+
+      if (!currentVersion) {
+        throw new NotFoundError("No active version found for this plan");
+      }
+
+      const updatedPlan = await prisma.$transaction(async (tx) => {
+        await tx.subscriptionPlanVersion.update({
+          where: { id: currentVersion.id },
+          data: { effectiveTo: new Date() },
+        });
+
+        const newVersion = await tx.subscriptionPlanVersion.create({
+          data: {
+            planId,
+            amount: body.amount ?? currentVersion.amount,
+            currency: body.currency ?? currentVersion.currency,
+            billingCycle: body.billingCycle ?? currentVersion.billingCycle,
+            features: (body.features as Prisma.InputJsonValue) ?? currentVersion.features,
+            description: body.description ?? currentVersion.description,
+          },
+        });
+
+        const plan = await tx.subscriptionPlan.update({
+          where: { id: planId, associationId: association.id },
+          data: {
+            name: body.name,
+            description: body.description,
+            isActive: body.isActive,
+            memberTypeId: body.memberTypeId,
+          },
+        });
+
+        return { ...plan, activeVersion: newVersion };
+      });
+
+      return SuccessResponse({ data: updatedPlan });
+    }
+
+    const { amount, currency, billingCycle, features, ...metadata } = body;
     const plan = await prisma.subscriptionPlan.update({
-      where: {
-        id: planId,
-        associationId: association.id,
-      },
-      data: body,
+      where: { id: planId, associationId: association.id },
+      data: metadata,
     });
 
     return SuccessResponse({ data: plan });

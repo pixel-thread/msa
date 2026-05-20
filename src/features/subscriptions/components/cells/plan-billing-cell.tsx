@@ -8,11 +8,12 @@ interface PlanBillingCellProps {
 }
 
 export function PlanBillingCell({ plan }: PlanBillingCellProps) {
-  const variant = plan.billingCycle === "YEARLY" ? "default" : "secondary";
+  const billingCycle = plan.activeVersion?.billingCycle ?? "MONTHLY";
+  const variant = billingCycle === "YEARLY" ? "default" : "secondary";
 
   return (
     <Badge variant={variant} className="capitalize">
-      {plan.billingCycle.toLowerCase()}
+      {billingCycle.toLowerCase()}
     </Badge>
   );
 }
