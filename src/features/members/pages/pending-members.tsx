@@ -6,16 +6,18 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { DataTable } from "@src/shared/components/data-table";
 import { useMembers } from "../hooks/useMembers";
 import { usePendingMemberColumns } from "../hooks/usePendingMemberColumns";
-import { User } from "@prisma/client";
 import { MemberReviewDialog } from "../components/member-review-dialog";
 import { useRejectMember } from "../hooks/useRejectMember";
 import { MembersPagination } from "../components/members-pagination";
+import { MemberListItem } from "../types";
 
 export function PendingMembersPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
-  const [selectedMember, setSelectedMember] = useState<User | null>(null);
+  const [selectedMember, setSelectedMember] = useState<MemberListItem | null>(
+    null,
+  );
   const rejectMember = useRejectMember();
 
   const {

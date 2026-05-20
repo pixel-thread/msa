@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { DashboardLayout } from "@src/shared/components/dashboard-layout";
 import { DataTable } from "@src/shared/components/data-table";
 import { Button } from "@src/shared/components/ui/button";
 import { Input } from "@src/shared/components/ui/input";

@@ -35,14 +35,15 @@ import {
   FormMessage,
 } from "@src/shared/components/ui/form";
 import { cn } from "@src/shared/lib/utils";
-import type { Member, Attendee } from "../types";
+import type { Attendee } from "../types";
 import { AssignAttendeeSchema, type AssignAttendeeInput } from "../validators";
+import { MemberListItem } from "@src/features/members/types";
 
 interface ManageAttendeesDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   meeting: { id: string; title: string } | null;
-  members: Member[];
+  members: MemberListItem[];
   attendees: Attendee[];
   onAddAttendee: (data: AssignAttendeeInput) => void;
   onRemoveAttendee: (userId: string) => void;

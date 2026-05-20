@@ -340,7 +340,7 @@ model User {
 
 model SubscriptionPlan {
   id            String   @id @default(uuid())
-  associationId String // ★
+  associationId String 
   name          String
   description   String?
   amount        Decimal  @db.Decimal(10, 2)
@@ -359,6 +359,7 @@ association   Association    @relation(fields: [associationId], references: [id]
   memberType   MemberType? @relation(fields: [memberTypeId], references: [id])
 
   @@unique([associationId, name])
+  @@unique([associationId,memberTypeId])
   @@index([associationId])
   @@map("subscription_plans")
 }

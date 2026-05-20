@@ -40,6 +40,7 @@ import { useApproveMember } from "@src/features/members/hooks/useApproveMember";
 import { useRejectMember } from "@src/features/members/hooks/useRejectMember";
 import { User } from "@prisma/client";
 import { ROLES } from "../utils/constants";
+import { MemberListItem } from "../types";
 
 const MemberReviewSchema = z.object({
   memberTypeId: z.string().min(1, "Member type is required"),
@@ -51,7 +52,7 @@ const MemberReviewSchema = z.object({
 type MemberReviewForm = z.infer<typeof MemberReviewSchema>;
 
 interface MemberReviewDialogProps {
-  member: User | null;
+  member: MemberListItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -263,5 +264,3 @@ export function MemberReviewDialog({
     </Dialog>
   );
 }
-
-

@@ -7,17 +7,31 @@ import { CreateSubscriptionPlanSchema } from "@feature/subscriptions/validators"
 import { ValidationError } from "@src/shared/errors";
 
 export const GET = withAssociation({}, async (association, _, request) => {
-  await withRole(request, UserRole.MEMBER);
+  const user = await withRole(request, UserRole.MEMBER);
 
-  const plans = await prisma.subscriptionPlan.findMany({
-    where: {
-      associationId: association.id,
-      isActive: true,
-    },
-    orderBy: {
-      amount: "asc",
-    },
-  });
+  let plans;
+  if (user.memberTypeId) {
+    plans = await prisma.subscriptionPlan.findMany({
+      where: {
+        associationId: association.id,
+        isActive: true,
+        memberTypeId: user.memberTypeId,
+      },
+      orderBy: {
+        amount: "asc",
+      },
+    });
+  } else {
+    plans = await prisma.subscriptionPlan.findFirst({
+      where: {
+        associationId: association.id,
+        isActive: true,
+      },
+      orderBy: {
+        amount: "asc",
+      },
+    });
+  }
 
   return SuccessResponse({ data: plans });
 });

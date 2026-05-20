@@ -3,10 +3,10 @@ import Link from "next/link";
 import { Avatar, AvatarFallback } from "@components/ui/avatar";
 import { getInitials } from "../utils/helper/get-initials";
 import { PendingActionsCell } from "@src/features/members/components/cells/pending-actions-cell";
-import { User } from "@prisma/client";
+import { MemberListItem } from "../types";
 
 interface UsePendingMemberColumnsOptions {
-  onAccept: (member: User) => void;
+  onAccept: (member: MemberListItem) => void;
   onReject: (memberId: string) => void;
   isRejecting: boolean;
 }
@@ -16,7 +16,7 @@ export function usePendingMemberColumns({
   onReject,
   isRejecting,
 }: UsePendingMemberColumnsOptions) {
-  const columns: ColumnDef<User>[] = [
+  const columns: ColumnDef<MemberListItem>[] = [
     {
       accessorKey: "name",
       header: "Member",

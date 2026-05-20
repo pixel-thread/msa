@@ -8,10 +8,7 @@ import {
   type AgendaItem,
   type Attendee,
 } from "@src/features/meetings/hooks/useMeetingDetail";
-import {
-  useMembers,
-  useMeetingAttendees,
-} from "@src/features/meetings/hooks/useMeetings";
+import { useMeetingAttendees } from "@src/features/meetings/hooks";
 import {
   Card,
   CardHeader,
@@ -34,6 +31,7 @@ import {
 import { EditMeetingDialog } from "@src/features/meetings/components/EditMeetingDialog";
 import { ManageAttendeesDialog } from "@src/features/meetings/components/ManageAttendeesDialog";
 import type { AssignAttendeeInput } from "@src/features/meetings/validators";
+import { useMembers } from "@src/features/members/hooks/useMembers";
 
 const getStatusBadge = (status: string) => {
   const variants: Record<

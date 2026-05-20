@@ -20,6 +20,7 @@ import {
   LayoutDashboardIcon,
   Settings2Icon,
   CalendarDaysIcon,
+  CreditCardIcon,
 } from "lucide-react";
 import { useAuthStore } from "@src/shared/stores/auth";
 
@@ -54,6 +55,22 @@ const navMain = [
       {
         title: "All Meetings",
         url: "/meetings",
+      },
+    ],
+  },
+  {
+    title: "Subscriptions",
+    url: "/subscriptions/plans",
+    icon: <CreditCardIcon />,
+    isActive: true,
+    items: [
+      {
+        title: "Plans",
+        url: "/subscriptions/plans",
+      },
+      {
+        title: "History",
+        url: "/subscriptions/my",
       },
     ],
   },

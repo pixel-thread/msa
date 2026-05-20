@@ -1,18 +1,18 @@
-import type { Status, UserRole } from "@prisma/client";
+import type { UserRole, UserStatus } from "@prisma/client";
 
 export type Member = {
   id: string;
   name: string;
   email: string;
   role: UserRole[];
-  status: Status;
-  membershipNumber: null | number;
+  status: UserStatus;
+  membershipNumber: null | string;
   designation: null | string;
   mobile: null | number;
   dateOfJoiningGovt: string;
   dateOfJoiningMfsa: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
   _count: {
     meetingAttendances: number;
   };
@@ -23,9 +23,9 @@ export type MemberListItem = {
   name: string;
   email: string;
   role: UserRole[];
-  status: Status;
-  membershipNumber: number | null;
-  createdAt: string;
+  status: UserStatus;
+  membershipNumber: string | null;
+  createdAt: Date;
 };
 
 export type Members = MemberListItem;

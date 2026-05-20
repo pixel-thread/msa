@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useFieldArray } from "react-hook-form";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Plus, Trash } from "@phosphor-icons/react";
 
 import {
   Dialog,
@@ -30,22 +28,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@src/shared/components/ui/form";
-import {
-  FieldSet,
-  FieldLegend,
-  FieldGroup,
-  FieldContent,
-  FieldLabel as ShadFieldLabel,
-  Field,
-} from "@src/shared/components/ui/field";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import http from "@src/shared/utils/http";
 import { toast } from "sonner";
-import {
-  UpdateMeetingSchema,
-  type UpdateMeetingInput,
-  type CreateMeetingInput,
-} from "../validators";
+import { UpdateMeetingSchema, type UpdateMeetingInput } from "../validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 interface MeetingData {
@@ -122,7 +108,9 @@ export function EditMeetingDialog({
   const onSubmit: SubmitHandler<UpdateMeetingInput> = (values) => {
     const formattedData: UpdateMeetingInput = {
       ...values,
-      scheduledAt: values.scheduledAt ? new Date(values.scheduledAt) : undefined,
+      scheduledAt: values.scheduledAt
+        ? new Date(values.scheduledAt)
+        : undefined,
     };
 
     updateMeetingMutation.mutate(formattedData);
@@ -161,7 +149,10 @@ export function EditMeetingDialog({
                   <FormItem className="flex w-full flex-col">
                     <FormLabel>Type</FormLabel>
                     <FormControl>
-                      <Select value={field.value} onValueChange={field.onChange}>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
                         <SelectTrigger className="w-full">
                           <SelectValue />
                         </SelectTrigger>
@@ -170,7 +161,9 @@ export function EditMeetingDialog({
                             General Meeting
                           </SelectItem>
                           <SelectItem value="EC_MEETING">EC Meeting</SelectItem>
-                          <SelectItem value="SPECIAL_MEETING">Special Meeting</SelectItem>
+                          <SelectItem value="SPECIAL_MEETING">
+                            Special Meeting
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -186,13 +179,18 @@ export function EditMeetingDialog({
                   <FormItem className="flex w-full flex-col">
                     <FormLabel>Status</FormLabel>
                     <FormControl>
-                      <Select value={field.value} onValueChange={field.onChange}>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
                         <SelectTrigger className="w-full">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="SCHEDULED">Scheduled</SelectItem>
-                          <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+                          <SelectItem value="IN_PROGRESS">
+                            In Progress
+                          </SelectItem>
                           <SelectItem value="COMPLETED">Completed</SelectItem>
                           <SelectItem value="CANCELLED">Cancelled</SelectItem>
                         </SelectContent>
@@ -249,7 +247,9 @@ export function EditMeetingDialog({
                 Cancel
               </Button>
               <Button type="submit" disabled={updateMeetingMutation.isPending}>
-                {updateMeetingMutation.isPending ? "Updating..." : "Update Meeting"}
+                {updateMeetingMutation.isPending
+                  ? "Updating..."
+                  : "Update Meeting"}
               </Button>
             </DialogFooter>
           </form>

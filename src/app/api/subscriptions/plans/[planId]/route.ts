@@ -15,6 +15,7 @@ const UpdatePlanSchema = z.object({
   features: z.record(z.string(), z.any()).optional(),
   isActive: z.boolean().optional(),
   effectiveFrom: z.string().datetime().optional(),
+  memberTypeId: z.uuid().optional().nullable(),
 });
 
 export const PATCH = withAssociation(

@@ -18,8 +18,8 @@ export const POST = withAssociation(
     if (!body) {
       throw new ValidationError("Invalid request body");
     }
-
-    const plan = await prisma.subscriptionPlan.findUnique({
+    let plan;
+    plan = await prisma.subscriptionPlan.findUnique({
       where: {
         id: body.planId,
         associationId: association.id,
