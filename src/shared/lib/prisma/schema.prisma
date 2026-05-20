@@ -343,46 +343,87 @@ model SubscriptionPlan {
   associationId String 
   name          String
   description   String?
-  amount        Decimal  @db.Decimal(10, 2)
-  currency      String   @default("INR")
-  billingCycle  String   @default("MONTHLY")
-  features      Json
   isActive      Boolean  @default(true)
-  effectiveFrom DateTime @default(now())
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-association   Association    @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  association   Association   @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  
+  versions      SubscriptionPlanVersion[]
   subscriptions Subscription[]
 
-  memberTypeId String?
-  memberType   MemberType? @relation(fields: [memberTypeId], references: [id])
+  memberTypeId  String?
+  memberType    MemberType?   @relation(fields: [memberTypeId], references: [id])
 
   @@unique([associationId, name])
-  @@unique([associationId,memberTypeId])
   @@index([associationId])
   @@map("subscription_plans")
 }
 
-model Subscription {
-  id           String    @id @default(uuid())
-  userId       String    @unique // One active subscription per user
-  planId       String
-  status       String    @default("ACTIVE")
-  startDate    DateTime  @default(now())
-  endDate      DateTime
-  waivedAt     DateTime?
-  waivedReason String?
-  waivedBy     String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+model SubscriptionPlanVersion {
+  id                 String           @id @default(uuid())
+  planId             String
+  
+  amount             Decimal          @db.Decimal(10, 2)
+  currency           String           @default("INR")
+  billingCycle       String           @default("MONTHLY")
+  features           Json
+  description        String?
+  
+  effectiveFrom      DateTime         @default(now())
+  effectiveTo        DateTime?
+  
+  createdAt          DateTime         @default(now())
 
-  user User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  plan SubscriptionPlan @relation(fields: [planId], references: [id])
+  plan               SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  subscriptions      Subscription[]
+  billingHistory     SubscriptionBillingHistory[]
+
+  @@index([planId])
+  @@map("subscription_plan_versions")
+}
+
+model Subscription {
+  id            String    @id @default(uuid())
+  userId        String    @unique 
+  planId        String
+  planVersionId String
+  status        String    @default("ACTIVE")
+  startDate     DateTime  @default(now())
+  endDate       DateTime
+  waivedAt      DateTime?
+  waivedReason  String?
+  waivedBy      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user          User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan          SubscriptionPlan        @relation(fields: [planId], references: [id])
+  planVersion   SubscriptionPlanVersion @relation(fields: [planVersionId], references: [id])
+  
+  billingHistory SubscriptionBillingHistory[]
 
   @@index([status])
   @@index([endDate])
   @@map("subscriptions")
+}
+
+model SubscriptionBillingHistory {
+  id             String       @id @default(uuid())
+  subscriptionId String
+  planVersionId  String
+  amountCharged  Decimal      @db.Decimal(10, 2)
+  status         String       @default("PENDING")
+  periodStart    DateTime
+  periodEnd      DateTime
+  dueDate        DateTime
+  createdAt      DateTime     @default(now())
+
+  subscription   Subscription            @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  planVersion    SubscriptionPlanVersion @relation(fields: [planVersionId], references: [id])
+
+  @@index([subscriptionId])
+  @@map("subscription_billing_history")
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

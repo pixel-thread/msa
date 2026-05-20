@@ -165,16 +165,28 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
       associationId: association.id,
       name: "Standard Membership",
       description: "Default membership plan",
-      amount: new Prisma.Decimal(500),
-      currency: "INR",
-      billingCycle: "MONTHLY",
-      features: {
-        voting: true,
-        newsletter: true,
-        events: true,
+      versions: {
+        create: {
+          amount: new Prisma.Decimal(500),
+          currency: "INR",
+          billingCycle: "MONTHLY",
+          features: {
+            voting: true,
+            newsletter: true,
+            events: true,
+          },
+          description: "Default membership plan",
+        },
+      },
+    },
+    include: {
+      versions: {
+        take: 1,
       },
     },
   });
+
+  const subscriptionPlanVersion = subscriptionPlan.versions[0];
 
   // ---------------------------------------------------------------------------
   // USERS
@@ -216,6 +228,7 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
             ? {
                 create: {
                   planId: subscriptionPlan.id,
+                  planVersionId: subscriptionPlanVersion.id,
                   status: "ACTIVE",
                   endDate: new Date("2027-01-01"),
                 },
