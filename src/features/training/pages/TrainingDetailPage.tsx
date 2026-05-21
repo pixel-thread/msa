@@ -92,8 +92,8 @@ export function TrainingDetailPage() {
           <Badge
             className={
               isCompleted
-                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                : "bg-surface-secondary text-body border-hairline"
+                ? "bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
+                : "bg-surface-soft text-body border-hairline"
             }
           >
             {isCompleted ? (
@@ -116,7 +116,7 @@ export function TrainingDetailPage() {
         return (
           <span className="text-sm text-body">
             {score !== null && score !== undefined ? (
-              <span className="flex items-center gap-1 text-emerald-700 font-medium">
+                <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-medium">
                 <Award className="h-3.5 w-3.5" />
                 {score} pts
               </span>
