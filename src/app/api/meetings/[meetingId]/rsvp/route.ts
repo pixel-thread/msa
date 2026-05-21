@@ -7,7 +7,7 @@ import { prisma } from "@src/shared/lib/prisma";
 import { z } from "zod";
 
 const AttendeeParamsSchema = z.object({
-  meetingId: z.string().cuid("Invalid meeting ID"),
+  meetingId: z.uuid("Invalid meeting ID"),
 });
 
 const RsvpSchema = z.object({
@@ -21,7 +21,7 @@ const RsvpSchema = z.object({
 
 export const POST = withAssociation(
   { params: AttendeeParamsSchema, body: RsvpSchema },
-  async (association, { params, body }, request) => {
+  async (_association, { params, body }, request) => {
     if (!params) {
       throw new ForbiddenError("Invalid parameters");
     }
@@ -30,8 +30,8 @@ export const POST = withAssociation(
       throw new ValidationError("Invalid request body");
     }
 
-    const user = await withRole(request, UserRole.MEMBER);
-    
+    await withRole(request, UserRole.MEMBER);
+
     // Member submitting own RSVP
     const userId = request.headers.get("x-user-id");
     if (!userId) {
@@ -43,13 +43,13 @@ export const POST = withAssociation(
         meetingId_userId: {
           meetingId: params.meetingId,
           userId: userId,
-        }
+        },
       },
       data: {
         rsvpStatus: body.status,
         rsvpNote: body.note,
         rsvpAt: new Date(),
-      }
+      },
     });
 
     return SuccessResponse({
