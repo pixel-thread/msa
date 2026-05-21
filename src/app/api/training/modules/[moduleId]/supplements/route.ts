@@ -5,9 +5,15 @@ import { withRole } from "@src/shared/api/with-role";
 import { SuccessResponse } from "@utils/responses";
 import { ForbiddenError, BadRequestError } from "@src/shared/errors";
 import { UserRole } from "@prisma/client";
-import { findManySupplements, createSupplement } from "@feature/training/services";
+import {
+  findManySupplements,
+  createSupplement,
+} from "@feature/training/services";
 import { CreateSupplementSchema } from "@feature/training/validators/training";
-import { uploadToBucket, mimeToFileType } from "@src/shared/lib/supabase/storage";
+import {
+  uploadToBucket,
+  mimeToFileType,
+} from "@src/shared/lib/supabase/storage";
 import { z } from "zod";
 
 const TrainingParamsSchema = z.object({
@@ -40,10 +46,13 @@ export const POST = withAssociation(
     }
 
     const { moduleId } = params;
+
     const user = await withRole(request, UserRole.DPO);
 
     const formData = await request.formData();
+
     const file = formData.get("file") as File | null;
+
     const metadataRaw = formData.get("metadata") as string | null;
 
     if (!file || !metadataRaw) {
