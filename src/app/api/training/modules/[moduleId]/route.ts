@@ -3,7 +3,7 @@ import { withRole } from "@src/shared/api/with-role";
 import { SuccessResponse } from "@utils/responses";
 import { ForbiddenError, NotFoundError } from "@src/shared/errors";
 import { UserRole } from "@prisma/client";
-import { findUniqueModule, updateModule } from "@feature/training/services";
+import { findUniqueModule, updateModule, deleteModule } from "@feature/training/services";
 import { UpdateTrainingModuleSchema } from "@feature/training/validators/training";
 import { z } from "zod";
 
@@ -54,5 +54,25 @@ export const PATCH = withAssociation(
     });
 
     return SuccessResponse({ data: trainingModule });
+  },
+);
+
+export const DELETE = withAssociation(
+  { params: TrainingParamsSchema },
+  async (association, { params }, request) => {
+    if (!params) {
+      throw new ForbiddenError("Invalid module ID");
+    }
+
+    const { moduleId } = params;
+    const user = await withRole(request, UserRole.DPO);
+
+    await deleteModule({
+      associationId: association.id,
+      moduleId,
+      actorId: user.id,
+    });
+
+    return SuccessResponse({ data: { success: true } });
   },
 );
