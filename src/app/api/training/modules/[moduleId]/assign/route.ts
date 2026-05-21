@@ -37,7 +37,7 @@ export const GET = withAssociation(
       throw new ForbiddenError("Invalid module ID");
     }
 
-    await withRole(request, UserRole.MEMBER);
+    await withRole(request, UserRole.SECRETARY);
     const { moduleId } = params;
 
     const assignments = await getTrainingAssignments({
@@ -172,4 +172,3 @@ export const PATCH = withAssociation(
     }
   },
 );
-

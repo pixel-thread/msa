@@ -565,7 +565,7 @@ Authorization: Bearer {{TOKEN}}
   "memberId": "{{userId}}"
 }
 
-### ----------------- TRAINING ------------------
+### ----------------- TRAINING MODULES ------------------
 
 ###
 # @name List Training Modules
@@ -582,12 +582,9 @@ Authorization: Bearer {{TOKEN}}
 {
   "title": "Data Privacy Training",
   "description": "Understanding GDPR and data protection",
-  "role": "MEMBER",
-  "isActive": true,
-  "content": {
-    "type": "article",
-    "body": "Training content here..."
-  }
+  "content": "Training content here...",
+  "requiredForRoles": ["MEMBER"],
+  "isActive": true
 }
 
 ###
@@ -607,29 +604,119 @@ Authorization: Bearer {{TOKEN}}
   "isActive": false
 }
 
+### ----------------- TRAINING MODULE SELF-COMPLETE ------------------
+
 ###
-# @name Complete Training Module
+# @name Complete Training Module (Self)
 POST {{NEXT_PUBLIC_API_BASE_URL}}/training/modules/{{moduleId}}/complete
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 {}
+
+### ----------------- TRAINING ASSIGNMENTS ------------------
+
 ###
-# @name Get My Training Completions
-GET {{NEXT_PUBLIC_API_BASE_URL}}/training/my-completions
+# @name List Module Assignments
+GET {{NEXT_PUBLIC_API_BASE_URL}}/training/modules/{{moduleId}}/assign
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 ###
-# @name Get All Training Completions
-GET {{NEXT_PUBLIC_API_BASE_URL}}/training/completions
+# @name Assign User to Module
+POST {{NEXT_PUBLIC_API_BASE_URL}}/training/modules/{{moduleId}}/assign
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "page": 1,
-  "limit": 10
+  "userId": "{{userId}}"
 }
+
+###
+# @name Bulk Assign Users to Module
+PUT {{NEXT_PUBLIC_API_BASE_URL}}/training/modules/{{moduleId}}/assign
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "userIds": ["{{userId}}"]
+}
+
+###
+# @name Remove User Assignment
+DELETE {{NEXT_PUBLIC_API_BASE_URL}}/training/modules/{{moduleId}}/assign
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "userId": "{{userId}}"
+}
+
+###
+# @name Bulk Remove Assignments
+PATCH {{NEXT_PUBLIC_API_BASE_URL}}/training/modules/{{moduleId}}/assign
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "userIds": ["{{userId}}"]
+}
+
+### ----------------- TRAINING ASSIGNED USERS ------------------
+
+###
+# @name List Assigned Users with Completion Status
+GET {{NEXT_PUBLIC_API_BASE_URL}}/training/modules/{{moduleId}}/assigned-users
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+### ----------------- TRAINING ADMIN COMPLETE ASSIGNMENT ------------------
+
+###
+# @name Admin Mark Assignment Complete
+POST {{NEXT_PUBLIC_API_BASE_URL}}/training/modules/{{moduleId}}/assignments/{{userId}}/complete
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "scorePercent": 95
+}
+
+### ----------------- TRAINING COMPLETIONS (Admin) ------------------
+
+###
+# @name List All Completions
+GET {{NEXT_PUBLIC_API_BASE_URL}}/training/completions?page=1
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Admin Record Completion
+POST {{NEXT_PUBLIC_API_BASE_URL}}/training/completions
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "userId": "{{userId}}",
+  "moduleId": "{{moduleId}}",
+  "scorePercent": 95
+}
+
+### ----------------- TRAINING MY ASSIGNMENTS ------------------
+
+###
+# @name Get My Assignments
+GET {{NEXT_PUBLIC_API_BASE_URL}}/training/my-assignments
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+### ----------------- TRAINING MY COMPLETIONS ------------------
+
+###
+# @name Get My Completions
+GET {{NEXT_PUBLIC_API_BASE_URL}}/training/my-completions
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
 
 ### ----------------- TRAINING SUPPLEMENTS ------------------
 
@@ -650,8 +737,8 @@ Authorization: Bearer {{TOKEN}}
 {
   "title": "GDPR Reference Guide",
   "description": "A PDF guide to GDPR compliance",
-  "type": "VIDEO",
-  "fileUrl": "https://lorem.video/1280x720",
+  "type": "PDF",
+  "fileUrl": "",
   "mimeType": "application/pdf",
   "fileSize": 2048000,
   "sortOrder": 1,
