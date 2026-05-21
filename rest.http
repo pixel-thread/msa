@@ -3,7 +3,7 @@
 @userId=0d627af0-bcb4-4b11-8934-0a3f3bfc53e8
 @test3UserId=9a6043b7-2b58-425a-9912-3275dd4153fe
 @test2UserId=0d627af0-bcb4-4b11-8934-0a3f3bfc53e8
-@moduleId=ee4b820e-0c34-46bf-a845-fb61e38cfedf
+@moduleId=b5063e33-f356-4a30-9256-fbbb1abb3fa4
 @supplementId=REPLACE_WITH_SUPPLEMENT_ID
 @dsarTicketId=REPLACE_WITH_DSAR_TICKET_ID
 @notificationId=REPLACE_WITH_NOTIFICATION_ID
@@ -750,7 +750,7 @@ Content-Type: application/pdf
 ###
 # @name Create Training Supplement (Image)
 POST {{NEXT_PUBLIC_API_BASE_URL}}/training/modules/{{moduleId}}/supplements
-Content-Type: multipart/form-data; boundary=supplement
+Content-Type: multipart/form-data;
 
 --supplement
 Content-Disposition: form-data; name="metadata"

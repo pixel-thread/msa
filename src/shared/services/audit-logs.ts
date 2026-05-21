@@ -1,6 +1,50 @@
 import { prisma } from "@src/shared/lib/prisma";
+import { AuditAction, Prisma } from "@prisma/client";
 import type { AuditLogEntry, AuditLogQuery } from "@src/shared/lib/validations/audit-logs";
 import { buildPagination } from "@src/shared/utils/build-pagination";
+
+interface LogActionParams {
+  actorId: string;
+  action: AuditAction;
+  resourceType: string;
+  resourceId?: string;
+  associationId: string;
+  oldValues?: Record<string, unknown>;
+  newValues?: Record<string, unknown>;
+  ipAddress?: string;
+  userAgent?: string;
+  traceId?: string;
+}
+
+export async function logAction(params: LogActionParams) {
+  const {
+    actorId,
+    action,
+    resourceType,
+    resourceId,
+    associationId,
+    oldValues,
+    newValues,
+    ipAddress,
+    userAgent,
+    traceId,
+  } = params;
+
+  await prisma.auditLog.create({
+    data: {
+      associationId,
+      actorId,
+      action,
+      resourceType,
+      resourceId: resourceId ?? null,
+      oldValues: (oldValues as Prisma.InputJsonValue) ?? Prisma.DbNull,
+      newValues: (newValues as Prisma.InputJsonValue) ?? Prisma.DbNull,
+      ipAddress: ipAddress ?? null,
+      userAgent: userAgent ?? null,
+      traceId: traceId ?? null,
+    },
+  });
+}
 
 export async function findAuditLogs(
   associationId: string,
