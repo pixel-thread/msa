@@ -15,7 +15,9 @@ export function useTrainingSupplements(moduleId: string | null) {
 
   const createSupplementMutation = useMutation({
     mutationFn: (formData: FormData) =>
-      http.post<any>(`/training/modules/${moduleId}/supplements`, formData),
+      http.post<any>(`/training/modules/${moduleId}/supplements`, formData, {
+        headers: { "Content-Type": undefined },
+      }),
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({ queryKey: ["training-supplements", moduleId] });
@@ -32,7 +34,9 @@ export function useTrainingSupplements(moduleId: string | null) {
 
   const updateSupplementMutation = useMutation({
     mutationFn: ({ supplementId, data }: { supplementId: string; data: UpdateSupplementInput | FormData }) =>
-      http.patch<any>(`/training/modules/${moduleId}/supplements/${supplementId}`, data),
+      http.patch<any>(`/training/modules/${moduleId}/supplements/${supplementId}`, data, {
+        headers: data instanceof FormData ? { "Content-Type": undefined } : undefined,
+      }),
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({ queryKey: ["training-supplements", moduleId] });
