@@ -55,6 +55,23 @@ export interface TrainingCompletionItem {
   };
 }
 
+export interface TrainingSupplementItem {
+  id: string;
+  moduleId: string;
+  title: string;
+  description: string | null;
+  type: string;
+  fileUrl: string | null;
+  thumbnailUrl: string | null;
+  mimeType: string | null;
+  fileSize: number | null;
+  durationSeconds: number | null;
+  sortOrder: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface AssignedUserWithCompletion {
   id: string;
   moduleId: string;

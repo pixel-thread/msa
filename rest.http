@@ -3,7 +3,7 @@
 @userId=0d627af0-bcb4-4b11-8934-0a3f3bfc53e8
 @test3UserId=9a6043b7-2b58-425a-9912-3275dd4153fe
 @test2UserId=0d627af0-bcb4-4b11-8934-0a3f3bfc53e8
-@moduleId=REPLACE_WITH_MODULE_ID
+@moduleId=ee4b820e-0c34-46bf-a845-fb61e38cfedf
 @dsarTicketId=REPLACE_WITH_DSAR_TICKET_ID
 @notificationId=REPLACE_WITH_NOTIFICATION_ID
 @paymentId=REPLACE_WITH_PAYMENT_ID
@@ -630,6 +630,56 @@ Authorization: Bearer {{TOKEN}}
   "page": 1,
   "limit": 10
 }
+
+### ----------------- TRAINING SUPPLEMENTS ------------------
+
+### @supplementId=REPLACE_WITH_SUPPLEMENT_ID
+
+###
+# @name List Training Supplements
+GET {{NEXT_PUBLIC_API_BASE_URL}}/training/modules/{{moduleId}}/supplements
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Create Training Supplement
+POST {{NEXT_PUBLIC_API_BASE_URL}}/training/modules/{{moduleId}}/supplements
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "title": "GDPR Reference Guide",
+  "description": "A PDF guide to GDPR compliance",
+  "type": "VIDEO",
+  "fileUrl": "https://lorem.video/1280x720",
+  "mimeType": "application/pdf",
+  "fileSize": 2048000,
+  "sortOrder": 1,
+  "isActive": true
+}
+
+###
+# @name Get Training Supplement
+GET {{NEXT_PUBLIC_API_BASE_URL}}/training/modules/{{moduleId}}/supplements/{{supplementId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Update Training Supplement
+PATCH {{NEXT_PUBLIC_API_BASE_URL}}/training/modules/{{moduleId}}/supplements/{{supplementId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "title": "Updated GDPR Reference Guide",
+  "sortOrder": 2
+}
+
+###
+# @name Delete Training Supplement
+DELETE {{NEXT_PUBLIC_API_BASE_URL}}/training/modules/{{moduleId}}/supplements/{{supplementId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
 
 ### ----------------- COMPLIANCE ------------------
 

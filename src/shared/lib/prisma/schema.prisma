@@ -278,11 +278,11 @@ model Association {
 
 model User {
   id                       String        @id @default(uuid())
-  associationId            String 
+  associationId            String
   email                    String
   name                     String
-  mobile                   String? 
-  designation              String? 
+  mobile                   String?
+  designation              String?
   role                     UserRole[]
   status                   UserStatus    @default(ACTIVE)
   dateOfJoiningGovt        DateTime?
@@ -341,7 +341,7 @@ enum ApplicationStatus {
 }
 
 model MembershipApplication {
-  id              String            @id @default(uuid())
+  id              String   @id @default(uuid())
   email           String
   phone           String
   associationSlug String
@@ -355,14 +355,14 @@ model MembershipApplication {
   state           String?
   country         String?
   postalCode      String?
-  
-  status          ApplicationStatus @default(PENDING)
-  rejectionReason String?           // Helpful if an admin denies their sign-up
-  reviewedAt      DateTime?
-  reviewedBy      String?           // ID of the admin who approved/rejected them
 
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  status          ApplicationStatus @default(PENDING)
+  rejectionReason String? // Helpful if an admin denies their sign-up
+  reviewedAt      DateTime?
+  reviewedBy      String? // ID of the admin who approved/rejected them
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([email, associationSlug])
   @@unique([phone, associationSlug])
@@ -954,7 +954,7 @@ model Announcement {
 
 model TrainingModule {
   id               String               @id @default(uuid())
-  associationId    String // ★
+  associationId    String
   title            String
   description      String?
   content          String
@@ -967,6 +967,7 @@ model TrainingModule {
   association      Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
   completions      TrainingCompletion[]
   assignments      TrainingAssignment[]
+  supplements      TrainingSupplement[]
 
   @@unique([associationId, title])
   @@index([associationId])
@@ -1029,6 +1030,53 @@ model TrainingAssignment {
   @@index([moduleId])
   @@index([status])
   @@map("training_assignments")
+}
+
+enum TrainingSupplementType {
+  PDF
+  VIDEO
+  IMAGE
+  LINK
+
+  @@map("training_supplement_type")
+}
+
+model TrainingSupplement {
+  id String @id @default(uuid())
+
+  moduleId String
+
+  title       String
+  description String?
+
+  type TrainingSupplementType
+
+  // Storage
+  fileUrl      String?
+  thumbnailUrl String?
+
+  // Optional metadata
+  mimeType        String?
+  fileSize        Int? // bytes
+  durationSeconds Int? // for videos
+
+  // Ordering
+  sortOrder Int @default(autoincrement()) 
+
+  // Visibility
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  module TrainingModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@index([moduleId])
+  @@index([type])
+  @@index([sortOrder])
+  @@index([moduleId,isActive])
+  @@map("training_supplements")
 }
 
 model AnnouncementRead {

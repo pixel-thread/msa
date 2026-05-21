@@ -8,3 +8,7 @@ export * from "./findUserCompletions";
 export * from "./assignTraining";
 export * from "./findUserAssignments";
 export * from "./completeAssignment";
+export * from "./findManySupplements";
+export * from "./createSupplement";
+export * from "./updateSupplement";
+export * from "./deleteSupplement";

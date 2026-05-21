@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { UserRole } from "@prisma/client";
+import { UserRole, TrainingSupplementType } from "@prisma/client";
 
 export const CreateTrainingModuleSchema = z.object({
   title: z
@@ -68,3 +68,47 @@ export type AdminRecordCompletionInput = z.infer<
 >;
 export type AssignTrainingInput = z.infer<typeof AssignTrainingSchema>;
 export type BulkAssignTrainingInput = z.infer<typeof BulkAssignTrainingSchema>;
+
+export const CreateSupplementSchema = z.object({
+  title: z
+    .string()
+    .min(3, "Title must be at least 3 characters")
+    .max(200)
+    .trim(),
+  description: z
+    .string()
+    .max(1000, "Description cannot exceed 1000 characters")
+    .optional(),
+  type: z.nativeEnum(TrainingSupplementType),
+  fileUrl: z.string().url().optional().or(z.literal("")),
+  thumbnailUrl: z.string().url().optional().or(z.literal("")),
+  mimeType: z.string().optional(),
+  fileSize: z.number().int().positive().optional(),
+  durationSeconds: z.number().int().positive().optional(),
+  sortOrder: z.number().int().default(0),
+  isActive: z.boolean().default(true),
+});
+
+export const UpdateSupplementSchema = z.object({
+  title: z
+    .string()
+    .min(3, "Title must be at least 3 characters")
+    .max(200)
+    .trim()
+    .optional(),
+  description: z
+    .string()
+    .max(1000, "Description cannot exceed 1000 characters")
+    .optional(),
+  type: z.nativeEnum(TrainingSupplementType).optional(),
+  fileUrl: z.string().url().optional().or(z.literal("")),
+  thumbnailUrl: z.string().url().optional().or(z.literal("")),
+  mimeType: z.string().optional(),
+  fileSize: z.number().int().positive().optional(),
+  durationSeconds: z.number().int().positive().optional(),
+  sortOrder: z.number().int().optional(),
+  isActive: z.boolean().optional(),
+});
+
+export type CreateSupplementInput = z.infer<typeof CreateSupplementSchema>;
+export type UpdateSupplementInput = z.infer<typeof UpdateSupplementSchema>;

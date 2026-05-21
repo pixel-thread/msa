@@ -5,7 +5,10 @@ interface FindUniqueModuleProps {
   moduleId: string;
 }
 
-export async function findUniqueModule({ associationId, moduleId }: FindUniqueModuleProps) {
+export async function findUniqueModule({
+  associationId,
+  moduleId,
+}: FindUniqueModuleProps) {
   return await prisma.trainingModule.findUnique({
     where: { id: moduleId, associationId },
   });
