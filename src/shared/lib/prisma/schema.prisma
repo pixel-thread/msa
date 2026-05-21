@@ -252,6 +252,7 @@ model Association {
   status         Status   @default(ACTIVE)
 
   users               User[]
+  files               File[]
   subscriptionPlans   SubscriptionPlan[]
   meetings            Meeting[]
   auditLogs           AuditLog[]
@@ -320,6 +321,7 @@ model User {
   trainingCompletions   TrainingCompletion[]
   complaints            Complaint[]
   trainingAssignments   TrainingAssignment[]
+  trainingCertificates  TrainingCertificate[]
   memberTypeId          String?
   memberType            MemberType?          @relation(fields: [memberTypeId], references: [id])
 
@@ -968,6 +970,7 @@ model TrainingModule {
   completions      TrainingCompletion[]
   assignments      TrainingAssignment[]
   supplements      TrainingSupplement[]
+  certificates     TrainingCertificate[]
 
   @@unique([associationId, title])
   @@index([associationId])
@@ -1092,7 +1095,7 @@ model TrainingCertificate {
   thumbnailUrl   String?
 
   // Canonical file
-  fileId String?
+  fileId String? @unique
   file   File? @relation(fields: [fileId], references: [id], onDelete: SetNull)
 
   user   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -1276,6 +1279,11 @@ model File {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  trainingCertificateId String?
+  trainingCertificate TrainingCertificate?
+
+  trainingSupplement TrainingSupplement[]
 
   association Association? @relation(fields: [associationId], references: [id], onDelete: Cascade)
 
