@@ -1,7 +1,7 @@
 "use client";
 
-import { TrainingPortalPage } from "@src/features/training/pages";
+import { TrainingListPage } from "@src/features/training/pages";
 
-export default function Page() {
-  return <TrainingPortalPage />;
+export default function TrainingPageRoute() {
+  return <TrainingListPage />;
 }
