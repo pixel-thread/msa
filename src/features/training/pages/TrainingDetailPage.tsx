@@ -239,6 +239,21 @@ export function TrainingDetailPage() {
   return (
     <div className="mx-auto pb-12">
       <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-4">
+          <Button
+            onClick={() => router.push("/training")}
+            variant="ghost"
+            size="sm"
+            className="h-10 w-10 p-0 rounded-full hover:bg-canvas"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Module Management</span>
+            <h1 className="text-2xl sm:text-3xl font-semibold text-ink leading-tight">{trainingModule.title}</h1>
+          </div>
+        </div>
+
         <div className="flex items-center gap-2">
           <Button
             onClick={() => setEditDialogOpen(true)}
@@ -264,7 +279,7 @@ export function TrainingDetailPage() {
         <div className="lg:col-span-2 space-y-6">
           {trainingModule.description && (
             <div className="bg-surface-card border border-hairline rounded-xl p-6">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-muted mb-2">
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">
                 Overview
               </h2>
               <p className="text-sm text-body leading-relaxed">
@@ -276,7 +291,7 @@ export function TrainingDetailPage() {
           {/* Supplements Section */}
           <div className="bg-surface-card border border-hairline rounded-xl p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-hairline pb-3">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-muted flex items-center gap-1.5">
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                 <Paperclip className="h-4 w-4" />
                 Supplements
               </h2>
@@ -292,9 +307,9 @@ export function TrainingDetailPage() {
             </div>
 
             {isSupplementsLoading ? (
-              <p className="text-sm text-muted">Loading supplements...</p>
+              <p className="text-sm text-muted-foreground">Loading supplements...</p>
             ) : supplements.length === 0 ? (
-              <p className="text-sm text-muted">No supplements added yet.</p>
+              <p className="text-sm text-muted-foreground">No supplements added yet.</p>
             ) : (
               <ul className="space-y-2">
                 {supplements.map(
@@ -323,7 +338,7 @@ export function TrainingDetailPage() {
                         </div>
                       </div>
                       {sup.description && (
-                        <p className="text-xs text-muted mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                           {sup.description}
                         </p>
                       )}
@@ -347,13 +362,13 @@ export function TrainingDetailPage() {
 
         <div className="space-y-6">
           <div className="bg-surface-card border border-hairline rounded-xl p-6 space-y-4">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-muted">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
               Course Info
             </h2>
             <div className="space-y-3 text-sm">
               {trainingModule.durationMinutes && (
                 <div className="flex items-center justify-between py-2 border-b border-hairline">
-                  <span className="text-muted flex items-center gap-1.5">
+                  <span className="text-muted-foreground flex items-center gap-1.5">
                     <Clock className="h-4 w-4" /> Estimated time
                   </span>
                   <span className="font-semibold text-ink">
@@ -362,13 +377,13 @@ export function TrainingDetailPage() {
                 </div>
               )}
               <div className="flex items-center justify-between py-2 border-b border-hairline">
-                <span className="text-muted">Module Version</span>
+                <span className="text-muted-foreground">Module Version</span>
                 <span className="font-semibold text-ink">
                   v{trainingModule.version}
                 </span>
               </div>
               <div className="flex items-center justify-between py-2 border-b border-hairline">
-                <span className="text-muted">Status</span>
+                <span className="text-muted-foreground">Status</span>
                 <Badge
                   variant={trainingModule.isActive ? "default" : "destructive"}
                 >
@@ -376,7 +391,7 @@ export function TrainingDetailPage() {
                 </Badge>
               </div>
               <div className="flex items-center justify-between py-2 border-b border-hairline">
-                <span className="text-muted">Required For</span>
+                <span className="text-muted-foreground">Required For</span>
                 <div className="flex flex-wrap gap-1 justify-end">
                   {trainingModule.requiredForRoles.map((role: string) => (
                     <Badge
@@ -401,7 +416,7 @@ export function TrainingDetailPage() {
             Assigned Users
           </h2>
           <div className="flex items-center gap-4">
-            <div className="text-sm text-muted flex items-center gap-1.5 hidden sm:flex">
+            <div className="text-sm text-muted-foreground flex items-center gap-1.5 hidden sm:flex">
               {assignedUsers.length} user{assignedUsers.length !== 1 ? "s" : ""}{" "}
               assigned
             </div>
@@ -417,12 +432,12 @@ export function TrainingDetailPage() {
         </div>
 
         <div className="relative max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search assigned users..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-10 rounded-md border-hairline bg-canvas pl-10 text-ink placeholder:text-muted focus-visible:border-primary"
+            className="h-10 rounded-md border-hairline bg-canvas pl-10 text-ink placeholder:text-muted-foreground focus-visible:border-primary"
           />
         </div>
 
