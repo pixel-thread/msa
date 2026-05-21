@@ -12,15 +12,23 @@ export async function deleteSupplement({ associationId, moduleId, supplementId, 
   return await prisma.$transaction(async (tx) => {
     const supplement = await tx.trainingSupplement.findFirst({
       where: { id: supplementId, moduleId, module: { associationId } },
+      include: { file: true },
     });
 
     if (!supplement) {
       throw new Error("Training supplement not found");
     }
 
+    const storageKey = supplement.file?.storageKey;
+    const fileId = supplement.fileId;
+
     await tx.trainingSupplement.delete({
       where: { id: supplementId },
     });
+
+    if (fileId) {
+      await tx.file.delete({ where: { id: fileId } });
+    }
 
     await tx.auditLog.create({
       data: {
@@ -33,6 +41,6 @@ export async function deleteSupplement({ associationId, moduleId, supplementId, 
       },
     });
 
-    return { success: true, message: "Training supplement deleted" };
+    return { success: true, message: "Training supplement deleted", storageKey };
   });
 }

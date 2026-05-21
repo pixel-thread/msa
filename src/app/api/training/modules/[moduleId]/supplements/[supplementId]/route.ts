@@ -1,7 +1,9 @@
+import { env } from "@src/env";
+import { prisma } from "@lib/prisma";
 import { withAssociation } from "@src/shared/api/with-association";
 import { withRole } from "@src/shared/api/with-role";
 import { SuccessResponse } from "@utils/responses";
-import { ForbiddenError, NotFoundError } from "@src/shared/errors";
+import { BadRequestError, ForbiddenError, NotFoundError } from "@src/shared/errors";
 import { UserRole } from "@prisma/client";
 import {
   findManySupplements,
@@ -9,6 +11,7 @@ import {
   deleteSupplement,
 } from "@feature/training/services";
 import { UpdateSupplementSchema } from "@feature/training/validators/training";
+import { uploadToBucket, deleteFromBucket, mimeToFileType } from "@src/shared/lib/supabase/storage";
 import { z } from "zod";
 
 const TrainingParamsSchema = z.object({
@@ -41,26 +44,84 @@ export const GET = withAssociation(
 );
 
 export const PATCH = withAssociation(
-  { params: TrainingParamsSchema, body: UpdateSupplementSchema },
-  async (association, { params, body }, request) => {
+  { params: TrainingParamsSchema },
+  async (association, { params }, request) => {
     if (!params) {
       throw new ForbiddenError("Invalid params");
-    }
-
-    if (!body) {
-      throw new ForbiddenError("Invalid request body");
     }
 
     const { moduleId, supplementId } = params;
     const user = await withRole(request, UserRole.DPO);
 
-    const supplement = await updateSupplement({
+    const formData = await request.formData();
+    const file = formData.get("file") as File | null;
+    const metadataRaw = formData.get("metadata") as string | null;
+
+    if (!metadataRaw) {
+      throw new BadRequestError("Metadata is required");
+    }
+
+    let metadata: z.infer<typeof UpdateSupplementSchema>;
+    try {
+      const parsed = JSON.parse(metadataRaw);
+      metadata = UpdateSupplementSchema.parse(parsed);
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        throw new BadRequestError("Invalid metadata JSON");
+      }
+      throw error;
+    }
+
+    let downloadUrl: string | undefined;
+    let fileId: string | undefined;
+
+    if (file) {
+      if (!file.size || file.size === 0) {
+        throw new BadRequestError("File is empty");
+      }
+
+      const uploadResult = await uploadToBucket(
+        file,
+        `supplements/${association.slug}/${moduleId}`,
+      );
+
+      const fileRecord = await prisma.file.create({
+        data: {
+          associationId: association.id,
+          originalName: file.name,
+          storedName: uploadResult.storedName,
+          mimeType: uploadResult.mimeType,
+          extension: file.name.split(".").pop() || null,
+          sizeBytes: uploadResult.sizeBytes,
+          type: mimeToFileType(uploadResult.mimeType),
+          bucket: env.SUPABASE_BUCKET,
+          storageKey: uploadResult.storageKey,
+          url: uploadResult.url,
+          uploadedById: user.id,
+        },
+      });
+
+      downloadUrl = uploadResult.url;
+      fileId = fileRecord.id;
+    }
+
+    const { supplement, oldStorageKey } = await updateSupplement({
       associationId: association.id,
       moduleId,
       supplementId,
       actorId: user.id,
-      data: body,
+      data: metadata,
+      downloadUrl,
+      fileId,
     });
+
+    if (oldStorageKey) {
+      try {
+        await deleteFromBucket(oldStorageKey);
+      } catch {
+        // Best-effort cleanup — file is orphaned in bucket but DB record is already updated
+      }
+    }
 
     return SuccessResponse({ data: supplement });
   },
@@ -82,6 +143,14 @@ export const DELETE = withAssociation(
       actorId: user.id,
     });
 
-    return SuccessResponse({ data: result });
+    if (result.storageKey) {
+      try {
+        await deleteFromBucket(result.storageKey);
+      } catch {
+        // Best-effort cleanup — file is orphaned in bucket but DB records are already cleaned
+      }
+    }
+
+    return SuccessResponse({ data: { success: true, message: "Training supplement deleted" } });
   },
 );

@@ -80,11 +80,7 @@ export const CreateSupplementSchema = z.object({
     .max(1000, "Description cannot exceed 1000 characters")
     .optional(),
   type: z.nativeEnum(TrainingSupplementType),
-  fileUrl: z.string().url().optional().or(z.literal("")),
   thumbnailUrl: z.string().url().optional().or(z.literal("")),
-  mimeType: z.string().optional(),
-  fileSize: z.number().int().positive().optional(),
-  durationSeconds: z.number().int().positive().optional(),
   sortOrder: z.number().int().default(0),
   isActive: z.boolean().default(true),
 });
@@ -101,11 +97,7 @@ export const UpdateSupplementSchema = z.object({
     .max(1000, "Description cannot exceed 1000 characters")
     .optional(),
   type: z.nativeEnum(TrainingSupplementType).optional(),
-  fileUrl: z.string().url().optional().or(z.literal("")),
   thumbnailUrl: z.string().url().optional().or(z.literal("")),
-  mimeType: z.string().optional(),
-  fileSize: z.number().int().positive().optional(),
-  durationSeconds: z.number().int().positive().optional(),
   sortOrder: z.number().int().optional(),
   isActive: z.boolean().optional(),
 });

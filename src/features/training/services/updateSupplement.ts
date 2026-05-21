@@ -8,22 +8,36 @@ interface UpdateSupplementProps {
   supplementId: string;
   actorId: string;
   data: UpdateSupplementInput;
+  downloadUrl?: string;
+  fileId?: string;
 }
 
-export async function updateSupplement({ associationId, moduleId, supplementId, actorId, data }: UpdateSupplementProps) {
+export async function updateSupplement({ associationId, moduleId, supplementId, actorId, data, downloadUrl, fileId }: UpdateSupplementProps) {
   return await prisma.$transaction(async (tx) => {
     const supplement = await tx.trainingSupplement.findFirst({
       where: { id: supplementId, moduleId, module: { associationId } },
+      include: { file: true },
     });
 
     if (!supplement) {
       throw new Error("Training supplement not found");
     }
 
+    const oldStorageKey = supplement.file?.storageKey;
+    const oldFileId = supplement.fileId;
+
     const updated = await tx.trainingSupplement.update({
       where: { id: supplementId },
-      data,
+      data: {
+        ...data,
+        ...(downloadUrl && { downloadUrl }),
+        ...(fileId && { fileId }),
+      },
     });
+
+    if (oldFileId && fileId && oldFileId !== fileId) {
+      await tx.file.delete({ where: { id: oldFileId } });
+    }
 
     await tx.auditLog.create({
       data: {
@@ -37,6 +51,6 @@ export async function updateSupplement({ associationId, moduleId, supplementId, 
       },
     });
 
-    return updated;
+    return { supplement: updated, oldStorageKey };
   });
 }

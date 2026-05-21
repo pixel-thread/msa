@@ -7,9 +7,11 @@ interface CreateSupplementProps {
   moduleId: string;
   actorId: string;
   data: CreateSupplementInput;
+  downloadUrl: string;
+  fileId?: string;
 }
 
-export async function createSupplement({ associationId, moduleId, actorId, data }: CreateSupplementProps) {
+export async function createSupplement({ associationId, moduleId, actorId, data, downloadUrl, fileId }: CreateSupplementProps) {
   return await prisma.$transaction(async (tx) => {
     const module = await tx.trainingModule.findFirst({
       where: { id: moduleId, associationId },
@@ -23,6 +25,8 @@ export async function createSupplement({ associationId, moduleId, actorId, data 
       data: {
         moduleId,
         ...data,
+        downloadUrl,
+        ...(fileId && { fileId }),
       },
     });
 
