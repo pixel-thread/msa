@@ -382,7 +382,7 @@ export const trainingPaths = {
     post: {
       tags: ["Training"],
       summary: "Create a training supplement",
-      description: "Add a supplement to a training module (requires DPO or higher)",
+      description: "Add a supplement to a training module (requires DPO or higher). Accepts multipart/form-data with a file and a metadata JSON string.",
       parameters: [
         {
           name: "moduleId",
@@ -394,24 +394,35 @@ export const trainingPaths = {
       requestBody: {
         required: true,
         content: {
-          "application/json": {
+          "multipart/form-data": {
             schema: {
               type: "object",
-              required: ["title", "type"],
+              required: ["file", "metadata"],
               properties: {
-                title: { type: "string", minLength: 3, maxLength: 200 },
-                description: { type: "string", maxLength: 1000 },
-                type: {
+                file: {
                   type: "string",
-                  enum: ["PDF", "VIDEO", "IMAGE", "LINK"],
+                  format: "binary",
+                  description: "The supplement file (PDF, video, image, etc.)",
                 },
-                fileUrl: { type: "string", format: "uri" },
-                thumbnailUrl: { type: "string", format: "uri" },
-                mimeType: { type: "string" },
-                fileSize: { type: "integer" },
-                durationSeconds: { type: "integer" },
-                sortOrder: { type: "integer", default: 0 },
-                isActive: { type: "boolean", default: true },
+                metadata: {
+                  type: "string",
+                  description: "JSON string containing supplement metadata",
+                  schema: {
+                    type: "object",
+                    required: ["title", "type"],
+                    properties: {
+                      title: { type: "string", minLength: 3, maxLength: 200 },
+                      description: { type: "string", maxLength: 1000 },
+                      type: {
+                        type: "string",
+                        enum: ["PDF", "VIDEO", "IMAGE", "LINK"],
+                      },
+                      thumbnailUrl: { type: "string", format: "uri" },
+                      sortOrder: { type: "integer", default: 0 },
+                      isActive: { type: "boolean", default: true },
+                    },
+                  },
+                },
               },
             },
           },
@@ -451,7 +462,7 @@ export const trainingPaths = {
     patch: {
       tags: ["Training"],
       summary: "Update a training supplement",
-      description: "Update a supplement (requires DPO or higher)",
+      description: "Update a supplement (requires DPO or higher). Accepts multipart/form-data with an optional file and a required metadata JSON string.",
       parameters: [
         {
           name: "moduleId",
@@ -468,23 +479,33 @@ export const trainingPaths = {
       ],
       requestBody: {
         content: {
-          "application/json": {
+          "multipart/form-data": {
             schema: {
               type: "object",
               properties: {
-                title: { type: "string", minLength: 3, maxLength: 200 },
-                description: { type: "string", maxLength: 1000 },
-                type: {
+                file: {
                   type: "string",
-                  enum: ["PDF", "VIDEO", "IMAGE", "LINK"],
+                  format: "binary",
+                  description: "Optional new supplement file to replace the existing one",
                 },
-                fileUrl: { type: "string", format: "uri" },
-                thumbnailUrl: { type: "string", format: "uri" },
-                mimeType: { type: "string" },
-                fileSize: { type: "integer" },
-                durationSeconds: { type: "integer" },
-                sortOrder: { type: "integer" },
-                isActive: { type: "boolean" },
+                metadata: {
+                  type: "string",
+                  description: "JSON string containing supplement metadata fields to update",
+                  schema: {
+                    type: "object",
+                    properties: {
+                      title: { type: "string", minLength: 3, maxLength: 200 },
+                      description: { type: "string", maxLength: 1000 },
+                      type: {
+                        type: "string",
+                        enum: ["PDF", "VIDEO", "IMAGE", "LINK"],
+                      },
+                      thumbnailUrl: { type: "string", format: "uri" },
+                      sortOrder: { type: "integer" },
+                      isActive: { type: "boolean" },
+                    },
+                  },
+                },
               },
             },
           },
@@ -499,7 +520,7 @@ export const trainingPaths = {
     delete: {
       tags: ["Training"],
       summary: "Delete a training supplement",
-      description: "Delete a supplement (requires DPO or higher)",
+      description: "Delete a supplement and its associated file from storage (requires DPO or higher)",
       parameters: [
         {
           name: "moduleId",
@@ -516,7 +537,23 @@ export const trainingPaths = {
       ],
       responses: {
         "200": {
-          description: "Supplement deleted",
+          description: "Supplement deleted successfully",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  data: {
+                    type: "object",
+                    properties: {
+                      success: { type: "boolean" },
+                      message: { type: "string" },
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       },
     },
