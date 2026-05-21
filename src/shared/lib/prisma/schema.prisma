@@ -1052,14 +1052,12 @@ model TrainingSupplement {
   type TrainingSupplementType
 
   // Storage
-  fileUrl      String?
+  downloadUrl  String
   thumbnailUrl String?
+  imageUrl     String?
 
-  // Optional metadata
-  mimeType        String?
-  fileSize        Int? // bytes
-  durationSeconds Int? // for videos
-
+  fileId String?
+  file   File? @relation(fields: [fileId], references: [id], onDelete: SetNull)
   // Ordering
   sortOrder Int @default(autoincrement()) 
 
@@ -1077,6 +1075,35 @@ model TrainingSupplement {
   @@index([sortOrder])
   @@index([moduleId,isActive])
   @@map("training_supplements")
+}
+
+model TrainingCertificate {
+  id String @id @default(uuid())
+
+  userId   String
+  moduleId String
+
+  certificateNumber String? @unique
+
+  issuedAt DateTime @default(now())
+
+  // Fast-access URLs
+  certificateUrl String
+  thumbnailUrl   String?
+
+  // Canonical file
+  fileId String?
+  file   File? @relation(fields: [fileId], references: [id], onDelete: SetNull)
+
+  user   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  module TrainingModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, moduleId])
+
+  @@index([userId])
+  @@index([moduleId])
+
+  @@map("training_certificates")
 }
 
 model AnnouncementRead {
@@ -1200,4 +1227,61 @@ model Log {
   createdAt DateTime @default(now())
 
   @@map("logs")
+}
+
+enum FileType {
+  IMAGE
+  PDF
+  VIDEO
+  DOCUMENT
+  CERTIFICATE
+  OTHER
+
+  @@map("file_type")
+}
+
+model File {
+  id String @id @default(uuid())
+
+  associationId String?
+
+  originalName String
+  storedName   String
+
+  mimeType String
+  extension String?
+
+  sizeBytes Int
+
+  type FileType
+
+  // Storage provider info
+  bucket     String?
+  storageKey String
+
+  // CDN / public URLs
+  url          String
+  thumbnailUrl String?
+
+  // Optional image metadata
+  width  Int?
+  height Int?
+
+  // Video metadata
+  durationSeconds Int?
+
+  checksum String?
+
+  uploadedById String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  association Association? @relation(fields: [associationId], references: [id], onDelete: Cascade)
+
+  @@index([associationId])
+  @@index([type])
+  @@index([mimeType])
+
+  @@map("files")
 }

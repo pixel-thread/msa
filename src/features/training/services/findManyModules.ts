@@ -15,20 +15,21 @@ export async function findManyModules({
   associationId,
   role,
   isActive,
+
   page = 1,
   userId,
 }: FindManyModulesProps) {
   const [trainingModules, total] = await prisma.$transaction([
     prisma.trainingModule.findMany({
       where: {
-        completions: {
-          none: {
-            userId,
-          },
-        },
         associationId,
         isActive,
-        ...(role ? { requiredForRoles: { hasSome: role } } : {}),
+        ...(role
+          ? {
+              requiredForRoles: { hasSome: role },
+              completions: { none: { userId } },
+            }
+          : {}),
       },
       orderBy: { createdAt: "desc" },
       take: PAGE_SIZE,
