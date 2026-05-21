@@ -110,6 +110,7 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
     React.useState<ThemeMode>(getStoredThemeMode);
 
   React.useEffect(() => {
+    updateThemeClass(themeMode);
     if (themeMode !== "auto") return;
     return setupPreferredListener();
   }, [themeMode]);
@@ -135,6 +136,10 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
         toggleMode,
       }}
     >
+      <script
+        dangerouslySetInnerHTML={{ __html: themeDetectorScript }}
+        suppressHydrationWarning
+      />
       {children}
     </ThemeContext>
   );

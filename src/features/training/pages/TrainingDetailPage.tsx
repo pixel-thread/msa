@@ -2,44 +2,62 @@
 
 import { useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { 
-  Clock, ArrowLeft, CheckCircle, Award, Users, Search, 
-  Pencil, Trash2, Plus, Paperclip
+import {
+  Clock,
+  ArrowLeft,
+  CheckCircle,
+  Award,
+  Users,
+  Search,
+  Pencil,
+  Trash2,
+  Plus,
+  Paperclip,
 } from "lucide-react";
-import { 
-  useTrainingModule, 
-  useModuleAssignedUsers, 
+import {
+  useTrainingModule,
+  useModuleAssignedUsers,
   useTrainingModules,
-  useTrainingSupplements
+  useTrainingSupplements,
 } from "../hooks";
 import { Button } from "@src/shared/components/ui/button";
 import { Input } from "@src/shared/components/ui/input";
 import { Badge } from "@src/shared/components/ui/badge";
 import { DataTable } from "@src/shared/components/data-table";
-import { 
-  CompleteAssignmentDialog, 
+import {
+  CompleteAssignmentDialog,
   ManageAssigneesDialog,
   EditModuleDialog,
-  AddSupplementDialog
+  AddSupplementDialog,
 } from "../components";
-import type { AssignedUserWithCompletion, TrainingModuleListItem } from "../types";
+import type {
+  AssignedUserWithCompletion,
+  TrainingModuleListItem,
+} from "../types";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDate } from "@src/shared/utils";
 
 export function TrainingDetailPage() {
   const router = useRouter();
   const params = useParams();
-  const moduleId = params.moduleId as string || params.id as string;
+  const moduleId = (params.moduleId as string) || (params.id as string);
 
-  const { module: trainingModule, isLoading: isModuleLoading } = useTrainingModule(moduleId);
+  const { module: trainingModule, isLoading: isModuleLoading } =
+    useTrainingModule(moduleId);
   const { deleteModule, isDeleting } = useTrainingModules();
-  const { assignedUsers, isLoading: isAssignedLoading, completeAssignment, isCompleting: isCompletingAssignment } =
-    useModuleAssignedUsers(moduleId);
-  const { supplements, isLoading: isSupplementsLoading } = useTrainingSupplements(moduleId);
+  const {
+    assignedUsers,
+    isLoading: isAssignedLoading,
+    completeAssignment,
+    isCompleting: isCompletingAssignment,
+  } = useModuleAssignedUsers(moduleId);
+  const { supplements, isLoading: isSupplementsLoading } =
+    useTrainingSupplements(moduleId);
 
   const [search, setSearch] = useState("");
   const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<AssignedUserWithCompletion | null>(null);
+  const [selectedUser, setSelectedUser] =
+    useState<AssignedUserWithCompletion | null>(null);
   const [assignDialogOpen, setAssignDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [addSupplementOpen, setAddSupplementOpen] = useState(false);
@@ -50,7 +68,7 @@ export function TrainingDetailPage() {
     return assignedUsers.filter(
       (u) =>
         u.user?.name?.toLowerCase().includes(query) ||
-        u.user?.email?.toLowerCase().includes(query)
+        u.user?.email?.toLowerCase().includes(query),
     );
   }, [assignedUsers, search]);
 
@@ -59,11 +77,15 @@ export function TrainingDetailPage() {
   };
 
   const handleDeleteModule = () => {
-    if (window.confirm("Are you sure you want to delete this training module? This action cannot be undone.")) {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this training module? This action cannot be undone.",
+      )
+    ) {
       deleteModule(moduleId, {
         onSuccess: () => {
           router.push("/training");
-        }
+        },
       });
     }
   };
@@ -76,7 +98,9 @@ export function TrainingDetailPage() {
         const u = row.original.user;
         return (
           <div className="flex flex-col">
-            <span className="text-sm font-semibold text-ink">{u?.name || "Unknown User"}</span>
+            <span className="text-sm font-semibold text-ink">
+              {u?.name || "Unknown User"}
+            </span>
             <span className="text-xs text-muted-foreground">{u?.email}</span>
           </div>
         );
@@ -92,7 +116,7 @@ export function TrainingDetailPage() {
           <Badge
             className={
               isCompleted
-                ? "bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
+                ? "bg-semantic-up/10 text-semantic-up border-semantic-up/20"
                 : "bg-surface-soft text-body border-hairline"
             }
           >
@@ -116,7 +140,7 @@ export function TrainingDetailPage() {
         return (
           <span className="text-sm text-body">
             {score !== null && score !== undefined ? (
-                <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-medium">
+              <span className="flex items-center gap-1 text-semantic-up font-medium">
                 <Award className="h-3.5 w-3.5" />
                 {score} pts
               </span>
@@ -187,15 +211,25 @@ export function TrainingDetailPage() {
   ];
 
   if (isModuleLoading) {
-    return <div className="py-24 text-center text-body">Loading training module details...</div>;
+    return (
+      <div className="py-24 text-center text-body">
+        Loading training module details...
+      </div>
+    );
   }
 
   if (!trainingModule) {
     return (
       <div className="py-24 text-center">
         <h2 className="text-xl font-bold text-ink mb-2">Module Not Found</h2>
-        <p className="text-body mb-6">The training module you are trying to access does not exist or has been removed.</p>
-        <Button onClick={() => router.push("/training")} className="rounded-full">
+        <p className="text-body mb-6">
+          The training module you are trying to access does not exist or has
+          been removed.
+        </p>
+        <Button
+          onClick={() => router.push("/training")}
+          className="rounded-full"
+        >
           Back to Portal
         </Button>
       </div>
@@ -203,23 +237,8 @@ export function TrainingDetailPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto pb-12">
+    <div className="mx-auto pb-12">
       <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-4">
-          <Button
-            onClick={() => router.push("/training")}
-            variant="ghost"
-            size="sm"
-            className="h-10 w-10 p-0 rounded-full hover:bg-canvas"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <span className="text-xs text-muted font-medium uppercase tracking-wider">Module Management</span>
-            <h1 className="text-2xl sm:text-3xl font-semibold text-ink leading-tight">{trainingModule.title}</h1>
-          </div>
-        </div>
-
         <div className="flex items-center gap-2">
           <Button
             onClick={() => setEditDialogOpen(true)}
@@ -245,8 +264,12 @@ export function TrainingDetailPage() {
         <div className="lg:col-span-2 space-y-6">
           {trainingModule.description && (
             <div className="bg-surface-card border border-hairline rounded-xl p-6">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-muted mb-2">Overview</h2>
-              <p className="text-sm text-body leading-relaxed">{trainingModule.description}</p>
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-muted mb-2">
+                Overview
+              </h2>
+              <p className="text-sm text-body leading-relaxed">
+                {trainingModule.description}
+              </p>
             </div>
           )}
 
@@ -267,29 +290,56 @@ export function TrainingDetailPage() {
                 Add Supplement
               </Button>
             </div>
-            
+
             {isSupplementsLoading ? (
               <p className="text-sm text-muted">Loading supplements...</p>
             ) : supplements.length === 0 ? (
               <p className="text-sm text-muted">No supplements added yet.</p>
             ) : (
               <ul className="space-y-2">
-                {supplements.map((sup: { id: string; title: string; type: string; description?: string; downloadUrl?: string }) => (
-                  <li key={sup.id} className="flex flex-col bg-canvas p-3 rounded-lg border border-hairline">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <span className="font-semibold text-sm text-ink">{sup.title}</span>
-                        <Badge variant="secondary" className="ml-2 text-[10px]">{sup.type}</Badge>
+                {supplements.map(
+                  (sup: {
+                    id: string;
+                    title: string;
+                    type: string;
+                    description?: string;
+                    downloadUrl?: string;
+                  }) => (
+                    <li
+                      key={sup.id}
+                      className="flex flex-col bg-canvas p-3 rounded-lg border border-hairline"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <span className="font-semibold text-sm text-ink">
+                            {sup.title}
+                          </span>
+                          <Badge
+                            variant="secondary"
+                            className="ml-2 text-[10px]"
+                          >
+                            {sup.type}
+                          </Badge>
+                        </div>
                       </div>
-                    </div>
-                    {sup.description && <p className="text-xs text-muted mt-1">{sup.description}</p>}
-                    {sup.downloadUrl && (
-                      <a href={sup.downloadUrl} target="_blank" rel="noreferrer" className="text-xs text-primary hover:underline mt-1">
-                        View Resource
-                      </a>
-                    )}
-                  </li>
-                ))}
+                      {sup.description && (
+                        <p className="text-xs text-muted mt-1">
+                          {sup.description}
+                        </p>
+                      )}
+                      {sup.downloadUrl && (
+                        <a
+                          href={sup.downloadUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-xs text-primary hover:underline mt-1"
+                        >
+                          View Resource
+                        </a>
+                      )}
+                    </li>
+                  ),
+                )}
               </ul>
             )}
           </div>
@@ -297,23 +347,31 @@ export function TrainingDetailPage() {
 
         <div className="space-y-6">
           <div className="bg-surface-card border border-hairline rounded-xl p-6 space-y-4">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-muted">Course Info</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-muted">
+              Course Info
+            </h2>
             <div className="space-y-3 text-sm">
               {trainingModule.durationMinutes && (
                 <div className="flex items-center justify-between py-2 border-b border-hairline">
                   <span className="text-muted flex items-center gap-1.5">
                     <Clock className="h-4 w-4" /> Estimated time
                   </span>
-                  <span className="font-semibold text-ink">{trainingModule.durationMinutes} mins</span>
+                  <span className="font-semibold text-ink">
+                    {trainingModule.durationMinutes} mins
+                  </span>
                 </div>
               )}
               <div className="flex items-center justify-between py-2 border-b border-hairline">
                 <span className="text-muted">Module Version</span>
-                <span className="font-semibold text-ink">v{trainingModule.version}</span>
+                <span className="font-semibold text-ink">
+                  v{trainingModule.version}
+                </span>
               </div>
               <div className="flex items-center justify-between py-2 border-b border-hairline">
                 <span className="text-muted">Status</span>
-                <Badge variant={trainingModule.isActive ? "default" : "destructive"}>
+                <Badge
+                  variant={trainingModule.isActive ? "default" : "destructive"}
+                >
                   {trainingModule.isActive ? "Active" : "Inactive"}
                 </Badge>
               </div>
@@ -321,7 +379,11 @@ export function TrainingDetailPage() {
                 <span className="text-muted">Required For</span>
                 <div className="flex flex-wrap gap-1 justify-end">
                   {trainingModule.requiredForRoles.map((role: string) => (
-                    <Badge key={role} variant="secondary" className="text-[10px]">
+                    <Badge
+                      key={role}
+                      variant="secondary"
+                      className="text-[10px]"
+                    >
                       {role}
                     </Badge>
                   ))}
@@ -340,7 +402,8 @@ export function TrainingDetailPage() {
           </h2>
           <div className="flex items-center gap-4">
             <div className="text-sm text-muted flex items-center gap-1.5 hidden sm:flex">
-              {assignedUsers.length} user{assignedUsers.length !== 1 ? "s" : ""} assigned
+              {assignedUsers.length} user{assignedUsers.length !== 1 ? "s" : ""}{" "}
+              assigned
             </div>
             <Button
               onClick={() => setAssignDialogOpen(true)}
@@ -363,7 +426,11 @@ export function TrainingDetailPage() {
           />
         </div>
 
-        <DataTable loading={isAssignedLoading} data={filteredUsers} columns={columns} />
+        <DataTable
+          loading={isAssignedLoading}
+          data={filteredUsers}
+          columns={columns}
+        />
       </div>
 
       {selectedUser && (

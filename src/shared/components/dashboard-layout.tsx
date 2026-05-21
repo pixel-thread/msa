@@ -17,6 +17,8 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@src/shared/components/ui/sidebar";
+import { useTheme } from "../providers/theme-provider";
+import { Button } from "./ui/button";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -26,7 +28,15 @@ interface DashboardLayoutProps {
   }>;
 }
 
-export function DashboardLayout({ children, breadcrumbs = [] }: DashboardLayoutProps) {
+export function DashboardLayout({
+  children,
+  breadcrumbs = [],
+}: DashboardLayoutProps) {
+  const { setTheme, themeMode } = useTheme();
+  const toggleTheme = () => {
+    setTheme(themeMode === "light" ? "dark" : "light");
+  };
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -38,36 +48,9 @@ export function DashboardLayout({ children, breadcrumbs = [] }: DashboardLayoutP
               orientation="vertical"
               className="mr-2 data-vertical:h-4 data-vertical:self-auto"
             />
-            {breadcrumbs.length > 0 && (
-              <Breadcrumb>
-                <BreadcrumbList>
-                  {breadcrumbs.map((crumb, index) => {
-                    const isLast = index === breadcrumbs.length - 1;
-                    return (
-                      <React.Fragment key={crumb.label}>
-                        {index > 0 && (
-                          <BreadcrumbSeparator className="hidden md:block" />
-                        )}
-                        <BreadcrumbItem className="hidden md:block">
-                          {isLast ? (
-                            <BreadcrumbPage className="text-ink">
-                              {crumb.label}
-                            </BreadcrumbPage>
-                          ) : (
-                            <BreadcrumbLink
-                              href={crumb.href || "#"}
-                              className="text-body hover:text-ink"
-                            >
-                              {crumb.label}
-                            </BreadcrumbLink>
-                          )}
-                        </BreadcrumbItem>
-                      </React.Fragment>
-                    );
-                  })}
-                </BreadcrumbList>
-              </Breadcrumb>
-            )}
+            <Button onClick={toggleTheme}>
+              {themeMode === "light" ? "Dark" : "Light"}
+            </Button>
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-6 bg-canvas p-6">
