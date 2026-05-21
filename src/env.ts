@@ -6,6 +6,8 @@ export const env = createEnv({
     DATABASE_URL: z.url(),
     UPSTASH_REDIS_REST_URL: z.url(),
     UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
+    SUPABASE_SECRET_KEY: z.string("SUPABASE_KEY"),
+    SUPABASE_BUCKET: z.string("SUPABASE_BUCKET"),
     FIELD_ENCRYPTION_KEY: z
       .string()
       .regex(
@@ -47,6 +49,8 @@ export const env = createEnv({
     NEXT_PUBLIC_ACCESS_TOKEN_EXPIRY: z.number().default(900),
   },
   runtimeEnv: {
+    SUPABASE_BUCKET: process.env.SUPABASE_BUCKET,
+    SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
     ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS,
     DATABASE_URL: process.env.DATABASE_URL,
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
