@@ -100,7 +100,7 @@ export default function SignInPage() {
                       <Input
                         type="email"
                         placeholder="Email address"
-                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted-foreground focus-visible:border-primary"
                         {...field}
                       />
                     </FormControl>
@@ -121,7 +121,7 @@ export default function SignInPage() {
                       <Input
                         type="password"
                         placeholder="Password"
-                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted-foreground focus-visible:border-primary"
                         {...field}
                       />
                     </FormControl>
@@ -223,7 +223,7 @@ function MfaVerify({
                       <Input
                         type="text"
                         maxLength={6}
-                        className="h-12 rounded-md border-hairline bg-canvas text-center text-2xl tracking-widest text-ink placeholder:text-muted focus-visible:border-primary"
+                        className="h-12 rounded-md border-hairline bg-canvas text-center text-2xl tracking-widest text-ink placeholder:text-muted-foreground focus-visible:border-primary"
                         placeholder="000000"
                         {...field}
                         onChange={(e) =>

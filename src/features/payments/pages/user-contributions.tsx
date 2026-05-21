@@ -128,7 +128,7 @@ export function UserContributionsPage() {
           <p className="mt-1 text-base text-body">
             Monthly contribution breakdown
             {user.email && (
-              <span className="ml-2 text-muted">({user.email})</span>
+              <span className="ml-2 text-muted-foreground">({user.email})</span>
             )}
           </p>
         </div>
@@ -139,9 +139,9 @@ export function UserContributionsPage() {
           <Card className="rounded-xl border-hairline bg-surface-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <CreditCard className="h-5 w-5 text-muted" />
+                <CreditCard className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-xs font-medium text-muted">
+                  <p className="text-xs font-medium text-muted-foreground">
                     Total Expected
                   </p>
                   <p className="text-lg font-medium text-ink mt-1">
@@ -157,7 +157,7 @@ export function UserContributionsPage() {
               <div className="flex items-center gap-3">
                 <Receipt className="h-5 w-5 text-green-600" />
                 <div>
-                  <p className="text-xs font-medium text-muted">Total Paid</p>
+                  <p className="text-xs font-medium text-muted-foreground">Total Paid</p>
                   <p className="text-lg font-medium text-green-600 mt-1">
                     {formattedAmount(summary.totalPaid)}
                   </p>
@@ -171,7 +171,7 @@ export function UserContributionsPage() {
               <div className="flex items-center gap-3">
                 <AlertCircle className="h-5 w-5 text-red-600" />
                 <div>
-                  <p className="text-xs font-medium text-muted">Total Due</p>
+                  <p className="text-xs font-medium text-muted-foreground">Total Due</p>
                   <p className="text-lg font-medium text-red-600 mt-1">
                     {formattedAmount(summary.totalDue)}
                   </p>
@@ -183,9 +183,9 @@ export function UserContributionsPage() {
           <Card className="rounded-xl border-hairline bg-surface-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <CalendarDays className="h-5 w-5 text-muted" />
+                <CalendarDays className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-xs font-medium text-muted">Overdue</p>
+                  <p className="text-xs font-medium text-muted-foreground">Overdue</p>
                   <p className="text-lg font-medium text-ink mt-1">
                     {summary.overdueMonths} months
                   </p>
@@ -199,7 +199,7 @@ export function UserContributionsPage() {
       <div className="rounded-xl border border-hairline bg-surface-card p-4">
         <div className="flex flex-wrap items-end gap-3">
           <div className="grid gap-1">
-            <Label className="text-xs text-muted">From Year</Label>
+            <Label className="text-xs text-muted-foreground">From Year</Label>
             <Select value={fromYear} onValueChange={setFromYear}>
               <SelectTrigger className="w-[120px] h-9">
                 <SelectValue placeholder="Year" />
@@ -216,7 +216,7 @@ export function UserContributionsPage() {
           </div>
 
           <div className="grid gap-1">
-            <Label className="text-xs text-muted">From Month</Label>
+            <Label className="text-xs text-muted-foreground">From Month</Label>
             <Select value={fromMonth} onValueChange={setFromMonth}>
               <SelectTrigger className="w-[130px] h-9">
                 <SelectValue placeholder="Month" />
@@ -233,7 +233,7 @@ export function UserContributionsPage() {
           </div>
 
           <div className="grid gap-1">
-            <Label className="text-xs text-muted">To Year</Label>
+            <Label className="text-xs text-muted-foreground">To Year</Label>
             <Select value={toYear} onValueChange={setToYear}>
               <SelectTrigger className="w-[120px] h-9">
                 <SelectValue placeholder="Year" />
@@ -250,7 +250,7 @@ export function UserContributionsPage() {
           </div>
 
           <div className="grid gap-1">
-            <Label className="text-xs text-muted">To Month</Label>
+            <Label className="text-xs text-muted-foreground">To Month</Label>
             <Select value={toMonth} onValueChange={setToMonth}>
               <SelectTrigger className="w-[130px] h-9">
                 <SelectValue placeholder="Month" />
@@ -277,16 +277,16 @@ export function UserContributionsPage() {
 
       <Card className="rounded-xl border-hairline bg-surface-card">
         <CardHeader>
-          <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted">
+          <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             Contribution Periods ({contributions.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
           {contributions.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <CalendarDays className="h-12 w-12 text-muted mb-4" />
+              <CalendarDays className="h-12 w-12 text-muted-foreground mb-4" />
               <p className="text-base text-body">No contributions found</p>
-              <p className="text-sm text-muted mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Adjust the date range filters or generate contributions
               </p>
             </div>
@@ -328,7 +328,7 @@ export function UserContributionsPage() {
                     </TableCell>
                     <TableCell>{getStatusBadge(cp.status)}</TableCell>
                     <TableCell>
-                      <span className="text-sm text-muted">
+                      <span className="text-sm text-muted-foreground">
                         {new Date(cp.dueDate).toLocaleDateString("en-IN", {
                           day: "2-digit",
                           month: "short",
@@ -350,7 +350,7 @@ export function UserContributionsPage() {
                           ))}
                         </div>
                       ) : (
-                        <span className="text-xs text-muted">No payments</span>
+                        <span className="text-xs text-muted-foreground">No payments</span>
                       )}
                     </TableCell>
                   </TableRow>

@@ -103,8 +103,8 @@ export default function MeetingMinutesPage() {
       <div className="rounded-xl border border-hairline bg-surface-card">
         <div className="p-4">
           <div className="flex items-center gap-2 mb-4">
-            <FileText className="h-5 w-5 text-muted" />
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
+            <FileText className="h-5 w-5 text-muted-foreground" />
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Meeting Minutes ({minutes.length})
             </h2>
           </div>

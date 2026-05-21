@@ -47,9 +47,9 @@ export function MinutesTable({ minutes, isLoading, onEdit, onDelete }: MinutesTa
   if (minutes.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <ClipboardList className="h-12 w-12 text-muted mb-4" />
+        <ClipboardList className="h-12 w-12 text-muted-foreground mb-4" />
         <p className="text-base text-body">No minutes recorded yet</p>
-        <p className="text-sm text-muted mt-1">
+        <p className="text-sm text-muted-foreground mt-1">
           Add meeting minutes to document decisions and action items
         </p>
       </div>
@@ -87,17 +87,17 @@ export function MinutesTable({ minutes, isLoading, onEdit, onDelete }: MinutesTa
                     </Badge>
                   ))}
                   {minute.actionItems.length > 2 && (
-                    <span className="text-xs text-muted">
+                    <span className="text-xs text-muted-foreground">
                       +{minute.actionItems.length - 2} more
                     </span>
                   )}
                 </div>
               ) : (
-                <span className="text-xs text-muted">None</span>
+                <span className="text-xs text-muted-foreground">None</span>
               )}
             </TableCell>
             <TableCell>
-              <span className="text-sm text-muted">
+              <span className="text-sm text-muted-foreground">
                 {formatDate(minute.recordedAt)}
               </span>
             </TableCell>

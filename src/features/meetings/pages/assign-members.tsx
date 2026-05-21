@@ -181,9 +181,9 @@ export default function AssignMembersPage() {
         <Card className="rounded-xl border-hairline bg-surface-card">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <Users className="h-5 w-5 text-muted" />
+              <Users className="h-5 w-5 text-muted-foreground" />
               <div>
-                <p className="text-xs font-medium text-muted">Total</p>
+                <p className="text-xs font-medium text-muted-foreground">Total</p>
                 <p className="text-lg font-medium text-ink mt-1">{stats.total}</p>
               </div>
             </div>
@@ -195,7 +195,7 @@ export default function AssignMembersPage() {
             <div className="flex items-center gap-3">
               <CheckCircle2 className="h-5 w-5 text-green-600" />
               <div>
-                <p className="text-xs font-medium text-muted">Accepted</p>
+                <p className="text-xs font-medium text-muted-foreground">Accepted</p>
                 <p className="text-lg font-medium text-green-600 mt-1">{stats.accepted}</p>
               </div>
             </div>
@@ -207,7 +207,7 @@ export default function AssignMembersPage() {
             <div className="flex items-center gap-3">
               <XCircle className="h-5 w-5 text-red-600" />
               <div>
-                <p className="text-xs font-medium text-muted">Declined</p>
+                <p className="text-xs font-medium text-muted-foreground">Declined</p>
                 <p className="text-lg font-medium text-red-600 mt-1">{stats.declined}</p>
               </div>
             </div>
@@ -217,9 +217,9 @@ export default function AssignMembersPage() {
         <Card className="rounded-xl border-hairline bg-surface-card">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <Clock className="h-5 w-5 text-muted" />
+              <Clock className="h-5 w-5 text-muted-foreground" />
               <div>
-                <p className="text-xs font-medium text-muted">Pending</p>
+                <p className="text-xs font-medium text-muted-foreground">Pending</p>
                 <p className="text-lg font-medium text-ink mt-1">{stats.pending}</p>
               </div>
             </div>
@@ -230,7 +230,7 @@ export default function AssignMembersPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search attendees..."
               value={search}
@@ -272,7 +272,7 @@ export default function AssignMembersPage() {
 
       <Card className="rounded-xl border-hairline bg-surface-card">
         <CardHeader>
-          <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted">
+          <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             Attendees ({filteredAttendees.length})
           </CardTitle>
         </CardHeader>
@@ -283,9 +283,9 @@ export default function AssignMembersPage() {
             </div>
           ) : filteredAttendees.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <Users className="h-12 w-12 text-muted mb-4" />
+              <Users className="h-12 w-12 text-muted-foreground mb-4" />
               <p className="text-base text-body">No attendees found</p>
-              <p className="text-sm text-muted mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Assign members to this meeting to get started
               </p>
             </div>
@@ -306,9 +306,9 @@ export default function AssignMembersPage() {
                     <TableCell>
                       <div>
                         <p className="text-sm font-medium">{attendee.user.name}</p>
-                        <p className="text-xs text-muted">{attendee.user.email}</p>
+                        <p className="text-xs text-muted-foreground">{attendee.user.email}</p>
                         {attendee.user.membershipNumber && (
-                          <p className="text-xs text-muted">#{attendee.user.membershipNumber}</p>
+                          <p className="text-xs text-muted-foreground">#{attendee.user.membershipNumber}</p>
                         )}
                       </div>
                     </TableCell>

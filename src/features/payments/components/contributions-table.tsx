@@ -35,7 +35,7 @@ export function ContributionsTable({
     return (
       <div className="flex flex-col items-center justify-center py-12">
         <p className="text-base text-body">No contributions found</p>
-        <p className="text-sm text-muted mt-1">
+        <p className="text-sm text-muted-foreground mt-1">
           Try adjusting your filters or generate contributions for a new month
         </p>
       </div>
@@ -66,7 +66,7 @@ export function ContributionsTable({
                 {cp.user?.name || cp.userId.slice(0, 8)}
               </Link>
               {cp.user?.email && (
-                <div className="text-xs text-muted">{cp.user.email}</div>
+                <div className="text-xs text-muted-foreground">{cp.user.email}</div>
               )}
             </TableCell>
             <TableCell>
@@ -91,7 +91,7 @@ export function ContributionsTable({
             </TableCell>
             <TableCell>{getStatusBadge(cp.status)}</TableCell>
             <TableCell>
-              <span className="text-sm text-muted">
+              <span className="text-sm text-muted-foreground">
                 {new Date(cp.dueDate).toLocaleDateString("en-IN", {
                   day: "2-digit",
                   month: "short",

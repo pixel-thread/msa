@@ -76,7 +76,7 @@ export function PlanDetailPage() {
       <div className="grid gap-6 md:grid-cols-3">
         <Card className="rounded-xl border-hairline bg-surface-card md:col-span-2">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted">
+            <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Plan Details
             </CardTitle>
           </CardHeader>
@@ -85,7 +85,7 @@ export function PlanDetailPage() {
               {plan.description && (
                 <>
                   <div>
-                    <p className="text-xs font-medium text-muted">Description</p>
+                    <p className="text-xs font-medium text-muted-foreground">Description</p>
                     <p className="text-sm text-ink mt-1">{plan.description}</p>
                   </div>
                   <Separator className="bg-hairline" />
@@ -94,26 +94,26 @@ export function PlanDetailPage() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <p className="text-xs font-medium text-muted">Amount</p>
+                  <p className="text-xs font-medium text-muted-foreground">Amount</p>
                   <p className="text-lg font-medium text-ink mt-1">
                     {formattedAmount}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted">Billing Cycle</p>
+                  <p className="text-xs font-medium text-muted-foreground">Billing Cycle</p>
                   <p className="text-sm text-ink mt-1 capitalize">
                     {billingCycle.toLowerCase()}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted">Currency</p>
+                  <p className="text-xs font-medium text-muted-foreground">Currency</p>
                   <p className="text-sm text-ink mt-1">{currency}</p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted">Effective From</p>
+                  <p className="text-xs font-medium text-muted-foreground">Effective From</p>
                   <p className="text-sm text-ink mt-1">
                     {formatDate(effectiveFrom)}
                   </p>
@@ -126,7 +126,7 @@ export function PlanDetailPage() {
         <div className="space-y-6">
           <Card className="rounded-xl border-hairline bg-surface-card">
             <CardHeader>
-              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted">
+              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 Features
               </CardTitle>
             </CardHeader>
@@ -141,27 +141,27 @@ export function PlanDetailPage() {
                   ))}
                 </ul>
               ) : (
-                <p className="text-sm text-muted">No features defined</p>
+                <p className="text-sm text-muted-foreground">No features defined</p>
               )}
             </CardContent>
           </Card>
 
           <Card className="rounded-xl border-hairline bg-surface-card">
             <CardHeader>
-              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted">
+              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 Metadata
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 <div>
-                  <p className="text-xs font-medium text-muted">Created</p>
+                  <p className="text-xs font-medium text-muted-foreground">Created</p>
                   <p className="text-sm text-ink mt-1">
                     {formatDate(plan.createdAt)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-muted">Last Updated</p>
+                  <p className="text-xs font-medium text-muted-foreground">Last Updated</p>
                   <p className="text-sm text-ink mt-1">
                     {formatDate(plan.updatedAt)}
                   </p>

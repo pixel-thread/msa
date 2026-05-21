@@ -161,7 +161,7 @@ export function CreateMinuteDialog({ meetingId, open, onOpenChange, onSubmit, is
                         className="h-8 w-8 shrink-0"
                         onClick={() => handleRemoveActionItem(index)}
                       >
-                        <Trash2 className="h-4 w-4 text-muted" />
+                        <Trash2 className="h-4 w-4 text-muted-foreground" />
                       </Button>
                     </div>
                   ))}

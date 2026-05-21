@@ -154,7 +154,7 @@ export default function MeetingDetailPage() {
       <div className="grid gap-6 md:grid-cols-3">
         <Card className="rounded-xl border-hairline bg-surface-card md:col-span-2">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted">
+            <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Meeting Details
             </CardTitle>
           </CardHeader>
@@ -162,9 +162,9 @@ export default function MeetingDetailPage() {
             <div className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="flex items-start gap-3">
-                  <Calendar className="mt-0.5 h-4 w-4 text-muted" />
+                  <Calendar className="mt-0.5 h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="text-xs font-medium text-muted">Scheduled</p>
+                    <p className="text-xs font-medium text-muted-foreground">Scheduled</p>
                     <p className="text-sm text-ink">
                       {formatDate(meeting.scheduledAt)}
                     </p>
@@ -172,9 +172,9 @@ export default function MeetingDetailPage() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <MapPin className="mt-0.5 h-4 w-4 text-muted" />
+                  <MapPin className="mt-0.5 h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="text-xs font-medium text-muted">Venue</p>
+                    <p className="text-xs font-medium text-muted-foreground">Venue</p>
                     <p className="text-sm text-ink">
                       {meeting.venue || "Not set"}
                     </p>
@@ -182,9 +182,9 @@ export default function MeetingDetailPage() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <Users className="mt-0.5 h-4 w-4 text-muted" />
+                  <Users className="mt-0.5 h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="text-xs font-medium text-muted">Attendees</p>
+                    <p className="text-xs font-medium text-muted-foreground">Attendees</p>
                     <p className="text-sm text-ink">
                       {meeting.attendees?.length || 0}
                     </p>
@@ -192,9 +192,9 @@ export default function MeetingDetailPage() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <FileText className="mt-0.5 h-4 w-4 text-muted" />
+                  <FileText className="mt-0.5 h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="text-xs font-medium text-muted">Organizer</p>
+                    <p className="text-xs font-medium text-muted-foreground">Organizer</p>
                     <p className="text-sm text-ink">
                       {meeting.createdBy?.name || "Unknown"}
                     </p>
@@ -206,7 +206,7 @@ export default function MeetingDetailPage() {
                 <>
                   <Separator className="bg-hairline" />
                   <div>
-                    <p className="text-xs font-medium text-muted">
+                    <p className="text-xs font-medium text-muted-foreground">
                       Description
                     </p>
                     <p className="mt-1 text-sm text-ink">
@@ -221,7 +221,7 @@ export default function MeetingDetailPage() {
 
         <Card className="rounded-xl border-hairline bg-surface-card">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted">
+            <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Agenda Items
             </CardTitle>
           </CardHeader>
@@ -238,7 +238,7 @@ export default function MeetingDetailPage() {
                         {item.title}
                       </p>
                       {item.duration && (
-                        <div className="mt-1 flex items-center gap-1 text-xs text-muted">
+                        <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
                           <Clock className="h-3 w-3" />
                           {item.duration} min
                         </div>
@@ -248,7 +248,7 @@ export default function MeetingDetailPage() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted">No agenda items</p>
+              <p className="text-sm text-muted-foreground">No agenda items</p>
             )}
           </CardContent>
         </Card>
@@ -256,7 +256,7 @@ export default function MeetingDetailPage() {
 
       <Card className="rounded-xl border-hairline bg-surface-card">
         <CardHeader>
-          <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted">
+          <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             Attendees
           </CardTitle>
         </CardHeader>
@@ -272,7 +272,7 @@ export default function MeetingDetailPage() {
                     <p className="text-sm font-medium text-ink">
                       {attendee.user.name}
                     </p>
-                    <p className="text-xs text-muted">{attendee.user.email}</p>
+                    <p className="text-xs text-muted-foreground">{attendee.user.email}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="text-xs">
@@ -284,7 +284,7 @@ export default function MeetingDetailPage() {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-muted">No attendees assigned</p>
+            <p className="text-sm text-muted-foreground">No attendees assigned</p>
           )}
         </CardContent>
       </Card>

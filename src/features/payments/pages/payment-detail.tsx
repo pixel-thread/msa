@@ -70,7 +70,7 @@ export function PaymentDetailPage() {
       <div className="grid gap-6 md:grid-cols-3">
         <Card className="rounded-xl border-hairline bg-surface-card md:col-span-2">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted">
+            <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Transaction Information
             </CardTitle>
           </CardHeader>
@@ -78,21 +78,21 @@ export function PaymentDetailPage() {
             <div className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <p className="text-xs font-medium text-muted">Amount</p>
+                  <p className="text-xs font-medium text-muted-foreground">Amount</p>
                   <p className="text-lg font-medium text-ink mt-1">
                     {formattedAmount(payment.amount, payment.currency)}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted">Gateway</p>
+                  <p className="text-xs font-medium text-muted-foreground">Gateway</p>
                   <p className="text-sm text-ink mt-1 capitalize">
                     {payment.gateway.toLowerCase()}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted">Method</p>
+                  <p className="text-xs font-medium text-muted-foreground">Method</p>
                   <p className="text-sm text-ink mt-1 capitalize">
                     {payment.method
                       ? payment.method.toLowerCase().replace("_", " ")
@@ -101,7 +101,7 @@ export function PaymentDetailPage() {
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted">Payment Date</p>
+                  <p className="text-xs font-medium text-muted-foreground">Payment Date</p>
                   <p className="text-sm text-ink mt-1">
                     {formatDate(payment.paymentDate)}
                   </p>
@@ -112,7 +112,7 @@ export function PaymentDetailPage() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <p className="text-xs font-medium text-muted">
+                  <p className="text-xs font-medium text-muted-foreground">
                     Reference Number
                   </p>
                   <p className="text-sm text-ink mt-1">
@@ -121,7 +121,7 @@ export function PaymentDetailPage() {
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted">
+                  <p className="text-xs font-medium text-muted-foreground">
                     Receipt Number
                   </p>
                   <p className="text-sm text-ink mt-1">
@@ -130,7 +130,7 @@ export function PaymentDetailPage() {
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted">
+                  <p className="text-xs font-medium text-muted-foreground">
                     Razorpay Payment ID
                   </p>
                   <p className="text-sm text-ink mt-1 font-mono text-xs">
@@ -139,7 +139,7 @@ export function PaymentDetailPage() {
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted">
+                  <p className="text-xs font-medium text-muted-foreground">
                     Razorpay Order ID
                   </p>
                   <p className="text-sm text-ink mt-1 font-mono text-xs">
@@ -152,7 +152,7 @@ export function PaymentDetailPage() {
                 <>
                   <Separator className="bg-hairline" />
                   <div>
-                    <p className="text-xs font-medium text-muted">Notes</p>
+                    <p className="text-xs font-medium text-muted-foreground">Notes</p>
                     <p className="text-sm text-ink mt-1">{payment.notes}</p>
                   </div>
                 </>
@@ -164,7 +164,7 @@ export function PaymentDetailPage() {
         <div className="space-y-6">
           <Card className="rounded-xl border-hairline bg-surface-card">
             <CardHeader>
-              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted flex items-center gap-2">
+              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-2">
                 <User className="h-4 w-4" />
                 User
               </CardTitle>
@@ -178,10 +178,10 @@ export function PaymentDetailPage() {
                   {payment.user?.name || "Unknown User"}
                 </Link>
                 {payment.user?.email && (
-                  <p className="text-sm text-muted">{payment.user.email}</p>
+                  <p className="text-sm text-muted-foreground">{payment.user.email}</p>
                 )}
                 {payment.user?.membershipNumber && (
-                  <p className="text-sm text-muted">
+                  <p className="text-sm text-muted-foreground">
                     #{payment.user.membershipNumber}
                   </p>
                 )}
@@ -191,7 +191,7 @@ export function PaymentDetailPage() {
 
           <Card className="rounded-xl border-hairline bg-surface-card">
             <CardHeader>
-              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted flex items-center gap-2">
+              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-2">
                 <CreditCard className="h-4 w-4" />
                 Allocations
               </CardTitle>
@@ -204,7 +204,7 @@ export function PaymentDetailPage() {
                       key={alloc.id}
                       className="flex items-center justify-between text-sm"
                     >
-                      <span className="text-muted">
+                      <span className="text-muted-foreground">
                         {new Date(
                           alloc.contributionPeriod.year,
                           alloc.contributionPeriod.month - 1,
@@ -220,33 +220,33 @@ export function PaymentDetailPage() {
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-muted">No allocations</p>
+                <p className="text-sm text-muted-foreground">No allocations</p>
               )}
             </CardContent>
           </Card>
 
           <Card className="rounded-xl border-hairline bg-surface-card">
             <CardHeader>
-              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted">
+              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 Timestamps
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 <div>
-                  <p className="text-xs font-medium text-muted">Created</p>
+                  <p className="text-xs font-medium text-muted-foreground">Created</p>
                   <p className="text-sm text-ink mt-1">
                     {formatDate(payment.createdAt)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-muted">Paid At</p>
+                  <p className="text-xs font-medium text-muted-foreground">Paid At</p>
                   <p className="text-sm text-ink mt-1">
                     {formatDate(payment.paidAt || "")}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-muted">Last Updated</p>
+                  <p className="text-xs font-medium text-muted-foreground">Last Updated</p>
                   <p className="text-sm text-ink mt-1">
                     {formatDate(payment.updatedAt)}
                   </p>

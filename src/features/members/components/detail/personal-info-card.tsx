@@ -18,7 +18,7 @@ export function PersonalInfoCard({ member }: PersonalInfoCardProps) {
   return (
     <Card className="rounded-xl border-hairline bg-surface-card md:col-span-2">
       <CardHeader>
-        <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted">
+        <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           Personal Information
         </CardTitle>
       </CardHeader>
@@ -40,17 +40,17 @@ export function PersonalInfoCard({ member }: PersonalInfoCardProps) {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="flex items-start gap-3">
-              <Mail className="mt-0.5 h-4 w-4 text-muted" />
+              <Mail className="mt-0.5 h-4 w-4 text-muted-foreground" />
               <div>
-                <p className="text-xs font-medium text-muted">Email</p>
+                <p className="text-xs font-medium text-muted-foreground">Email</p>
                 <p className="text-sm text-ink">{member.email}</p>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
-              <Phone className="mt-0.5 h-4 w-4 text-muted" />
+              <Phone className="mt-0.5 h-4 w-4 text-muted-foreground" />
               <div>
-                <p className="text-xs font-medium text-muted">Mobile</p>
+                <p className="text-xs font-medium text-muted-foreground">Mobile</p>
                 <p className="text-sm text-ink">
                   {member.mobile || "Not provided"}
                 </p>
@@ -58,9 +58,9 @@ export function PersonalInfoCard({ member }: PersonalInfoCardProps) {
             </div>
 
             <div className="flex items-start gap-3">
-              <Hash className="mt-0.5 h-4 w-4 text-muted" />
+              <Hash className="mt-0.5 h-4 w-4 text-muted-foreground" />
               <div>
-                <p className="text-xs font-medium text-muted">
+                <p className="text-xs font-medium text-muted-foreground">
                   Membership Number
                 </p>
                 <p className="text-sm text-ink">
@@ -70,9 +70,9 @@ export function PersonalInfoCard({ member }: PersonalInfoCardProps) {
             </div>
 
             <div className="flex items-start gap-3">
-              <Briefcase className="mt-0.5 h-4 w-4 text-muted" />
+              <Briefcase className="mt-0.5 h-4 w-4 text-muted-foreground" />
               <div>
-                <p className="text-xs font-medium text-muted">Designation</p>
+                <p className="text-xs font-medium text-muted-foreground">Designation</p>
                 <p className="text-sm text-ink">
                   {member.designation || "Not provided"}
                 </p>

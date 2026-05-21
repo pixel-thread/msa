@@ -48,12 +48,12 @@ export default function MeetingsPage() {
 
       <div className="flex items-center gap-4">
         <div className="relative max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search meetings..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-11 rounded-md border-hairline bg-canvas pl-10 text-ink placeholder:text-muted focus-visible:border-primary"
+            className="h-11 rounded-md border-hairline bg-canvas pl-10 text-ink placeholder:text-muted-foreground focus-visible:border-primary"
           />
         </div>
       </div>

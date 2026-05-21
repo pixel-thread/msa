@@ -15,7 +15,7 @@ export function AccountCard({ member }: AccountCardProps) {
   return (
     <Card className="rounded-xl border-hairline bg-surface-card">
       <CardHeader>
-        <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted">
+        <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           Account
         </CardTitle>
       </CardHeader>

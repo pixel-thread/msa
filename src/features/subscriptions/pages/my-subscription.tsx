@@ -122,9 +122,9 @@ export function MySubscriptionPage() {
           <Card className="rounded-xl border-hairline bg-surface-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <CreditCard className="h-5 w-5 text-muted" />
+                <CreditCard className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-xs font-medium text-muted">Total Paid</p>
+                  <p className="text-xs font-medium text-muted-foreground">Total Paid</p>
                   <p className="text-lg font-medium text-ink mt-1">
                     {formattedAmount(summary.totalPaid)}
                   </p>
@@ -136,9 +136,9 @@ export function MySubscriptionPage() {
           <Card className="rounded-xl border-hairline bg-surface-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <Clock className="h-5 w-5 text-muted" />
+                <Clock className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-xs font-medium text-muted">Pending</p>
+                  <p className="text-xs font-medium text-muted-foreground">Pending</p>
                   <p className="text-lg font-medium text-ink mt-1">
                     {formattedAmount(summary.totalPending)}
                   </p>
@@ -150,9 +150,9 @@ export function MySubscriptionPage() {
           <Card className="rounded-xl border-hairline bg-surface-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <AlertCircle className="h-5 w-5 text-muted" />
+                <AlertCircle className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-xs font-medium text-muted">Total Dues</p>
+                  <p className="text-xs font-medium text-muted-foreground">Total Dues</p>
                   <p className="text-lg font-medium text-ink mt-1">
                     {formattedAmount(summary.totalDues)}
                   </p>
@@ -165,7 +165,7 @@ export function MySubscriptionPage() {
 
       <Card className="rounded-xl border-hairline bg-surface-card">
         <CardHeader>
-          <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted">
+          <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             Transactions
           </CardTitle>
         </CardHeader>

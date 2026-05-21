@@ -119,8 +119,8 @@ export default function ContributionsPage() {
       <div className="rounded-xl border border-hairline bg-surface-card">
         <div className="p-4">
           <div className="flex items-center gap-2 mb-4">
-            <CalendarDays className="h-5 w-5 text-muted" />
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
+            <CalendarDays className="h-5 w-5 text-muted-foreground" />
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Contribution Periods ({meta?.total || 0})
             </h2>
           </div>

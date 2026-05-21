@@ -92,7 +92,7 @@ export default function SignUpPage() {
                     <FormControl>
                       <Input
                         placeholder="First name"
-                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted-foreground focus-visible:border-primary"
                         {...field}
                       />
                     </FormControl>
@@ -112,7 +112,7 @@ export default function SignUpPage() {
                     <FormControl>
                       <Input
                         placeholder="Last name"
-                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted-foreground focus-visible:border-primary"
                         {...field}
                       />
                     </FormControl>
@@ -133,7 +133,7 @@ export default function SignUpPage() {
                       <Input
                         type="email"
                         placeholder="Email address"
-                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted-foreground focus-visible:border-primary"
                         {...field}
                       />
                     </FormControl>
@@ -154,7 +154,7 @@ export default function SignUpPage() {
                       <Input
                         type="tel"
                         placeholder="Phone number"
-                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted-foreground focus-visible:border-primary"
                         {...field}
                       />
                     </FormControl>
@@ -174,7 +174,7 @@ export default function SignUpPage() {
                     <FormControl>
                       <Input
                         type="date"
-                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted-foreground focus-visible:border-primary"
                         {...field}
                       />
                     </FormControl>
@@ -195,7 +195,7 @@ export default function SignUpPage() {
                       <Input
                         type="number"
                         placeholder="Age"
-                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted-foreground focus-visible:border-primary"
                         {...field}
                         onChange={(e) =>
                           field.onChange(parseInt(e.target.value, 10))
@@ -241,7 +241,7 @@ export default function SignUpPage() {
                     <FormControl>
                       <Input
                         placeholder="Address"
-                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted-foreground focus-visible:border-primary"
                         {...field}
                       />
                     </FormControl>
@@ -262,7 +262,7 @@ export default function SignUpPage() {
                       <FormControl>
                         <Input
                           placeholder="City"
-                          className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                          className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted-foreground focus-visible:border-primary"
                           {...field}
                         />
                       </FormControl>
@@ -282,7 +282,7 @@ export default function SignUpPage() {
                       <FormControl>
                         <Input
                           placeholder="State"
-                          className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                          className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted-foreground focus-visible:border-primary"
                           {...field}
                         />
                       </FormControl>
@@ -304,7 +304,7 @@ export default function SignUpPage() {
                       <FormControl>
                         <Input
                           placeholder="Country"
-                          className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                          className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted-foreground focus-visible:border-primary"
                           {...field}
                         />
                       </FormControl>
@@ -324,7 +324,7 @@ export default function SignUpPage() {
                       <FormControl>
                         <Input
                           placeholder="Postal code"
-                          className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                          className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted-foreground focus-visible:border-primary"
                           {...field}
                         />
                       </FormControl>

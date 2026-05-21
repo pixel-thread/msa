@@ -151,7 +151,7 @@ export default function ResetPasswordPage() {
                       <Input
                         type="password"
                         placeholder="New password"
-                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted focus-visible:border-primary"
+                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted-foreground focus-visible:border-primary"
                         {...field}
                       />
                     </FormControl>

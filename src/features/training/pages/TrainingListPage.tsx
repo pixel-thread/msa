@@ -84,12 +84,12 @@ export function TrainingListPage() {
 
       <div className="flex items-center justify-between gap-4 mb-6">
         <div className="relative max-w-sm flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search training modules..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-11 rounded-md border-hairline bg-canvas pl-10 text-ink placeholder:text-muted focus-visible:border-primary"
+            className="h-11 rounded-md border-hairline bg-canvas pl-10 text-ink placeholder:text-muted-foreground focus-visible:border-primary"
           />
         </div>
 

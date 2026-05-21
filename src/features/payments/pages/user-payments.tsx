@@ -82,9 +82,9 @@ export function UserPaymentsPage() {
           </h1>
           <p className="mt-1 text-base text-body">
             Payment history and contribution summary
-            {user.email && <span className="ml-2 text-muted">({user.email})</span>}
+            {user.email && <span className="ml-2 text-muted-foreground">({user.email})</span>}
             {user.membershipNumber && (
-              <span className="ml-2 text-muted">#{user.membershipNumber}</span>
+              <span className="ml-2 text-muted-foreground">#{user.membershipNumber}</span>
             )}
           </p>
         </div>
@@ -95,9 +95,9 @@ export function UserPaymentsPage() {
           <Card className="rounded-xl border-hairline bg-surface-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <CreditCard className="h-5 w-5 text-muted" />
+                <CreditCard className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-xs font-medium text-muted">Total Expected</p>
+                  <p className="text-xs font-medium text-muted-foreground">Total Expected</p>
                   <p className="text-lg font-medium text-ink mt-1">
                     {formatAmount(summary.totalExpected)}
                   </p>
@@ -111,7 +111,7 @@ export function UserPaymentsPage() {
               <div className="flex items-center gap-3">
                 <Receipt className="h-5 w-5 text-green-600" />
                 <div>
-                  <p className="text-xs font-medium text-muted">Total Paid</p>
+                  <p className="text-xs font-medium text-muted-foreground">Total Paid</p>
                   <p className="text-lg font-medium text-green-600 mt-1">
                     {formatAmount(summary.totalPaid)}
                   </p>
@@ -125,7 +125,7 @@ export function UserPaymentsPage() {
               <div className="flex items-center gap-3">
                 <AlertCircle className="h-5 w-5 text-red-600" />
                 <div>
-                  <p className="text-xs font-medium text-muted">Total Due</p>
+                  <p className="text-xs font-medium text-muted-foreground">Total Due</p>
                   <p className="text-lg font-medium text-red-600 mt-1">
                     {formatAmount(summary.totalDue)}
                   </p>
@@ -137,9 +137,9 @@ export function UserPaymentsPage() {
           <Card className="rounded-xl border-hairline bg-surface-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <Clock className="h-5 w-5 text-muted" />
+                <Clock className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-xs font-medium text-muted">Overdue Months</p>
+                  <p className="text-xs font-medium text-muted-foreground">Overdue Months</p>
                   <p className="text-lg font-medium text-ink mt-1">
                     {summary.overdueMonths}
                   </p>
@@ -153,7 +153,7 @@ export function UserPaymentsPage() {
       <div className="grid gap-6 md:grid-cols-3">
         <Card className="rounded-xl border-hairline bg-surface-card md:col-span-2">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted">
+            <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Payment Transactions
             </CardTitle>
           </CardHeader>
@@ -165,7 +165,7 @@ export function UserPaymentsPage() {
         <div className="space-y-6">
           <Card className="rounded-xl border-hairline bg-surface-card">
             <CardHeader>
-              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted">
+              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 Contribution Summary
               </CardTitle>
             </CardHeader>
@@ -173,22 +173,22 @@ export function UserPaymentsPage() {
               {summary && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted">Paid Months</span>
+                    <span className="text-sm text-muted-foreground">Paid Months</span>
                     <Badge variant="default">{summary.paidMonths}</Badge>
                   </div>
                   <Separator className="bg-hairline" />
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted">Partial Months</span>
+                    <span className="text-sm text-muted-foreground">Partial Months</span>
                     <Badge variant="outline">{summary.partialMonths}</Badge>
                   </div>
                   <Separator className="bg-hairline" />
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted">Overdue Months</span>
+                    <span className="text-sm text-muted-foreground">Overdue Months</span>
                     <Badge variant="destructive">{summary.overdueMonths}</Badge>
                   </div>
                   <Separator className="bg-hairline" />
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted">Waived Months</span>
+                    <span className="text-sm text-muted-foreground">Waived Months</span>
                     <Badge variant="secondary">{summary.waivedMonths}</Badge>
                   </div>
                 </div>
@@ -198,7 +198,7 @@ export function UserPaymentsPage() {
 
           <Card className="rounded-xl border-hairline bg-surface-card">
             <CardHeader>
-              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted">
+              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 Quick Links
               </CardTitle>
             </CardHeader>

@@ -33,7 +33,7 @@ export function PaymentsTable({ payments, isLoading }: PaymentsTableProps) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
         <p className="text-base text-body">No payments found</p>
-        <p className="text-sm text-muted mt-1">
+        <p className="text-sm text-muted-foreground mt-1">
           Try adjusting your filters or record a new payment
         </p>
       </div>
@@ -62,7 +62,7 @@ export function PaymentsTable({ payments, isLoading }: PaymentsTableProps) {
                   {formatDate(tx.paymentDate)}
                 </span>
                 {tx.notes && (
-                  <span className="text-xs text-muted line-clamp-1">
+                  <span className="text-xs text-muted-foreground line-clamp-1">
                     {tx.notes}
                   </span>
                 )}
@@ -76,7 +76,7 @@ export function PaymentsTable({ payments, isLoading }: PaymentsTableProps) {
                 {tx.user?.name || tx.userId.slice(0, 8)}
               </Link>
               {tx.user?.email && (
-                <div className="text-xs text-muted">{tx.user.email}</div>
+                <div className="text-xs text-muted-foreground">{tx.user.email}</div>
               )}
             </TableCell>
             <TableCell>

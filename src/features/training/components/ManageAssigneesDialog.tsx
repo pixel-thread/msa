@@ -155,7 +155,7 @@ export function ManageAssigneesDialog({ open, onOpenChange, module }: ManageAssi
         </DialogHeader>
 
         <div className="relative my-2">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search by name or email..."
             className="pl-9 h-10 border-hairline bg-canvas/50"
@@ -214,17 +214,17 @@ export function ManageAssigneesDialog({ open, onOpenChange, module }: ManageAssi
             className="flex-1 overflow-y-auto mt-4 pr-1 min-h-[300px] flex flex-col"
           >
             {isAssignmentsLoading || isMembersLoading ? (
-              <p className="text-center text-sm text-muted my-8">Loading assignees...</p>
+              <p className="text-center text-sm text-muted-foreground my-8">Loading assignees...</p>
             ) : filteredCurrent.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <p className="text-sm text-muted">No assigned users found.</p>
+                <p className="text-sm text-muted-foreground">No assigned users found.</p>
               </div>
             ) : (
               <div className="space-y-2">
-                <div className="flex items-center gap-3 px-3 py-1 border-b text-xs text-muted font-medium">
+                <div className="flex items-center gap-3 px-3 py-1 border-b text-xs text-muted-foreground font-medium">
                   <button
                     onClick={toggleAllCurrent}
-                    className="hover:text-ink text-muted flex items-center"
+                    className="hover:text-ink text-muted-foreground flex items-center"
                   >
                     {selectedCurrent.length === filteredCurrent.length ? (
                       <CheckSquare className="h-4 w-4 text-primary" />
@@ -248,7 +248,7 @@ export function ManageAssigneesDialog({ open, onOpenChange, module }: ManageAssi
                     >
                       <button
                         onClick={() => toggleSelectCurrent(user.id)}
-                        className="text-muted hover:text-ink"
+                        className="text-muted-foreground hover:text-ink"
                       >
                         {selectedCurrent.includes(user.id) ? (
                           <CheckSquare className="h-4.5 w-4.5 text-primary" />
@@ -259,13 +259,13 @@ export function ManageAssigneesDialog({ open, onOpenChange, module }: ManageAssi
 
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-ink truncate">{user.name}</p>
-                        <p className="text-xs text-muted truncate">{user.email}</p>
+                        <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                       </div>
 
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-muted hover:text-destructive hover:bg-destructive/10"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                         onClick={() => handleRemoveSingle(user.id)}
                         disabled={isRemoving}
                       >
@@ -284,17 +284,17 @@ export function ManageAssigneesDialog({ open, onOpenChange, module }: ManageAssi
             className="flex-1 overflow-y-auto mt-4 pr-1 min-h-[300px] flex flex-col"
           >
             {isAssignmentsLoading || isMembersLoading ? (
-              <p className="text-center text-sm text-muted my-8">Loading available members...</p>
+              <p className="text-center text-sm text-muted-foreground my-8">Loading available members...</p>
             ) : filteredAdd.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <p className="text-sm text-muted">No available members to assign.</p>
+                <p className="text-sm text-muted-foreground">No available members to assign.</p>
               </div>
             ) : (
               <div className="space-y-2">
-                <div className="flex items-center gap-3 px-3 py-1 border-b text-xs text-muted font-medium">
+                <div className="flex items-center gap-3 px-3 py-1 border-b text-xs text-muted-foreground font-medium">
                   <button
                     onClick={toggleAllAdd}
-                    className="hover:text-ink text-muted flex items-center"
+                    className="hover:text-ink text-muted-foreground flex items-center"
                   >
                     {selectedAdd.length === filteredAdd.length ? (
                       <CheckSquare className="h-4 w-4 text-primary" />
@@ -318,7 +318,7 @@ export function ManageAssigneesDialog({ open, onOpenChange, module }: ManageAssi
                     >
                       <button
                         onClick={() => toggleSelectAdd(member.id)}
-                        className="text-muted hover:text-ink"
+                        className="text-muted-foreground hover:text-ink"
                       >
                         {selectedAdd.includes(member.id) ? (
                           <CheckSquare className="h-4.5 w-4.5 text-primary" />
@@ -329,13 +329,13 @@ export function ManageAssigneesDialog({ open, onOpenChange, module }: ManageAssi
 
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-ink truncate">{member.name}</p>
-                        <p className="text-xs text-muted truncate">{member.email}</p>
+                        <p className="text-xs text-muted-foreground truncate">{member.email}</p>
                       </div>
 
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-muted hover:text-primary hover:bg-primary/10"
+                        className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10"
                         onClick={() => handleAssignSingle(member.id)}
                         disabled={isAssigning}
                       >
