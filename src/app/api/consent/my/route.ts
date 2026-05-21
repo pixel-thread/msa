@@ -23,9 +23,6 @@ export const GET = withAssociation({}, async (association, _, req) => {
   );
 
   return SuccessResponse({
-    data: {
-      consentState,
-      association: association.slug,
-    },
+    data: consentState,
   });
 });

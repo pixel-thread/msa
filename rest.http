@@ -8,7 +8,7 @@
 @notificationId=REPLACE_WITH_NOTIFICATION_ID
 @paymentId=REPLACE_WITH_PAYMENT_ID
 @providerId=REPLACE_WITH_PROVIDER_ID
-@announcementId=REPLACE_WITH_ANNOUNCEMENT_ID
+@announcementId=6fd37ef7-007b-4a2f-8a04-0932e94b4f2a
 @invoiceId=REPLACE_WITH_INVOICE_ID
 @minuitesId=REPLACE_WITH_MINUTES_ID
 
@@ -972,7 +972,7 @@ Content-Type: application/json
 
 ###
 # @name List Announcements
-GET {{NEXT_PUBLIC_API_BASE_URL}}/announcements?page=1&limit=10
+GET {{NEXT_PUBLIC_API_BASE_URL}}/announcement?page=1&limit=10
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 

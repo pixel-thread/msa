@@ -33,7 +33,10 @@ export const GET = withAssociation(
       associationId: association.id,
     });
 
-    return SuccessResponse({ data: announcement });
+    return SuccessResponse({
+      data: announcement,
+      message: "Successfully fetch announcement",
+    });
   },
 );
 
@@ -173,4 +176,3 @@ export const PATCH = withAssociation(
     );
   },
 );
-

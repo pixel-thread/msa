@@ -10,7 +10,7 @@ export async function findUniqueAnnouncement({
   announcementId,
   associationId,
 }: FindUniqueAnnouncementProps) {
-  const announcement = await prisma.announcement.findFirst({
+  const announcement = await prisma.announcement.findUnique({
     where: { id: announcementId, associationId },
     include: {
       author: {
@@ -37,3 +37,4 @@ export async function findUniqueAnnouncement({
 
   return announcement;
 }
+

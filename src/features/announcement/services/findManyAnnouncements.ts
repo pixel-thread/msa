@@ -29,6 +29,7 @@ export async function findManyAnnouncements({
     ...(filters?.status && { status: filters.status }),
     ...(filters?.priority && { priority: filters.priority }),
     ...(filters?.search && {
+      publishedAt: { not: null },
       OR: [
         { title: { contains: filters.search, mode: "insensitive" } },
         { summary: { contains: filters.search, mode: "insensitive" } },
@@ -50,6 +51,7 @@ export async function findManyAnnouncements({
         author: {
           select: { id: true, name: true, imageUrl: true },
         },
+        readReceipts: true,
         _count: {
           select: { readReceipts: true },
         },
@@ -63,3 +65,4 @@ export async function findManyAnnouncements({
     pagination: buildPagination(total, page, limit),
   };
 }
+

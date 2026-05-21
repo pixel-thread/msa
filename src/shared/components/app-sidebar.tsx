@@ -23,6 +23,7 @@ import {
   CreditCardIcon,
   BookOpenIcon,
   WalletIcon,
+  AlertTriangleIcon,
 } from "lucide-react";
 import { useAuthStore } from "@src/shared/stores/auth";
 
@@ -31,6 +32,11 @@ const navMain = [
     title: "Dashboard",
     url: "/dashboard",
     icon: <LayoutDashboardIcon />,
+  },
+  {
+    title: "Announcement",
+    url: "/announcement",
+    icon: <AlertTriangleIcon />,
   },
   {
     title: "Members",
@@ -143,13 +149,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const dynamicNavMain = React.useMemo(() => {
     const roles = user?.role || [];
     const isDpoOrAdmin = roles.some((role: string) =>
-      ["DPO", "SUPER_ADMIN"].includes(role)
+      ["DPO", "SUPER_ADMIN"].includes(role),
     );
     const isSecretaryOrAdmin = roles.some((role: string) =>
-      ["SECRETARY", "PRESIDENT", "SUPER_ADMIN"].includes(role)
+      ["SECRETARY", "PRESIDENT", "SUPER_ADMIN"].includes(role),
     );
     const isFinanceOrAdmin = roles.some((role: string) =>
-      ["FINANCE", "SUPER_ADMIN", "PRESIDENT", "SECRETARY"].includes(role)
+      ["FINANCE", "SUPER_ADMIN", "PRESIDENT", "SECRETARY"].includes(role),
     );
 
     return navMain
