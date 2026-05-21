@@ -16,10 +16,16 @@ export async function findManyModules({
   role,
   isActive,
   page = 1,
+  userId,
 }: FindManyModulesProps) {
   const [trainingModules, total] = await prisma.$transaction([
     prisma.trainingModule.findMany({
       where: {
+        completions: {
+          none: {
+            userId,
+          },
+        },
         associationId,
         isActive,
         ...(role ? { requiredForRoles: { hasSome: role } } : {}),
@@ -27,6 +33,7 @@ export async function findManyModules({
       orderBy: { createdAt: "desc" },
       take: PAGE_SIZE,
       skip: (page - 1) * PAGE_SIZE,
+      include: { completions: true },
     }),
 
     prisma.trainingModule.count({

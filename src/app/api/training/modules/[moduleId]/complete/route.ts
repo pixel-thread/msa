@@ -23,7 +23,7 @@ export const POST = withAssociation(
 
     const { moduleId } = params;
 
-    const user = await withRole(request, UserRole.MEMBER);
+    const user = await withRole(request, UserRole.SUPER_ADMIN);
 
     const completion = await recordCompletion({
       associationId: association.id,

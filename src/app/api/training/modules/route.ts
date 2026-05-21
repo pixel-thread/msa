@@ -31,7 +31,9 @@ export const GET = withAssociation({}, async (association, _, request) => {
     associationId: association.id,
     isActive,
     role,
+    userId: user.id,
   });
+
   return SuccessResponse({
     data: modules.trainingModules,
     meta: modules.pagination,

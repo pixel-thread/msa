@@ -93,13 +93,13 @@ export const useMeetingTableColumns = (): {
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href={`/dashboard/meetings/${meeting.id}`}>
+                <Link href={`/meetings/${meeting.id}`}>
                   <Eye className="mr-2 h-4 w-4" />
                   View Details
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href={`/dashboard/meetings/${meeting.id}?edit=true`}>
+                <Link href={`/meetings/${meeting.id}?edit=true`}>
                   <Pencil className="mr-2 h-4 w-4" />
                   Edit
                 </Link>
