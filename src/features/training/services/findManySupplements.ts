@@ -5,7 +5,10 @@ interface FindManySupplementsProps {
   moduleId: string;
 }
 
-export async function findManySupplements({ associationId, moduleId }: FindManySupplementsProps) {
+export async function findManySupplements({
+  associationId,
+  moduleId,
+}: FindManySupplementsProps) {
   return await prisma.trainingSupplement.findMany({
     where: {
       moduleId,
