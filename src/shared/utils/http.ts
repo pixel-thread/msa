@@ -73,7 +73,7 @@ const http = {
 
   post: async <T>(
     url: string,
-    data?: object,
+    data?: object | FormData,
     config?: AxiosRequestConfig,
   ): Promise<ApiResponse<T>> => {
     try {
@@ -107,7 +107,7 @@ const http = {
 
   patch: async <T>(
     url: string,
-    data?: object,
+    data?: object | FormData,
     config?: AxiosRequestConfig,
   ): Promise<ApiResponse<T>> => {
     try {

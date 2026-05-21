@@ -1,5 +1,6 @@
 import { prisma } from "@src/shared/lib/prisma";
 import { AuditAction } from "@prisma/client";
+import { logAction } from "@src/shared/services/audit-logs";
 
 export interface SubscriptionExpiryResult {
   associationId: string;
@@ -58,17 +59,11 @@ export async function expireOverdueSubscriptions(
       },
     });
 
-    await prisma.auditLog.create({
-      data: {
-        associationId,
-        action: AuditAction.SUBSCRIPTION_CHANGE,
-        resourceType: "SUBSCRIPTION_OVERDUE",
-        // details: {
-        //   action: "EXPIRE_OVERDUE",
-        //   expiredCount: expiredSubscriptions.length,
-        //   subscriptionIds: expiredSubscriptions.map((s) => s.id),
-        // },
-      },
+    await logAction({
+      associationId,
+      actorId: "",
+      action: AuditAction.SUBSCRIPTION_CHANGE,
+      resourceType: "SUBSCRIPTION_OVERDUE",
     });
 
     return {
@@ -102,4 +97,3 @@ export async function runSubscriptionExpiryCron(): Promise<
 
   return results;
 }
-

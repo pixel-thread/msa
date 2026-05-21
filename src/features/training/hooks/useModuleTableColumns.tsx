@@ -9,28 +9,26 @@ import {
   DropdownMenuTrigger,
 } from "@src/shared/components/ui/dropdown-menu";
 import { Button } from "@src/shared/components/ui/button";
-import { MoreHorizontal, Pencil, Users, ToggleLeft, ToggleRight, Eye } from "lucide-react";
+import { MoreHorizontal, Settings, ToggleLeft, ToggleRight } from "lucide-react";
 import type { TrainingModuleListItem } from "../types";
 
 export const useModuleTableColumns = (options: {
-  onEdit: (module: TrainingModuleListItem) => void;
-  onManageAssignees: (module: TrainingModuleListItem) => void;
+  onManage: (module: TrainingModuleListItem) => void;
   onToggleActive: (module: TrainingModuleListItem) => void;
-  onViewAssignedUsers: (module: TrainingModuleListItem) => void;
 }): { columns: ColumnDef<TrainingModuleListItem>[] } => {
-  const { onEdit, onManageAssignees, onToggleActive, onViewAssignedUsers } = options;
+  const { onManage, onToggleActive } = options;
 
   const columns: ColumnDef<TrainingModuleListItem>[] = [
     {
       accessorKey: "title",
       header: "Title",
       cell: ({ row }) => {
-        const module = row.original;
+        const mod = row.original;
         return (
           <div className="flex flex-col max-w-md">
-            <span className="text-sm font-semibold text-ink">{module.title}</span>
-            {module.description && (
-              <span className="text-xs text-muted-foreground truncate">{module.description}</span>
+            <span className="text-sm font-semibold text-ink">{mod.title}</span>
+            {mod.description && (
+              <span className="text-xs text-muted-foreground truncate">{mod.description}</span>
             )}
           </div>
         );
@@ -87,7 +85,7 @@ export const useModuleTableColumns = (options: {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => {
-        const module = row.original;
+        const mod = row.original;
 
         return (
           <DropdownMenu>
@@ -99,20 +97,12 @@ export const useModuleTableColumns = (options: {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => onViewAssignedUsers(module)}>
-                <Eye className="mr-2 h-4 w-4" />
-                View Assigned Users
+              <DropdownMenuItem onClick={() => onManage(mod)}>
+                <Settings className="mr-2 h-4 w-4" />
+                Manage Module
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onEdit(module)}>
-                <Pencil className="mr-2 h-4 w-4" />
-                Edit Module
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onManageAssignees(module)}>
-                <Users className="mr-2 h-4 w-4" />
-                Manage Assignees
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onToggleActive(module)}>
-                {module.isActive ? (
+              <DropdownMenuItem onClick={() => onToggleActive(mod)}>
+                {mod.isActive ? (
                   <>
                     <ToggleLeft className="mr-2 h-4 w-4 text-destructive" />
                     Deactivate

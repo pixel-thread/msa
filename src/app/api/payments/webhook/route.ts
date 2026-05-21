@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AuditAction } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
-import {
-  processWebhookEvent,
-} from "@feature/payments/services/webhook.service";
+import { processWebhookEvent } from "@feature/payments/services/webhook.service";
 import { WebhookSignatureError } from "@src/shared/errors";
+import { logAction } from "@src/shared/services/audit-logs";
 
 /**
  * POST /api/payments/webhook
@@ -60,17 +59,15 @@ export async function POST(request: NextRequest) {
       const associationId = notes?.associationId;
 
       if (associationId) {
-        await prisma.auditLog.create({
-          data: {
-            associationId,
-            actorId: null,
-            action: AuditAction.WEBHOOK_RECEIVED,
-            resourceType: "PaymentWebhookEvent",
-            resourceId: result.eventId ?? null,
-            newValues: {
-              event: payload.event,
-              status: result.status,
-            },
+        await logAction({
+          associationId,
+          actorId: "",
+          action: AuditAction.WEBHOOK_RECEIVED,
+          resourceType: "PaymentWebhookEvent",
+          resourceId: result.eventId ?? "",
+          newValues: {
+            event: payload.event,
+            status: result.status,
           },
         });
       }

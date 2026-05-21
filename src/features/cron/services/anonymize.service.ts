@@ -1,5 +1,6 @@
 import { prisma } from "@src/shared/lib/prisma";
 import { UserStatus, AuditAction } from "@prisma/client";
+import { logAction } from "@src/shared/services/audit-logs";
 
 export interface AnonymizeResult {
   associationId: string;
@@ -67,12 +68,11 @@ export async function anonymizeExpiredUsers(
       ),
     );
 
-    await prisma.auditLog.create({
-      data: {
-        associationId,
-        action: AuditAction.ANONYMIZE,
-        resourceType: "User",
-      },
+    await logAction({
+      actorId: "",
+      associationId,
+      action: AuditAction.ANONYMIZE,
+      resourceType: "User",
     });
 
     return {
@@ -104,4 +104,3 @@ export async function runAnonymizeCron(): Promise<AnonymizeResult[]> {
 
   return results;
 }
-

@@ -12,3 +12,4 @@ export * from "./findManySupplements";
 export * from "./createSupplement";
 export * from "./updateSupplement";
 export * from "./deleteSupplement";
+export * from "./deleteModule";

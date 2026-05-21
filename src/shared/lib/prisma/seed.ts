@@ -27,6 +27,7 @@ import {
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import bcrypt from "bcryptjs";
+import { logAction } from "@src/shared/services/audit-logs";
 
 // -----------------------------------------------------------------------------
 // PRISMA
@@ -650,21 +651,19 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
   // AUDIT LOG
   // ---------------------------------------------------------------------------
 
-  await prisma.auditLog.create({
-    data: {
-      associationId: association.id,
-      actorId: users[UserRole.SUPER_ADMIN].id,
-      action: "CREATE",
-      resourceType: "Association",
-      resourceId: association.id,
-      newValues: {
-        name: data.name,
-        slug: data.slug,
-      },
-      ipAddress: "127.0.0.1",
-      userAgent: "seed-script",
-      traceId: `${data.short}-trace-001`,
+  await logAction({
+    associationId: association.id,
+    actorId: users[UserRole.SUPER_ADMIN].id,
+    action: "CREATE",
+    resourceType: "Association",
+    resourceId: association.id,
+    newValues: {
+      name: data.name,
+      slug: data.slug,
     },
+    ipAddress: "127.0.0.1",
+    userAgent: "seed-script",
+    traceId: `${data.short}-trace-001`,
   });
 
   // ---------------------------------------------------------------------------

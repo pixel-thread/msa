@@ -13,11 +13,11 @@ interface CreateSupplementProps {
 
 export async function createSupplement({ associationId, moduleId, actorId, data, downloadUrl, fileId }: CreateSupplementProps) {
   return await prisma.$transaction(async (tx) => {
-    const module = await tx.trainingModule.findFirst({
+    const trainingModule = await tx.trainingModule.findFirst({
       where: { id: moduleId, associationId },
     });
 
-    if (!module) {
+    if (!trainingModule) {
       throw new Error("Training module not found");
     }
 

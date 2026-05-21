@@ -7,33 +7,24 @@ import { useAuthStore } from "@src/shared/stores/auth";
 import { DataTable } from "@src/shared/components/data-table";
 import { Button } from "@src/shared/components/ui/button";
 import { Input } from "@src/shared/components/ui/input";
-import { Plus, Search, ShieldAlert, ArrowLeft } from "lucide-react";
+import { Plus, Search, ShieldAlert } from "lucide-react";
 
 import { useTrainingModules, useModuleTableColumns } from "../hooks";
-import {
-  CreateModuleDialog,
-  EditModuleDialog,
-  ManageAssigneesDialog,
-  ViewAssignedUsersDialog,
-} from "../components";
-import type { TrainingModuleListItem } from "../types";
+import { CreateModuleDialog } from "../components";
 
-export function AdminModulesPage() {
+export function TrainingListPage() {
   const router = useRouter();
   const { user } = useAuthStore();
   const userRoles = user?.role || [];
 
   const isDpoOrAdmin =
     userRoles.includes(UserRole.DPO) ||
-    userRoles.includes(UserRole.SUPER_ADMIN);
+    userRoles.includes(UserRole.SUPER_ADMIN) ||
+    userRoles.includes(UserRole.SECRETARY) ||
+    userRoles.includes(UserRole.PRESIDENT);
 
   const [search, setSearch] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
-  const [editOpen, setEditOpen] = useState(false);
-  const [assigneesOpen, setAssigneesOpen] = useState(false);
-  const [viewAssignedUsersOpen, setViewAssignedUsersOpen] = useState(false);
-  const [selectedModule, setSelectedModule] =
-    useState<TrainingModuleListItem | null>(null);
 
   const {
     modules: allModules,
@@ -42,23 +33,14 @@ export function AdminModulesPage() {
   } = useTrainingModules();
 
   const { columns: moduleColumns } = useModuleTableColumns({
-    onEdit: (mod) => {
-      setSelectedModule(mod);
-      setEditOpen(true);
-    },
-    onManageAssignees: (mod) => {
-      setSelectedModule(mod);
-      setAssigneesOpen(true);
+    onManage: (mod) => {
+      router.push(`/training/${mod.id}`);
     },
     onToggleActive: (mod) => {
       updateModule({
         moduleId: mod.id,
         data: { isActive: !mod.isActive },
       });
-    },
-    onViewAssignedUsers: (mod) => {
-      setSelectedModule(mod);
-      setViewAssignedUsersOpen(true);
     },
   });
 
@@ -83,13 +65,6 @@ export function AdminModulesPage() {
           You do not have the required permissions to view the training modules
           management panel.
         </p>
-        <Button
-          onClick={() => router.push("/training")}
-          className="h-11 rounded-full bg-primary px-6 font-semibold text-on-primary hover:bg-primary-active flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to My Training
-        </Button>
       </div>
     );
   }
@@ -99,22 +74,12 @@ export function AdminModulesPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Manage Training Modules
+            Training Modules
           </h1>
           <p className="mt-1 text-base text-body">
-            Create, edit, activate/deactivate, and assign training modules to
-            members.
+            Manage training modules, assign them to members, and record scores.
           </p>
         </div>
-
-        <Button
-          onClick={() => router.push("/training")}
-          variant="outline"
-          className="h-11 rounded-full border-hairline px-5 text-sm font-semibold flex items-center gap-2 hover:bg-canvas/50"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Training Portal
-        </Button>
       </div>
 
       <div className="flex items-center justify-between gap-4 mb-6">
@@ -141,28 +106,10 @@ export function AdminModulesPage() {
         loading={isModulesLoading}
         data={filteredModules}
         columns={moduleColumns}
+        onRowClick={(row) => router.push(`/training/${row.original.id}`)}
       />
 
       <CreateModuleDialog open={createOpen} onOpenChange={setCreateOpen} />
-
-      <EditModuleDialog
-        open={editOpen}
-        onOpenChange={setEditOpen}
-        module={selectedModule}
-      />
-
-      <ManageAssigneesDialog
-        open={assigneesOpen}
-        onOpenChange={setAssigneesOpen}
-        module={selectedModule}
-      />
-
-      <ViewAssignedUsersDialog
-        open={viewAssignedUsersOpen}
-        onOpenChange={setViewAssignedUsersOpen}
-        moduleId={selectedModule?.id ?? ""}
-        moduleTitle={selectedModule?.title ?? ""}
-      />
     </>
   );
 }

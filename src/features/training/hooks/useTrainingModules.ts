@@ -61,6 +61,23 @@ export function useTrainingModules(options: { page?: number; isActive?: boolean 
     },
   });
 
+  const deleteModuleMutation = useMutation({
+    mutationFn: (moduleId: string) =>
+      http.delete<{ success: boolean }>(`/training/modules/${moduleId}`),
+    onSuccess: (res) => {
+      if (res.success) {
+        queryClient.invalidateQueries({ queryKey: ["training-modules"] });
+        toast.success("Training module deleted successfully");
+        return res;
+      }
+      toast.error(res.message || "Failed to delete module");
+      return res;
+    },
+    onError: (err: any) => {
+      toast.error(err?.message || "Failed to delete module");
+    },
+  });
+
   return {
     modules: data?.data ?? [],
     pagination: data?.meta,
@@ -68,8 +85,10 @@ export function useTrainingModules(options: { page?: number; isActive?: boolean 
     error,
     createModule: createModuleMutation.mutate,
     updateModule: updateModuleMutation.mutate,
+    deleteModule: deleteModuleMutation.mutate,
     isCreating: createModuleMutation.isPending,
     isUpdating: updateModuleMutation.isPending,
+    isDeleting: deleteModuleMutation.isPending,
     refetch,
   };
 }

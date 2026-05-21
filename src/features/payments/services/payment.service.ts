@@ -19,6 +19,7 @@ import {
   NotFoundError,
   PaymentError,
 } from "@src/shared/errors";
+import { logAction } from "@src/shared/services/audit-logs";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -536,15 +537,13 @@ export async function markPaymentFailed(
   });
 
   // Audit log
-  await prisma.auditLog.create({
-    data: {
-      associationId: transaction.associationId,
-      actorId: transaction.userId,
-      action: AuditAction.PAYMENT_FAILED,
-      resourceType: "PaymentTransaction",
-      resourceId: transaction.id,
-      newValues: { reason },
-    },
+  await logAction({
+    associationId: transaction.associationId,
+    actorId: transaction.userId,
+    action: AuditAction.PAYMENT_FAILED,
+    resourceType: "PaymentTransaction",
+    resourceId: transaction.id,
+    newValues: { reason },
   });
 
   return updated;
