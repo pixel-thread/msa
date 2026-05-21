@@ -25,6 +25,17 @@ import { Input } from "@src/shared/components/ui/input";
 import { Badge } from "@src/shared/components/ui/badge";
 import { DataTable } from "@src/shared/components/data-table";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+} from "@src/shared/components/ui/alert-dialog";
+import {
   CompleteAssignmentDialog,
   ManageAssigneesDialog,
   EditModuleDialog,
@@ -51,8 +62,12 @@ export function TrainingDetailPage() {
     completeAssignment,
     isCompleting: isCompletingAssignment,
   } = useModuleAssignedUsers(moduleId);
-  const { supplements, isLoading: isSupplementsLoading } =
-    useTrainingSupplements(moduleId);
+  const {
+    supplements,
+    isLoading: isSupplementsLoading,
+    deleteSupplement,
+    isDeleting: isDeletingSupplement,
+  } = useTrainingSupplements(moduleId);
 
   const [search, setSearch] = useState("");
   const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
@@ -61,6 +76,8 @@ export function TrainingDetailPage() {
   const [assignDialogOpen, setAssignDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [addSupplementOpen, setAddSupplementOpen] = useState(false);
+  const [supplementToDelete, setSupplementToDelete] = useState<{ id: string; title: string } | null>(null);
+  const [deleteModuleDialogOpen, setDeleteModuleDialogOpen] = useState(false);
 
   const filteredUsers = useMemo(() => {
     const query = search.toLowerCase().trim();
@@ -76,18 +93,32 @@ export function TrainingDetailPage() {
     completeAssignment(data);
   };
 
+  const handleDeleteSupplement = (supplementId: string) => {
+    const supplement = supplements.find((s) => s.id === supplementId);
+    setSupplementToDelete(
+      supplement
+        ? { id: supplement.id, title: supplement.title }
+        : { id: supplementId, title: "this supplement" },
+    );
+  };
+
+  const handleConfirmDeleteSupplement = () => {
+    if (!supplementToDelete) return;
+    deleteSupplement(supplementToDelete.id, {
+      onSettled: () => setSupplementToDelete(null),
+    });
+  };
+
   const handleDeleteModule = () => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete this training module? This action cannot be undone.",
-      )
-    ) {
-      deleteModule(moduleId, {
-        onSuccess: () => {
-          router.push("/training");
-        },
-      });
-    }
+    setDeleteModuleDialogOpen(true);
+  };
+
+  const handleConfirmDeleteModule = () => {
+    deleteModule(moduleId, {
+      onSuccess: () => {
+        router.push("/training");
+      },
+    });
   };
 
   const columns: ColumnDef<AssignedUserWithCompletion>[] = [
@@ -336,6 +367,18 @@ export function TrainingDetailPage() {
                             {sup.type}
                           </Badge>
                         </div>
+                        <Button
+                          onClick={() => handleDeleteSupplement(sup.id)}
+                          variant="ghost"
+                          size="sm"
+                          disabled={
+                            isDeletingSupplement &&
+                            supplementToDelete?.id === sup.id
+                          }
+                          className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0 ml-2"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                       {sup.description && (
                         <p className="text-xs text-muted-foreground mt-1">
@@ -481,6 +524,67 @@ export function TrainingDetailPage() {
         onOpenChange={setAddSupplementOpen}
         moduleId={moduleId}
       />
+
+      <AlertDialog
+        open={deleteModuleDialogOpen}
+        onOpenChange={(open) => !open && setDeleteModuleDialogOpen(false)}
+      >
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogMedia>
+              <Trash2 className="text-destructive" />
+            </AlertDialogMedia>
+            <AlertDialogTitle>Delete Module</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this training module? This action
+              cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteModuleDialogOpen(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={handleConfirmDeleteModule}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={!!supplementToDelete}
+        onOpenChange={(open) => !open && setSupplementToDelete(null)}
+      >
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogMedia>
+              <Trash2 className="text-destructive" />
+            </AlertDialogMedia>
+            <AlertDialogTitle>Remove Supplement</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove "
+              {supplementToDelete?.title || "this supplement"}
+              "? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setSupplementToDelete(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={handleConfirmDeleteSupplement}
+              disabled={isDeletingSupplement}
+            >
+              {isDeletingSupplement ? "Removing..." : "Remove"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

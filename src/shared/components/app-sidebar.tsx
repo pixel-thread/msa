@@ -73,7 +73,7 @@ const navMain = [
     isActive: true,
     items: [
       {
-        title: "Portal",
+        title: "Modules",
         url: "/training",
       },
     ],
@@ -148,57 +148,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const dynamicNavMain = React.useMemo(() => {
     const roles = user?.role || [];
-    const isDpoOrAdmin = roles.some((role: string) =>
-      ["DPO", "SUPER_ADMIN"].includes(role),
-    );
-    const isSecretaryOrAdmin = roles.some((role: string) =>
-      ["SECRETARY", "PRESIDENT", "SUPER_ADMIN"].includes(role),
-    );
     const isFinanceOrAdmin = roles.some((role: string) =>
       ["FINANCE", "SUPER_ADMIN", "PRESIDENT", "SECRETARY"].includes(role),
     );
 
-    return navMain
-      .map((item) => {
-        if (item.title === "Training") {
-          const subItems = [
-            {
-              title: "Active Courses",
-              url: "/training",
-            },
-            {
-              title: "My Completions",
-              url: "/training/my-completions",
-            },
-          ];
-
-          if (isSecretaryOrAdmin) {
-            subItems.push({
-              title: "Completions Logs",
-              url: "/training/completions",
-            });
-          }
-
-          if (isDpoOrAdmin) {
-            subItems.push({
-              title: "Manage Modules",
-              url: "/training/modules",
-            });
-          }
-
-          return {
-            ...item,
-            items: subItems,
-          };
-        }
-        return item;
-      })
-      .filter((item) => {
-        if (item.title === "Payments") {
-          return isFinanceOrAdmin;
-        }
-        return true;
-      });
+    return navMain.filter((item) => {
+      if (item.title === "Payments") {
+        return isFinanceOrAdmin;
+      }
+      return true;
+    });
   }, [user]);
 
   return (

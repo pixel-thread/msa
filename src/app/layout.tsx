@@ -1,27 +1,24 @@
-import {
-  Geist,
-  Geist_Mono,
-  Inter,
-  Outfit,
-  Instrument_Serif,
-} from "next/font/google";
+import { Roboto, Roboto_Mono } from "next/font/google";
 import { AppProviders } from "@src/shared/providers/AppProviders";
 import "./globals.css";
 import { cn } from "@src/shared/lib/utils";
 import { Suspense } from "react";
 
-const instrumentSerifHeading = Instrument_Serif({subsets:['latin'],weight:['400'],variable:'--font-heading'});
-
-const outfit = Outfit({subsets:['latin'],variable:'--font-sans'});
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const roboto = Roboto({
   subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-sans",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const robotoHeading = Roboto({
   subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-heading",
+});
+
+const robotoMono = Roboto_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
 });
 
 export default function RootLayout({
@@ -36,11 +33,9 @@ export default function RootLayout({
       className={cn(
         "h-full",
         "antialiased",
-        geistSans.variable,
-        geistMono.variable,
-        "font-sans",
-        outfit.variable,
-        instrumentSerifHeading.variable,
+        roboto.variable,
+        robotoHeading.variable,
+        robotoMono.variable,
       )}
     >
       <body className="min-h-full flex flex-col">

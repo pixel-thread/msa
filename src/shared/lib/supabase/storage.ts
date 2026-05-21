@@ -26,10 +26,12 @@ export async function uploadToBucket(
   const storedName = `${crypto.randomUUID()}${ext ? `.${ext}` : ""}`;
   const storageKey = `${pathPrefix}/${storedName}`;
 
-  const { error } = await supabase.storage.from(bucket).upload(storageKey, file, {
-    contentType: file.type,
-    upsert: false,
-  });
+  const { error } = await supabase.storage
+    .from(bucket)
+    .upload(storageKey, file, {
+      contentType: file.type,
+      upsert: false,
+    });
 
   if (error) {
     throw new Error(`Failed to upload file: ${error.message}`);

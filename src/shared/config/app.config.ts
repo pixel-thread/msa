@@ -1,20 +1,22 @@
 import type { Metadata, Viewport } from "next";
-import { JetBrains_Mono, Manrope, Noto_Serif } from "next/font/google";
+import { Roboto, Roboto_Mono } from "next/font/google";
 
 import { cn } from "@lib/utils";
 
-export const jetbrainsMono = JetBrains_Mono({
+export const robotoMono = Roboto_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
 });
 
-export const notoSerif = Noto_Serif({
+export const roboto = Roboto({
   subsets: ["latin"],
+  weight: ["400", "500", "700"],
   variable: "--font-serif",
 });
 
-export const manrope = Manrope({
+export const robotoSans = Roboto({
   subsets: ["latin"],
+  weight: ["400", "500", "700"],
   variable: "--font-sans",
 });
 
@@ -83,7 +85,7 @@ export const appViewport: Viewport = {
 };
 
 export const fontVariables = cn(
-  notoSerif.variable,
-  manrope.variable,
-  jetbrainsMono.variable,
+  roboto.variable,
+  robotoSans.variable,
+  robotoMono.variable,
 );
