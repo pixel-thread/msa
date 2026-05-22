@@ -11,21 +11,34 @@ import {
   CreateAnnouncementSchema,
   AnnouncementQuerySchema,
 } from "@feature/announcement/validators";
+import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
 
 export const GET = withAssociation(
   { query: AnnouncementQuerySchema },
   async (association, { query }, request) => {
-    await withRole(request, UserRole.MEMBER);
+    const user = await withRole(request, UserRole.MEMBER);
     if (!query) {
       throw new ForbiddenError("Invalid query parameters");
     }
 
-    const { page, limit, status, priority, search } = query;
+    const { page, priority, search, status } = query;
+    if (hasHighRoleAccess(user.role)) {
+      const result = await findManyAnnouncements({
+        associationId: association.id,
+        filters: { priority, search, status },
+        pagination: { page },
+      });
+
+      return SuccessResponse({
+        data: result.announcements,
+        meta: result.pagination,
+      });
+    }
 
     const result = await findManyAnnouncements({
       associationId: association.id,
-      filters: { status, priority, search },
-      pagination: { page, limit },
+      filters: { status: "PUBLISHED", priority, search },
+      pagination: { page },
     });
 
     return SuccessResponse({
@@ -65,4 +78,3 @@ export const POST = withAssociation(
     return SuccessResponse({ data: announcement }, 201);
   },
 );
-

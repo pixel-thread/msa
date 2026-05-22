@@ -1,5 +1,5 @@
 import { AnnouncementsPage } from "@src/features/announcement/pages";
 
-export default function page() {
+export default function AnnouncementsPublishedPage() {
   return <AnnouncementsPage />;
 }

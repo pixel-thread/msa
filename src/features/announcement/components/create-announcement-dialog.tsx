@@ -120,7 +120,7 @@ export function CreateAnnouncementDialog() {
                   <FormControl>
                     <Textarea
                       placeholder="Full announcement content"
-                      className="min-h-[120px]"
+                      className="min-h-30"
                       {...field}
                     />
                   </FormControl>

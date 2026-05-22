@@ -37,6 +37,21 @@ const navMain = [
     title: "Announcement",
     url: "/announcement",
     icon: <AlertTriangleIcon />,
+    isActive: true,
+    items: [
+      {
+        title: "Published",
+        url: "/announcement",
+      },
+      {
+        title: "Drafts",
+        url: "/announcement/draft",
+      },
+      {
+        title: "Archive",
+        url: "/announcement/archive",
+      },
+    ],
   },
   {
     title: "Members",

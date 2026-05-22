@@ -1,6 +1,7 @@
 import { prisma } from "@lib/prisma";
 import { AnnouncementStatus, AnnouncementPriority } from "@prisma/client";
 import { Prisma } from "@prisma/client";
+import { PAGE_SIZE } from "@src/shared/constants";
 import { buildPagination } from "@src/shared/utils/build-pagination";
 
 interface FindManyAnnouncementsProps {
@@ -12,16 +13,16 @@ interface FindManyAnnouncementsProps {
   };
   pagination?: {
     page?: number;
-    limit?: number;
   };
 }
 
 export async function findManyAnnouncements({
   associationId,
   filters,
-  pagination = { page: 1, limit: 10 },
+  pagination = { page: 1 },
 }: FindManyAnnouncementsProps) {
-  const { page = 1, limit = 10 } = pagination;
+  const { page = 1 } = pagination;
+  const limit = PAGE_SIZE;
   const skip = (page - 1) * limit;
 
   const where: Prisma.AnnouncementWhereInput = {
@@ -52,7 +53,14 @@ export async function findManyAnnouncements({
           select: { id: true, name: true, imageUrl: true },
         },
         imageFile: {
-          select: { id: true, url: true, originalName: true, mimeType: true, sizeBytes: true, thumbnailUrl: true },
+          select: {
+            id: true,
+            url: true,
+            originalName: true,
+            mimeType: true,
+            sizeBytes: true,
+            thumbnailUrl: true,
+          },
         },
         readReceipts: true,
         _count: {
@@ -68,4 +76,3 @@ export async function findManyAnnouncements({
     pagination: buildPagination(total, page, limit),
   };
 }
-
