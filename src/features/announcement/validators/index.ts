@@ -13,7 +13,6 @@ export const CreateAnnouncementSchema = z.object({
   title: z.string().min(1).max(200),
   summary: z.string().max(500).optional(),
   content: z.string().min(1),
-  imageUrl: z.url().optional(),
   status: z.enum(AnnouncementStatus).default(AnnouncementStatus.DRAFT),
   priority: z.enum(AnnouncementPriority).default(AnnouncementPriority.NORMAL),
   targetRoles: z.array(z.enum(UserRole)).default([]),

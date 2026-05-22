@@ -944,6 +944,8 @@ model Announcement {
   association  Association        @relation(fields: [associationId], references: [id], onDelete: Cascade)
   author       User               @relation("AuthoredAnnouncements", fields: [authorId], references: [id])
   readReceipts AnnouncementRead[]
+  imageFileId String? @unique
+  imageFile   File?     @relation("AnnouncementImage", fields: [imageFileId], references: [id], onDelete: SetNull)
 
   @@index([associationId, status])
   @@index([publishedAt])
@@ -1284,6 +1286,7 @@ model File {
   trainingCertificate TrainingCertificate?
 
   trainingSupplement TrainingSupplement[]
+  announcement       Announcement?       @relation("AnnouncementImage")
 
   association Association? @relation(fields: [associationId], references: [id], onDelete: Cascade)
 

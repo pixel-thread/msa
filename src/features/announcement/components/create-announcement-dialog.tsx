@@ -40,7 +40,7 @@ export function CreateAnnouncementDialog() {
   const [open, setOpen] = useState(false);
   const createAnnouncement = useCreateAnnouncement();
 
-  const form = useForm<CreateAnnouncementInput>({
+  const form = useForm({
     resolver: zodResolver(CreateAnnouncementSchema),
     defaultValues: {
       title: "",
@@ -176,7 +176,8 @@ export function CreateAnnouncementDialog() {
                       <SelectContent>
                         {Object.values(AnnouncementPriority).map((priority) => (
                           <SelectItem key={priority} value={priority}>
-                            {priority.charAt(0) + priority.slice(1).toLowerCase()}
+                            {priority.charAt(0) +
+                              priority.slice(1).toLowerCase()}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -186,20 +187,6 @@ export function CreateAnnouncementDialog() {
                 )}
               />
             </div>
-
-            <FormField
-              control={form.control}
-              name="imageUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Image URL (optional)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="https://example.com/image.jpg" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <DialogFooter>
               <Button

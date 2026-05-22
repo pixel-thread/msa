@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -20,6 +20,7 @@ import {
 import { Input } from "@src/shared/components/ui/input";
 import { Button } from "@src/shared/components/ui/button";
 import { useUpdateAnnouncement } from "@src/features/announcement/hooks/useUpdateAnnouncement";
+import { useUploadAnnouncementImage } from "@src/features/announcement/hooks/useUploadAnnouncementImage";
 import {
   UpdateAnnouncementInput,
   UpdateAnnouncementSchema,
@@ -34,6 +35,7 @@ import {
 import { Textarea } from "@src/shared/components/ui/textarea";
 import { AnnouncementStatus, AnnouncementPriority } from "@prisma/client";
 import type { Announcement } from "@src/features/announcement/types";
+import { ImageIcon, Upload, X } from "lucide-react";
 
 interface EditAnnouncementDialogProps {
   announcement: Announcement | null;
@@ -47,6 +49,9 @@ export function EditAnnouncementDialog({
   onOpenChange,
 }: EditAnnouncementDialogProps) {
   const updateAnnouncement = useUpdateAnnouncement();
+  const { uploadImage, isUploading } = useUploadAnnouncementImage(announcement?.id ?? null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const form = useForm<UpdateAnnouncementInput>({
     resolver: zodResolver(UpdateAnnouncementSchema),
@@ -72,6 +77,7 @@ export function EditAnnouncementDialog({
         priority: announcement.priority as AnnouncementPriority,
         isPinned: announcement.isPinned,
       });
+      setPreviewUrl(announcement.imageUrl);
     }
   }, [open, announcement, form]);
 
@@ -86,6 +92,26 @@ export function EditAnnouncementDialog({
       },
     );
   };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewUrl(objectUrl);
+
+    uploadImage(file, {
+      onSuccess: () => {
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      },
+      onError: () => {
+        setPreviewUrl(announcement?.imageUrl ?? null);
+        URL.revokeObjectURL(objectUrl);
+      },
+    });
+  };
+
+  const currentFile = announcement?.imageFile;
 
   if (!announcement) return null;
 
@@ -208,19 +234,66 @@ export function EditAnnouncementDialog({
               />
             </div>
 
-            <FormField
-              control={form.control}
-              name="imageUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Image URL (optional)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="https://example.com/image.jpg" {...field} value={field.value ?? ""} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+            <div className="space-y-2">
+              <FormLabel>Image</FormLabel>
+              {previewUrl ? (
+                <div className="relative rounded-lg overflow-hidden border">
+                  <img
+                    src={previewUrl}
+                    alt="Announcement image"
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploading}
+                    >
+                      <Upload className="h-4 w-4 mr-1" />
+                      {isUploading ? "Uploading..." : "Change"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => {
+                        setPreviewUrl(null);
+                        form.setValue("imageUrl", null);
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  {currentFile && (
+                    <div className="px-3 py-1.5 bg-muted text-xs text-muted-foreground flex items-center gap-2">
+                      <ImageIcon className="h-3 w-3" />
+                      {currentFile.originalName}
+                      {" — "}
+                      {(currentFile.sizeBytes / 1024).toFixed(1)} KB
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:border-muted-foreground/50 transition-colors"
+                >
+                  <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">
+                    {isUploading ? "Uploading..." : "Click to upload an image"}
+                  </p>
+                </div>
               )}
-            />
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileSelect}
+              />
+            </div>
 
             <DialogFooter>
               <Button

@@ -16,6 +16,14 @@ export interface Announcement {
     name: string | null;
     imageUrl: string | null;
   };
+  imageFile: {
+    id: string;
+    url: string;
+    thumbnailUrl: string | null;
+    originalName: string;
+    mimeType: string;
+    sizeBytes: number;
+  } | null;
   _count: {
     readReceipts: number;
   };

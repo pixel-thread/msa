@@ -1,8 +1,13 @@
 import { supabase } from ".";
 import { env } from "@src/env";
 import { FileType } from "@prisma/client";
+import { logger } from "@src/shared/logger";
+import { BadRequestError } from "@src/shared/errors";
 
 export interface UploadResult {
+  id: string;
+  path: string;
+  fullPath: string;
   storageKey: string;
   url: string;
   mimeType: string;
@@ -26,15 +31,16 @@ export async function uploadToBucket(
   const storedName = `${crypto.randomUUID()}${ext ? `.${ext}` : ""}`;
   const storageKey = `${pathPrefix}/${storedName}`;
 
-  const { error } = await supabase.storage
+  const { error, data } = await supabase.storage
     .from(bucket)
     .upload(storageKey, file, {
       contentType: file.type,
-      upsert: false,
+      upsert: true,
     });
 
   if (error) {
-    throw new Error(`Failed to upload file: ${error.message}`);
+    logger.error("Failed to upload file", { error });
+    throw new BadRequestError(`Failed to upload file: ${error.message}`);
   }
 
   const { data: publicUrlData } = supabase.storage
@@ -42,8 +48,11 @@ export async function uploadToBucket(
     .getPublicUrl(storageKey);
 
   return {
+    id: data.id,
     storageKey,
     url: publicUrlData.publicUrl,
+    fullPath: data.fullPath,
+    path: data.path,
     mimeType: file.type,
     sizeBytes: file.size,
     storedName,
