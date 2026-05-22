@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import http from "@src/shared/utils/http";
 import { toast } from "sonner";
+import { trainingEndpoints, trainingQueryKeys } from "../utils/constants";
 import type { TrainingModuleListItem } from "../types";
 import type { UpdateTrainingModuleInput } from "../validators/training";
 
@@ -15,12 +16,17 @@ export function useUpdateTrainingModule() {
       moduleId: string;
       data: UpdateTrainingModuleInput;
     }) =>
-      http.patch<TrainingModuleListItem>(`/training/modules/${moduleId}`, data),
+      http.patch<TrainingModuleListItem>(
+        trainingEndpoints.byId(moduleId),
+        data,
+      ),
     onSuccess: (res, variables) => {
       if (res.success) {
-        queryClient.invalidateQueries({ queryKey: ["training-modules"] });
         queryClient.invalidateQueries({
-          queryKey: ["training-module", variables.moduleId],
+          queryKey: trainingQueryKeys.modules.all,
+        });
+        queryClient.invalidateQueries({
+          queryKey: trainingQueryKeys.modules.detail(variables.moduleId),
         });
         toast.success("Training module updated successfully");
         return res;

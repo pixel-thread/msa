@@ -61,11 +61,12 @@ export interface TrainingSupplementItem {
   title: string;
   description: string | null;
   type: string;
-  fileUrl: string | null;
+  downloadUrl: string | null;
+  imageUrl: string | null;
   thumbnailUrl: string | null;
   mimeType: string | null;
+  fileId: string;
   fileSize: number | null;
-  durationSeconds: number | null;
   sortOrder: number;
   isActive: boolean;
   createdAt: string;
@@ -94,4 +95,3 @@ export interface AssignedUserWithCompletion {
     completedAt: string;
   } | null;
 }
-

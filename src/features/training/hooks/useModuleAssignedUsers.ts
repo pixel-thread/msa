@@ -1,21 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import http from "@src/shared/utils/http";
 import { toast } from "sonner";
+import { trainingEndpoints, trainingQueryKeys } from "../utils/constants";
 import type { AssignedUserWithCompletion } from "../types";
 
 export function useModuleAssignedUsers(moduleId: string | null) {
   const queryClient = useQueryClient();
 
-  const queryKey = ["module-assigned-users", moduleId];
-
-  const {
-    data,
-    isLoading,
-    refetch,
-  } = useQuery({
-    queryKey,
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: trainingQueryKeys.assignedUsers.all(moduleId),
     queryFn: async () =>
-      http.get<AssignedUserWithCompletion[]>(`/training/modules/${moduleId}/assigned-users`),
+      http.get<AssignedUserWithCompletion[]>(
+        trainingEndpoints.assignedUsers.list(moduleId!),
+      ),
     enabled: !!moduleId,
     select: (res) => res.data,
   });
@@ -28,22 +25,25 @@ export function useModuleAssignedUsers(moduleId: string | null) {
       userId: string;
       scorePercent?: number;
     }) =>
-      http.post(`/training/modules/${moduleId}/assignments/${userId}/complete`, {
+      http.post(trainingEndpoints.assignedUsers.complete(moduleId!, userId), {
         scorePercent,
       }),
     onSuccess: (res) => {
       if (res.success) {
-        queryClient.invalidateQueries({ queryKey: ["module-assigned-users"] });
-        queryClient.invalidateQueries({ queryKey: ["admin-training-completions"] });
-        queryClient.invalidateQueries({ queryKey: ["my-training-completions"] });
+        queryClient.invalidateQueries({
+          queryKey: trainingQueryKeys.assignedUsers.base,
+        });
+        queryClient.invalidateQueries({
+          queryKey: trainingQueryKeys.completions.admin,
+        });
+        queryClient.invalidateQueries({
+          queryKey: trainingQueryKeys.completions.my,
+        });
         toast.success("User marked as completed successfully");
         return res;
       }
       toast.error(res.message || "Failed to mark as completed");
       return res;
-    },
-    onError: (err: any) => {
-      toast.error(err?.message || "Failed to mark as completed");
     },
   });
 

@@ -6,7 +6,7 @@ import { Badge } from "@src/shared/components/ui/badge";
 import { Button } from "@src/shared/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDate } from "@src/shared/utils";
-import type { TrainingSupplementItem } from "../types";
+import type { TrainingSupplementItem } from "../../types";
 
 export function useTrainingSupplementsColumns(options: {
   supplements: TrainingSupplementItem[];
@@ -34,14 +34,14 @@ export function useTrainingSupplementsColumns(options: {
       cell: ({ row }) => {
         const s = row.original;
         return (
-          <div className="flex flex-col">
+          <a target="_blank" href={s.imageUrl || ""} className="flex flex-col">
             <span className="text-sm font-semibold text-ink">{s.title}</span>
             {s.description && (
               <span className="text-xs text-muted-foreground line-clamp-1">
                 {s.description}
               </span>
             )}
-          </div>
+          </a>
         );
       },
     },
@@ -102,8 +102,8 @@ export function useTrainingSupplementsColumns(options: {
         const s = row.original;
         return (
           <div className="flex items-center gap-1">
-            {s.fileUrl && (
-              <a href={s.fileUrl} target="_blank" rel="noreferrer">
+            {s.downloadUrl && (
+              <a href={s.downloadUrl} target="_blank" rel="noreferrer">
                 <Button
                   variant="ghost"
                   size="sm"

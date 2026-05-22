@@ -15,7 +15,13 @@ import {
 import { Button } from "@src/shared/components/ui/button";
 import { Input } from "@src/shared/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@src/shared/components/ui/tabs";
-import { useTrainingAssignments } from "../hooks/useTrainingAssignments";
+import {
+  useTrainingAssignmentsQuery,
+  useAssignTrainingModule,
+  useBulkAssignTrainingModule,
+  useRemoveTrainingAssignment,
+  useBulkRemoveTrainingAssignment,
+} from "../hooks/assignments";
 import { useMembers } from "@src/features/members/hooks/useMembers";
 import type { TrainingModuleListItem } from "../types";
 
@@ -34,16 +40,16 @@ export function ManageAssigneesDialog({ open, onOpenChange, module }: ManageAssi
   const [selectedAdd, setSelectedAdd] = useState<string[]>([]);
 
   // Fetch all assignments for this module
-  const {
-    assignments,
-    isLoading: isAssignmentsLoading,
-    assignUser,
-    bulkAssignUsers,
-    removeUser,
-    bulkRemoveUsers,
-    isAssigning,
-    isRemoving,
-  } = useTrainingAssignments(module?.id ?? null);
+  const { assignments, isLoading: isAssignmentsLoading } =
+    useTrainingAssignmentsQuery(module?.id ?? null);
+  const { assignUser, isAssigning } =
+    useAssignTrainingModule(module?.id ?? null);
+  const { bulkAssignUsers, isBulkAssigning } =
+    useBulkAssignTrainingModule(module?.id ?? null);
+  const { removeUser, isRemoving } =
+    useRemoveTrainingAssignment(module?.id ?? null);
+  const { bulkRemoveUsers, isBulkRemoving } =
+    useBulkRemoveTrainingAssignment(module?.id ?? null);
 
   // Fetch all active members
   const { members, isLoading: isMembersLoading } = useMembers({ status: "ACTIVE" });
@@ -188,7 +194,7 @@ export function ManageAssigneesDialog({ open, onOpenChange, module }: ManageAssi
                 size="sm"
                 className="h-8 rounded-full text-xs font-semibold px-3"
                 onClick={handleBulkRemove}
-                disabled={isRemoving}
+                disabled={isBulkRemoving}
               >
                 <Trash2 className="mr-1 h-3.5 w-3.5" />
                 Unassign Selected ({selectedCurrent.length})
@@ -200,7 +206,7 @@ export function ManageAssigneesDialog({ open, onOpenChange, module }: ManageAssi
                 size="sm"
                 className="h-8 rounded-full text-xs font-semibold px-3"
                 onClick={handleBulkAssign}
-                disabled={isAssigning}
+                disabled={isBulkAssigning}
               >
                 <Plus className="mr-1 h-3.5 w-3.5" />
                 Assign Selected ({selectedAdd.length})

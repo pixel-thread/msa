@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import http from "@src/shared/utils/http";
 import { toast } from "sonner";
+import { trainingEndpoints, trainingQueryKeys } from "../utils/constants";
 import type { TrainingModuleListItem } from "../types";
 import type { CreateTrainingModuleInput } from "../validators/training";
 
@@ -9,10 +10,12 @@ export function useCreateTrainingModule() {
 
   const mutation = useMutation({
     mutationFn: (data: CreateTrainingModuleInput) =>
-      http.post<TrainingModuleListItem>("/training/modules", data),
+      http.post<TrainingModuleListItem>(trainingEndpoints.base, data),
     onSuccess: (res) => {
       if (res.success) {
-        queryClient.invalidateQueries({ queryKey: ["training-modules"] });
+        queryClient.invalidateQueries({
+          queryKey: trainingQueryKeys.modules.all,
+        });
         toast.success("Training module created successfully");
         return res;
       }
