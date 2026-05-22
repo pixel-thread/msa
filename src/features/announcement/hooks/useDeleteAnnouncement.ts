@@ -6,7 +6,7 @@ export function useDeleteAnnouncement() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => http.delete(`/announcement/${id}`),
+    mutationFn: (id: string) => http.delete(`/announcements/${id}`),
     onSuccess: (data) => {
       if (data.success) {
         toast.success("Announcement deleted successfully");

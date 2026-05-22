@@ -5,7 +5,7 @@ import type { Announcement } from "../types";
 export function useAnnouncementsList() {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["announcements-list"],
-    queryFn: async () => http.get<Announcement[]>("/announcement"),
+    queryFn: async () => http.get<Announcement[]>("/announcements"),
     select: (data) => data.data,
   });
 

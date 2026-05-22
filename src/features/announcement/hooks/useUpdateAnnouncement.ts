@@ -8,7 +8,7 @@ export function useUpdateAnnouncement() {
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateAnnouncementInput }) =>
-      http.put(`/announcement/${id}`, data),
+      http.put(`/announcements/${id}`, data),
     onSuccess: (data) => {
       if (data.success) {
         toast.success("Announcement updated successfully");

@@ -8,7 +8,7 @@ export function useCreateAnnouncement() {
 
   return useMutation({
     mutationFn: (data: CreateAnnouncementInput) =>
-      http.post("/announcement", data),
+      http.post("/announcements", data),
     onSuccess: (data) => {
       if (data.success) {
         toast.success("Announcement created successfully");
