@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import {
   useMeetingDetail,
@@ -20,7 +20,6 @@ import { Button } from "@src/shared/components/ui/button";
 import { Separator } from "@src/shared/components/ui/separator";
 import { formatDate } from "@src/shared/utils";
 import {
-  ArrowLeft,
   Calendar,
   MapPin,
   Users,
@@ -62,10 +61,6 @@ export default function MeetingDetailPage() {
     removeAttendee({ meetingId, userId });
   };
 
-  useEffect(() => {
-    // setEditOpen(searchParams.get("edit") === "true");
-  }, [searchParams]);
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-24">
@@ -93,14 +88,6 @@ export default function MeetingDetailPage() {
     <>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() => router.back()}
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
@@ -164,7 +151,9 @@ export default function MeetingDetailPage() {
                 <div className="flex items-start gap-3">
                   <Calendar className="mt-0.5 h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground">Scheduled</p>
+                    <p className="text-xs font-medium text-muted-foreground">
+                      Scheduled
+                    </p>
                     <p className="text-sm text-ink">
                       {formatDate(meeting.scheduledAt)}
                     </p>
@@ -174,7 +163,9 @@ export default function MeetingDetailPage() {
                 <div className="flex items-start gap-3">
                   <MapPin className="mt-0.5 h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground">Venue</p>
+                    <p className="text-xs font-medium text-muted-foreground">
+                      Venue
+                    </p>
                     <p className="text-sm text-ink">
                       {meeting.venue || "Not set"}
                     </p>
@@ -184,7 +175,9 @@ export default function MeetingDetailPage() {
                 <div className="flex items-start gap-3">
                   <Users className="mt-0.5 h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground">Attendees</p>
+                    <p className="text-xs font-medium text-muted-foreground">
+                      Attendees
+                    </p>
                     <p className="text-sm text-ink">
                       {meeting.attendees?.length || 0}
                     </p>
@@ -194,7 +187,9 @@ export default function MeetingDetailPage() {
                 <div className="flex items-start gap-3">
                   <FileText className="mt-0.5 h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground">Organizer</p>
+                    <p className="text-xs font-medium text-muted-foreground">
+                      Organizer
+                    </p>
                     <p className="text-sm text-ink">
                       {meeting.createdBy?.name || "Unknown"}
                     </p>
@@ -272,7 +267,9 @@ export default function MeetingDetailPage() {
                     <p className="text-sm font-medium text-ink">
                       {attendee.user.name}
                     </p>
-                    <p className="text-xs text-muted-foreground">{attendee.user.email}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {attendee.user.email}
+                    </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="text-xs">
@@ -284,7 +281,9 @@ export default function MeetingDetailPage() {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">No attendees assigned</p>
+            <p className="text-sm text-muted-foreground">
+              No attendees assigned
+            </p>
           )}
         </CardContent>
       </Card>

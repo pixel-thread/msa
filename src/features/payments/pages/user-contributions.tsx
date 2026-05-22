@@ -113,14 +113,6 @@ export function UserContributionsPage() {
   return (
     <>
       <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => router.back()}
-          className="h-8 w-8"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
         <div>
           <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
             {user.name} - Contributions
@@ -157,7 +149,9 @@ export function UserContributionsPage() {
               <div className="flex items-center gap-3">
                 <Receipt className="h-5 w-5 text-green-600" />
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Total Paid</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Total Paid
+                  </p>
                   <p className="text-lg font-medium text-green-600 mt-1">
                     {formattedAmount(summary.totalPaid)}
                   </p>
@@ -171,7 +165,9 @@ export function UserContributionsPage() {
               <div className="flex items-center gap-3">
                 <AlertCircle className="h-5 w-5 text-red-600" />
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Total Due</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Total Due
+                  </p>
                   <p className="text-lg font-medium text-red-600 mt-1">
                     {formattedAmount(summary.totalDue)}
                   </p>
@@ -185,7 +181,9 @@ export function UserContributionsPage() {
               <div className="flex items-center gap-3">
                 <CalendarDays className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Overdue</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Overdue
+                  </p>
                   <p className="text-lg font-medium text-ink mt-1">
                     {summary.overdueMonths} months
                   </p>
@@ -350,7 +348,9 @@ export function UserContributionsPage() {
                           ))}
                         </div>
                       ) : (
-                        <span className="text-xs text-muted-foreground">No payments</span>
+                        <span className="text-xs text-muted-foreground">
+                          No payments
+                        </span>
                       )}
                     </TableCell>
                   </TableRow>

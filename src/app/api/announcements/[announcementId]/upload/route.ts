@@ -50,7 +50,9 @@ export const POST = withAssociation(
         await deleteFromBucket(oldStorageKey);
       } catch (error) {
         // Best-effort cleanup
-        logger.error("Failed to delete old image", { error });
+        logger.error("Failed to delete old image", {
+          error,
+        });
       }
     }
 

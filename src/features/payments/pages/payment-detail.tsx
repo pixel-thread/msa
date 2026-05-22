@@ -48,14 +48,6 @@ export function PaymentDetailPage() {
   return (
     <>
       <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => router.back()}
-          className="h-8 w-8"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
         <div>
           <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
             Payment Details
@@ -78,21 +70,27 @@ export function PaymentDetailPage() {
             <div className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Amount</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Amount
+                  </p>
                   <p className="text-lg font-medium text-ink mt-1">
                     {formattedAmount(payment.amount, payment.currency)}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Gateway</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Gateway
+                  </p>
                   <p className="text-sm text-ink mt-1 capitalize">
                     {payment.gateway.toLowerCase()}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Method</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Method
+                  </p>
                   <p className="text-sm text-ink mt-1 capitalize">
                     {payment.method
                       ? payment.method.toLowerCase().replace("_", " ")
@@ -101,7 +99,9 @@ export function PaymentDetailPage() {
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Payment Date</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Payment Date
+                  </p>
                   <p className="text-sm text-ink mt-1">
                     {formatDate(payment.paymentDate)}
                   </p>
@@ -152,7 +152,9 @@ export function PaymentDetailPage() {
                 <>
                   <Separator className="bg-hairline" />
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground">Notes</p>
+                    <p className="text-xs font-medium text-muted-foreground">
+                      Notes
+                    </p>
                     <p className="text-sm text-ink mt-1">{payment.notes}</p>
                   </div>
                 </>
@@ -178,7 +180,9 @@ export function PaymentDetailPage() {
                   {payment.user?.name || "Unknown User"}
                 </Link>
                 {payment.user?.email && (
-                  <p className="text-sm text-muted-foreground">{payment.user.email}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {payment.user.email}
+                  </p>
                 )}
                 {payment.user?.membershipNumber && (
                   <p className="text-sm text-muted-foreground">
@@ -234,19 +238,25 @@ export function PaymentDetailPage() {
             <CardContent>
               <div className="space-y-3">
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Created</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Created
+                  </p>
                   <p className="text-sm text-ink mt-1">
                     {formatDate(payment.createdAt)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Paid At</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Paid At
+                  </p>
                   <p className="text-sm text-ink mt-1">
                     {formatDate(payment.paidAt || "")}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Last Updated</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Last Updated
+                  </p>
                   <p className="text-sm text-ink mt-1">
                     {formatDate(payment.updatedAt)}
                   </p>

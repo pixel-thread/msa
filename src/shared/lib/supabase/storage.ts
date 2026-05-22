@@ -1,6 +1,5 @@
 import { supabase } from ".";
 import { env } from "@src/env";
-import { FileType } from "@prisma/client";
 import { logger } from "@src/shared/logger";
 import { BadRequestError } from "@src/shared/errors";
 
@@ -13,13 +12,6 @@ export interface UploadResult {
   mimeType: string;
   sizeBytes: number;
   storedName: string;
-}
-
-export function mimeToFileType(mimeType: string): FileType {
-  if (mimeType.startsWith("image/")) return FileType.IMAGE;
-  if (mimeType === "application/pdf") return FileType.PDF;
-  if (mimeType.startsWith("video/")) return FileType.VIDEO;
-  return FileType.DOCUMENT;
 }
 
 export async function uploadToBucket(

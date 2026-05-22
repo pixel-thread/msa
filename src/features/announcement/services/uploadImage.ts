@@ -1,10 +1,8 @@
 import { env } from "@src/env";
 import { prisma } from "@lib/prisma";
 import { NotFoundError } from "@src/shared/errors";
-import {
-  uploadToBucket,
-  mimeToFileType,
-} from "@src/shared/lib/supabase/storage";
+import { uploadToBucket } from "@src/shared/lib/supabase/storage";
+import { mimeToFileType } from "@src/shared/utils/helper/mimeToFileType";
 
 interface UploadImageProps {
   announcementId: string;

@@ -31,7 +31,6 @@ import {
   TableRow,
 } from "@src/shared/components/ui/table";
 import {
-  ArrowLeft,
   Users,
   CheckCircle2,
   XCircle,
@@ -40,7 +39,6 @@ import {
   UserPlus,
   Trash2,
 } from "lucide-react";
-import Link from "next/link";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import http from "@src/shared/utils/http";
 import { toast } from "sonner";
@@ -70,17 +68,30 @@ export default function AssignMembersPage() {
 
   const { meeting, isLoading: meetingLoading } = useMeetingDetail(meetingId);
   const { members } = useMembers();
-  const { attendees, isLoading: attendeesLoading, removeAttendee, addAttendee } = useMeetingAttendees(meetingId);
+  const {
+    attendees,
+    isLoading: attendeesLoading,
+    removeAttendee,
+    addAttendee,
+  } = useMeetingAttendees(meetingId);
 
   const updateAttendeeMutation = useMutation({
-    mutationFn: ({ userId, attendeeRole }: { userId: string; attendeeRole: string }) =>
+    mutationFn: ({
+      userId,
+      attendeeRole,
+    }: {
+      userId: string;
+      attendeeRole: string;
+    }) =>
       http.patch(`/meetings/${meetingId}/attendees/${userId}`, {
         userId,
         attendeeRole,
       }),
     onSuccess: (res) => {
       if (res.success) {
-        queryClient.invalidateQueries({ queryKey: ["meeting-attendees", meetingId] });
+        queryClient.invalidateQueries({
+          queryKey: ["meeting-attendees", meetingId],
+        });
         toast.success("Attendee updated successfully");
       } else {
         toast.error(res.message || "Failed to update attendee");
@@ -102,13 +113,22 @@ export default function AssignMembersPage() {
 
   const stats = {
     total: attendees.length,
-    accepted: (attendees as AttendeeRow[]).filter((a) => a.rsvpStatus === "ACCEPTED").length,
-    declined: (attendees as AttendeeRow[]).filter((a) => a.rsvpStatus === "DECLINED").length,
-    pending: (attendees as AttendeeRow[]).filter((a) => a.rsvpStatus === "PENDING").length,
+    accepted: (attendees as AttendeeRow[]).filter(
+      (a) => a.rsvpStatus === "ACCEPTED",
+    ).length,
+    declined: (attendees as AttendeeRow[]).filter(
+      (a) => a.rsvpStatus === "DECLINED",
+    ).length,
+    pending: (attendees as AttendeeRow[]).filter(
+      (a) => a.rsvpStatus === "PENDING",
+    ).length,
   };
 
   const getRsvpBadge = (status: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+    const variants: Record<
+      string,
+      "default" | "secondary" | "destructive" | "outline"
+    > = {
       ACCEPTED: "default",
       DECLINED: "destructive",
       PENDING: "secondary",
@@ -159,14 +179,6 @@ export default function AssignMembersPage() {
   return (
     <>
       <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => router.back()}
-          className="h-8 w-8"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
         <div>
           <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
             {meeting.title}
@@ -183,8 +195,12 @@ export default function AssignMembersPage() {
             <div className="flex items-center gap-3">
               <Users className="h-5 w-5 text-muted-foreground" />
               <div>
-                <p className="text-xs font-medium text-muted-foreground">Total</p>
-                <p className="text-lg font-medium text-ink mt-1">{stats.total}</p>
+                <p className="text-xs font-medium text-muted-foreground">
+                  Total
+                </p>
+                <p className="text-lg font-medium text-ink mt-1">
+                  {stats.total}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -195,8 +211,12 @@ export default function AssignMembersPage() {
             <div className="flex items-center gap-3">
               <CheckCircle2 className="h-5 w-5 text-green-600" />
               <div>
-                <p className="text-xs font-medium text-muted-foreground">Accepted</p>
-                <p className="text-lg font-medium text-green-600 mt-1">{stats.accepted}</p>
+                <p className="text-xs font-medium text-muted-foreground">
+                  Accepted
+                </p>
+                <p className="text-lg font-medium text-green-600 mt-1">
+                  {stats.accepted}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -207,8 +227,12 @@ export default function AssignMembersPage() {
             <div className="flex items-center gap-3">
               <XCircle className="h-5 w-5 text-red-600" />
               <div>
-                <p className="text-xs font-medium text-muted-foreground">Declined</p>
-                <p className="text-lg font-medium text-red-600 mt-1">{stats.declined}</p>
+                <p className="text-xs font-medium text-muted-foreground">
+                  Declined
+                </p>
+                <p className="text-lg font-medium text-red-600 mt-1">
+                  {stats.declined}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -219,8 +243,12 @@ export default function AssignMembersPage() {
             <div className="flex items-center gap-3">
               <Clock className="h-5 w-5 text-muted-foreground" />
               <div>
-                <p className="text-xs font-medium text-muted-foreground">Pending</p>
-                <p className="text-lg font-medium text-ink mt-1">{stats.pending}</p>
+                <p className="text-xs font-medium text-muted-foreground">
+                  Pending
+                </p>
+                <p className="text-lg font-medium text-ink mt-1">
+                  {stats.pending}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -235,12 +263,12 @@ export default function AssignMembersPage() {
               placeholder="Search attendees..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 h-10 w-[250px]"
+              className="pl-9 h-10 w-62.5"
             />
           </div>
 
           <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className="w-[160px] h-10">
+            <SelectTrigger className="w-40 h-10">
               <SelectValue placeholder="Role" />
             </SelectTrigger>
             <SelectContent>
@@ -252,7 +280,7 @@ export default function AssignMembersPage() {
           </Select>
 
           <Select value={rsvpFilter} onValueChange={setRsvpFilter}>
-            <SelectTrigger className="w-[160px] h-10">
+            <SelectTrigger className="w-40 h-10">
               <SelectValue placeholder="RSVP" />
             </SelectTrigger>
             <SelectContent>
@@ -294,10 +322,10 @@ export default function AssignMembersPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Member</TableHead>
-                  <TableHead className="w-[150px]">Role</TableHead>
-                  <TableHead className="w-[150px]">RSVP Status</TableHead>
-                  <TableHead className="w-[200px]">Change Role</TableHead>
-                  <TableHead className="w-[80px] text-right">Actions</TableHead>
+                  <TableHead className="w-37.5">Role</TableHead>
+                  <TableHead className="w-37.5">RSVP Status</TableHead>
+                  <TableHead className="w-50">Change Role</TableHead>
+                  <TableHead className="w-20 text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -305,10 +333,16 @@ export default function AssignMembersPage() {
                   <TableRow key={attendee.id}>
                     <TableCell>
                       <div>
-                        <p className="text-sm font-medium">{attendee.user.name}</p>
-                        <p className="text-xs text-muted-foreground">{attendee.user.email}</p>
+                        <p className="text-sm font-medium">
+                          {attendee.user.name}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {attendee.user.email}
+                        </p>
                         {attendee.user.membershipNumber && (
-                          <p className="text-xs text-muted-foreground">#{attendee.user.membershipNumber}</p>
+                          <p className="text-xs text-muted-foreground">
+                            #{attendee.user.membershipNumber}
+                          </p>
                         )}
                       </div>
                     </TableCell>
@@ -317,9 +351,11 @@ export default function AssignMembersPage() {
                     <TableCell>
                       <Select
                         value={attendee.attendeeRole}
-                        onValueChange={(value) => handleRoleChange(attendee.userId, value)}
+                        onValueChange={(value) =>
+                          handleRoleChange(attendee.userId, value)
+                        }
                       >
-                        <SelectTrigger className="h-8 w-[160px]">
+                        <SelectTrigger className="h-8 w-40">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -346,21 +382,6 @@ export default function AssignMembersPage() {
           )}
         </CardContent>
       </Card>
-
-      <div className="mt-4 flex items-center gap-4">
-        <Link
-          href={`/meetings/${meetingId}`}
-          className="text-sm text-primary hover:underline"
-        >
-          ← Back to Meeting Details
-        </Link>
-        <Link
-          href={`/meetings/${meetingId}/minutes`}
-          className="text-sm text-primary hover:underline"
-        >
-          View Minutes →
-        </Link>
-      </div>
 
       <ManageAttendeesDialog
         open={manageOpen}

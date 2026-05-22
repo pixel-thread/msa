@@ -3,12 +3,23 @@
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useMeetingDetail } from "@src/features/meetings/hooks/useMeetingDetail";
-import { useMeetingMinutes, type MeetingMinute as MeetingMinuteType } from "@src/features/meetings/hooks/useMeetingMinutes";
-import { MinutesTable, CreateMinuteDialog, EditMinuteDialog, DeleteMinuteDialog } from "@src/features/meetings/components";
+import {
+  useMeetingMinutes,
+  type MeetingMinute as MeetingMinuteType,
+} from "@src/features/meetings/hooks/useMeetingMinutes";
+import {
+  MinutesTable,
+  CreateMinuteDialog,
+  EditMinuteDialog,
+  DeleteMinuteDialog,
+} from "@src/features/meetings/components";
 import { Button } from "@src/shared/components/ui/button";
 import { ArrowLeft, FileText, Plus } from "lucide-react";
 import Link from "next/link";
-import type { CreateMeetingMinuteInput, UpdateMeetingMinuteInput } from "@src/features/meetings/validators";
+import type {
+  CreateMeetingMinuteInput,
+  UpdateMeetingMinuteInput,
+} from "@src/features/meetings/validators";
 
 export default function MeetingMinutesPage() {
   const params = useParams();
@@ -16,8 +27,11 @@ export default function MeetingMinutesPage() {
   const meetingId = params.meetingId as string;
 
   const [createOpen, setCreateOpen] = useState(false);
-  const [editingMinute, setEditingMinute] = useState<MeetingMinuteType | null>(null);
-  const [deletingMinute, setDeletingMinute] = useState<MeetingMinuteType | null>(null);
+  const [editingMinute, setEditingMinute] = useState<MeetingMinuteType | null>(
+    null,
+  );
+  const [deletingMinute, setDeletingMinute] =
+    useState<MeetingMinuteType | null>(null);
 
   const { meeting, isLoading: meetingLoading } = useMeetingDetail(meetingId);
   const {
@@ -77,14 +91,6 @@ export default function MeetingMinutesPage() {
     <>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => router.back()}
-            className="h-8 w-8"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
           <div>
             <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
               {meeting.title} - Minutes
@@ -112,7 +118,9 @@ export default function MeetingMinutesPage() {
             minutes={minutes as MeetingMinuteType[]}
             isLoading={minutesLoading}
             onEdit={(minute) => setEditingMinute(minute as MeetingMinuteType)}
-            onDelete={(minute) => setDeletingMinute(minute as MeetingMinuteType)}
+            onDelete={(minute) =>
+              setDeletingMinute(minute as MeetingMinuteType)
+            }
           />
         </div>
       </div>
@@ -142,10 +150,20 @@ export default function MeetingMinutesPage() {
 
       <EditMinuteDialog
         meetingId={meetingId}
-        minute={editingMinute ? {
-          ...editingMinute,
-          actionItems: editingMinute.actionItems as { assigneeId?: string; task: string; dueDate?: Date | string }[] | null,
-        } : null}
+        minute={
+          editingMinute
+            ? {
+                ...editingMinute,
+                actionItems: editingMinute.actionItems as
+                  | {
+                      assigneeId?: string;
+                      task: string;
+                      dueDate?: Date | string;
+                    }[]
+                  | null,
+              }
+            : null
+        }
         open={!!editingMinute}
         onOpenChange={(open) => {
           if (!open) setEditingMinute(null);
@@ -155,7 +173,11 @@ export default function MeetingMinutesPage() {
       />
 
       <DeleteMinuteDialog
-        minute={deletingMinute ? { id: deletingMinute.id, agendaPoint: deletingMinute.agendaPoint } : null}
+        minute={
+          deletingMinute
+            ? { id: deletingMinute.id, agendaPoint: deletingMinute.agendaPoint }
+            : null
+        }
         open={!!deletingMinute}
         onOpenChange={(open) => {
           if (!open) setDeletingMinute(null);

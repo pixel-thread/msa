@@ -13,7 +13,13 @@ import {
 import { Badge } from "@src/shared/components/ui/badge";
 import { Separator } from "@src/shared/components/ui/separator";
 import { Button } from "@src/shared/components/ui/button";
-import { ArrowLeft, CreditCard, Clock, AlertCircle, Receipt } from "lucide-react";
+import {
+  ArrowLeft,
+  CreditCard,
+  Clock,
+  AlertCircle,
+  Receipt,
+} from "lucide-react";
 import Link from "next/link";
 
 export function UserPaymentsPage() {
@@ -68,23 +74,19 @@ export function UserPaymentsPage() {
   return (
     <>
       <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => router.back()}
-          className="h-8 w-8"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
         <div>
           <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
             {user.name}
           </h1>
           <p className="mt-1 text-base text-body">
             Payment history and contribution summary
-            {user.email && <span className="ml-2 text-muted-foreground">({user.email})</span>}
+            {user.email && (
+              <span className="ml-2 text-muted-foreground">({user.email})</span>
+            )}
             {user.membershipNumber && (
-              <span className="ml-2 text-muted-foreground">#{user.membershipNumber}</span>
+              <span className="ml-2 text-muted-foreground">
+                #{user.membershipNumber}
+              </span>
             )}
           </p>
         </div>
@@ -97,7 +99,9 @@ export function UserPaymentsPage() {
               <div className="flex items-center gap-3">
                 <CreditCard className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Total Expected</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Total Expected
+                  </p>
                   <p className="text-lg font-medium text-ink mt-1">
                     {formatAmount(summary.totalExpected)}
                   </p>
@@ -111,7 +115,9 @@ export function UserPaymentsPage() {
               <div className="flex items-center gap-3">
                 <Receipt className="h-5 w-5 text-green-600" />
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Total Paid</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Total Paid
+                  </p>
                   <p className="text-lg font-medium text-green-600 mt-1">
                     {formatAmount(summary.totalPaid)}
                   </p>
@@ -125,7 +131,9 @@ export function UserPaymentsPage() {
               <div className="flex items-center gap-3">
                 <AlertCircle className="h-5 w-5 text-red-600" />
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Total Due</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Total Due
+                  </p>
                   <p className="text-lg font-medium text-red-600 mt-1">
                     {formatAmount(summary.totalDue)}
                   </p>
@@ -139,7 +147,9 @@ export function UserPaymentsPage() {
               <div className="flex items-center gap-3">
                 <Clock className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Overdue Months</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Overdue Months
+                  </p>
                   <p className="text-lg font-medium text-ink mt-1">
                     {summary.overdueMonths}
                   </p>
@@ -173,22 +183,30 @@ export function UserPaymentsPage() {
               {summary && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Paid Months</span>
+                    <span className="text-sm text-muted-foreground">
+                      Paid Months
+                    </span>
                     <Badge variant="default">{summary.paidMonths}</Badge>
                   </div>
                   <Separator className="bg-hairline" />
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Partial Months</span>
+                    <span className="text-sm text-muted-foreground">
+                      Partial Months
+                    </span>
                     <Badge variant="outline">{summary.partialMonths}</Badge>
                   </div>
                   <Separator className="bg-hairline" />
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Overdue Months</span>
+                    <span className="text-sm text-muted-foreground">
+                      Overdue Months
+                    </span>
                     <Badge variant="destructive">{summary.overdueMonths}</Badge>
                   </div>
                   <Separator className="bg-hairline" />
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Waived Months</span>
+                    <span className="text-sm text-muted-foreground">
+                      Waived Months
+                    </span>
                     <Badge variant="secondary">{summary.waivedMonths}</Badge>
                   </div>
                 </div>
