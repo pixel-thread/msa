@@ -1,17 +1,11 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import http from "@src/shared/utils/http";
-import { toast } from "sonner";
 import type { TrainingModuleListItem } from "../types";
-import type {
-  CreateTrainingModuleInput,
-  UpdateTrainingModuleInput,
-} from "../validators/training";
 
 export function useTrainingModules(
   options: { page?: number; isActive?: boolean } = {},
 ) {
   const { page = 1, isActive } = options;
-  const queryClient = useQueryClient();
 
   const queryKey = ["training-modules", page, isActive];
 
@@ -26,68 +20,11 @@ export function useTrainingModules(
     },
   });
 
-  const createModuleMutation = useMutation({
-    mutationFn: (data: CreateTrainingModuleInput) =>
-      http.post<TrainingModuleListItem>("/training/modules", data),
-    onSuccess: (res) => {
-      if (res.success) {
-        queryClient.invalidateQueries({ queryKey: ["training-modules"] });
-        toast.success("Training module created successfully");
-        return res;
-      }
-      toast.error(res.message || "Failed to create module");
-      return res;
-    },
-  });
-
-  const updateModuleMutation = useMutation({
-    mutationFn: ({
-      moduleId,
-      data,
-    }: {
-      moduleId: string;
-      data: UpdateTrainingModuleInput;
-    }) =>
-      http.patch<TrainingModuleListItem>(`/training/modules/${moduleId}`, data),
-    onSuccess: (res, variables) => {
-      if (res.success) {
-        queryClient.invalidateQueries({ queryKey: ["training-modules"] });
-        queryClient.invalidateQueries({
-          queryKey: ["training-module", variables.moduleId],
-        });
-        toast.success("Training module updated successfully");
-        return res;
-      }
-      toast.error(res.message || "Failed to update module");
-      return res;
-    },
-  });
-
-  const deleteModuleMutation = useMutation({
-    mutationFn: (moduleId: string) =>
-      http.delete<{ success: boolean }>(`/training/modules/${moduleId}`),
-    onSuccess: (res) => {
-      if (res.success) {
-        queryClient.invalidateQueries({ queryKey: ["training-modules"] });
-        toast.success("Training module deleted successfully");
-        return res;
-      }
-      toast.error(res.message || "Failed to delete module");
-      return res;
-    },
-  });
-
   return {
     modules: data?.data ?? [],
     pagination: data?.meta,
     isLoading,
     error,
-    createModule: createModuleMutation.mutate,
-    updateModule: updateModuleMutation.mutate,
-    deleteModule: deleteModuleMutation.mutate,
-    isCreating: createModuleMutation.isPending,
-    isUpdating: updateModuleMutation.isPending,
-    isDeleting: deleteModuleMutation.isPending,
     refetch,
   };
 }

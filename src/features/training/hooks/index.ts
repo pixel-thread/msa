@@ -1,4 +1,7 @@
 export * from "./useTrainingModules";
+export * from "./useCreateTrainingModule";
+export * from "./useUpdateTrainingModule";
+export * from "./useDeleteTrainingModule";
 export * from "./useTrainingAssignments";
 export * from "./useModuleTableColumns";
 export * from "./useModuleAssignedUsers";
