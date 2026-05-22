@@ -1,8 +1,13 @@
-import { NextResponse } from "next/server";
 import { withAssociation } from "@src/shared/api/with-association";
 import { ForbiddenError } from "@src/shared/errors";
 import { UserRole } from "@prisma/client";
-import { findAuditLogs, getAuditLogStats } from "@src/shared/services/audit-logs";
+import {
+  findAuditLogs,
+  getAuditLogStats,
+} from "@src/shared/services/audit-logs";
+import { SuccessResponse } from "@src/shared/utils";
+import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
+import { withRole } from "@src/shared/api/with-role";
 
 const AuditLogQuerySchema = {
   parse: (params: URLSearchParams) => {
@@ -22,19 +27,12 @@ const AuditLogQuerySchema = {
   },
 };
 
-const ALLOWED_ROLES: UserRole[] = [
-  UserRole.DPO,
-  UserRole.PRESIDENT,
-  UserRole.SUPER_ADMIN,
-];
-
 export const GET = withAssociation(
   {},
   async (association, _validated, request) => {
-    const roleHeader = request.headers.get("x-user-role");
-    const userRole = roleHeader as UserRole;
+    const user = await withRole(request, UserRole.DPO);
 
-    if (!ALLOWED_ROLES.includes(userRole)) {
+    if (hasHighRoleAccess(user.role)) {
       throw new ForbiddenError(
         "Permission denied: DPO, PRESIDENT, or SUPER_ADMIN required",
       );
@@ -48,14 +46,13 @@ export const GET = withAssociation(
       getAuditLogStats(association.id),
     ]);
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: logsResult.logs,
-        meta: logsResult.pagination,
+    return SuccessResponse({
+      data: {
+        logs: logsResult.logs,
         stats,
       },
-      { status: 200 },
-    );
+      meta: logsResult.pagination,
+    });
   },
 );
+

@@ -24,6 +24,7 @@ import {
   BookOpenIcon,
   WalletIcon,
   AlertTriangleIcon,
+  ScrollTextIcon,
 } from "lucide-react";
 import { useAuthStore } from "@src/shared/stores/auth";
 
@@ -138,6 +139,12 @@ const navMain = [
     ],
   },
   {
+    title: "Audit Logs",
+    url: "/audit-logs",
+    icon: <ScrollTextIcon />,
+    isActive: true,
+  },
+  {
     title: "Settings",
     url: "#",
     icon: <Settings2Icon />,
@@ -178,10 +185,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const isFinanceOrAdmin = roles.some((role: string) =>
       ["FINANCE", "SUPER_ADMIN", "PRESIDENT", "SECRETARY"].includes(role),
     );
+    const isAuditorOrAdmin = roles.some((role: string) =>
+      ["DPO", "SUPER_ADMIN", "PRESIDENT"].includes(role),
+    );
 
     return navMain.filter((item) => {
       if (item.title === "Payments") {
         return isFinanceOrAdmin;
+      }
+      if (item.title === "Audit Logs") {
+        return isAuditorOrAdmin;
       }
       return true;
     });
