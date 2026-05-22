@@ -18,12 +18,6 @@ export function useUpdateTrainingSupplement(moduleId: string | null) {
       http.patch(
         trainingEndpoints.supplements.byId(moduleId!, supplementId),
         data,
-        {
-          headers:
-            data instanceof FormData
-              ? { "Content-Type": undefined }
-              : undefined,
-        },
       ),
     onSuccess: (res) => {
       if (res.success) {

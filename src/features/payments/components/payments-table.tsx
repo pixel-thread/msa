@@ -70,7 +70,7 @@ export function PaymentsTable({ payments, isLoading }: PaymentsTableProps) {
             </TableCell>
             <TableCell>
               <Link
-                href={`/payments/users/${tx.userId}`}
+                href={`/payments/user/${tx.userId}`}
                 className="text-sm text-primary hover:underline"
               >
                 {tx.user?.name || tx.userId.slice(0, 8)}

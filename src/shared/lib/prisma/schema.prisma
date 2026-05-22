@@ -1037,15 +1037,6 @@ model TrainingAssignment {
   @@map("training_assignments")
 }
 
-enum TrainingSupplementType {
-  PDF
-  VIDEO
-  IMAGE
-  LINK
-
-  @@map("training_supplement_type")
-}
-
 model TrainingSupplement {
   id String @id @default(uuid())
 
@@ -1054,7 +1045,6 @@ model TrainingSupplement {
   title       String
   description String?
 
-  type TrainingSupplementType
 
   // Storage
   downloadUrl  String
@@ -1076,7 +1066,6 @@ model TrainingSupplement {
   module TrainingModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
   @@index([moduleId])
-  @@index([type])
   @@index([sortOrder])
   @@index([moduleId,isActive])
   @@map("training_supplements")
@@ -1234,17 +1223,6 @@ model Log {
   @@map("logs")
 }
 
-enum FileType {
-  IMAGE
-  PDF
-  VIDEO
-  DOCUMENT
-  CERTIFICATE
-  OTHER
-
-  @@map("file_type")
-}
-
 model File {
   id String @id @default(uuid())
 
@@ -1257,8 +1235,6 @@ model File {
   extension String?
 
   sizeBytes Int
-
-  type FileType
 
   // Storage provider info
   bucket     String?
@@ -1291,7 +1267,6 @@ model File {
   association Association? @relation(fields: [associationId], references: [id], onDelete: Cascade)
 
   @@index([associationId])
-  @@index([type])
   @@index([mimeType])
 
   @@map("files")

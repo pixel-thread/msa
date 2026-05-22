@@ -3,3 +3,7 @@ export * from "./contribution-filters";
 export * from "./record-payment-dialog";
 export * from "./payments-table";
 export * from "./contributions-table";
+export * from "./providers-table";
+export * from "./provider-form";
+export * from "./provider-detail";
+export * from "./contribution-detail";

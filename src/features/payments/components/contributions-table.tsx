@@ -60,7 +60,7 @@ export function ContributionsTable({
           <TableRow key={cp.id}>
             <TableCell>
               <Link
-                href={`/payments/users/${cp.userId}`}
+                href={`/payments/user/${cp.userId}`}
                 className="text-sm text-primary hover:underline"
               >
                 {cp.user?.name || cp.userId.slice(0, 8)}

@@ -29,9 +29,9 @@ export const GET = withAssociation({}, async (association, _, request) => {
 
   const modules = await findManyModules({
     associationId: association.id,
+    userId: user.id,
     isActive,
     role,
-    userId: user.id,
   });
 
   return SuccessResponse({

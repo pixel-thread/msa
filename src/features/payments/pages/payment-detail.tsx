@@ -174,7 +174,7 @@ export function PaymentDetailPage() {
             <CardContent>
               <div className="space-y-3">
                 <Link
-                  href={`/payments/users/${payment.userId}`}
+                  href={`/payments/user/${payment.userId}`}
                   className="text-sm text-primary hover:underline"
                 >
                   {payment.user?.name || "Unknown User"}

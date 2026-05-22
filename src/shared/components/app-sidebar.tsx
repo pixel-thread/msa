@@ -127,6 +127,10 @@ const navMain = [
         title: "Contributions",
         url: "/payments/contributions",
       },
+      {
+        title: "Providers",
+        url: "/payments/providers",
+      },
     ],
   },
   {

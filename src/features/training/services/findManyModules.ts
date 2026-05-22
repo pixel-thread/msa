@@ -15,7 +15,6 @@ export async function findManyModules({
   associationId,
   role,
   isActive,
-
   page = 1,
   userId,
 }: FindManyModulesProps) {

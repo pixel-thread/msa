@@ -78,7 +78,10 @@ const http = {
   ): Promise<ApiResponse<T>> => {
     try {
       logger.info(`POST => ${url}`);
-      const response = await axiosClient.post(url, data, config);
+      const requestConfig: AxiosRequestConfig = data instanceof FormData
+        ? { ...config, headers: { ...config?.headers, "Content-Type": null } }
+        : { ...config };
+      const response = await axiosClient.post(url, data, requestConfig);
       return handleResponse<T>(response);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
@@ -112,7 +115,10 @@ const http = {
   ): Promise<ApiResponse<T>> => {
     try {
       logger.info(`PATCH => ${url}`);
-      const response = await axiosClient.patch(url, data, config);
+      const requestConfig: AxiosRequestConfig = data instanceof FormData
+        ? { ...config, headers: { ...config?.headers, "Content-Type": null } }
+        : { ...config };
+      const response = await axiosClient.patch(url, data, requestConfig);
       return handleResponse<T>(response);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {

@@ -8,17 +8,16 @@ export function useCreateTrainingSupplement(moduleId: string | null) {
 
   return useMutation({
     mutationFn: (formData: FormData) =>
-      http.post(trainingEndpoints.supplements.list(moduleId!), formData, {
-        headers: { "Content-Type": undefined },
-      }),
+      http.post(trainingEndpoints.supplements.list(moduleId!), formData),
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({
           queryKey: trainingQueryKeys.supplements.all(moduleId),
         });
-        toast.success("Supplement added successfully");
+        toast.success(res.message);
         return res;
       }
+      console.log(res.message);
       toast.error(res.message || "Failed to add supplement");
       return res;
     },

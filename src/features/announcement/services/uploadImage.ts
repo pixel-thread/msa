@@ -2,7 +2,6 @@ import { env } from "@src/env";
 import { prisma } from "@lib/prisma";
 import { NotFoundError } from "@src/shared/errors";
 import { uploadToBucket } from "@src/shared/lib/supabase/storage";
-import { mimeToFileType } from "@src/shared/utils/helper/mimeToFileType";
 
 interface UploadImageProps {
   announcementId: string;
@@ -47,7 +46,6 @@ export async function uploadAnnouncementImage({
       mimeType: uploadResult.mimeType,
       extension: file.name.split(".").pop() || null,
       sizeBytes: uploadResult.sizeBytes,
-      type: mimeToFileType(uploadResult.mimeType),
       bucket: env.SUPABASE_BUCKET,
       storageKey: uploadResult.storageKey,
       url: uploadResult.url,
