@@ -51,6 +51,9 @@ export async function findManyAnnouncements({
         author: {
           select: { id: true, name: true, imageUrl: true },
         },
+        imageFile: {
+          select: { id: true, url: true, originalName: true, mimeType: true, sizeBytes: true, thumbnailUrl: true },
+        },
         readReceipts: true,
         _count: {
           select: { readReceipts: true },
