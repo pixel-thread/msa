@@ -26,8 +26,7 @@ import {
   CreateSupplementSchema,
   type CreateSupplementInput,
 } from "../validators/training";
-import { useTrainingSupplements } from "../hooks";
-import { TrainingSupplementType } from "@prisma/client";
+import { useCreateTrainingSupplement } from "../hooks/supplements";
 import { Paperclip, X } from "lucide-react";
 
 interface AddSupplementDialogProps {
@@ -41,7 +40,8 @@ export function AddSupplementDialog({
   onOpenChange,
   moduleId,
 }: AddSupplementDialogProps) {
-  const { createSupplement, isCreating } = useTrainingSupplements(moduleId);
+  const createSupplement = useCreateTrainingSupplement(moduleId);
+  const isCreating = createSupplement.isPending;
   const [file, setFile] = useState<File | null>(null);
 
   const form = useForm({

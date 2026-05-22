@@ -19,6 +19,7 @@ import {
   useModuleAssignedUsers,
   useTrainingModules,
   useTrainingSupplements,
+  useDeleteTrainingSupplement,
 } from "../hooks";
 import { Button } from "@src/shared/components/ui/button";
 import { Input } from "@src/shared/components/ui/input";
@@ -69,12 +70,11 @@ export function TrainingDetailPage() {
     completeAssignment,
     isCompleting: isCompletingAssignment,
   } = useModuleAssignedUsers(moduleId);
-  const {
-    supplements,
-    isLoading: isSupplementsLoading,
-    deleteSupplement,
-    isDeleting: isDeletingSupplement,
-  } = useTrainingSupplements(moduleId);
+  const { data: supplements = [], isFetching: isSupplementsLoading } =
+    useTrainingSupplements(moduleId);
+
+  const { mutate: deleteSupplement, isPending: isDeletingSupplement } =
+    useDeleteTrainingSupplement(moduleId);
 
   const [search, setSearch] = useState("");
   const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
@@ -105,7 +105,7 @@ export function TrainingDetailPage() {
   };
 
   const handleDeleteSupplement = (supplementId: string) => {
-    const supplement = supplements.find((s) => s.id === supplementId);
+    const supplement = supplements?.find((s) => s.id === supplementId);
     setSupplementToDelete(
       supplement
         ? { id: supplement.id, title: supplement.title }
@@ -465,7 +465,7 @@ export function TrainingDetailPage() {
             <div className="flex items-center justify-between py-2 border-b border-hairline">
               <span className="text-muted-foreground">Supplements</span>
               <span className="font-semibold text-ink">
-                {supplements.length}
+                {supplements?.length}
               </span>
             </div>
             <div className="flex items-center justify-between py-2">
@@ -531,8 +531,8 @@ export function TrainingDetailPage() {
         <TabsContent value="supplements" className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="text-sm text-muted-foreground">
-              {supplements.length} supplement
-              {supplements.length !== 1 ? "s" : ""}
+              {supplements?.length} supplement
+              {supplements?.length !== 1 ? "s" : ""}
             </div>
             <Button
               onClick={() => setAddSupplementOpen(true)}
@@ -545,7 +545,7 @@ export function TrainingDetailPage() {
           </div>
           <DataTable
             loading={isSupplementsLoading}
-            data={supplements}
+            data={supplements || []}
             columns={supplementColumns}
           />
         </TabsContent>

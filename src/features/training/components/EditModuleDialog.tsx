@@ -27,7 +27,10 @@ import {
   FormMessage,
 } from "@src/shared/components/ui/form";
 import type { TrainingModuleListItem } from "../types";
-import { UpdateTrainingModuleSchema, type UpdateTrainingModuleInput } from "../validators/training";
+import {
+  UpdateTrainingModuleSchema,
+  type UpdateTrainingModuleInput,
+} from "../validators/training";
 import { useTrainingModules } from "../hooks";
 
 interface EditModuleDialogProps {
@@ -38,7 +41,11 @@ interface EditModuleDialogProps {
 
 const ROLES_LIST = Object.values(UserRole);
 
-export function EditModuleDialog({ open, onOpenChange, module }: EditModuleDialogProps) {
+export function EditModuleDialog({
+  open,
+  onOpenChange,
+  module,
+}: EditModuleDialogProps) {
   const { updateModule, isUpdating } = useTrainingModules();
 
   const form = useForm({
@@ -60,7 +67,9 @@ export function EditModuleDialog({ open, onOpenChange, module }: EditModuleDialo
         description: module.description || "",
         content: module.content,
         durationMinutes: module.durationMinutes || undefined,
-        requiredForRoles: (module.requiredForRoles as UserRole[]) || [UserRole.MEMBER],
+        requiredForRoles: (module.requiredForRoles as UserRole[]) || [
+          UserRole.MEMBER,
+        ],
         isActive: module.isActive,
       });
     }
@@ -77,7 +86,7 @@ export function EditModuleDialog({ open, onOpenChange, module }: EditModuleDialo
             onOpenChange(false);
           }
         },
-      }
+      },
     );
   };
 
@@ -134,7 +143,7 @@ export function EditModuleDialog({ open, onOpenChange, module }: EditModuleDialo
                   <FormControl>
                     <Textarea
                       placeholder="Add detailed training content, instructions, or links here..."
-                      className="min-h-[120px]"
+                      className="min-h-30"
                       {...field}
                     />
                   </FormControl>
@@ -156,7 +165,13 @@ export function EditModuleDialog({ open, onOpenChange, module }: EditModuleDialo
                         placeholder="e.g. 30"
                         {...field}
                         value={field.value ?? ""}
-                        onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value, 10) : undefined)}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value
+                              ? parseInt(e.target.value, 10)
+                              : undefined,
+                          )
+                        }
                       />
                     </FormControl>
                     <FormMessage />
@@ -196,7 +211,8 @@ export function EditModuleDialog({ open, onOpenChange, module }: EditModuleDialo
                         control={form.control}
                         name="requiredForRoles"
                         render={({ field }) => {
-                          const isChecked = field.value?.includes(role) ?? false;
+                          const isChecked =
+                            field.value?.includes(role) ?? false;
                           return (
                             <div className="flex items-center gap-2 space-y-0">
                               <Checkbox
@@ -205,7 +221,9 @@ export function EditModuleDialog({ open, onOpenChange, module }: EditModuleDialo
                                 onCheckedChange={(checked) => {
                                   const updatedRoles = checked
                                     ? [...(field.value || []), role]
-                                    : (field.value || []).filter((r) => r !== role);
+                                    : (field.value || []).filter(
+                                        (r) => r !== role,
+                                      );
                                   field.onChange(updatedRoles);
                                 }}
                               />
