@@ -21,5 +21,7 @@ export const trainingQueryKeys = {
   completions: {
     admin: ["admin-training-completions"] as const,
     my: ["my-training-completions"] as const,
+    byModule: (moduleId: string | null) =>
+      ["training-completions", moduleId] as const,
   },
 } as const;

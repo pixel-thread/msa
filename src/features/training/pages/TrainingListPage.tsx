@@ -7,7 +7,7 @@ import { useAuthStore } from "@src/shared/stores/auth";
 import { DataTable } from "@src/shared/components/data-table";
 import { Button } from "@src/shared/components/ui/button";
 import { Input } from "@src/shared/components/ui/input";
-import { Plus, Search, ShieldAlert } from "lucide-react";
+import { Plus, Search, ShieldAlert, Award } from "lucide-react";
 
 import {
   useTrainingModules,
@@ -95,13 +95,23 @@ export function TrainingListPage() {
           />
         </div>
 
-        <Button
-          onClick={() => setCreateOpen(true)}
-          className="h-11 rounded-full bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-active"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Create Module
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => router.push("/training/completions")}
+            className="h-11 rounded-full border-hairline px-4 text-sm font-semibold"
+          >
+            <Award className="mr-2 h-4 w-4" />
+            Completions
+          </Button>
+          <Button
+            onClick={() => setCreateOpen(true)}
+            className="h-11 rounded-full bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-active"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Create Module
+          </Button>
+        </div>
       </div>
 
       <DataTable

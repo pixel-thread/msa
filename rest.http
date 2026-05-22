@@ -608,6 +608,12 @@ Authorization: Bearer {{TOKEN}}
 ### ----------------- TRAINING MODULE SELF-COMPLETE ------------------
 
 ###
+# @name List Training Module Completes (Self)
+GET {{NEXT_PUBLIC_API_BASE_URL}}/training/modules/{{moduleId}}/complete
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
 # @name Complete Training Module (Self)
 POST {{NEXT_PUBLIC_API_BASE_URL}}/training/modules/{{moduleId}}/complete
 Content-Type: application/json

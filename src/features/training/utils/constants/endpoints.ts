@@ -14,4 +14,8 @@ export const trainingEndpoints = {
     complete: (moduleId: string, userId: string) =>
       `/training/modules/${moduleId}/assignments/${userId}/complete`,
   },
+  completions: {
+    byId: (id: string) => `training/modules/${id}/complete`,
+    all: () => "/training/completions" as const,
+  },
 } as const;

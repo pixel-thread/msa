@@ -10,6 +10,7 @@ import {
   Trash2,
   Plus,
   Paperclip,
+  Award,
 } from "lucide-react";
 import {
   useTrainingModule,
@@ -220,6 +221,14 @@ export function TrainingDetailPage() {
           <TabsTrigger value="supplements" className="flex items-center gap-2">
             <Paperclip className="h-4 w-4" />
             Supplements
+          </TabsTrigger>
+          <TabsTrigger
+            value="completions"
+            className="flex items-center gap-2"
+            onClick={() => router.push(`/training/${moduleId}/completions`)}
+          >
+            <Award className="h-4 w-4" />
+            Completions
           </TabsTrigger>
         </TabsList>
 

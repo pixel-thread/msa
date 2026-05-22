@@ -76,6 +76,10 @@ const navMain = [
         title: "Modules",
         url: "/training",
       },
+      {
+        title: "Completions",
+        url: "/training/completions",
+      },
     ],
   },
   {

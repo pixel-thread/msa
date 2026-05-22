@@ -8,3 +8,4 @@ export * from "./useTrainingMemberColumn";
 export * from "./supplements/useTrainingSupplementsColumns";
 export * from "./supplements";
 export * from "./assignments";
+export * from "./completions";
