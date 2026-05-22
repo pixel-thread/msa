@@ -18,6 +18,8 @@ import {
   useTrainingSupplements,
   useTrainingMemberColumn,
   useTrainingSupplementsColumns,
+  useTrainingCompletions,
+  useTrainingCompletionsColumns,
 } from "../hooks";
 import { Button } from "@src/shared/components/ui/button";
 import { Input } from "@src/shared/components/ui/input";
@@ -222,11 +224,7 @@ export function TrainingDetailPage() {
             <Paperclip className="h-4 w-4" />
             Supplements
           </TabsTrigger>
-          <TabsTrigger
-            value="completions"
-            className="flex items-center gap-2"
-            onClick={() => router.push(`/training/${moduleId}/completions`)}
-          >
+          <TabsTrigger value="completions" className="flex items-center gap-2">
             <Award className="h-4 w-4" />
             Completions
           </TabsTrigger>
@@ -284,6 +282,23 @@ export function TrainingDetailPage() {
             columns={supplementColumns}
           />
         </TabsContent>
+
+        <TabsContent value="completions" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-muted-foreground">
+              Users who completed this module
+            </div>
+            <Button
+              variant="outline"
+              className="h-10 rounded-full border-hairline px-4 text-sm font-semibold flex items-center gap-2 hover:bg-canvas/50"
+              onClick={() => router.push(`/training/${moduleId}/completions`)}
+            >
+              <Award className="mr-1.5 h-4 w-4" />
+              View All
+            </Button>
+          </div>
+          <CompletionsTabContent moduleId={moduleId} />
+        </TabsContent>
       </Tabs>
 
       {selectedUser && (
@@ -326,5 +341,14 @@ export function TrainingDetailPage() {
         }
       />
     </div>
+  );
+}
+
+function CompletionsTabContent({ moduleId }: { moduleId: string }) {
+  const { completions, isLoading } = useTrainingCompletions(moduleId);
+  const { columns } = useTrainingCompletionsColumns();
+
+  return (
+    <DataTable loading={isLoading} data={completions} columns={columns} />
   );
 }
