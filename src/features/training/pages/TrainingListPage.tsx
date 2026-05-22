@@ -9,7 +9,11 @@ import { Button } from "@src/shared/components/ui/button";
 import { Input } from "@src/shared/components/ui/input";
 import { Plus, Search, ShieldAlert } from "lucide-react";
 
-import { useTrainingModules, useUpdateTrainingModule, useModuleTableColumns } from "../hooks";
+import {
+  useTrainingModules,
+  useUpdateTrainingModule,
+  useModuleTableColumns,
+} from "../hooks";
 import { CreateModuleDialog } from "../components";
 
 export function TrainingListPage() {
@@ -104,7 +108,6 @@ export function TrainingListPage() {
         loading={isModulesLoading}
         data={filteredModules}
         columns={moduleColumns}
-        onRowClick={(row) => router.push(`/training/${row.original.id}`)}
       />
 
       <CreateModuleDialog open={createOpen} onOpenChange={setCreateOpen} />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Clock, Download, Trash2 } from "lucide-react";
+import { Download, Trash2 } from "lucide-react";
 import { Badge } from "@src/shared/components/ui/badge";
 import { Button } from "@src/shared/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
@@ -66,22 +66,6 @@ export function useTrainingSupplementsColumns(options: {
         return (
           <span className="text-sm text-body">
             {mb >= 1 ? `${mb.toFixed(1)} MB` : `${kb.toFixed(0)} KB`}
-          </span>
-        );
-      },
-    },
-    {
-      accessorKey: "durationSeconds",
-      header: "Duration",
-      cell: ({ row }) => {
-        const secs = row.original.durationSeconds;
-        if (secs === null || secs === undefined)
-          return <span className="text-sm text-muted-foreground">—</span>;
-        const mins = Math.round(secs / 60);
-        return (
-          <span className="text-sm text-body flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            {mins} min
           </span>
         );
       },
