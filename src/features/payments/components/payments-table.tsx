@@ -70,13 +70,15 @@ export function PaymentsTable({ payments, isLoading }: PaymentsTableProps) {
             </TableCell>
             <TableCell>
               <Link
-                href={`/payments/user/${tx.userId}`}
+                href={`/payments/users/${tx.userId}`}
                 className="text-sm text-primary hover:underline"
               >
                 {tx.user?.name || tx.userId.slice(0, 8)}
               </Link>
               {tx.user?.email && (
-                <div className="text-xs text-muted-foreground">{tx.user.email}</div>
+                <div className="text-xs text-muted-foreground">
+                  {tx.user.email}
+                </div>
               )}
             </TableCell>
             <TableCell>

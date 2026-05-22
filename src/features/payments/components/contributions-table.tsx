@@ -60,13 +60,15 @@ export function ContributionsTable({
           <TableRow key={cp.id}>
             <TableCell>
               <Link
-                href={`/payments/user/${cp.userId}`}
+                href={`/payments/users/${cp.userId}`}
                 className="text-sm text-primary hover:underline"
               >
                 {cp.user?.name || cp.userId.slice(0, 8)}
               </Link>
               {cp.user?.email && (
-                <div className="text-xs text-muted-foreground">{cp.user.email}</div>
+                <div className="text-xs text-muted-foreground">
+                  {cp.user.email}
+                </div>
               )}
             </TableCell>
             <TableCell>

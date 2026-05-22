@@ -37,7 +37,7 @@ export function UserPaymentsPage() {
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", String(page));
-    router.push(`/payments/user/${userId}?${params.toString()}`);
+    router.push(`/payments/users/${userId}?${params.toString()}`);
   };
 
   const formatAmount = (amount: number, currency: string = "INR") => {
@@ -223,7 +223,7 @@ export function UserPaymentsPage() {
             <CardContent>
               <div className="space-y-2">
                 <Link
-                  href={`/payments/user/${userId}/contributions`}
+                  href={`/payments/users/${userId}/contributions`}
                   className="block text-sm text-primary hover:underline"
                 >
                   View Contributions →

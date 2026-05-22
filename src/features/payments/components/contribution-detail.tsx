@@ -19,9 +19,7 @@ interface ContributionDetailProps {
   contribution: ContributionPeriod;
 }
 
-export function ContributionDetail({
-  contribution,
-}: ContributionDetailProps) {
+export function ContributionDetail({ contribution }: ContributionDetailProps) {
   return (
     <div className="grid gap-6 md:grid-cols-3">
       <Card className="rounded-xl border-hairline bg-surface-card md:col-span-2">
@@ -101,7 +99,7 @@ export function ContributionDetail({
           <CardContent>
             <div className="space-y-3">
               <Link
-                href={`/payments/user/${contribution.userId}`}
+                href={`/payments/users/${contribution.userId}`}
                 className="text-sm text-primary hover:underline"
               >
                 {contribution.user?.name || "Unknown"}

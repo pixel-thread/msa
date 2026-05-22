@@ -10,6 +10,7 @@ import { pageNumberValidation } from "@src/shared/validators/common";
 const QuerySchema = z.object({
   page: pageNumberValidation,
   status: z.nativeEnum(UserStatus).optional(),
+  search: z.string().optional(),
 });
 export const GET = withAssociation(
   { query: QuerySchema },
@@ -17,21 +18,26 @@ export const GET = withAssociation(
     const user = await withRole(request, UserRole.SECRETARY);
     const page = query?.page;
     const status = query?.status;
+    const search = query?.search;
+
+    const baseWhere: Record<string, unknown> = { associationId: association.id };
+    if (status) baseWhere.status = status;
 
     let members;
-    if (status) {
+    if (search) {
       members = await getMembers({
-        where: { associationId: association.id, status },
+        where: baseWhere,
+        search,
         page,
       });
     } else if (!hasHighRoleAccess(user.role)) {
       members = await getMembers({
-        where: { associationId: association.id, status: "ACTIVE" },
+        where: { ...baseWhere, status: "ACTIVE" },
         page,
       });
     } else {
       members = await getMembers({
-        where: { associationId: association.id },
+        where: baseWhere,
         page,
       });
     }

@@ -6,10 +6,19 @@ import { buildPagination } from "@src/shared/utils/build-pagination";
 type Props = {
   where: Prisma.UserWhereInput;
   page?: number;
+  search?: string;
 };
 
-export async function getMembers({ where, page = 1 }: Props) {
-  const pageSize = 10;
+export async function getMembers({ where, page = 1, search }: Props) {
+  const pageSize = search ? 20 : 10;
+
+  if (search) {
+    where.OR = [
+      { name: { contains: search, mode: "insensitive" } },
+      { email: { contains: search, mode: "insensitive" } },
+      { membershipNumber: { contains: search, mode: "insensitive" } },
+    ];
+  }
   const skip = (page - 1) * pageSize;
 
   const [members, total] = await Promise.all([

@@ -76,7 +76,7 @@ export function UserContributionsPage() {
   ];
 
   const applyFilters = () => {
-    router.push(`/payments/user/${userId}/contributions`);
+    router.push(`/payments/users/${userId}/contributions`);
   };
 
   const resetFilters = () => {
@@ -84,7 +84,7 @@ export function UserContributionsPage() {
     setFromMonth("all");
     setToYear("all");
     setToMonth("all");
-    router.push(`/payments/user/${userId}/contributions`);
+    router.push(`/payments/users/${userId}/contributions`);
   };
 
   if (isLoading) {
@@ -363,7 +363,7 @@ export function UserContributionsPage() {
 
       <div className="mt-4">
         <Link
-          href={`/payments/user/${userId}`}
+          href={`/payments/users/${userId}`}
           className="text-sm text-primary hover:underline"
         >
           ← Back to Payment History

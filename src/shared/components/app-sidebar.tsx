@@ -128,6 +128,10 @@ const navMain = [
         url: "/payments/contributions",
       },
       {
+        title: "By Member",
+        url: "/payments/users",
+      },
+      {
         title: "Providers",
         url: "/payments/providers",
       },
