@@ -23,13 +23,9 @@ import {
   FormMessage,
 } from "@src/shared/components/ui/form";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@src/shared/components/ui/select";
-import { CreateSupplementSchema, type CreateSupplementInput } from "../validators/training";
+  CreateSupplementSchema,
+  type CreateSupplementInput,
+} from "../validators/training";
 import { useTrainingSupplements } from "../hooks";
 import { TrainingSupplementType } from "@prisma/client";
 import { Paperclip, X } from "lucide-react";
@@ -48,12 +44,11 @@ export function AddSupplementDialog({
   const { createSupplement, isCreating } = useTrainingSupplements(moduleId);
   const [file, setFile] = useState<File | null>(null);
 
-  const form = useForm<CreateSupplementInput>({
+  const form = useForm({
     resolver: zodResolver(CreateSupplementSchema),
     defaultValues: {
       title: "",
       description: "",
-      type: TrainingSupplementType.DOCUMENT,
       sortOrder: 0,
       isActive: true,
     },
@@ -84,7 +79,12 @@ export function AddSupplementDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={(open) => { if (!open) handleClose(); }}>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        if (!open) handleClose();
+      }}
+    >
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Add Supplement</DialogTitle>
@@ -123,31 +123,6 @@ export function AddSupplementDialog({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Type</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {Object.values(TrainingSupplementType).map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <FormItem>
               <FormLabel>File</FormLabel>
               <FormControl>
@@ -155,7 +130,9 @@ export function AddSupplementDialog({
                   <div className="flex items-center justify-between rounded-md border border-hairline bg-canvas px-3 py-2">
                     <div className="flex items-center gap-2 min-w-0">
                       <Paperclip className="h-4 w-4 shrink-0 text-muted-foreground" />
-                      <span className="text-sm text-body truncate">{file.name}</span>
+                      <span className="text-sm text-body truncate">
+                        {file.name}
+                      </span>
                       <span className="text-xs text-muted-foreground shrink-0">
                         ({(file.size / 1024).toFixed(1)} KB)
                       </span>

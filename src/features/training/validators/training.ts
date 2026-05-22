@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { UserRole, TrainingSupplementType } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 
 export const CreateTrainingModuleSchema = z.object({
   title: z
@@ -79,7 +79,6 @@ export const CreateSupplementSchema = z.object({
     .string()
     .max(1000, "Description cannot exceed 1000 characters")
     .optional(),
-  type: z.nativeEnum(TrainingSupplementType),
   sortOrder: z.number().int().default(0),
   isActive: z.boolean().default(true),
 });
@@ -95,7 +94,6 @@ export const UpdateSupplementSchema = z.object({
     .string()
     .max(1000, "Description cannot exceed 1000 characters")
     .optional(),
-  type: z.nativeEnum(TrainingSupplementType).optional(),
   sortOrder: z.number().int().optional(),
   isActive: z.boolean().optional(),
 });
