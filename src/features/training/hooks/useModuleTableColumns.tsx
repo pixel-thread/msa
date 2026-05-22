@@ -9,8 +9,14 @@ import {
   DropdownMenuTrigger,
 } from "@src/shared/components/ui/dropdown-menu";
 import { Button } from "@src/shared/components/ui/button";
-import { MoreHorizontal, Settings, ToggleLeft, ToggleRight } from "lucide-react";
+import {
+  MoreHorizontal,
+  Settings,
+  ToggleLeft,
+  ToggleRight,
+} from "lucide-react";
 import type { TrainingModuleListItem } from "../types";
+import Link from "next/link";
 
 export const useModuleTableColumns = (options: {
   onManage: (module: TrainingModuleListItem) => void;
@@ -25,12 +31,14 @@ export const useModuleTableColumns = (options: {
       cell: ({ row }) => {
         const mod = row.original;
         return (
-          <div className="flex flex-col max-w-md">
+          <Link href={`/training/${mod.id}`} className="flex flex-col max-w-md">
             <span className="text-sm font-semibold text-ink">{mod.title}</span>
             {mod.description && (
-              <span className="text-xs text-muted-foreground truncate">{mod.description}</span>
+              <span className="text-xs text-muted-foreground truncate">
+                {mod.description}
+              </span>
             )}
-          </div>
+          </Link>
         );
       },
     },
