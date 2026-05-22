@@ -6,6 +6,7 @@ import { UserRole } from "@prisma/client";
 import { uploadAnnouncementImage } from "@feature/announcement/services";
 import { deleteFromBucket } from "@src/shared/lib/supabase/storage";
 import { z } from "zod";
+import { logger } from "@src/shared/logger";
 
 const RouteParams = z.object({
   announcementId: z.uuid(),
@@ -22,6 +23,7 @@ export const POST = withAssociation(
     const user = await withRole(request, UserRole.SECRETARY);
 
     const formData = await request.formData();
+
     const file = formData.get("file") as File | null;
 
     if (!file) {
@@ -46,9 +48,9 @@ export const POST = withAssociation(
     if (oldStorageKey) {
       try {
         await deleteFromBucket(oldStorageKey);
-      } catch {
+      } catch (error) {
         // Best-effort cleanup
-        console.error("Failed to delete old image");
+        logger.error("Failed to delete old image", { error });
       }
     }
 

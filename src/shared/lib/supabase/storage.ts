@@ -31,9 +31,13 @@ export async function uploadToBucket(
   const storedName = `${crypto.randomUUID()}${ext ? `.${ext}` : ""}`;
   const storageKey = `${pathPrefix}/${storedName}`;
 
+  const arrayBuffer = await file.arrayBuffer();
+
+  const buffer = Buffer.from(arrayBuffer);
+
   const { error, data } = await supabase.storage
     .from(bucket)
-    .upload(storageKey, file, {
+    .upload(storageKey, buffer, {
       contentType: file.type,
       upsert: true,
     });
