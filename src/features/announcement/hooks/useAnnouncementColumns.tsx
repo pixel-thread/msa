@@ -1,6 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { AnnouncementActionsCell } from "@src/features/announcement/components/cells/announcement-actions-cell";
 import type { Announcement } from "../types";
+import Link from "next/link";
 
 interface UseAnnouncementColumnsOptions {
   onEdit: (announcement: Announcement) => void;
@@ -16,12 +17,17 @@ export function useAnnouncementColumns({
       accessorKey: "title",
       header: "Title",
       cell: ({ row }) => (
-        <div className="flex items-center gap-2">
+        <Link
+          href={`/announcement/${row.original.id}`}
+          className="flex items-center gap-2"
+        >
           {row.original.isPinned && (
-            <span className="text-amber-500" title="Pinned">📌</span>
+            <span className="text-amber-500" title="Pinned">
+              📌
+            </span>
           )}
           <span className="text-sm font-medium">{row.original.title}</span>
-        </div>
+        </Link>
       ),
     },
     {
@@ -35,14 +41,18 @@ export function useAnnouncementColumns({
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => (
-        <span className="text-sm capitalize">{row.original.status.toLowerCase()}</span>
+        <span className="text-sm capitalize">
+          {row.original.status.toLowerCase()}
+        </span>
       ),
     },
     {
       accessorKey: "priority",
       header: "Priority",
       cell: ({ row }) => (
-        <span className="text-sm capitalize">{row.original.priority.toLowerCase()}</span>
+        <span className="text-sm capitalize">
+          {row.original.priority.toLowerCase()}
+        </span>
       ),
     },
     {

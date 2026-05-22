@@ -667,6 +667,9 @@ export async function getAllTransactions(
       { referenceNumber: { contains: search, mode: "insensitive" } },
       { receiptNumber: { contains: search, mode: "insensitive" } },
       { notes: { contains: search, mode: "insensitive" } },
+      { user: { name: { contains: search, mode: "insensitive" } } },
+      { user: { email: { contains: search, mode: "insensitive" } } },
+      { user: { membershipNumber: { contains: search, mode: "insensitive" } } },
     ];
   }
 

@@ -44,7 +44,7 @@ export function PaymentFilters({ onFilterChange }: PaymentFiltersProps) {
       <div className="relative flex-1 min-w-[200px]">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="Search reference, receipt, notes..."
+          placeholder="Search member, reference, receipt..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-9 h-10"
