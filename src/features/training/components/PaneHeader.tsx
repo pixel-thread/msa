@@ -2,20 +2,22 @@
 
 import { CheckSquare, Square } from "lucide-react";
 
-interface SelectAllHeaderProps {
+interface PaneHeaderProps {
+  title: string;
   count: number;
   total: number;
   onToggleAll: () => void;
 }
 
-export function SelectAllHeader({
+export function PaneHeader({
+  title,
   count,
   total,
   onToggleAll,
-}: SelectAllHeaderProps) {
+}: PaneHeaderProps) {
   const allSelected = count === total && total > 0;
   return (
-    <div className="flex items-center gap-3 px-3 py-1 border-b text-xs text-muted-foreground font-medium">
+    <div className="flex items-center gap-3 pb-2 border-b text-xs font-medium">
       <button
         onClick={onToggleAll}
         className="hover:text-ink text-muted-foreground flex items-center"
@@ -26,8 +28,9 @@ export function SelectAllHeader({
           <Square className="h-4 w-4" />
         )}
       </button>
-      <span className="flex-1">Select All / User Details</span>
-      <span>Action</span>
+      <span className="text-muted-foreground">{title}</span>
+      <span className="text-ink font-semibold">{total}</span>
+      <span className="ml-auto text-muted-foreground">Action</span>
     </div>
   );
 }
