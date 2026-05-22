@@ -26,7 +26,7 @@ import {
   FormMessage,
 } from "@src/shared/components/ui/form";
 import { CreateTrainingModuleSchema, type CreateTrainingModuleInput } from "../validators/training";
-import { useTrainingModules } from "../hooks";
+import { useCreateTrainingModule } from "../hooks";
 
 interface CreateModuleDialogProps {
   open: boolean;
@@ -36,7 +36,7 @@ interface CreateModuleDialogProps {
 const ROLES_LIST = Object.values(UserRole);
 
 export function CreateModuleDialog({ open, onOpenChange }: CreateModuleDialogProps) {
-  const { createModule, isCreating } = useTrainingModules();
+  const { createModule, isCreating } = useCreateTrainingModule();
 
   const form = useForm({
     resolver: zodResolver(CreateTrainingModuleSchema),

@@ -9,7 +9,7 @@ import { Button } from "@src/shared/components/ui/button";
 import { Input } from "@src/shared/components/ui/input";
 import { Plus, Search, ShieldAlert } from "lucide-react";
 
-import { useTrainingModules, useModuleTableColumns } from "../hooks";
+import { useTrainingModules, useUpdateTrainingModule, useModuleTableColumns } from "../hooks";
 import { CreateModuleDialog } from "../components";
 
 export function TrainingListPage() {
@@ -26,11 +26,9 @@ export function TrainingListPage() {
   const [search, setSearch] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
 
-  const {
-    modules: allModules,
-    isLoading: isModulesLoading,
-    updateModule,
-  } = useTrainingModules();
+  const { modules: allModules, isLoading: isModulesLoading } =
+    useTrainingModules();
+  const { updateModule } = useUpdateTrainingModule();
 
   const { columns: moduleColumns } = useModuleTableColumns({
     onManage: (mod) => {

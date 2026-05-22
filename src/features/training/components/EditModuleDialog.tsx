@@ -31,7 +31,7 @@ import {
   UpdateTrainingModuleSchema,
   type UpdateTrainingModuleInput,
 } from "../validators/training";
-import { useTrainingModules } from "../hooks";
+import { useUpdateTrainingModule } from "../hooks";
 
 interface EditModuleDialogProps {
   open: boolean;
@@ -46,7 +46,7 @@ export function EditModuleDialog({
   onOpenChange,
   module,
 }: EditModuleDialogProps) {
-  const { updateModule, isUpdating } = useTrainingModules();
+  const { updateModule, isUpdating } = useUpdateTrainingModule();
 
   const form = useForm({
     resolver: zodResolver(UpdateTrainingModuleSchema),

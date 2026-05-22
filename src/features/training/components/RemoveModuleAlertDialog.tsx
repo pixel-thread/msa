@@ -11,7 +11,7 @@ import {
 } from "@components/ui/alert-dialog";
 
 import { Trash2 } from "lucide-react";
-import { useTrainingModules } from "../hooks";
+import { useDeleteTrainingModule } from "../hooks";
 type RemoveModuleAlertDialogProps = {
   isOpen: boolean;
   onValueChange: (open: boolean) => void;
@@ -23,7 +23,7 @@ export const RemoveModuleAlertDialog = ({
   moduleId,
   onValueChange,
 }: RemoveModuleAlertDialogProps) => {
-  const { deleteModule, isDeleting } = useTrainingModules();
+  const { deleteModule, isDeleting } = useDeleteTrainingModule();
 
   const handleConfirmDeleteModule = () => {
     deleteModule(moduleId, {
