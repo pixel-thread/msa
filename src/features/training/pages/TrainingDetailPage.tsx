@@ -30,7 +30,6 @@ import {
 } from "@src/shared/components/ui/tabs";
 import {
   CompleteAssignmentDialog,
-  ManageAssigneesDialog,
   EditModuleDialog,
   AddSupplementDialog,
 } from "../components";
@@ -56,8 +55,6 @@ export function TrainingDetailPage() {
 
   const { data: supplements = [], isFetching: isSupplementsLoading } =
     useTrainingSupplements(moduleId);
-
-  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
@@ -233,7 +230,7 @@ export function TrainingDetailPage() {
               assigned
             </div>
             <Button
-              onClick={() => setAssignDialogOpen(true)}
+              onClick={() => router.push(`/training/${moduleId}/assign`)}
               variant="outline"
               className="h-10 rounded-full border-hairline px-4 text-sm font-semibold flex items-center gap-2 hover:bg-canvas/50"
             >
@@ -289,14 +286,6 @@ export function TrainingDetailPage() {
           moduleId={moduleId}
           onComplete={handleComplete}
           isCompleting={isCompletingAssignment}
-        />
-      )}
-
-      {trainingModule && (
-        <ManageAssigneesDialog
-          open={assignDialogOpen}
-          onOpenChange={setAssignDialogOpen}
-          module={trainingModule as TrainingModuleListItem}
         />
       )}
 
