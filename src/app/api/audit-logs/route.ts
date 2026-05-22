@@ -30,9 +30,9 @@ const AuditLogQuerySchema = {
 export const GET = withAssociation(
   {},
   async (association, _validated, request) => {
-    const user = await withRole(request, UserRole.DPO);
+    const user = await withRole(request, UserRole.SECRETARY);
 
-    if (hasHighRoleAccess(user.role)) {
+    if (!hasHighRoleAccess(user.role)) {
       throw new ForbiddenError(
         "Permission denied: DPO, PRESIDENT, or SUPER_ADMIN required",
       );
