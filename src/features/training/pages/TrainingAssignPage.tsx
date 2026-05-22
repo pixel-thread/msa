@@ -39,11 +39,13 @@ export function TrainingAssignPage() {
   const { assignments, isLoading: isAssignmentsLoading } =
     useTrainingAssignmentsQuery(moduleId);
   const { assignUser, isAssigning } = useAssignTrainingModule(moduleId);
-  const { bulkAssignUsers, isBulkAssigning } =
-    useBulkAssignTrainingModule(moduleId);
+  const { bulkAssignUsers, isBulkAssigning } = useBulkAssignTrainingModule(
+    moduleId,
+  );
   const { removeUser, isRemoving } = useRemoveTrainingAssignment(moduleId);
-  const { bulkRemoveUsers, isBulkRemoving } =
-    useBulkRemoveTrainingAssignment(moduleId);
+  const { bulkRemoveUsers, isBulkRemoving } = useBulkRemoveTrainingAssignment(
+    moduleId,
+  );
 
   const { members, isLoading: isMembersLoading } = useMembers({
     status: "ACTIVE",
@@ -154,6 +156,14 @@ export function TrainingAssignPage() {
     <div className="mx-auto pb-12 w-full h-full flex flex-col min-h-0">
       {/* Header */}
       <div className="flex items-center gap-3 pb-4 shrink-0">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-9 w-9"
+          onClick={() => router.push(`/training/${moduleId}`)}
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
         <div>
           <h1 className="text-2xl font-bold text-ink">Manage Assignees</h1>
           {isModuleLoading ? (
@@ -172,6 +182,7 @@ export function TrainingAssignPage() {
 
       {/* Search */}
       <div className="relative pb-4 shrink-0">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           placeholder="Search by name or email..."
           className="pl-9 h-10 border-hairline bg-canvas/50"
@@ -224,6 +235,7 @@ export function TrainingAssignPage() {
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                      onClick={() => handleRemoveSingle(user.id)}
                       disabled={isRemoving}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -277,6 +289,7 @@ export function TrainingAssignPage() {
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                      onClick={() => handleAssignSingle(member.id)}
                       disabled={isAssigning}
                     >
                       <Plus className="h-4 w-4" />
