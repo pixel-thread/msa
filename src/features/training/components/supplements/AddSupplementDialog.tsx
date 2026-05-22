@@ -22,12 +22,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@src/shared/components/ui/form";
-import {
-  CreateSupplementSchema,
-  type CreateSupplementInput,
-} from "../validators/training";
-import { useCreateTrainingSupplement } from "../hooks/supplements";
+
 import { Paperclip, X } from "lucide-react";
+import { useCreateTrainingSupplement } from "../../hooks";
+import {
+  CreateSupplementInput,
+  CreateSupplementSchema,
+} from "../../validators/training";
 
 interface AddSupplementDialogProps {
   open: boolean;
@@ -40,8 +41,10 @@ export function AddSupplementDialog({
   onOpenChange,
   moduleId,
 }: AddSupplementDialogProps) {
-  const createSupplement = useCreateTrainingSupplement(moduleId);
-  const isCreating = createSupplement.isPending;
+  const { mutate: createSupplement, isPending } =
+    useCreateTrainingSupplement(moduleId);
+
+  const isCreating = isPending;
   const [file, setFile] = useState<File | null>(null);
 
   const form = useForm({
