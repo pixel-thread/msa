@@ -10,10 +10,7 @@ import {
   createSupplement,
 } from "@feature/training/services";
 import { CreateSupplementSchema } from "@feature/training/validators/training";
-import {
-  uploadToBucket,
-  mimeToFileType,
-} from "@src/shared/lib/supabase/storage";
+import { uploadToBucket } from "@src/shared/lib/supabase/storage";
 import { z } from "zod";
 
 const TrainingParamsSchema = z.object({
@@ -26,7 +23,9 @@ export const GET = withAssociation(
     if (!params) {
       throw new ForbiddenError("Invalid module ID");
     }
+
     await withRole(request, UserRole.MEMBER);
+
     const { moduleId } = params;
 
     const supplements = await findManySupplements({
@@ -60,8 +59,10 @@ export const POST = withAssociation(
     }
 
     let metadata: z.infer<typeof CreateSupplementSchema>;
+
     try {
       const parsed = JSON.parse(metadataRaw);
+
       metadata = CreateSupplementSchema.parse(parsed);
     } catch (error) {
       if (error instanceof SyntaxError) {
@@ -87,7 +88,6 @@ export const POST = withAssociation(
         mimeType: uploadResult.mimeType,
         extension: file.name.split(".").pop() || null,
         sizeBytes: uploadResult.sizeBytes,
-        type: mimeToFileType(uploadResult.mimeType),
         bucket: env.SUPABASE_BUCKET,
         storageKey: uploadResult.storageKey,
         url: uploadResult.url,
