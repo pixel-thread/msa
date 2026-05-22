@@ -11,6 +11,7 @@ import {
 } from "@src/shared/components/ui/sidebar";
 import { useTheme } from "../providers/theme-provider";
 import { Button } from "./ui/button";
+import { MoonIcon, SunIcon } from "lucide-react";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -31,14 +32,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <AppSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b border-hairline bg-canvas transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator
-              orientation="vertical"
-              className="mr-2 data-vertical:h-4 data-vertical:self-auto"
-            />
-            <Button onClick={() => toggleTheme()}>
-              {themeMode === "light" ? "Dark" : "Light"}
+          <div className="flex items-center w-full justify-between gap-2 px-4">
+            <div className="flex items-center">
+              <SidebarTrigger className="-ml-1" />
+              <Separator
+                orientation="vertical"
+                className="mr-2 data-vertical:h-4 data-vertical:self-auto"
+              />
+            </div>
+            <Button variant={"ghost"} onClick={() => toggleTheme()}>
+              {themeMode === "light" ? <SunIcon /> : <MoonIcon />}
             </Button>
           </div>
         </header>

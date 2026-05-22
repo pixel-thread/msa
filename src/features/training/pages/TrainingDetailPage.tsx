@@ -4,7 +4,6 @@ import { useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   Clock,
-  ArrowLeft,
   CheckCircle,
   Award,
   Users,
@@ -13,6 +12,7 @@ import {
   Trash2,
   Plus,
   Paperclip,
+  Download,
 } from "lucide-react";
 import {
   useTrainingModule,
@@ -24,6 +24,12 @@ import { Button } from "@src/shared/components/ui/button";
 import { Input } from "@src/shared/components/ui/input";
 import { Badge } from "@src/shared/components/ui/badge";
 import { DataTable } from "@src/shared/components/data-table";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@src/shared/components/ui/tabs";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,6 +50,7 @@ import {
 import type {
   AssignedUserWithCompletion,
   TrainingModuleListItem,
+  TrainingSupplementItem,
 } from "../types";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDate } from "@src/shared/utils";
@@ -81,6 +88,7 @@ export function TrainingDetailPage() {
     title: string;
   } | null>(null);
   const [deleteModuleDialogOpen, setDeleteModuleDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("members");
 
   const filteredUsers = useMemo(() => {
     const query = search.toLowerCase().trim();
@@ -124,7 +132,7 @@ export function TrainingDetailPage() {
     });
   };
 
-  const columns: ColumnDef<AssignedUserWithCompletion>[] = [
+  const memberColumns: ColumnDef<AssignedUserWithCompletion>[] = [
     {
       accessorKey: "user.name",
       header: "Member",
@@ -244,6 +252,107 @@ export function TrainingDetailPage() {
     },
   ];
 
+  const supplementColumns: ColumnDef<TrainingSupplementItem>[] = [
+    {
+      accessorKey: "title",
+      header: "Title",
+      cell: ({ row }) => {
+        const s = row.original;
+        return (
+          <div className="flex flex-col">
+            <span className="text-sm font-semibold text-ink">{s.title}</span>
+            {s.description && (
+              <span className="text-xs text-muted-foreground line-clamp-1">
+                {s.description}
+              </span>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "type",
+      header: "Type",
+      cell: ({ row }) => (
+        <Badge variant="secondary" className="text-[10px]">
+          {row.original.type}
+        </Badge>
+      ),
+    },
+    {
+      accessorKey: "fileSize",
+      header: "Size",
+      cell: ({ row }) => {
+        const bytes = row.original.fileSize;
+        if (bytes === null || bytes === undefined)
+          return <span className="text-sm text-muted-foreground">—</span>;
+        const kb = bytes / 1024;
+        const mb = kb / 1024;
+        return (
+          <span className="text-sm text-body">
+            {mb >= 1 ? `${mb.toFixed(1)} MB` : `${kb.toFixed(0)} KB`}
+          </span>
+        );
+      },
+    },
+    {
+      accessorKey: "durationSeconds",
+      header: "Duration",
+      cell: ({ row }) => {
+        const secs = row.original.durationSeconds;
+        if (secs === null || secs === undefined)
+          return <span className="text-sm text-muted-foreground">—</span>;
+        const mins = Math.round(secs / 60);
+        return (
+          <span className="text-sm text-body flex items-center gap-1">
+            <Clock className="h-3 w-3" />
+            {mins} min
+          </span>
+        );
+      },
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Added",
+      cell: ({ row }) => (
+        <span className="text-sm text-body">
+          {formatDate(row.original.createdAt)}
+        </span>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => {
+        const s = row.original;
+        return (
+          <div className="flex items-center gap-1">
+            {s.fileUrl && (
+              <a href={s.fileUrl} target="_blank" rel="noreferrer">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+              </a>
+            )}
+            <Button
+              onClick={() => handleDeleteSupplement(s.id)}
+              variant="ghost"
+              size="sm"
+              disabled={isDeletingSupplement && supplementToDelete?.id === s.id}
+              className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        );
+      },
+    },
+  ];
+
   if (isModuleLoading) {
     return (
       <div className="py-24 text-center text-body">
@@ -271,9 +380,19 @@ export function TrainingDetailPage() {
   }
 
   return (
-    <div className="mx-auto pb-12 w-full h-full">
-      <div className="flex items-center justify-between mb-8 w-full">
-        <div className="flex items-center justify-end w-full gap-2">
+    <div className="mx-auto pb-12 w-full h-full space-y-8">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-ink">
+            {trainingModule.title}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            v{trainingModule.version} &middot;{" "}
+            {trainingModule.isActive ? "Active" : "Inactive"}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
           <Button
             onClick={() => setEditDialogOpen(true)}
             variant="outline"
@@ -294,164 +413,93 @@ export function TrainingDetailPage() {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2 space-y-6">
-          {trainingModule.description && (
-            <div className="bg-surface-card border border-hairline rounded-xl p-6">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                Overview
-              </h2>
-              <p className="text-sm text-body leading-relaxed">
-                {trainingModule.description}
-              </p>
-            </div>
-          )}
-
-          {/* Supplements Section */}
-          <div className="bg-surface-card border border-hairline rounded-xl p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-hairline pb-3">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <Paperclip className="h-4 w-4" />
-                Supplements
-              </h2>
-              <Button
-                onClick={() => setAddSupplementOpen(true)}
-                variant="ghost"
-                size="sm"
-                className="h-8 text-xs font-semibold text-primary"
-              >
-                <Plus className="mr-1 h-3.5 w-3.5" />
-                Add Supplement
-              </Button>
-            </div>
-
-            {isSupplementsLoading ? (
-              <p className="text-sm text-muted-foreground">
-                Loading supplements...
-              </p>
-            ) : supplements.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                No supplements added yet.
-              </p>
-            ) : (
-              <ul className="space-y-2">
-                {supplements.map(
-                  (sup: {
-                    id: string;
-                    title: string;
-                    type: string;
-                    description?: string;
-                    downloadUrl?: string;
-                  }) => (
-                    <li
-                      key={sup.id}
-                      className="flex flex-col bg-canvas p-3 rounded-lg border border-hairline"
-                    >
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <span className="font-semibold text-sm text-ink">
-                            {sup.title}
-                          </span>
-                          <Badge
-                            variant="secondary"
-                            className="ml-2 text-[10px]"
-                          >
-                            {sup.type}
-                          </Badge>
-                        </div>
-                        <Button
-                          onClick={() => handleDeleteSupplement(sup.id)}
-                          variant="ghost"
-                          size="sm"
-                          disabled={
-                            isDeletingSupplement &&
-                            supplementToDelete?.id === sup.id
-                          }
-                          className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0 ml-2"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      {sup.description && (
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {sup.description}
-                        </p>
-                      )}
-                      {sup.downloadUrl && (
-                        <a
-                          href={sup.downloadUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-xs text-primary hover:underline mt-1"
-                        >
-                          View Resource
-                        </a>
-                      )}
-                    </li>
-                  ),
-                )}
-              </ul>
+      {/* Training Detail Card */}
+      <div className="bg-surface-card border border-hairline rounded-xl p-6">
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2 space-y-4">
+            {trainingModule.description && (
+              <div>
+                <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                  Overview
+                </h2>
+                <p className="text-sm text-body leading-relaxed">
+                  {trainingModule.description}
+                </p>
+              </div>
             )}
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          <div className="bg-surface-card border border-hairline rounded-xl p-6 space-y-4">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-              Course Info
-            </h2>
-            <div className="space-y-3 text-sm">
+            <div className="flex flex-wrap gap-4">
               {trainingModule.durationMinutes && (
-                <div className="flex items-center justify-between py-2 border-b border-hairline">
-                  <span className="text-muted-foreground flex items-center gap-1.5">
-                    <Clock className="h-4 w-4" /> Estimated time
-                  </span>
+                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <Clock className="h-4 w-4" />
                   <span className="font-semibold text-ink">
                     {trainingModule.durationMinutes} mins
                   </span>
                 </div>
               )}
-              <div className="flex items-center justify-between py-2 border-b border-hairline">
-                <span className="text-muted-foreground">Module Version</span>
-                <span className="font-semibold text-ink">
-                  v{trainingModule.version}
-                </span>
-              </div>
-              <div className="flex items-center justify-between py-2 border-b border-hairline">
-                <span className="text-muted-foreground">Status</span>
-                <Badge
-                  variant={trainingModule.isActive ? "default" : "destructive"}
-                >
-                  {trainingModule.isActive ? "Active" : "Inactive"}
-                </Badge>
-              </div>
-              <div className="flex items-center justify-between py-2 border-b border-hairline">
-                <span className="text-muted-foreground">Required For</span>
-                <div className="flex flex-wrap gap-1 justify-end">
-                  {trainingModule.requiredForRoles.map((role: string) => (
-                    <Badge
-                      key={role}
-                      variant="secondary"
-                      className="text-[10px]"
-                    >
-                      {role}
-                    </Badge>
-                  ))}
+              {trainingModule.requiredForRoles.length > 0 && (
+                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <Users className="h-4 w-4" />
+                  <span>Required for: </span>
+                  <div className="flex flex-wrap gap-1">
+                    {trainingModule.requiredForRoles.map((role: string) => (
+                      <Badge
+                        key={role}
+                        variant="secondary"
+                        className="text-[10px]"
+                      >
+                        {role}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
+            </div>
+          </div>
+          <div className="flex flex-col gap-2 text-sm">
+            <div className="flex items-center justify-between py-2 border-b border-hairline">
+              <span className="text-muted-foreground">Assigned Users</span>
+              <span className="font-semibold text-ink">
+                {assignedUsers.length}
+              </span>
+            </div>
+            <div className="flex items-center justify-between py-2 border-b border-hairline">
+              <span className="text-muted-foreground">Supplements</span>
+              <span className="font-semibold text-ink">
+                {supplements.length}
+              </span>
+            </div>
+            <div className="flex items-center justify-between py-2">
+              <span className="text-muted-foreground">Completion Rate</span>
+              <span className="font-semibold text-ink">
+                {assignedUsers.length > 0
+                  ? `${Math.round((assignedUsers.filter((u) => u.status === "COMPLETED").length / assignedUsers.length) * 100)}%`
+                  : "—"}
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="mt-10 space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-ink flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Assigned Users
-          </h2>
-          <div className="flex items-center gap-4">
-            <div className="text-sm text-muted-foreground items-center gap-1.5 hidden sm:flex">
+      {/* Tabs: Members | Supplements */}
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-6"
+      >
+        <TabsList>
+          <TabsTrigger value="members" className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            Members
+          </TabsTrigger>
+          <TabsTrigger value="supplements" className="flex items-center gap-2">
+            <Paperclip className="h-4 w-4" />
+            Supplements
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="members" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-muted-foreground">
               {assignedUsers.length} user{assignedUsers.length !== 1 ? "s" : ""}{" "}
               assigned
             </div>
@@ -464,24 +512,44 @@ export function TrainingDetailPage() {
               Assign Users
             </Button>
           </div>
-        </div>
-
-        <div className="relative max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search assigned users..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="h-10 rounded-md border-hairline bg-canvas pl-10 text-ink placeholder:text-muted-foreground focus-visible:border-primary"
+          <div className="relative max-w-sm">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search assigned users..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="h-10 rounded-md border-hairline bg-canvas pl-10 text-ink placeholder:text-muted-foreground focus-visible:border-primary"
+            />
+          </div>
+          <DataTable
+            loading={isAssignedLoading}
+            data={filteredUsers}
+            columns={memberColumns}
           />
-        </div>
+        </TabsContent>
 
-        <DataTable
-          loading={isAssignedLoading}
-          data={filteredUsers}
-          columns={columns}
-        />
-      </div>
+        <TabsContent value="supplements" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-muted-foreground">
+              {supplements.length} supplement
+              {supplements.length !== 1 ? "s" : ""}
+            </div>
+            <Button
+              onClick={() => setAddSupplementOpen(true)}
+              variant="outline"
+              className="h-10 rounded-full border-hairline px-4 text-sm font-semibold flex items-center gap-2 hover:bg-canvas/50"
+            >
+              <Plus className="h-4 w-4" />
+              Add Supplement
+            </Button>
+          </div>
+          <DataTable
+            loading={isSupplementsLoading}
+            data={supplements}
+            columns={supplementColumns}
+          />
+        </TabsContent>
+      </Tabs>
 
       {selectedUser && (
         <CompleteAssignmentDialog
