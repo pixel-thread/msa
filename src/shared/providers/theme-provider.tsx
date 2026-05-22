@@ -72,29 +72,6 @@ const getNextTheme = (current: ThemeMode): ThemeMode => {
   return themes[(themes.indexOf(current) + 1) % themes.length]!;
 };
 
-export const themeDetectorScript = (function () {
-  function themeFn() {
-    const isValidTheme = (theme: string): theme is ThemeMode => {
-      const validThemes = ["light", "dark", "auto"] as const;
-      return validThemes.includes(theme as ThemeMode);
-    };
-
-    const storedTheme = localStorage.getItem("theme-mode") ?? "auto";
-    const validTheme = isValidTheme(storedTheme) ? storedTheme : "auto";
-
-    if (validTheme === "auto") {
-      const autoTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light";
-      document.documentElement.classList.add(autoTheme, "auto");
-    } else {
-      document.documentElement.classList.add(validTheme);
-    }
-  }
-  return `(${themeFn.toString()})();`;
-})();
-
 interface ThemeContextProps {
   themeMode: ThemeMode;
   resolvedTheme: ResolvedTheme;
@@ -136,10 +113,6 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
         toggleMode,
       }}
     >
-      <script
-        dangerouslySetInnerHTML={{ __html: themeDetectorScript }}
-        suppressHydrationWarning
-      />
       {children}
     </ThemeContext>
   );

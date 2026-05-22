@@ -3,14 +3,6 @@
 import * as React from "react";
 
 import { AppSidebar } from "@src/shared/components/app-sidebar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@src/shared/components/ui/breadcrumb";
 import { Separator } from "@src/shared/components/ui/separator";
 import {
   SidebarInset,
@@ -28,10 +20,7 @@ interface DashboardLayoutProps {
   }>;
 }
 
-export function DashboardLayout({
-  children,
-  breadcrumbs = [],
-}: DashboardLayoutProps) {
+export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { setTheme, themeMode } = useTheme();
   const toggleTheme = () => {
     setTheme(themeMode === "light" ? "dark" : "light");
@@ -48,7 +37,7 @@ export function DashboardLayout({
               orientation="vertical"
               className="mr-2 data-vertical:h-4 data-vertical:self-auto"
             />
-            <Button onClick={toggleTheme}>
+            <Button onClick={() => toggleTheme()}>
               {themeMode === "light" ? "Dark" : "Light"}
             </Button>
           </div>

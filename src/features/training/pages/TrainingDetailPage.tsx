@@ -76,7 +76,10 @@ export function TrainingDetailPage() {
   const [assignDialogOpen, setAssignDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [addSupplementOpen, setAddSupplementOpen] = useState(false);
-  const [supplementToDelete, setSupplementToDelete] = useState<{ id: string; title: string } | null>(null);
+  const [supplementToDelete, setSupplementToDelete] = useState<{
+    id: string;
+    title: string;
+  } | null>(null);
   const [deleteModuleDialogOpen, setDeleteModuleDialogOpen] = useState(false);
 
   const filteredUsers = useMemo(() => {
@@ -268,24 +271,9 @@ export function TrainingDetailPage() {
   }
 
   return (
-    <div className="mx-auto pb-12">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-4">
-          <Button
-            onClick={() => router.push("/training")}
-            variant="ghost"
-            size="sm"
-            className="h-10 w-10 p-0 rounded-full hover:bg-canvas"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Module Management</span>
-            <h1 className="text-2xl sm:text-3xl font-semibold text-ink leading-tight">{trainingModule.title}</h1>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
+    <div className="mx-auto pb-12 w-full h-full">
+      <div className="flex items-center justify-between mb-8 w-full">
+        <div className="flex items-center justify-end w-full gap-2">
           <Button
             onClick={() => setEditDialogOpen(true)}
             variant="outline"
@@ -338,9 +326,13 @@ export function TrainingDetailPage() {
             </div>
 
             {isSupplementsLoading ? (
-              <p className="text-sm text-muted-foreground">Loading supplements...</p>
+              <p className="text-sm text-muted-foreground">
+                Loading supplements...
+              </p>
             ) : supplements.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No supplements added yet.</p>
+              <p className="text-sm text-muted-foreground">
+                No supplements added yet.
+              </p>
             ) : (
               <ul className="space-y-2">
                 {supplements.map(
@@ -459,7 +451,7 @@ export function TrainingDetailPage() {
             Assigned Users
           </h2>
           <div className="flex items-center gap-4">
-            <div className="text-sm text-muted-foreground flex items-center gap-1.5 hidden sm:flex">
+            <div className="text-sm text-muted-foreground items-center gap-1.5 hidden sm:flex">
               {assignedUsers.length} user{assignedUsers.length !== 1 ? "s" : ""}{" "}
               assigned
             </div>
@@ -566,9 +558,9 @@ export function TrainingDetailPage() {
             </AlertDialogMedia>
             <AlertDialogTitle>Remove Supplement</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to remove "
-              {supplementToDelete?.title || "this supplement"}
-              "? This action cannot be undone.
+              Are you sure you want to remove
+              {` "${supplementToDelete?.title}" ` || "this supplement"}? This
+              action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

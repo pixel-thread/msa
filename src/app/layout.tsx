@@ -1,3 +1,4 @@
+"use client";
 import { Roboto, Roboto_Mono } from "next/font/google";
 import { AppProviders } from "@src/shared/providers/AppProviders";
 import "./globals.css";
