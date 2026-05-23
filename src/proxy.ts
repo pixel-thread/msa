@@ -5,10 +5,16 @@ import {
   withCors,
   withLogging,
   withSecurityHeaders,
+  withBotProtection,
+  withRequestSizeLimit,
+  withTraceId,
 } from "./shared/middleware";
 
 export default chain([
+  withTraceId,
   withRateLimiting,
+  withRequestSizeLimit,
+  withBotProtection,
   withAuth,
   withCors,
   withSecurityHeaders,
