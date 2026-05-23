@@ -33,7 +33,7 @@ import { env } from "@src/env";
 export default function SignUpPage() {
   const signUpMutation = useSignUp();
 
-  const form = useForm<MembershipApplicationInput>({
+  const form = useForm({
     resolver: zodResolver(MembershipApplicationSchema),
     defaultValues: {
       email: "",
@@ -175,7 +175,11 @@ export default function SignUpPage() {
                       <Input
                         type="date"
                         className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted-foreground focus-visible:border-primary"
-                        {...field}
+                        value={field.value as string}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
                       />
                     </FormControl>
                     <FormMessage />
