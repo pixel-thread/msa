@@ -15,7 +15,9 @@ import {
   TableHeader,
   TableRow,
 } from "@src/shared/components/ui/table";
+import { TableSkeleton } from "@src/shared/components/ui/table-skeleton";
 import { Card } from "@components/ui/card";
+import { PAGE_SIZE } from "@src/shared/constants";
 
 type DataTableProps<TData> = {
   loading?: boolean;
@@ -63,14 +65,7 @@ export function DataTable<TData>({
 
           <TableBody>
             {loading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  Loading...
-                </TableCell>
-              </TableRow>
+              <TableSkeleton columns={columns.length} rows={PAGE_SIZE} />
             ) : table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
