@@ -20,6 +20,7 @@ import {
   PaymentError,
 } from "@src/shared/errors";
 import { logAction } from "@src/shared/services/audit-logs";
+import { PAGE_SIZE } from "@src/shared/constants";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -27,7 +28,6 @@ import { logAction } from "@src/shared/services/audit-logs";
 
 export interface TransactionFilters {
   page?: number;
-  pageSize?: number;
   userId?: string;
   status?: PaymentStatus;
   method?: PaymentMethod;
@@ -561,14 +561,9 @@ export async function markPaymentFailed(
 // 8. Get Payment History
 // ---------------------------------------------------------------------------
 
-export async function getUserPaymentHistory(
-  userId: string,
-  page = 1,
-  pageSize = 20,
-) {
+export async function getUserPaymentHistory(userId: string, page = 1) {
   const validPage = Math.max(1, page);
-  const validPageSize = Math.max(1, pageSize);
-  const skip = (validPage - 1) * validPageSize;
+  const skip = (validPage - 1) * PAGE_SIZE;
 
   const [transactions, total] = await Promise.all([
     prisma.paymentTransaction.findMany({
@@ -589,20 +584,14 @@ export async function getUserPaymentHistory(
       },
       orderBy: { createdAt: "desc" },
       skip,
-      take: validPageSize,
+      take: PAGE_SIZE,
     }),
     prisma.paymentTransaction.count({ where: { userId } }),
   ]);
 
   return {
     transactions,
-    pagination: {
-      page: validPage,
-      pageSize: validPageSize,
-      total,
-      totalPages: Math.ceil(total / validPageSize),
-      hasMore: skip + validPageSize < total,
-    },
+    pagination: buildPagination(total, page),
   };
 }
 
@@ -619,7 +608,6 @@ export async function getAllTransactions(
 ) {
   const {
     page = 1,
-    pageSize = 20,
     userId,
     status,
     method,
@@ -630,8 +618,7 @@ export async function getAllTransactions(
   } = filters;
 
   const validPage = Math.max(1, page);
-  const validPageSize = Math.max(1, pageSize);
-  const skip = (validPage - 1) * validPageSize;
+  const skip = (validPage - 1) * PAGE_SIZE;
 
   const where: Prisma.PaymentTransactionWhereInput = { associationId };
 
@@ -681,14 +668,14 @@ export async function getAllTransactions(
       },
       orderBy: { createdAt: "desc" },
       skip,
-      take: validPageSize,
+      take: PAGE_SIZE,
     }),
     prisma.paymentTransaction.count({ where }),
   ]);
 
   return {
     transactions,
-    pagination: buildPagination(total, validPage, validPageSize),
+    pagination: buildPagination(total, validPage, PAGE_SIZE),
   };
 }
 
