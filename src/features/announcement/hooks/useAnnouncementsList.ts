@@ -1,19 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
 import http from "@src/shared/utils/http";
+import type { PaginationMeta } from "@src/shared/types/api.types";
 import type { Announcement } from "../types";
 
-export function useAnnouncementsList(status?: string) {
+export function useAnnouncementsList(status?: string, page: number = 1) {
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["announcements-list", status],
+    queryKey: ["announcements-list", status, page],
     queryFn: async () =>
-      http.get<Announcement[]>("/announcements", {
-        params: status ? { status } : undefined,
-      }),
-    select: (data) => data.data,
+      http.get<Announcement[]>(
+        `/announcements?page=${page}${status ? `&status=${status}` : ""}`,
+      ),
   });
 
   return {
-    announcements: data ?? [],
+    announcements: data?.data ?? [],
+    meta: data?.meta as PaginationMeta | undefined,
     isLoading,
     error,
     refetch,

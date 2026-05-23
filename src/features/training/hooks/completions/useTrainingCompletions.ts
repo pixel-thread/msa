@@ -16,8 +16,8 @@ export function useTrainingCompletions(
     : `${trainingEndpoints.completions.all()}?page=${page}`;
 
   const queryKey = !!moduleId
-    ? trainingQueryKeys.completions.byModule(moduleId)
-    : trainingQueryKeys.completions.admin;
+    ? trainingQueryKeys.completions.byModule(moduleId, page)
+    : trainingQueryKeys.completions.adminList(page);
 
   const query = useQuery({
     queryKey: queryKey,

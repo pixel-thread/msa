@@ -1,4 +1,5 @@
 import { prisma } from "@lib/prisma";
+import { PAGE_SIZE } from "@src/shared/constants";
 import { buildPagination } from "@src/shared/utils/build-pagination";
 
 interface FindManyCompletionsProps {
@@ -14,6 +15,8 @@ export async function findManyCompletions({
   userId,
   page = 1,
 }: FindManyCompletionsProps) {
+  const skip = (page - 1) * PAGE_SIZE;
+
   const [trainingCompletions, total] = await prisma.$transaction([
     prisma.trainingCompletion.findMany({
       where: {
@@ -21,6 +24,8 @@ export async function findManyCompletions({
         moduleId,
         userId,
       },
+      skip,
+      take: PAGE_SIZE,
       include: {
         user: {
           select: {

@@ -20,8 +20,10 @@ export const trainingQueryKeys = {
   },
   completions: {
     admin: ["admin-training-completions"] as const,
+    adminList: (page?: number) =>
+      ["admin-training-completions", page] as const,
     my: ["my-training-completions"] as const,
-    byModule: (moduleId: string | null) =>
-      ["training-completions", moduleId] as const,
+    byModule: (moduleId: string | null, page?: number) =>
+      ["training-completions", moduleId, page] as const,
   },
 } as const;

@@ -3,23 +3,20 @@ import http from "@src/shared/utils/http";
 import { toast } from "sonner";
 import type { Meeting, Member, Attendee } from "../types";
 import type { CreateMeetingInput } from "../validators";
+import type { PaginationMeta } from "@src/shared/types/api.types";
 
 interface UseMeetingsOptions {
-  limit?: number;
+  page?: number;
 }
 
 export function useMeetings(options: UseMeetingsOptions = {}) {
-  const { limit = 50 } = options;
+  const { page = 1 } = options;
   const queryClient = useQueryClient();
 
-  const {
-    data = [],
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["meetings"],
-    queryFn: async () => http.get<Meeting[]>(`/meetings?limit=${limit}`),
-    select: (data) => data.data,
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["meetings", page],
+    queryFn: async () =>
+      http.get<Meeting[]>(`/meetings?page=${page}`),
   });
 
   const createMeetingMutation = useMutation({
@@ -52,8 +49,8 @@ export function useMeetings(options: UseMeetingsOptions = {}) {
   });
 
   return {
-    meetings: data ?? [],
-    pagination: undefined,
+    meetings: data?.data ?? [],
+    meta: data?.meta as PaginationMeta | undefined,
     isLoading,
     error,
     createMeeting: createMeetingMutation.mutate,

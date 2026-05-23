@@ -1,12 +1,21 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useMemo, useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { UserRole } from "@prisma/client";
 import { useAuthStore } from "@src/shared/stores/auth";
 import { DataTable } from "@src/shared/components/data-table";
 import { Button } from "@src/shared/components/ui/button";
 import { Input } from "@src/shared/components/ui/input";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@src/shared/components/ui/pagination";
 import { Plus, Search, ShieldAlert, Award } from "lucide-react";
 
 import {
@@ -18,8 +27,11 @@ import { CreateModuleDialog } from "../components";
 
 export function TrainingListPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user } = useAuthStore();
   const userRoles = user?.role || [];
+
+  const currentPage = Number(searchParams.get("page")) || 1;
 
   const isDpoOrAdmin =
     userRoles.includes(UserRole.DPO) ||
@@ -30,8 +42,8 @@ export function TrainingListPage() {
   const [search, setSearch] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
 
-  const { modules: allModules, isLoading: isModulesLoading } =
-    useTrainingModules();
+  const { modules: allModules, pagination, isLoading: isModulesLoading } =
+    useTrainingModules({ page: currentPage });
   const { updateModule } = useUpdateTrainingModule();
 
   const { columns: moduleColumns } = useModuleTableColumns({
@@ -55,6 +67,30 @@ export function TrainingListPage() {
         m.description?.toLowerCase().includes(query),
     );
   }, [allModules, search]);
+
+  const handlePageChange = useCallback(
+    (page: number) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("page", String(page));
+      router.push(`/training?${params.toString()}`);
+    },
+    [router, searchParams],
+  );
+
+  const getPageNumbers = (page: number, totalPages: number) => {
+    const pages: number[] = [];
+    const maxVisible = 5;
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else if (page <= 3) {
+      for (let i = 1; i <= maxVisible; i++) pages.push(i);
+    } else if (page >= totalPages - 2) {
+      for (let i = totalPages - 4; i <= totalPages; i++) pages.push(i);
+    } else {
+      for (let i = page - 2; i <= page + 2; i++) pages.push(i);
+    }
+    return pages;
+  };
 
   if (!isDpoOrAdmin) {
     return (
@@ -119,6 +155,70 @@ export function TrainingListPage() {
         data={filteredModules}
         columns={moduleColumns}
       />
+
+      {pagination && pagination.totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-body">
+            Showing{" "}
+            <span className="font-medium text-body-strong">
+              {(pagination.page - 1) * pagination.pageSize + 1}
+            </span>{" "}
+            to{" "}
+            <span className="font-medium text-body-strong">
+              {Math.min(pagination.page * pagination.pageSize, pagination.total)}
+            </span>{" "}
+            of{" "}
+            <span className="font-medium text-body-strong">
+              {pagination.total}
+            </span>{" "}
+            modules
+          </p>
+
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                  className={
+                    currentPage <= 1
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+
+              {getPageNumbers(currentPage, pagination.totalPages).map((pageNum) => (
+                <PaginationItem key={pageNum}>
+                  <PaginationLink
+                    onClick={() => handlePageChange(pageNum)}
+                    isActive={currentPage === pageNum}
+                    className="cursor-pointer"
+                  >
+                    {pageNum}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+
+              {pagination.totalPages > 5 && currentPage < pagination.totalPages - 2 && (
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              )}
+
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className={
+                    currentPage >= pagination.totalPages
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
 
       <CreateModuleDialog open={createOpen} onOpenChange={setCreateOpen} />
     </>
