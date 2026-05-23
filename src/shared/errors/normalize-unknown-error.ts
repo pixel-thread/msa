@@ -2,6 +2,7 @@ import { ZodError } from "zod";
 import { env } from "@src/env";
 import { AppError } from "./classes/base";
 import {
+  BadRequestError,
   NotFoundError,
   PaymentError,
   UnauthorizedError,
@@ -32,6 +33,20 @@ const isJwtError = (error: unknown): error is JWTClaimValidationFailed => {
   return error instanceof JOSEError;
 };
 
+export function isSupabaseStorageError(error: unknown) {
+  if (typeof error !== "object" || error === null) return false;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const err = error as any;
+
+  return (
+    err.name === "StorageError" ||
+    err.name === "StorageUnknownError" ||
+    typeof err.statusCode === "string" ||
+    typeof err.error?.message === "string"
+  );
+}
+
 export const normalizeUnknownError = (error: unknown): AppError => {
   const isProd = env.NODE_ENV === "production";
 
@@ -41,6 +56,10 @@ export const normalizeUnknownError = (error: unknown): AppError => {
 
   if (error instanceof NotFoundError) {
     return new NotFoundError(error.message);
+  }
+
+  if (isSupabaseStorageError(error)) {
+    return new BadRequestError("Supabase storage error");
   }
 
   if (error instanceof ZodError) {
