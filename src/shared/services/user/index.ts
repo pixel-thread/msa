@@ -1,3 +1,3 @@
-export * from "./getUniqueUser";
-export * from "./getUniqueUserNoFilter";
-export * from "./getUserFirst";
+export * from "./get-unique-user";
+export * from "./get-unique-user-no-filter";
+export * from "./get-user-first";

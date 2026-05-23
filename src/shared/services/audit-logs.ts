@@ -3,7 +3,7 @@ import { AuditAction, Prisma } from "@prisma/client";
 import type {
   AuditLogEntry,
   AuditLogQuery,
-} from "@src/shared/validators/audit-logs";
+} from "@src/shared/types/audit-logs";
 import { buildPagination } from "@src/shared/utils/build-pagination";
 import { PAGE_SIZE } from "../constants";
 

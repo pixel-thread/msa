@@ -1,13 +1,11 @@
 import { z } from "zod";
 
 export const OnboardingSchema = z.object({
-  dateOfJoiningGovt: z
-    .string()
-    .datetime()
+  dateOfJoiningGovt: z.coerce
+    .date()
     .refine((d) => new Date(d) < new Date(), "Cannot be in the future"),
-  dateOfJoiningAssociation: z
-    .string()
-    .datetime()
+  dateOfJoiningAssociation: z.coerce
+    .date()
     .refine((d) => new Date(d) < new Date(), "Cannot be in the future"),
   mobile: z
     .string()
@@ -16,4 +14,3 @@ export const OnboardingSchema = z.object({
 });
 
 export type OnboardingInput = z.infer<typeof OnboardingSchema>;
-
