@@ -14,10 +14,10 @@ export interface AuditLogEntry {
 
 export interface AuditLogQuery {
   page: number;
-  limit: number;
   action?: string;
   resourceType?: string;
   actorId?: string;
   fromDate?: Date;
   toDate?: Date;
 }
+

@@ -15,6 +15,7 @@ export async function getUniqueUser({ where }: Props) {
       role: true,
       status: true,
       memberTypeId: true,
+      imageUrl: true,
     },
   });
 }

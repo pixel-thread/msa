@@ -14,191 +14,18 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@src/shared/components/ui/sidebar";
-import {
-  GalleryVerticalEndIcon,
-  UsersIcon,
-  LayoutDashboardIcon,
-  Settings2Icon,
-  CalendarDaysIcon,
-  CreditCardIcon,
-  BookOpenIcon,
-  WalletIcon,
-  AlertTriangleIcon,
-  ScrollTextIcon,
-} from "lucide-react";
+import { GalleryVerticalEndIcon } from "lucide-react";
 import { useAuthStore } from "@src/shared/stores/auth";
-
-const navMain = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: <LayoutDashboardIcon />,
-  },
-  {
-    title: "Announcement",
-    url: "/announcement",
-    icon: <AlertTriangleIcon />,
-    isActive: true,
-    items: [
-      {
-        title: "Published",
-        url: "/announcement",
-      },
-      {
-        title: "Drafts",
-        url: "/announcement/draft",
-      },
-      {
-        title: "Archive",
-        url: "/announcement/archive",
-      },
-    ],
-  },
-  {
-    title: "Members",
-    url: "/members",
-    icon: <UsersIcon />,
-    isActive: true,
-    items: [
-      {
-        title: "All Members",
-        url: "/members",
-      },
-      {
-        title: "Membership Applicants",
-        url: "/members/applications",
-      },
-    ],
-  },
-  {
-    title: "Meetings",
-    url: "/meetings",
-    icon: <CalendarDaysIcon />,
-    isActive: true,
-    items: [
-      {
-        title: "All Meetings",
-        url: "/meetings",
-      },
-    ],
-  },
-  {
-    title: "Training",
-    url: "/training",
-    icon: <BookOpenIcon />,
-    isActive: true,
-    items: [
-      {
-        title: "Modules",
-        url: "/training",
-      },
-      {
-        title: "Completions",
-        url: "/training/completions",
-      },
-    ],
-  },
-  {
-    title: "Subscriptions",
-    url: "/subscriptions/plans",
-    icon: <CreditCardIcon />,
-    isActive: true,
-    items: [
-      {
-        title: "Plans",
-        url: "/subscriptions/plans",
-      },
-      {
-        title: "History",
-        url: "/subscriptions/my",
-      },
-    ],
-  },
-  {
-    title: "Payments",
-    url: "/payments",
-    icon: <WalletIcon />,
-    isActive: true,
-    items: [
-      {
-        title: "All Payments",
-        url: "/payments",
-      },
-      {
-        title: "Contributions",
-        url: "/payments/contributions",
-      },
-      {
-        title: "By Member",
-        url: "/payments/users",
-      },
-      {
-        title: "Providers",
-        url: "/payments/providers",
-      },
-    ],
-  },
-  {
-    title: "Audit Logs",
-    url: "/audit-logs",
-    icon: <ScrollTextIcon />,
-    isActive: true,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: <Settings2Icon />,
-    items: [
-      {
-        title: "Member Types",
-        url: "/member-types",
-      },
-      {
-        title: "General",
-        url: "#",
-      },
-      {
-        title: "Change Password",
-        url: "/change-password",
-      },
-    ],
-  },
-];
+import { drawrNavMain } from "../constants/drawer";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user, fetchUser } = useAuthStore();
-
-  React.useEffect(() => {
-    if (!user) {
-      fetchUser();
-    }
-  }, [user, fetchUser]);
+  const { user } = useAuthStore();
 
   const sidebarUser = {
-    name: user?.name || "User",
+    name: user?.name || "",
     email: user?.email || "",
-    avatar: "",
+    avatar: user?.imageUrl || "",
   };
-
-  const dynamicNavMain = React.useMemo(() => {
-    const roles = user?.role || [];
-    const isFinanceOrAdmin = roles.some((role: string) =>
-      ["FINANCE", "SUPER_ADMIN", "PRESIDENT", "SECRETARY"].includes(role),
-    );
-    const isAuditorOrAdmin = roles.some((role: string) =>
-      ["DPO", "SUPER_ADMIN", "PRESIDENT"].includes(role),
-    );
-
-    return navMain.filter((item) => {
-      if (item.title === "Payments") {
-        return isFinanceOrAdmin;
-      }
-      if (item.title === "Audit Logs") {
-        return isAuditorOrAdmin;
-      }
-      return true;
-    });
-  }, [user]);
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -221,7 +48,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={dynamicNavMain} />
+        <NavMain items={drawrNavMain} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={sidebarUser} />

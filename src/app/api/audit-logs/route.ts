@@ -12,7 +12,6 @@ import { withRole } from "@src/shared/api/with-role";
 const AuditLogQuerySchema = {
   parse: (params: URLSearchParams) => {
     const page = parseInt(params.get("page") || "1", 10);
-    const limit = Math.min(parseInt(params.get("limit") || "50", 10), 100);
     const action = params.get("action") || undefined;
     const resourceType = params.get("resourceType") || undefined;
     const actorId = params.get("actorId") || undefined;
@@ -23,7 +22,7 @@ const AuditLogQuerySchema = {
       ? new Date(params.get("toDate")!)
       : undefined;
 
-    return { page, limit, action, resourceType, actorId, fromDate, toDate };
+    return { page, action, resourceType, actorId, fromDate, toDate };
   },
 };
 

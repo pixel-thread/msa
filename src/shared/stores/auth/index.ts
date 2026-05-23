@@ -9,6 +9,7 @@ export interface AuthUser {
   id: string;
   email: string;
   name: string | null;
+  imageUrl: string;
   role: UserRole[];
   mfaEnabled: boolean;
   associationId: string;
@@ -17,7 +18,6 @@ export interface AuthUser {
 export interface AuthState {
   user: AuthUser | null;
   isLoading: boolean;
-
   setUser: (user: AuthUser | null) => void;
   setLoading: (isLoading: boolean) => void;
   fetchUser: () => Promise<void>;

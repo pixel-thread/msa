@@ -17,7 +17,16 @@ import { useAuditLogs } from "@src/features/audit-logs/hooks/useAuditLogs";
 import { useAuditLogColumns } from "@src/features/audit-logs/hooks/useAuditLogColumns";
 import { AuditLogDetailsDialog } from "@src/features/audit-logs/components/audit-log-details-dialog";
 import type { AuditLogEntry } from "@src/features/audit-logs/types";
-import { FilterIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@src/shared/components/ui/pagination";
+import { FilterIcon } from "lucide-react";
 
 const AUDIT_ACTIONS = [
   "CREATE",
@@ -101,6 +110,31 @@ export default function AuditLogsPage() {
     toDate: toDate || undefined,
   });
 
+  const getPageNumbers = (meta: { page: number; totalPages: number }) => {
+    const pages: number[] = [];
+    const maxVisible = 5;
+
+    if (meta.totalPages <= maxVisible) {
+      for (let i = 1; i <= meta.totalPages; i++) {
+        pages.push(i);
+      }
+    } else if (meta.page <= 3) {
+      for (let i = 1; i <= maxVisible; i++) {
+        pages.push(i);
+      }
+    } else if (meta.page >= meta.totalPages - 2) {
+      for (let i = meta.totalPages - 4; i <= meta.totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      for (let i = meta.page - 2; i <= meta.page + 2; i++) {
+        pages.push(i);
+      }
+    }
+
+    return pages;
+  };
+
   const handleViewDetails = useCallback((entry: AuditLogEntry) => {
     setSelectedEntry(entry);
     setDetailsOpen(true);
@@ -134,8 +168,8 @@ export default function AuditLogsPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Card className="rounded-xl border-hairline bg-surface-card">
+      <div className="flex flex-cols md:flex-row gap-4 ">
+        <Card className="rounded-xl w-full border-hairline bg-surface-card">
           <CardContent className="p-4">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               Total
@@ -145,7 +179,7 @@ export default function AuditLogsPage() {
             </p>
           </CardContent>
         </Card>
-        <Card className="rounded-xl border-hairline bg-surface-card">
+        <Card className="rounded-xl w-full border-hairline bg-surface-card">
           <CardContent className="p-4">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               Last 30 Days
@@ -155,7 +189,7 @@ export default function AuditLogsPage() {
             </p>
           </CardContent>
         </Card>
-        <Card className="rounded-xl border-hairline bg-surface-card">
+        <Card className="rounded-xl w-full border-hairline bg-surface-card">
           <CardContent className="p-4">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               Last 7 Days
@@ -252,32 +286,70 @@ export default function AuditLogsPage() {
       <DataTable loading={isLoading} data={logs} columns={columns} />
 
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          Page {pagination?.page} of {pagination?.totalPages} (
-          {pagination?.total} total)
+        <p className="text-sm text-body">
+          Showing{" "}
+          <span className="font-medium text-body-strong">
+            {pagination ? (pagination.page - 1) * pagination.pageSize + 1 : 0}
+          </span>{" "}
+          to{" "}
+          <span className="font-medium text-body-strong">
+            {pagination
+              ? Math.min(pagination.page * pagination.pageSize, pagination.total)
+              : 0}
+          </span>{" "}
+          of{" "}
+          <span className="font-medium text-body-strong">
+            {pagination?.total.toLocaleString()}
+          </span>{" "}
+          audit logs
         </p>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={pagination?.page === 1}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="h-9 rounded-full border-hairline"
-          >
-            <ChevronLeft className="mr-1 h-4 w-4" />
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={!pagination?.hasMore}
-            onClick={() => setPage((p) => p + 1)}
-            className="h-9 rounded-full border-hairline"
-          >
-            Next
-            <ChevronRight className="ml-1 h-4 w-4" />
-          </Button>
-        </div>
+
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                className={
+                  !pagination || pagination.page <= 1
+                    ? "pointer-events-none opacity-50"
+                    : "cursor-pointer"
+                }
+              />
+            </PaginationItem>
+
+            {pagination &&
+              getPageNumbers(pagination).map((pageNum) => (
+                <PaginationItem key={pageNum}>
+                  <PaginationLink
+                    onClick={() => setPage(pageNum)}
+                    isActive={pagination.page === pageNum}
+                    className="cursor-pointer"
+                  >
+                    {pageNum}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+
+            {pagination &&
+              pagination.totalPages > 5 &&
+              pagination.page < pagination.totalPages - 2 && (
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              )}
+
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => setPage((p) => p + 1)}
+                className={
+                  !pagination || pagination.page >= pagination.totalPages
+                    ? "pointer-events-none opacity-50"
+                    : "cursor-pointer"
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
 
       <AuditLogDetailsDialog

@@ -1,7 +1,11 @@
 import { prisma } from "@src/shared/lib/prisma";
 import { AuditAction, Prisma } from "@prisma/client";
-import type { AuditLogEntry, AuditLogQuery } from "@src/shared/lib/validations/audit-logs";
+import type {
+  AuditLogEntry,
+  AuditLogQuery,
+} from "@src/shared/lib/validations/audit-logs";
 import { buildPagination } from "@src/shared/utils/build-pagination";
+import { PAGE_SIZE } from "../constants";
 
 interface LogActionParams {
   actorId: string;
@@ -49,8 +53,11 @@ export async function logAction(params: LogActionParams) {
 export async function findAuditLogs(
   associationId: string,
   query: AuditLogQuery,
-): Promise<{ logs: AuditLogEntry[]; pagination: ReturnType<typeof buildPagination> }> {
-  const { page, limit, action, resourceType, actorId, fromDate, toDate } = query;
+): Promise<{
+  logs: AuditLogEntry[];
+  pagination: ReturnType<typeof buildPagination>;
+}> {
+  const { page, action, resourceType, actorId, fromDate, toDate } = query;
 
   const where: Record<string, unknown> = { associationId };
 
@@ -72,8 +79,8 @@ export async function findAuditLogs(
         },
       },
       orderBy: { createdAt: "desc" },
-      skip: (page - 1) * limit,
-      take: limit,
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
     }),
     prisma.auditLog.count({ where }),
   ]);
@@ -94,7 +101,7 @@ export async function findAuditLogs(
 
   return {
     logs: formattedLogs,
-    pagination: buildPagination(total, page, limit),
+    pagination: buildPagination(total, page),
   };
 }
 
@@ -130,3 +137,4 @@ export async function getAuditLogStats(associationId: string) {
     })),
   };
 }
+
