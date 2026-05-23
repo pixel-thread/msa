@@ -9,6 +9,7 @@ import {
   AlertTriangleIcon,
   ScrollTextIcon,
   ShieldCheck,
+  ClipboardCheck,
 } from "lucide-react";
 
 export const drawrNavMain = [
@@ -131,6 +132,12 @@ export const drawrNavMain = [
     title: "Consent",
     url: "/consent",
     icon: <ShieldCheck />,
+    isActive: true,
+  },
+  {
+    title: "Compliance",
+    url: "/compliance",
+    icon: <ClipboardCheck />,
     isActive: true,
   },
   {

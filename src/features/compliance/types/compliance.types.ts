@@ -31,3 +31,14 @@ export interface ComplianceEvidence {
     auditLogs: ComplianceEvidenceItem;
   };
 }
+
+export interface ComplianceRecord {
+  id: string;
+  checkType: string;
+  status: string;
+  score: number;
+  message: string;
+  details?: Record<string, unknown>;
+  recommendations?: string[];
+  checkedAt: string;
+}

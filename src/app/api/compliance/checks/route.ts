@@ -4,11 +4,11 @@ import {
   ComplianceCheckStatus as PrismaComplianceCheckStatus,
   Prisma,
 } from "@prisma/client";
-import { runComplianceCheck } from "@src/features/complaince/services";
+import { runComplianceCheck } from "@src/features/compliance/services";
 import {
   ComplianceCheckQuerySchema,
   ALL_CHECK_TYPES,
-} from "@src/features/complaince/validators";
+} from "@src/features/compliance/validators";
 import { prisma } from "@src/shared/lib/prisma";
 import { withRole } from "@src/shared/api/with-role";
 import { SuccessResponse } from "@src/shared/utils";

@@ -1,6 +1,6 @@
 import { withAssociation } from "@src/shared/api/with-association";
 import { UserRole } from "@prisma/client";
-import { generateComplianceEvidence } from "@src/features/complaince/services";
+import { generateComplianceEvidence } from "@src/features/compliance/services";
 import { withRole } from "@src/shared/api/with-role";
 import { SuccessResponse } from "@src/shared/utils";
 

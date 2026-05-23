@@ -59,3 +59,9 @@ export const ComplianceCheckQuerySchema = z.object({
 export type ComplianceCheckQueryInput = z.infer<
   typeof ComplianceCheckQuerySchema
 >;
+
+export const ComplianceCheckParamsSchema = z.object({
+  checkId: z.string().uuid("Invalid check ID"),
+});
+
+export type ComplianceCheckParamsInput = z.infer<typeof ComplianceCheckParamsSchema>;
