@@ -1,14 +1,12 @@
 import { withValidation, withRole } from "@src/shared/api";
-import {
-  CreateAssociationInput,
-  CreateAssociationSchema,
-} from "@validator/associations";
 import { createAssociation } from "@src/features/associations/services/createAssociation";
 import { findManyAssociation } from "@src/features/associations/services/findManyAssociation";
 import { findFirstAssociation } from "@src/features/associations/services/findFirstAssociation";
 import { SuccessResponse } from "@src/shared/utils";
 import { UserRole, type Association } from "@prisma/client";
 import { ConflictError } from "@src/shared/errors";
+import type { CreateAssociationInput } from "@validator/associations";
+import { CreateAssociationSchema } from "@src/shared/validators";
 
 export const GET = withValidation({}, async (req) => {
   await withRole(req, UserRole.SUPER_ADMIN);
