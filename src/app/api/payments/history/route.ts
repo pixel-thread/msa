@@ -15,10 +15,9 @@ export const GET = withAssociation(
   async (_association, { query }, request) => {
     const userId = request.headers.get("x-user-id")!;
     const page = query?.page ?? 1;
-    const pageSize = query?.pageSize ?? 20;
 
     const [history, summary] = await Promise.all([
-      getUserPaymentHistory(userId, page, pageSize),
+      getUserPaymentHistory(userId, page),
       getUserContributionSummary(userId),
     ]);
 
