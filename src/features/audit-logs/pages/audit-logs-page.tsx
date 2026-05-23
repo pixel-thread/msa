@@ -98,10 +98,13 @@ export default function AuditLogsPage() {
   );
   const [detailsOpen, setDetailsOpen] = useState(false);
 
-  const { logs, meta: pagination, isLoading } = useAuditLogs({
+  const {
+    logs: auditLogs,
+    meta: pagination,
+    isLoading,
+  } = useAuditLogs({
     page: currentPage,
-    action:
-      actionFilter && actionFilter !== "all" ? actionFilter : undefined,
+    action: actionFilter && actionFilter !== "all" ? actionFilter : undefined,
     resourceType:
       resourceFilter && resourceFilter !== "all" ? resourceFilter : undefined,
     fromDate: fromDateFilter || undefined,
@@ -144,9 +147,14 @@ export default function AuditLogsPage() {
     const params = new URLSearchParams();
     const page = overrides.page ?? String(currentPage);
     params.set("page", page);
-    const action = overrides.action !== undefined ? overrides.action : actionFilter;
-    const resource = overrides.resourceType !== undefined ? overrides.resourceType : resourceFilter;
-    const from = overrides.fromDate !== undefined ? overrides.fromDate : fromDateFilter;
+    const action =
+      overrides.action !== undefined ? overrides.action : actionFilter;
+    const resource =
+      overrides.resourceType !== undefined
+        ? overrides.resourceType
+        : resourceFilter;
+    const from =
+      overrides.fromDate !== undefined ? overrides.fromDate : fromDateFilter;
     const to = overrides.toDate !== undefined ? overrides.toDate : toDateFilter;
     if (action && action !== "all") params.set("action", action);
     if (resource && resource !== "all") params.set("resourceType", resource);
@@ -236,7 +244,9 @@ export default function AuditLogsPage() {
               </p>
               <Select
                 value={resourceFilter}
-                onValueChange={(v) => pushParams({ resourceType: v, page: "1" })}
+                onValueChange={(v) =>
+                  pushParams({ resourceType: v, page: "1" })
+                }
               >
                 <SelectTrigger className="w-40 h-10 rounded-lg border-hairline">
                   <SelectValue placeholder="All resources" />
@@ -290,7 +300,7 @@ export default function AuditLogsPage() {
         </CardContent>
       </Card>
 
-      <DataTable loading={isLoading} data={logs} columns={columns} />
+      <DataTable loading={isLoading} data={auditLogs} columns={columns} />
 
       <div className="flex items-center justify-between">
         <p className="text-sm text-body">
@@ -301,7 +311,10 @@ export default function AuditLogsPage() {
           to{" "}
           <span className="font-medium text-body-strong">
             {pagination
-              ? Math.min(pagination.page * pagination.pageSize, pagination.total)
+              ? Math.min(
+                  pagination.page * pagination.pageSize,
+                  pagination.total,
+                )
               : 0}
           </span>{" "}
           of{" "}
