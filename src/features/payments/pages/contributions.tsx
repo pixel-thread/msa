@@ -5,10 +5,9 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import http from "@src/shared/utils/http";
 import { useContributions } from "@src/features/payments/hooks/useContributions";
-import {
-  ContributionsTable,
-  ContributionFilters,
-} from "@src/features/payments/components";
+import { ContributionFilters } from "@src/features/payments/components";
+import { DataTable } from "@src/shared/components/data-table";
+import { useContributionPeriodColumns } from "@src/features/payments/hooks/useContributionPeriodColumns";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import { Button } from "@src/shared/components/ui/button";
 import {
@@ -47,6 +46,8 @@ export default function ContributionsPage() {
     page: currentPage,
     ...filters,
   });
+
+  const { columns } = useContributionPeriodColumns();
 
   const generateContributions = useMutation({
     mutationFn: () =>
@@ -134,10 +135,7 @@ export default function ContributionsPage() {
               Contribution Periods ({meta?.total || 0})
             </h2>
           </div>
-          <ContributionsTable
-            contributions={contributions}
-            isLoading={isLoading}
-          />
+          <DataTable columns={columns} data={contributions} loading={isLoading} />
         </div>
       </div>
 

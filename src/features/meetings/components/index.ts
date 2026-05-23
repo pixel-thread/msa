@@ -7,4 +7,3 @@ export * from "./ManageAttendeesDialog";
 export * from "./CreateMinuteDialog";
 export * from "./EditMinuteDialog";
 export * from "./DeleteMinuteDialog";
-export * from "./MinutesTable";

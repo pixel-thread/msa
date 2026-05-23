@@ -12,7 +12,6 @@ import {
   CardTitle,
   CardContent,
 } from "@src/shared/components/ui/card";
-import { Badge } from "@src/shared/components/ui/badge";
 import { Button } from "@src/shared/components/ui/button";
 import { Input } from "@src/shared/components/ui/input";
 import {
@@ -22,14 +21,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@src/shared/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@src/shared/components/ui/table";
+import { DataTable } from "@src/shared/components/data-table";
+import { useMeetingAttendeesColumns } from "@src/features/meetings/hooks/useMeetingAttendeesColumns";
 import {
   Users,
   CheckCircle2,
@@ -37,7 +30,6 @@ import {
   Clock,
   Search,
   UserPlus,
-  Trash2,
 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import http from "@src/shared/utils/http";
@@ -124,34 +116,18 @@ export default function AssignMembersPage() {
     ).length,
   };
 
-  const getRsvpBadge = (status: string) => {
-    const variants: Record<
-      string,
-      "default" | "secondary" | "destructive" | "outline"
-    > = {
-      ACCEPTED: "default",
-      DECLINED: "destructive",
-      PENDING: "secondary",
-    };
-    return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
-  };
-
-  const getRoleBadge = (role: string) => {
-    const variants: Record<string, "default" | "secondary" | "outline"> = {
-      REQUIRED: "default",
-      OPTIONAL: "secondary",
-      OBSERVER: "outline",
-    };
-    return <Badge variant={variants[role] || "outline"}>{role}</Badge>;
+  const handleRoleChange = (userId: string, newRole: string) => {
+    updateAttendeeMutation.mutate({ userId, attendeeRole: newRole });
   };
 
   const handleRemoveAttendee = (userId: string) => {
     removeAttendee({ meetingId, userId });
   };
 
-  const handleRoleChange = (userId: string, newRole: string) => {
-    updateAttendeeMutation.mutate({ userId, attendeeRole: newRole });
-  };
+  const { columns } = useMeetingAttendeesColumns({
+    onRoleChange: handleRoleChange,
+    onRemoveAttendee: handleRemoveAttendee,
+  });
 
   if (meetingLoading) {
     return (
@@ -305,81 +281,11 @@ export default function AssignMembersPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {attendeesLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <p className="text-body">Loading attendees...</p>
-            </div>
-          ) : filteredAttendees.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12">
-              <Users className="h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-base text-body">No attendees found</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Assign members to this meeting to get started
-              </p>
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Member</TableHead>
-                  <TableHead className="w-37.5">Role</TableHead>
-                  <TableHead className="w-37.5">RSVP Status</TableHead>
-                  <TableHead className="w-50">Change Role</TableHead>
-                  <TableHead className="w-20 text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredAttendees.map((attendee) => (
-                  <TableRow key={attendee.id}>
-                    <TableCell>
-                      <div>
-                        <p className="text-sm font-medium">
-                          {attendee.user.name}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {attendee.user.email}
-                        </p>
-                        {attendee.user.membershipNumber && (
-                          <p className="text-xs text-muted-foreground">
-                            #{attendee.user.membershipNumber}
-                          </p>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>{getRoleBadge(attendee.attendeeRole)}</TableCell>
-                    <TableCell>{getRsvpBadge(attendee.rsvpStatus)}</TableCell>
-                    <TableCell>
-                      <Select
-                        value={attendee.attendeeRole}
-                        onValueChange={(value) =>
-                          handleRoleChange(attendee.userId, value)
-                        }
-                      >
-                        <SelectTrigger className="h-8 w-40">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="REQUIRED">Required</SelectItem>
-                          <SelectItem value="OPTIONAL">Optional</SelectItem>
-                          <SelectItem value="OBSERVER">Observer</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
-                        onClick={() => handleRemoveAttendee(attendee.userId)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
+          <DataTable
+            columns={columns}
+            data={filteredAttendees}
+            loading={attendeesLoading}
+          />
         </CardContent>
       </Card>
 

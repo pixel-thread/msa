@@ -8,6 +8,8 @@ import { useApproveEntry } from "../hooks/useApproveEntry";
 import { Card, CardContent } from "@src/shared/components/ui/card";
 import { Button } from "@src/shared/components/ui/button";
 import { Badge } from "@src/shared/components/ui/badge";
+import { DataTable } from "@src/shared/components/data-table";
+import { useLedgerLineColumns } from "../hooks/useLedgerLineColumns";
 import { formatDate } from "@src/shared/utils/format";
 import { ArrowLeftIcon } from "lucide-react";
 import { toast } from "sonner";
@@ -67,6 +69,8 @@ export default function LedgerEntryDetailPage() {
       },
     });
   };
+
+  const { columns: lineColumns } = useLedgerLineColumns({ getAccountName });
 
   const statusVariant =
     entry.approvalStatus === "APPROVED"
@@ -132,49 +136,7 @@ export default function LedgerEntryDetailPage() {
       <Card className=" border-hairline bg-surface-card">
         <CardContent className="p-6">
           <h2 className="text-lg font-semibold text-ink mb-4">Ledger Lines</h2>
-          <div className="overflow-hidden border">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-muted/50">
-                  <th className="px-4 py-2.5 text-left text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Account
-                  </th>
-                  <th className="px-4 py-2.5 text-left text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Type
-                  </th>
-                  <th className="px-4 py-2.5 text-right text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Amount
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {entry.lines.map((line) => (
-                  <tr key={line.id} className="border-t border-hairline">
-                    <td className="px-4 py-3 text-sm text-ink">
-                      {getAccountName(line.accountId)}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 text-xs font-medium ${
-                          line.isDebit
-                            ? "bg-blue-50 text-blue-700"
-                            : "bg-orange-50 text-orange-700"
-                        }`}
-                      >
-                        {line.isDebit ? "Debit" : "Credit"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-sm text-right font-mono text-ink">
-                      ₹{Number(line.amount).toLocaleString("en-IN", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <DataTable columns={lineColumns} data={entry.lines} />
         </CardContent>
       </Card>
 

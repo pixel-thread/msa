@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { MemberSearch } from "@src/features/payments/components/member-search";
-import { PaymentsTable } from "@src/features/payments/components";
+import { DataTable } from "@src/shared/components/data-table";
+import { usePaymentTransactionColumns } from "@src/features/payments/hooks/usePaymentTransactionColumns";
 import { useUserPayments } from "@src/features/payments/hooks/useUserPayments";
 import { Card, CardContent } from "@src/shared/components/ui/card";
 import { Button } from "@src/shared/components/ui/button";
@@ -21,6 +22,8 @@ export function UserPaymentsLookupPage() {
     userId: selectedMember?.id ?? "",
     page: 1,
   });
+
+  const { columns } = usePaymentTransactionColumns();
 
   return (
     <>
@@ -139,7 +142,7 @@ export function UserPaymentsLookupPage() {
                   </Link>
                 </Button>
               </div>
-              <PaymentsTable payments={transactions} isLoading={isLoading} />
+              <DataTable columns={columns} data={transactions} loading={isLoading} />
             </div>
           </div>
         </>

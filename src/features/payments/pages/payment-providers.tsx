@@ -6,7 +6,8 @@ import {
   usePaymentProviders,
   useDeleteProvider,
 } from "@src/features/payments/hooks/usePaymentProviders";
-import { ProvidersTable } from "@src/features/payments/components/providers-table";
+import { DataTable } from "@src/shared/components/data-table";
+import { usePaymentProviderColumns } from "@src/features/payments/hooks/usePaymentProviderColumns";
 import { Button } from "@src/shared/components/ui/button";
 import { Plus, Wallet } from "lucide-react";
 import { toast } from "sonner";
@@ -51,6 +52,11 @@ export default function PaymentProvidersPage() {
     });
   };
 
+  const { columns } = usePaymentProviderColumns({
+    onDelete: handleDelete,
+    isDeleting: deleteProvider.isPending,
+  });
+
   return (
     <>
       <div className="flex items-center justify-between">
@@ -79,12 +85,7 @@ export default function PaymentProvidersPage() {
               Provider Configurations ({providers.length})
             </h2>
           </div>
-          <ProvidersTable
-            providers={providers}
-            isLoading={isLoading}
-            onDelete={handleDelete}
-            isDeleting={deleteProvider.isPending}
-          />
+          <DataTable columns={columns} data={providers} loading={isLoading} />
         </div>
       </div>
 

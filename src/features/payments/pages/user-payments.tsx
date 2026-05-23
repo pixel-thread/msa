@@ -2,7 +2,8 @@
 
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { useUserPayments } from "@src/features/payments/hooks/useUserPayments";
-import { PaymentsTable } from "@src/features/payments/components";
+import { DataTable } from "@src/shared/components/data-table";
+import { usePaymentTransactionColumns } from "@src/features/payments/hooks/usePaymentTransactionColumns";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import {
   Card,
@@ -33,6 +34,8 @@ export function UserPaymentsPage() {
     userId,
     page: currentPage,
   });
+
+  const { columns } = usePaymentTransactionColumns();
 
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -168,7 +171,7 @@ export function UserPaymentsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <PaymentsTable payments={transactions} isLoading={isLoading} />
+            <DataTable columns={columns} data={transactions} loading={isLoading} />
           </CardContent>
         </Card>
 

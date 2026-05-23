@@ -9,16 +9,9 @@ import {
   CardTitle,
   CardContent,
 } from "@src/shared/components/ui/card";
-import { Badge } from "@src/shared/components/ui/badge";
 import { Button } from "@src/shared/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@src/shared/components/ui/table";
+import { DataTable } from "@src/shared/components/data-table";
+import { useUserContributionColumns } from "@src/features/payments/hooks/useUserContributionColumns";
 import {
   Select,
   SelectContent,
@@ -36,8 +29,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { formattedAmount } from "@src/shared/utils";
-import { getStatusBadge } from "@src/shared/utils/helper/get-status-badge";
-import { getMonthName } from "@src/shared/utils/helper/get-month-name";
 
 export function UserContributionsPage() {
   const params = useParams();
@@ -74,6 +65,8 @@ export function UserContributionsPage() {
     { value: "11", label: "November" },
     { value: "12", label: "December" },
   ];
+
+  const { columns } = useUserContributionColumns();
 
   const applyFilters = () => {
     router.push(`/payments/users/${userId}/contributions`);
@@ -280,84 +273,7 @@ export function UserContributionsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {contributions.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12">
-              <CalendarDays className="h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-base text-body">No contributions found</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Adjust the date range filters or generate contributions
-              </p>
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Period</TableHead>
-                  <TableHead>Expected</TableHead>
-                  <TableHead>Paid</TableHead>
-                  <TableHead>Due</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Due Date</TableHead>
-                  <TableHead>Payments</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {contributions.map((cp) => (
-                  <TableRow key={cp.id}>
-                    <TableCell>
-                      <span className="text-sm font-medium">
-                        {getMonthName(cp.month)} {cp.year}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <span className="text-sm">
-                        {formattedAmount(cp.expectedAmount)}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <span className="text-sm text-green-600">
-                        {formattedAmount(cp.paidAmount)}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <span className="text-sm text-red-600">
-                        {formattedAmount(cp.dueAmount)}
-                      </span>
-                    </TableCell>
-                    <TableCell>{getStatusBadge(cp.status)}</TableCell>
-                    <TableCell>
-                      <span className="text-sm text-muted-foreground">
-                        {new Date(cp.dueDate).toLocaleDateString("en-IN", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                        })}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      {cp.allocations.length > 0 ? (
-                        <div className="flex flex-wrap gap-1">
-                          {cp.allocations.map((alloc) => (
-                            <Badge
-                              key={alloc.id}
-                              variant="secondary"
-                              className="text-xs"
-                            >
-                              {formattedAmount(alloc.allocatedAmount)}
-                            </Badge>
-                          ))}
-                        </div>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">
-                          No payments
-                        </span>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
+          <DataTable columns={columns} data={contributions} loading={false} />
         </CardContent>
       </Card>
 

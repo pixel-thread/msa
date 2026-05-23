@@ -8,11 +8,12 @@ import {
   type MeetingMinute as MeetingMinuteType,
 } from "@src/features/meetings/hooks/useMeetingMinutes";
 import {
-  MinutesTable,
   CreateMinuteDialog,
   EditMinuteDialog,
   DeleteMinuteDialog,
 } from "@src/features/meetings/components";
+import { DataTable } from "@src/shared/components/data-table";
+import { useMeetingMinutesColumns } from "@src/features/meetings/hooks/useMeetingMinutesColumns";
 import { Button } from "@src/shared/components/ui/button";
 import { ArrowLeft, FileText, Plus } from "lucide-react";
 import Link from "next/link";
@@ -64,6 +65,11 @@ export default function MeetingMinutesPage() {
     }
   };
 
+  const { columns } = useMeetingMinutesColumns({
+    onEdit: (minute) => setEditingMinute(minute as MeetingMinuteType),
+    onDelete: (minute) => setDeletingMinute(minute as MeetingMinuteType),
+  });
+
   if (meetingLoading) {
     return (
       <div className="flex items-center justify-center py-24">
@@ -114,13 +120,10 @@ export default function MeetingMinutesPage() {
               Meeting Minutes ({minutes.length})
             </h2>
           </div>
-          <MinutesTable
-            minutes={minutes as MeetingMinuteType[]}
-            isLoading={minutesLoading}
-            onEdit={(minute) => setEditingMinute(minute as MeetingMinuteType)}
-            onDelete={(minute) =>
-              setDeletingMinute(minute as MeetingMinuteType)
-            }
+          <DataTable
+            columns={columns}
+            data={minutes as MeetingMinuteType[]}
+            loading={minutesLoading}
           />
         </div>
       </div>

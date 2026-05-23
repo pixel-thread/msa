@@ -9,22 +9,12 @@ import {
   CardTitle,
   CardContent,
 } from "@src/shared/components/ui/card";
-import { Badge } from "@src/shared/components/ui/badge";
 import { Separator } from "@src/shared/components/ui/separator";
-import { formatDate, formattedAmount } from "@src/shared/utils";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@src/shared/components/ui/table";
+import { formattedAmount } from "@src/shared/utils";
+import { DataTable } from "@src/shared/components/data-table";
+import { useSubscriptionPaymentColumns } from "@src/features/subscriptions/hooks/useSubscriptionPaymentColumns";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import { CreditCard, Clock, Receipt, AlertCircle } from "lucide-react";
-import { getStatusBadge } from "@src/shared/utils/helper/get-status-badge";
-import { getMonthName } from "@src/shared/utils/helper/get-month-name";
-import { getMethodBadge } from "@src/shared/utils/helper/get-method-badge";
 
 interface PaymentAllocation {
   id: string;
@@ -89,6 +79,8 @@ export function MySubscriptionPage() {
   const transactions = data?.data?.transactions ?? [];
   const summary = data?.data?.summary;
   const meta = data?.meta as PaginationMeta | undefined;
+
+  const { columns } = useSubscriptionPaymentColumns();
 
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -180,77 +172,11 @@ export function MySubscriptionPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Method</TableHead>
-                    <TableHead>Gateway</TableHead>
-                    <TableHead>Allocations</TableHead>
-                    <TableHead className="text-right">Reference</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {transactions.map((tx) => (
-                    <TableRow key={tx.id}>
-                      <TableCell>
-                        <div className="flex flex-col">
-                          <span className="text-sm font-medium">
-                            {formatDate(tx.paymentDate)}
-                          </span>
-                          {tx.notes && (
-                            <span className="text-xs text-muted-foreground line-clamp-1">
-                              {tx.notes}
-                            </span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm font-medium text-ink">
-                          {formattedAmount(tx.amount, tx.currency)}
-                        </span>
-                      </TableCell>
-                      <TableCell>{getStatusBadge(tx.status)}</TableCell>
-                      <TableCell>{getMethodBadge(tx.method)}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="capitalize">
-                          {tx.gateway.toLowerCase()}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {tx.allocations.length > 0 ? (
-                          <div className="flex flex-wrap gap-1">
-                            {tx.allocations.map((alloc) => (
-                              <Badge
-                                key={alloc.id}
-                                variant="secondary"
-                                className="text-xs"
-                              >
-                                {getMonthName(alloc.contributionPeriod.month)}{" "}
-                                {alloc.contributionPeriod.year}
-                              </Badge>
-                            ))}
-                          </div>
-                        ) : (
-                          <span className="text-xs text-muted-foreground">
-                            No allocations
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <span className="text-xs text-muted-foreground">
-                          {tx.referenceNumber ||
-                            tx.receiptNumber ||
-                            tx.razorpayPaymentId ||
-                            "-"}
-                        </span>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <DataTable
+                columns={columns}
+                data={transactions}
+                loading={false}
+              />
 
               <Separator className="bg-hairline" />
 

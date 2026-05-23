@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { usePayments } from "@src/features/payments/hooks/usePayments";
-import { PaymentsTable, PaymentFilters, RecordPaymentDialog } from "@src/features/payments/components";
+import { PaymentFilters, RecordPaymentDialog } from "@src/features/payments/components";
+import { DataTable } from "@src/shared/components/data-table";
+import { usePaymentTransactionColumns } from "@src/features/payments/hooks/usePaymentTransactionColumns";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import { Button } from "@src/shared/components/ui/button";
 import { Plus, Receipt } from "lucide-react";
@@ -19,6 +21,8 @@ export default function AllPaymentsPage() {
     page: currentPage,
     ...filters,
   });
+
+  const { columns } = usePaymentTransactionColumns();
 
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -65,7 +69,7 @@ export default function AllPaymentsPage() {
               Transactions ({meta?.total || 0})
             </h2>
           </div>
-          <PaymentsTable payments={payments} isLoading={isLoading} />
+          <DataTable columns={columns} data={payments} loading={isLoading} />
         </div>
       </div>
 

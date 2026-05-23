@@ -5,7 +5,8 @@ import { useLedgerSummary } from "../hooks/useLedgerSummary";
 import { useLedgerEntries } from "../hooks/useLedgerEntries";
 import { Card, CardContent } from "@src/shared/components/ui/card";
 import { Button } from "@src/shared/components/ui/button";
-import { formatDate } from "@src/shared/utils/format";
+import { DataTable } from "@src/shared/components/data-table";
+import { useRecentLedgerEntryColumns } from "../hooks/useRecentLedgerEntryColumns";
 import {
   ArrowRightIcon,
   FileTextIcon,
@@ -24,6 +25,8 @@ export default function LedgerDashboardPage() {
   const pendingEntries = entries.filter(
     (e) => e.approvalStatus === "PENDING",
   ).length;
+
+  const { columns: entryColumns } = useRecentLedgerEntryColumns();
 
   return (
     <>
@@ -108,74 +111,11 @@ export default function LedgerDashboardPage() {
             </Link>
           </div>
 
-          <div className="overflow-hidden border">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-muted/50">
-                  <th className="px-4 py-2.5 text-left text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Description
-                  </th>
-                  <th className="px-4 py-2.5 text-left text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Status
-                  </th>
-                  <th className="px-4 py-2.5 text-left text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Lines
-                  </th>
-                  <th className="px-4 py-2.5 text-left text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Date
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {entriesLoading ? (
-                  <tr>
-                    <td
-                      colSpan={4}
-                      className="px-4 py-8 text-center text-sm text-muted-foreground"
-                    >
-                      Loading...
-                    </td>
-                  </tr>
-                ) : entries.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={4}
-                      className="px-4 py-8 text-center text-sm text-muted-foreground"
-                    >
-                      No entries found
-                    </td>
-                  </tr>
-                ) : (
-                  entries.map((entry) => (
-                    <tr key={entry.id} className="border-t border-hairline">
-                      <td className="px-4 py-3 text-sm text-ink max-w-[300px] truncate">
-                        {entry.description}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-0.5 text-xs font-medium ${
-                            entry.approvalStatus === "APPROVED"
-                              ? "bg-green-50 text-green-700"
-                              : entry.approvalStatus === "REJECTED"
-                                ? "bg-red-50 text-red-700"
-                                : "bg-amber-50 text-amber-700"
-                          }`}
-                        >
-                          {entry.approvalStatus}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-muted-foreground">
-                        {entry.lines.length}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-muted-foreground">
-                        {formatDate(entry.createdAt)}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+          <DataTable
+            columns={entryColumns}
+            data={entries}
+            loading={entriesLoading}
+          />
         </CardContent>
       </Card>
 
