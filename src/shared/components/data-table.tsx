@@ -40,8 +40,8 @@ export function DataTable<TData>({
   });
 
   return (
-    <Card className="overflow-hidden p-4">
-      <div className="overflow-hidden border">
+    <Card className="overflow-visible p-4">
+      <div className="w-full min-w-0 overflow-x-auto border">
         <Table>
           <TableHeader className="bg-primary/80">
             {table.getHeaderGroups().map((headerGroup) => (

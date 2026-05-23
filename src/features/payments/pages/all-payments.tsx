@@ -3,7 +3,10 @@
 import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { usePayments } from "@src/features/payments/hooks/usePayments";
-import { PaymentFilters, RecordPaymentDialog } from "@src/features/payments/components";
+import {
+  PaymentFilters,
+  RecordPaymentDialog,
+} from "@src/features/payments/components";
 import { DataTable } from "@src/shared/components/data-table";
 import { usePaymentTransactionColumns } from "@src/features/payments/hooks/usePaymentTransactionColumns";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
@@ -15,7 +18,9 @@ export default function AllPaymentsPage() {
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
   const [recordDialogOpen, setRecordDialogOpen] = useState(false);
-  const [filters, setFilters] = useState<Record<string, string | undefined>>({});
+  const [filters, setFilters] = useState<Record<string, string | undefined>>(
+    {},
+  );
 
   const { payments, meta, isLoading } = usePayments({
     page: currentPage,
@@ -30,7 +35,9 @@ export default function AllPaymentsPage() {
     router.push(`/payments?${params.toString()}`);
   };
 
-  const handleFilterChange = (newFilters: Record<string, string | undefined>) => {
+  const handleFilterChange = (
+    newFilters: Record<string, string | undefined>,
+  ) => {
     setFilters(newFilters);
     const params = new URLSearchParams();
     params.set("page", "1");
@@ -61,17 +68,7 @@ export default function AllPaymentsPage() {
         <PaymentFilters onFilterChange={handleFilterChange} />
       </div>
 
-      <div className=" border border-hairline bg-surface-card">
-        <div className="p-4">
-          <div className="flex items-center gap-2 mb-4">
-            <Receipt className="h-5 w-5 text-muted-foreground" />
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Transactions ({meta?.total || 0})
-            </h2>
-          </div>
-          <DataTable columns={columns} data={payments} loading={isLoading} />
-        </div>
-      </div>
+      <DataTable columns={columns} data={payments} loading={isLoading} />
 
       <DataTablePagination
         meta={meta}

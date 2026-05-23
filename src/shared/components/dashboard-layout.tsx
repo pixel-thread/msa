@@ -30,7 +30,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className="overflow-x-hidden">
         <header className="flex h-16 shrink-0 items-center gap-2 border-b border-hairline bg-canvas transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center w-full justify-between gap-2 px-4">
             <div className="flex items-center">
@@ -45,7 +45,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </Button>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-6 bg-canvas p-6">
+        <div className="flex flex-1 flex-col gap-6 bg-canvas p-6 min-w-0">
           {children}
         </div>
       </SidebarInset>
