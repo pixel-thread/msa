@@ -55,6 +55,7 @@ export default function DsarAdminPage() {
         setRespondRecord(record);
       }
     },
+    onAssign: setAssignRecord,
     onDelete: setDeletingRecord,
   });
 

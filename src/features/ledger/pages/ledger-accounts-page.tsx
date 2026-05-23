@@ -1,0 +1,59 @@
+"use client";
+
+import { useState } from "react";
+import { useLedgerAccounts } from "../hooks/useLedgerAccounts";
+import { DataTable } from "@src/shared/components/data-table";
+import { Card, CardContent } from "@src/shared/components/ui/card";
+import { Button } from "@src/shared/components/ui/button";
+import { CreateAccountDialog } from "../components/create-account-dialog";
+import { useLedgerAccountColumns } from "../hooks/useLedgerAccountColumns";
+import { Plus, BanknoteIcon } from "lucide-react";
+
+export default function LedgerAccountsPage() {
+  const { accounts, isLoading } = useLedgerAccounts();
+  const [createOpen, setCreateOpen] = useState(false);
+  const { columns } = useLedgerAccountColumns();
+
+  return (
+    <>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
+            Chart of Accounts
+          </h1>
+          <p className="mt-1 text-base text-body">
+            Manage the Chart of Accounts for your association
+          </p>
+        </div>
+        <Button onClick={() => setCreateOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Create Account
+        </Button>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card className="rounded-xl border-hairline bg-surface-card">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg bg-green-50 p-2.5">
+                <BanknoteIcon className="h-5 w-5 text-green-600" />
+              </div>
+              <div>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  Total Accounts
+                </p>
+                <p className="mt-0.5 text-2xl font-semibold text-ink">
+                  {accounts.length}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <DataTable loading={isLoading} data={accounts} columns={columns} />
+
+      <CreateAccountDialog open={createOpen} onOpenChange={setCreateOpen} />
+    </>
+  );
+}

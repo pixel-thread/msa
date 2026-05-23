@@ -6,6 +6,7 @@ import type { DsarTicketRecord } from "../types";
 interface UseDsarColumnsOptions {
   onViewDetail: (record: DsarTicketRecord) => void;
   onRespond: (record: DsarTicketRecord) => void;
+  onAssign: (record: DsarTicketRecord) => void;
   onDelete: (record: DsarTicketRecord) => void;
 }
 
@@ -28,6 +29,7 @@ const requestTypeLabels: Record<string, string> = {
 export function useDsarColumns({
   onViewDetail,
   onRespond,
+  onAssign,
   onDelete,
 }: UseDsarColumnsOptions) {
   const columns: ColumnDef<DsarTicketRecord>[] = [
@@ -113,6 +115,7 @@ export function useDsarColumns({
           record={row.original}
           onViewDetail={onViewDetail}
           onRespond={onRespond}
+          onAssign={onAssign}
           onDelete={onDelete}
         />
       ),

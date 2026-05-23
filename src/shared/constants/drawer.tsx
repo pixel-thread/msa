@@ -124,6 +124,26 @@ export const drawrNavMain = [
     ],
   },
   {
+    title: "Ledger",
+    url: "/ledger",
+    icon: <BookOpenIcon />,
+    isActive: true,
+    items: [
+      {
+        title: "Dashboard",
+        url: "/ledger",
+      },
+      {
+        title: "Entries",
+        url: "/ledger/entries",
+      },
+      {
+        title: "Accounts",
+        url: "/ledger/accounts",
+      },
+    ],
+  },
+  {
     title: "Audit Logs",
     url: "/audit-logs",
     icon: <ScrollTextIcon />,

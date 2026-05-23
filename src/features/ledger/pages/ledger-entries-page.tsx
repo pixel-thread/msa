@@ -1,0 +1,252 @@
+"use client";
+
+import { useState, useCallback } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { DataTable } from "@src/shared/components/data-table";
+import { Card, CardContent } from "@src/shared/components/ui/card";
+import { Button } from "@src/shared/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@src/shared/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@src/shared/components/ui/pagination";
+import {
+  useLedgerEntries,
+  type LedgerEntryResponse,
+} from "../hooks/useLedgerEntries";
+import { useApproveEntry } from "../hooks/useApproveEntry";
+import { useLedgerEntriesColumns } from "../hooks/useLedgerEntriesColumns";
+import { CreateEntryDialog } from "../components/create-entry-dialog";
+import { ApproveEntryDialog } from "../components/approve-entry-dialog";
+import { Plus, FilterIcon } from "lucide-react";
+
+const STATUS_OPTIONS = ["ALL", "PENDING", "APPROVED", "REJECTED"] as const;
+
+export default function LedgerEntriesPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const currentPage = Number(searchParams.get("page")) || 1;
+  const statusFilter = searchParams.get("status") ?? "ALL";
+
+  const [createOpen, setCreateOpen] = useState(false);
+  const [approveTarget, setApproveTarget] = useState<{
+    id: string;
+    description: string;
+  } | null>(null);
+
+  const { entries, meta, isLoading } = useLedgerEntries({
+    page: currentPage,
+    pageSize: 20,
+  });
+
+  const pushParams = (overrides: Record<string, string>) => {
+    const params = new URLSearchParams();
+    const page = overrides.page ?? String(currentPage);
+    params.set("page", page);
+    const status =
+      overrides.status !== undefined ? overrides.status : statusFilter;
+    if (status && status !== "ALL") params.set("status", status);
+    router.push(`/ledger/entries?${params.toString()}`);
+  };
+
+  const handlePageChange = (page: number) => {
+    pushParams({ page: String(page) });
+  };
+
+  const handleViewDetails = useCallback((entry: LedgerEntryResponse) => {
+    router.push(`/ledger/entries/${entry.id}`);
+  }, [router]);
+
+  const handleApprove = useCallback((entry: LedgerEntryResponse) => {
+    setApproveTarget({ id: entry.id, description: entry.description });
+  }, []);
+
+  const { columns } = useLedgerEntriesColumns({
+    onViewDetails: handleViewDetails,
+    onApprove: handleApprove,
+  });
+
+  const getPageNumbers = (meta: {
+    page: number;
+    totalPages: number;
+  }) => {
+    const pages: number[] = [];
+    const maxVisible = 5;
+
+    if (meta.totalPages <= maxVisible) {
+      for (let i = 1; i <= meta.totalPages; i++) {
+        pages.push(i);
+      }
+    } else if (meta.page <= 3) {
+      for (let i = 1; i <= maxVisible; i++) {
+        pages.push(i);
+      }
+    } else if (meta.page >= meta.totalPages - 2) {
+      for (let i = meta.totalPages - 4; i <= meta.totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      for (let i = meta.page - 2; i <= meta.page + 2; i++) {
+        pages.push(i);
+      }
+    }
+
+    return pages;
+  };
+
+  return (
+    <>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
+            Ledger Entries
+          </h1>
+          <p className="mt-1 text-base text-body">
+            View and manage all ledger transactions
+          </p>
+        </div>
+        <Button onClick={() => setCreateOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Create Entry
+        </Button>
+      </div>
+
+      <Card className="rounded-xl border-hairline bg-surface-card">
+        <CardContent className="p-4">
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="space-y-1.5">
+              <p className="text-xs font-medium text-muted-foreground">
+                Status
+              </p>
+              <Select
+                value={statusFilter}
+                onValueChange={(v) =>
+                  pushParams({ status: v, page: "1" })
+                }
+              >
+                <SelectTrigger className="w-40 h-10 rounded-lg border-hairline">
+                  <SelectValue placeholder="All statuses" />
+                </SelectTrigger>
+                <SelectContent>
+                  {STATUS_OPTIONS.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s === "ALL"
+                        ? "All Statuses"
+                        : s.charAt(0) + s.slice(1).toLowerCase()}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                onClick={() => router.push("/ledger/entries")}
+                className="h-10 rounded-full px-4 text-sm text-muted-foreground"
+              >
+                <FilterIcon className="mr-1.5 h-4 w-4" />
+                Reset
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <DataTable loading={isLoading} data={entries} columns={columns} />
+
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-body">
+          Showing{" "}
+          <span className="font-medium text-body-strong">
+            {meta ? (meta.page - 1) * meta.pageSize + 1 : 0}
+          </span>{" "}
+          to{" "}
+          <span className="font-medium text-body-strong">
+            {meta
+              ? Math.min(
+                  meta.page * meta.pageSize,
+                  meta.total,
+                )
+              : 0}
+          </span>{" "}
+          of{" "}
+          <span className="font-medium text-body-strong">
+            {meta?.total.toLocaleString()}
+          </span>{" "}
+          entries
+        </p>
+
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                className={
+                  !meta || meta.page <= 1
+                    ? "pointer-events-none opacity-50"
+                    : "cursor-pointer"
+                }
+              />
+            </PaginationItem>
+
+            {meta &&
+              getPageNumbers(meta).map((pageNum) => (
+                <PaginationItem key={pageNum}>
+                  <PaginationLink
+                    onClick={() => handlePageChange(pageNum)}
+                    isActive={meta.page === pageNum}
+                    className="cursor-pointer"
+                  >
+                    {pageNum}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+
+            {meta &&
+              meta.totalPages > 5 &&
+              meta.page < meta.totalPages - 2 && (
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              )}
+
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => handlePageChange(currentPage + 1)}
+                className={
+                  !meta || meta.page >= meta.totalPages
+                    ? "pointer-events-none opacity-50"
+                    : "cursor-pointer"
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
+
+      <CreateEntryDialog open={createOpen} onOpenChange={setCreateOpen} />
+
+      <ApproveEntryDialog
+        entryId={approveTarget?.id ?? null}
+        entryDescription={approveTarget?.description ?? ""}
+        open={!!approveTarget}
+        onOpenChange={(open) => {
+          if (!open) setApproveTarget(null);
+        }}
+      />
+    </>
+  );
+}
