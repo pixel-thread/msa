@@ -20,14 +20,14 @@ export const GET = withAssociation(
 
     const userId = request.headers.get("x-user-id")!;
 
-    const { page, limit, type, status } = query;
+    const { page, type, status } = query;
 
     if (hasHighRoleAccess(user.role)) {
       const result = await findManyMeetings({
         role: user.role,
         associationId: association.id,
         filters: { type, status },
-        pagination: { page: page ?? 1, limit: limit ?? 10 },
+        pagination: { page: page ?? 1 },
       });
 
       return SuccessResponse({
@@ -41,7 +41,7 @@ export const GET = withAssociation(
       userId: userId,
       associationId: association.id,
       filters: { status: MeetingStatus.SCHEDULED },
-      pagination: { page: page ?? 1, limit: limit ?? 10 },
+      pagination: { page: page ?? 1 },
     });
 
     return SuccessResponse({

@@ -57,7 +57,6 @@ export const MeetingQuerySchema = z.object({
     .enum(MeetingStatus, { message: "Invalid meeting status" })
     .optional(),
   page: pageNumberValidation,
-  limit: pageSizeValidation,
 });
 
 export type CreateMeetingInput = z.infer<typeof CreateMeetingSchema>;

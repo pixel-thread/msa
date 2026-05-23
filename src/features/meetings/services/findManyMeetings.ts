@@ -1,5 +1,6 @@
 import { prisma } from "@lib/prisma";
 import { MeetingType, MeetingStatus, Prisma, UserRole } from "@prisma/client";
+import { PAGE_SIZE } from "@src/shared/constants";
 import { buildPagination } from "@src/shared/utils/build-pagination";
 import { hasHighRoleAccess } from "@src/shared/utils/has-high-role";
 
@@ -13,14 +14,13 @@ interface FindManyMeetingsProps {
   };
   pagination: {
     page: number;
-    limit: number;
   };
 }
 
 export async function findManyMeetings({
   associationId,
   filters,
-  pagination: { page, limit },
+  pagination: { page },
   userId,
   role,
 }: FindManyMeetingsProps) {
@@ -51,14 +51,14 @@ export async function findManyMeetings({
         },
       },
       orderBy: { scheduledAt: "desc" },
-      skip: (page - 1) * limit,
-      take: limit,
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
     }),
     prisma.meeting.count({ where }),
   ]);
 
   return {
     meetings,
-    pagination: buildPagination(total, page, limit),
+    pagination: buildPagination(total, page),
   };
 }
