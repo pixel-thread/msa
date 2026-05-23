@@ -31,6 +31,7 @@ import {
   type VerifySignInInput,
 } from "@src/features/auth/validators";
 import { useSignIn, useVerifyMfa } from "@src/features/auth/hooks";
+import { logger } from "@src/shared/logger";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -54,7 +55,9 @@ export default function SignInPage() {
       } else {
         router.push("/dashboard");
       }
-    } catch {}
+    } catch (e) {
+      logger.error("Sign in failed", { error: e });
+    }
   };
 
   if (mfaTempToken) {
