@@ -23,6 +23,10 @@ export interface ConsentReceiptRecord {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata: any;
   createdAt: Date;
+  user?: {
+    name: string | null;
+    email: string | null;
+  };
 }
 
 /**
@@ -33,4 +37,15 @@ export interface ConsentSummaryReport {
   grantedCount: number;
   withdrawnCount: number;
   totalCount: number;
+}
+
+/**
+ * Consent record as returned from the API (with user info and string dates).
+ */
+export interface ConsentRecord extends Omit<ConsentReceiptRecord, "createdAt"> {
+  createdAt: string;
+  user?: {
+    name: string | null;
+    email: string | null;
+  };
 }

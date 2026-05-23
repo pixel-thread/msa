@@ -1,11 +1,16 @@
 import { prisma } from "@src/shared/lib/prisma";
-import { ConsentPurpose, ConsentStatus } from "@prisma/client";
+import { AuditAction, ConsentPurpose, ConsentStatus, Prisma } from "@prisma/client";
 import {
   UserConsentState,
   ConsentReceiptRecord,
   ConsentSummaryReport,
 } from "../types/consent.types";
-import { ConsentUpdateInput } from "../validators/consent.validators";
+import {
+  ConsentUpdateInput,
+  UpdateConsentReceiptInput,
+  AllConsentRecordsQueryInput,
+} from "../validators/consent.validators";
+import { NotFoundError, BadRequestError } from "@src/shared/errors";
 
 /**
  * Service for managing user consent according to DPDP Act 2023.
@@ -143,34 +148,158 @@ export class ConsentService {
   }
 
   /**
-   * Retrieves all consent records for the association (Admin/DPO only).
-   *
+   * Retrieves all consent records for the association with pagination and filtering.
    * @param associationId - The ID of the association.
-   * @param limit - Optional limit for pagination.
-   * @returns A promise that resolves to an array of ConsentReceiptRecord objects.
+   * @param query - Pagination and filter options.
    */
   static async getAllConsentRecords(
     associationId: string,
-    limit = 100,
-  ): Promise<ConsentReceiptRecord[]> {
-    const records = await prisma.consentReceipt.findMany({
-      where: {
-        associationId,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: limit,
+    query?: AllConsentRecordsQueryInput,
+  ): Promise<{ records: ConsentReceiptRecord[]; total: number }> {
+    const page = query?.page ?? 1;
+    const pageSize = query?.pageSize ?? 20;
+    const skip = (page - 1) * pageSize;
+
+    const where: Prisma.ConsentReceiptWhereInput = { associationId };
+
+    if (query?.purpose) {
+      where.purpose = query.purpose;
+    }
+    if (query?.status) {
+      where.status = query.status;
+    }
+    if (query?.search) {
+      where.user = {
+        OR: [
+          { name: { contains: query.search, mode: "insensitive" } },
+          { email: { contains: query.search, mode: "insensitive" } },
+        ],
+      };
+    }
+
+    const [records, total] = await Promise.all([
+      prisma.consentReceipt.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: pageSize,
+        include: {
+          user: {
+            select: { name: true, email: true },
+          },
+        },
+      }),
+      prisma.consentReceipt.count({ where }),
+    ]);
+
+    return { records: records as unknown as ConsentReceiptRecord[], total };
+  }
+
+  /**
+   * Finds a single consent receipt by ID.
+   */
+  static async findUniqueConsentReceipt(
+    associationId: string,
+    receiptId: string,
+  ): Promise<ConsentReceiptRecord | null> {
+    const receipt = await prisma.consentReceipt.findFirst({
+      where: { id: receiptId, associationId },
       include: {
         user: {
-          select: {
-            name: true,
-            email: true,
-          },
+          select: { name: true, email: true },
         },
       },
     });
+    return receipt as unknown as ConsentReceiptRecord | null;
+  }
 
+  /**
+   * Updates a single consent receipt.
+   */
+  static async updateConsentReceipt(
+    associationId: string,
+    receiptId: string,
+    actorId: string,
+    data: UpdateConsentReceiptInput,
+  ): Promise<ConsentReceiptRecord> {
+    const existing = await prisma.consentReceipt.findFirst({
+      where: { id: receiptId, associationId },
+    });
+    if (!existing) throw new NotFoundError("Consent receipt not found");
+
+    return (await prisma.$transaction(async (tx) => {
+      const updated = await tx.consentReceipt.update({
+        where: { id: receiptId },
+        data,
+      });
+
+      await tx.auditLog.create({
+        data: {
+          associationId,
+          actorId,
+          action: AuditAction.UPDATE,
+          resourceType: "ConsentReceipt",
+          resourceId: receiptId,
+          oldValues: {
+            status: existing.status,
+            channel: existing.channel,
+          } as Prisma.InputJsonValue,
+          newValues: data as Prisma.InputJsonValue,
+        },
+      });
+
+      return updated;
+    })) as unknown as ConsentReceiptRecord;
+  }
+
+  /**
+   * Deletes a single consent receipt.
+   */
+  static async deleteConsentReceipt(
+    associationId: string,
+    receiptId: string,
+    actorId: string,
+  ): Promise<void> {
+    const existing = await prisma.consentReceipt.findFirst({
+      where: { id: receiptId, associationId },
+    });
+    if (!existing) throw new NotFoundError("Consent receipt not found");
+
+    await prisma.$transaction(async (tx) => {
+      await tx.consentReceipt.delete({ where: { id: receiptId } });
+
+      await tx.auditLog.create({
+        data: {
+          associationId,
+          actorId,
+          action: AuditAction.DELETE,
+          resourceType: "ConsentReceipt",
+          resourceId: receiptId,
+          oldValues: {
+            purpose: existing.purpose,
+            status: existing.status,
+          } as Prisma.InputJsonValue,
+        },
+      });
+    });
+  }
+
+  /**
+   * Gets consent history for a specific user (admin view).
+   */
+  static async getUserConsentHistoryById(
+    userId: string,
+    associationId: string,
+  ): Promise<ConsentReceiptRecord[]> {
+    const records = await prisma.consentReceipt.findMany({
+      where: { userId, associationId },
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: {
+          select: { name: true, email: true },
+        },
+      },
+    });
     return records as unknown as ConsentReceiptRecord[];
   }
 }

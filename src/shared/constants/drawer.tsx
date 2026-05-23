@@ -8,6 +8,7 @@ import {
   WalletIcon,
   AlertTriangleIcon,
   ScrollTextIcon,
+  ShieldCheck,
 } from "lucide-react";
 
 export const drawrNavMain = [
@@ -124,6 +125,12 @@ export const drawrNavMain = [
     title: "Audit Logs",
     url: "/audit-logs",
     icon: <ScrollTextIcon />,
+    isActive: true,
+  },
+  {
+    title: "Consent",
+    url: "/consent",
+    icon: <ShieldCheck />,
     isActive: true,
   },
   {
