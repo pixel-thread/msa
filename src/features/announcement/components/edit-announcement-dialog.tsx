@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
@@ -49,11 +49,12 @@ export function EditAnnouncementDialog({
   onOpenChange,
 }: EditAnnouncementDialogProps) {
   const updateAnnouncement = useUpdateAnnouncement();
-  const { uploadImage, isUploading } = useUploadAnnouncementImage(announcement?.id ?? null);
+  const { uploadImage, isUploading } = useUploadAnnouncementImage(
+    announcement?.id ?? null,
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const form = useForm<UpdateAnnouncementInput>({
+  const form = useForm({
     resolver: zodResolver(UpdateAnnouncementSchema),
     defaultValues: {
       title: "",
@@ -64,6 +65,11 @@ export function EditAnnouncementDialog({
       priority: undefined,
       isPinned: false,
     } as UpdateAnnouncementInput,
+  });
+
+  const previewUrl = useWatch({
+    control: form.control,
+    name: "imageUrl",
   });
 
   useEffect(() => {
@@ -77,7 +83,6 @@ export function EditAnnouncementDialog({
         priority: announcement.priority as AnnouncementPriority,
         isPinned: announcement.isPinned,
       });
-      setPreviewUrl(announcement.imageUrl);
     }
   }, [open, announcement, form]);
 
@@ -98,14 +103,12 @@ export function EditAnnouncementDialog({
     if (!file) return;
 
     const objectUrl = URL.createObjectURL(file);
-    setPreviewUrl(objectUrl);
 
     uploadImage(file, {
       onSuccess: () => {
         if (fileInputRef.current) fileInputRef.current.value = "";
       },
       onError: () => {
-        setPreviewUrl(announcement?.imageUrl ?? null);
         URL.revokeObjectURL(objectUrl);
       },
     });
@@ -183,10 +186,7 @@ export function EditAnnouncementDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Status</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select status" />
@@ -211,10 +211,7 @@ export function EditAnnouncementDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Priority</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select priority" />
@@ -223,7 +220,8 @@ export function EditAnnouncementDialog({
                       <SelectContent>
                         {Object.values(AnnouncementPriority).map((priority) => (
                           <SelectItem key={priority} value={priority}>
-                            {priority.charAt(0) + priority.slice(1).toLowerCase()}
+                            {priority.charAt(0) +
+                              priority.slice(1).toLowerCase()}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -259,7 +257,6 @@ export function EditAnnouncementDialog({
                       variant="destructive"
                       size="sm"
                       onClick={() => {
-                        setPreviewUrl(null);
                         form.setValue("imageUrl", null);
                       }}
                     >

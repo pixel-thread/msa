@@ -32,7 +32,7 @@ export function CreateAssociationDialog() {
   const [open, setOpen] = useState(false);
   const createAssociation = useCreateAssociation();
 
-  const form = useForm<CreateAssociationInput>({
+  const form = useForm({
     resolver: zodResolver(CreateAssociationSchema),
     defaultValues: {
       slug: "",
