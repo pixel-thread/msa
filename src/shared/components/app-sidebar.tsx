@@ -17,6 +17,7 @@ import {
 import { GalleryVerticalEndIcon } from "lucide-react";
 import { useAuthStore } from "@src/shared/stores/auth";
 import { DRAWER_NAV_MAIN } from "../constants/drawer";
+import { env } from "@src/env";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuthStore();
@@ -40,7 +41,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <GalleryVerticalEndIcon className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">MFSA</span>
+                <span className="truncate font-medium">
+                  {env.NEXT_PUBLIC_ASSOCIATION_SLUG.toUpperCase()}
+                </span>
                 <span className="truncate text-xs">Association Portal</span>
               </div>
             </SidebarMenuButton>
