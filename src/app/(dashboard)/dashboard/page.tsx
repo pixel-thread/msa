@@ -1,139 +1,85 @@
-import { redirect } from "next/navigation";
-import Link from "next/link";
+"use client"
 
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@src/shared/components/ui/card";
-import { Button } from "@src/shared/components/ui/button";
-import { getAuthFromCookies } from "@src/shared/api";
-import { getUserFirst } from "@src/shared/services/user/get-user-first";
+import { useDashboard } from "@src/shared/hooks/use-dashboard"
+import { StatsCards } from "@src/shared/components/dashboard/stats-cards"
+import { RevenueAreaChart } from "@src/shared/components/dashboard/revenue-area-chart"
+import { MemberBarChart } from "@src/shared/components/dashboard/member-bar-chart"
+import { RevenueLineChart } from "@src/shared/components/dashboard/revenue-line-chart"
+import { PaymentPieChart } from "@src/shared/components/dashboard/payment-pie-chart"
+import { RolesRadarChart } from "@src/shared/components/dashboard/roles-radar-chart"
+import { RecentPaymentsTable } from "@src/shared/components/dashboard/recent-payments-table"
+import { DashboardSkeleton } from "@src/shared/components/dashboard/dashboard-skeleton"
 
-export default async function DashboardPage() {
-  const auth = await getAuthFromCookies();
+export default function DashboardPage() {
+  const { data, isLoading, error } = useDashboard()
 
-  if (!auth) {
-    redirect("/sign-in");
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
+            Dashboard
+          </h1>
+          <p className="mt-1 text-base text-body">
+            Association analytics and overview
+          </p>
+        </div>
+        <DashboardSkeleton />
+      </div>
+    )
   }
 
-  const user = await getUserFirst({
-    where: { id: auth.userId },
-  });
-
-  if (!user) {
-    redirect("/sign-in");
+  if (error || !data) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-ink">Failed to load dashboard</h2>
+          <p className="mt-2 text-sm text-body">
+            {error instanceof Error ? error.message : "An unexpected error occurred"}
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-on-primary hover:bg-primary-active"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Welcome back, {user.name || "User"}
-          </h1>
-          <p className="mt-1 text-base text-body">
-            Manage your association activities and account settings
-          </p>
-        </div>
-        <div className="flex gap-3">
-          <Button
-            asChild
-            variant="outline"
-            className="h-11 border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
-          >
-            <Link href="/change-password">Change Password</Link>
-          </Button>
-          <Button
-            asChild
-            className="h-11 bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-active"
-          >
-            <Link href="/dashboard/settings">Account Settings</Link>
-          </Button>
-        </div>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card className=" border-hairline bg-surface-card">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Account Status
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-normal text-ink">
-              {user.mfaEnabled ? (
-                <span className="text-semantic-up">Protected</span>
-              ) : (
-                <span className="text-accent-yellow">Setup MFA</span>
-              )}
-            </div>
-            <p className="mt-1 text-sm text-body">
-              {user.mfaEnabled
-                ? "Two-factor authentication enabled"
-                : "Enable two-factor authentication for extra security"}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className=" border-hairline bg-surface-card">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Role
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-normal text-ink">
-              {Array.isArray(user.role) ? user.role.join(", ") : user.role}
-            </div>
-            <p className="mt-1 text-sm text-body">Your association role</p>
-          </CardContent>
-        </Card>
-
-        <Card className=" border-hairline bg-surface-card">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Email
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg font-normal text-ink">{user.email}</div>
-            <p className="mt-1 text-sm text-body">Primary contact email</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className=" border border-hairline bg-surface-soft p-8">
-        <h2 className="text-2xl font-normal tracking-tight text-ink">
-          Quick Actions
-        </h2>
-        <p className="mt-2 text-base text-body">
-          Manage your account settings and security preferences
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
+          Dashboard
+        </h1>
+        <p className="mt-1 text-base text-body">
+          Association analytics and overview
         </p>
-        <div className="mt-6 flex flex-wrap gap-3">
-          <Button
-            asChild
-            className="h-11 bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-active"
-          >
-            <Link href="/change-password">Change Password</Link>
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            className="h-11 border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
-          >
-            <Link href="/dashboard/security">Security Settings</Link>
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            className="h-11 border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
-          >
-            <Link href="/dashboard/profile">Edit Profile</Link>
-          </Button>
-        </div>
       </div>
-    </>
-  );
+
+      <StatsCards stats={data.stats} />
+
+      <RevenueAreaChart data={data.revenueOverTime} />
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <MemberBarChart data={data.memberGrowth} />
+        <RevenueLineChart
+          revenueData={data.revenueOverTime}
+          memberData={data.memberGrowth}
+        />
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <PaymentPieChart data={data.paymentMethodDistribution} />
+        <RolesRadarChart data={data.memberRoleDistribution} />
+      </div>
+
+      <div>
+        <h2 className="mb-4 text-xl font-semibold text-ink">Recent Payments</h2>
+        <RecentPaymentsTable payments={data.recentPayments} />
+      </div>
+    </div>
+  )
 }
