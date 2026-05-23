@@ -1,4 +1,4 @@
-export const authEndpoints = {
+export const AUTH_ENDPOINTS = {
   signIn: '/auth/sign-in',
   signInVerify: '/auth/sign-in/verify',
   signUp: '/auth/sign-up',
@@ -9,7 +9,7 @@ export const authEndpoints = {
   changePassword: '/auth/change-password',
 } as const;
 
-export const associationEndpoints = {
+export const ASSOCIATION_ENDPOINTS = {
   list: '/associations',
   get: (id: string) => `/associations/${id}`,
   create: '/associations',
@@ -17,7 +17,7 @@ export const associationEndpoints = {
   deactivate: (id: string) => `/associations/${id}/deactivate`,
 } as const;
 
-export const memberEndpoints = {
+export const MEMBER_ENDPOINTS = {
   list: '/members',
   get: (id: string) => `/members/${id}`,
   create: '/members',
@@ -27,7 +27,7 @@ export const memberEndpoints = {
   onboarding: '/members/onboarding',
 } as const;
 
-export const meetingEndpoints = {
+export const MEETING_ENDPOINTS = {
   list: '/meetings',
   get: (id: string) => `/meetings/${id}`,
   create: '/meetings',
@@ -44,7 +44,7 @@ export const meetingEndpoints = {
   my: '/meetings/my',
 } as const;
 
-export const paymentEndpoints = {
+export const PAYMENT_ENDPOINTS = {
   get: (id: string) => `/payments/${id}`,
   receipt: (id: string) => `/payments/${id}/receipt`,
   my: '/payments/my',
@@ -52,14 +52,14 @@ export const paymentEndpoints = {
   collectionsReport: '/payments/reports/collections',
 } as const;
 
-export const subscriptionEndpoints = {
+export const SUBSCRIPTION_ENDPOINTS = {
   list: '/subscriptions/plans',
   get: (id: string) => `/subscriptions/plans/${id}`,
   my: '/subscriptions/my',
   payments: (id: string) => `/subscriptions/${id}/payments`,
 } as const;
 
-export const ledgerEndpoints = {
+export const LEDGER_ENDPOINTS = {
   entries: '/ledger/entries',
   approve: (id: string) => `/ledger/entries/${id}/approve`,
   summary: '/ledger/summary',
@@ -67,7 +67,7 @@ export const ledgerEndpoints = {
   member: (memberId: string) => `/ledger/member/${memberId}`,
 } as const;
 
-export const consentEndpoints = {
+export const CONSENT_ENDPOINTS = {
   grant: '/consent/grant',
   revoke: '/consent/revoke',
   my: '/consent/my',
@@ -76,24 +76,24 @@ export const consentEndpoints = {
   all: '/consent/all',
 } as const;
 
-export const dsarEndpoints = {
+export const DSAR_ENDPOINTS = {
   my: (ticketId: string) => `/dsar/my/${ticketId}`,
 } as const;
 
-export const auditLogEndpoints = {
+export const AUDIT_LOG_ENDPOINTS = {
   list: '/audit-logs',
 } as const;
 
-export const complianceEndpoints = {
+export const COMPLIANCE_ENDPOINTS = {
   checks: '/compliance/checks',
   evidence: '/compliance/evidence',
 } as const;
 
-export const announcementEndpoints = {
+export const ANNOUNCEMENT_ENDPOINTS = {
   get: (id: string) => `/announcement/${id}`,
 } as const;
 
-export const trainingEndpoints = {
+export const TRAINING_ENDPOINTS = {
   modules: '/training/modules',
   getModule: (id: string) => `/training/modules/${id}`,
   complete: (id: string) => `/training/modules/${id}/complete`,
@@ -104,18 +104,18 @@ export const trainingEndpoints = {
     `/training/modules/${moduleId}/assignments/${userId}/complete`,
 } as const;
 
-export const apiEndpoints = {
-  auth: authEndpoints,
-  associations: associationEndpoints,
-  members: memberEndpoints,
-  meetings: meetingEndpoints,
-  payments: paymentEndpoints,
-  subscriptions: subscriptionEndpoints,
-  ledger: ledgerEndpoints,
-  consent: consentEndpoints,
-  dsar: dsarEndpoints,
-  auditLogs: auditLogEndpoints,
-  compliance: complianceEndpoints,
-  announcements: announcementEndpoints,
-  training: trainingEndpoints,
+export const API_ENDPOINTS = {
+  auth: AUTH_ENDPOINTS,
+  associations: ASSOCIATION_ENDPOINTS,
+  members: MEMBER_ENDPOINTS,
+  meetings: MEETING_ENDPOINTS,
+  payments: PAYMENT_ENDPOINTS,
+  subscriptions: SUBSCRIPTION_ENDPOINTS,
+  ledger: LEDGER_ENDPOINTS,
+  consent: CONSENT_ENDPOINTS,
+  dsar: DSAR_ENDPOINTS,
+  auditLogs: AUDIT_LOG_ENDPOINTS,
+  compliance: COMPLIANCE_ENDPOINTS,
+  announcements: ANNOUNCEMENT_ENDPOINTS,
+  training: TRAINING_ENDPOINTS,
 } as const;

@@ -1,10 +1,5 @@
 import { UserRole } from "@prisma/client";
-
-const HIGH_ROLE_USERS: UserRole[] = [
-  UserRole.SUPER_ADMIN,
-  UserRole.PRESIDENT,
-  UserRole.SECRETARY,
-];
+import { HIGH_ROLE_USERS } from "@src/shared/constants";
 
 export const hasHighRoleAccess = (roles: UserRole | UserRole[]): boolean => {
   const roleArray = Array.isArray(roles) ? roles : [roles];

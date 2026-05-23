@@ -1,3 +1,5 @@
+import { HIGH_ROLE_USERS } from "@src/shared/constants";
+
 export interface Meeting {
   id: string;
   title: string;
@@ -43,11 +45,3 @@ export interface RsvpForm {
   status: "ACCEPTED" | "DECLINED";
   note?: string;
 }
-
-export const HIGH_ROLE_USERS = [
-  "SUPER_ADMIN",
-  "PRESIDENT",
-  "SECRETARY",
-] as const;
-
-export type HighRoleUser = (typeof HIGH_ROLE_USERS)[number];

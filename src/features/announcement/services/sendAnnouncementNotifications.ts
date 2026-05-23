@@ -2,7 +2,7 @@ import { prisma } from "@lib/prisma";
 import { NotificationType, Prisma } from "@prisma/client";
 import { ExpoNotificationService } from "@lib/expo";
 import { logger } from "@src/shared/logger";
-import { ExpoRoutes } from "@src/shared/constants/expo-route";
+import { EXPO_ROUTES } from "@src/shared/constants/expo-route";
 import { createNotification } from "@src/shared/services/notification";
 
 export async function sendAnnouncementNotifications(
@@ -46,7 +46,7 @@ export async function sendAnnouncementNotifications(
           title: announcement.title,
           type: NotificationType.SYSTEM,
           body: announcement.summary ?? "New announcement posted",
-          route: ExpoRoutes.ANNOUNCEMENTS.DETAIL(announcement.id),
+          route: EXPO_ROUTES.ANNOUNCEMENTS.DETAIL(announcement.id),
           entityId: announcement.id,
           imageUrl: announcement.imageUrl,
           meta: { priority: announcement.priority },
@@ -64,7 +64,7 @@ export async function sendAnnouncementNotifications(
           body: announcement.summary ?? "New announcement posted",
           type: "GENERAL_MESSAGE",
           entityId: announcement.id,
-          route: ExpoRoutes.ANNOUNCEMENTS.DETAIL(announcement.id),
+          route: EXPO_ROUTES.ANNOUNCEMENTS.DETAIL(announcement.id),
         },
       );
     });

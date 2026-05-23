@@ -13,7 +13,7 @@ import {
   ClipboardCheck,
 } from "lucide-react";
 
-export const drawrNavMain = [
+export const DRAWER_NAV_MAIN = [
   {
     title: "Dashboard",
     url: "/dashboard",

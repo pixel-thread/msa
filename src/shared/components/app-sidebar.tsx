@@ -16,7 +16,7 @@ import {
 } from "@src/shared/components/ui/sidebar";
 import { GalleryVerticalEndIcon } from "lucide-react";
 import { useAuthStore } from "@src/shared/stores/auth";
-import { drawrNavMain } from "../constants/drawer";
+import { DRAWER_NAV_MAIN } from "../constants/drawer";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuthStore();
@@ -48,7 +48,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={drawrNavMain} />
+        <NavMain items={DRAWER_NAV_MAIN} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={sidebarUser} />

@@ -2,7 +2,7 @@ import { prisma } from "@lib/prisma";
 import { NotFoundError, ForbiddenError } from "@src/shared/errors";
 import { $Enums, AttendeeRole } from "@prisma/client";
 import { ExpoNotificationService } from "@lib/expo";
-import { ExpoRoutes } from "@src/shared/constants/expo-route";
+import { EXPO_ROUTES } from "@src/shared/constants/expo-route";
 import { logger } from "@src/shared/logger";
 
 interface BulkAssignAttendeesProps {
@@ -93,7 +93,7 @@ export async function bulkAssignAttendees({
           type: $Enums.NotificationType.GENERAL_MESSAGE,
           title: meeting.title,
           body: `You have been assigned to: ${meeting.title}`,
-          route: ExpoRoutes.MEETINGS.MEETING_DETAIL(meeting.id),
+          route: EXPO_ROUTES.MEETINGS.MEETING_DETAIL(meeting.id),
           entityId: meetingId,
           meta: { id: meeting.id, type: "MEETING" },
           associationId,
@@ -116,7 +116,7 @@ export async function bulkAssignAttendees({
               title: "New Meeting Assigned",
               body: `You have been assigned to: ${meeting.title}`,
               entityId: meeting.id,
-              route: ExpoRoutes.MEETINGS.MEETING_DETAIL(meeting.id),
+route: EXPO_ROUTES.MEETINGS.MEETING_DETAIL(meeting.id),
             },
           );
         }

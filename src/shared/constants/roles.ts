@@ -1,4 +1,5 @@
 import type { UserRole as Role } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 
 export const ROLE_HIERARCHY: Record<Role, number> = {
   SUPER_ADMIN: 0,
@@ -9,6 +10,8 @@ export const ROLE_HIERARCHY: Record<Role, number> = {
   MEMBER: 2,
 };
 
-export function hasRole(userRole: Role, requiredRole: Role): boolean {
-  return ROLE_HIERARCHY[userRole] <= ROLE_HIERARCHY[requiredRole];
-}
+export const HIGH_ROLE_USERS: UserRole[] = [
+  UserRole.SUPER_ADMIN,
+  UserRole.PRESIDENT,
+  UserRole.SECRETARY,
+];

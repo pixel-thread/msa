@@ -1,4 +1,4 @@
-export const ExpoRoutes = {
+export const EXPO_ROUTES = {
   MEETINGS: {
     MEETING_DETAIL: (id: string) => `/meetings/${id}`,
     MEETING: "/meetings",

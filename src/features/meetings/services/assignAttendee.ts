@@ -7,7 +7,7 @@ import {
 import { $Enums, AttendeeRole } from "@prisma/client";
 import { ExpoNotificationService } from "@lib/expo";
 import { logger } from "@src/shared/logger";
-import { ExpoRoutes } from "@src/shared/constants/expo-route";
+import { EXPO_ROUTES } from "@src/shared/constants/expo-route";
 import { createNotification } from "@src/shared/services/notification";
 
 interface AssignAttendeeProps {
@@ -78,7 +78,7 @@ export async function assignAttendee({
         type: "GENERAL_MESSAGE" as $Enums.NotificationType,
         title: meeting.title,
         body: `You have been assigned to: ${meeting.title}`,
-        route: ExpoRoutes.MEETINGS.MEETING_DETAIL(meeting.id),
+        route: EXPO_ROUTES.MEETINGS.MEETING_DETAIL(meeting.id),
         entityId: meetingId,
         createdAt: new Date().toISOString(),
         meta: { id: meeting.id, type: "MEETING" },
