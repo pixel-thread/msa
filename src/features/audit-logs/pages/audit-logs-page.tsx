@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 
 import { DataTable } from "@src/shared/components/data-table";
 import { Card, CardContent } from "@src/shared/components/ui/card";
@@ -83,31 +84,28 @@ const RESOURCE_TYPES = [
 ] as const;
 
 export default function AuditLogsPage() {
-  const [page, setPage] = useState(1);
-  const [action, setAction] = useState("");
-  const [resourceType, setResourceType] = useState("");
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const currentPage = Number(searchParams.get("page")) || 1;
+  const actionFilter = searchParams.get("action") ?? "";
+  const resourceFilter = searchParams.get("resourceType") ?? "";
+  const fromDateFilter = searchParams.get("fromDate") ?? "";
+  const toDateFilter = searchParams.get("toDate") ?? "";
+
   const [selectedEntry, setSelectedEntry] = useState<AuditLogEntry | null>(
     null,
   );
   const [detailsOpen, setDetailsOpen] = useState(false);
 
-  const filterAction = action && action !== "all" ? action : undefined;
-  const filterResource =
-    resourceType && resourceType !== "all" ? resourceType : undefined;
-
-  const {
-    logs,
-    meta: pagination,
-    isLoading,
-    refetch,
-  } = useAuditLogs({
-    page,
-    action: filterAction,
-    resourceType: filterResource,
-    fromDate: fromDate || undefined,
-    toDate: toDate || undefined,
+  const { logs, meta: pagination, isLoading } = useAuditLogs({
+    page: currentPage,
+    action:
+      actionFilter && actionFilter !== "all" ? actionFilter : undefined,
+    resourceType:
+      resourceFilter && resourceFilter !== "all" ? resourceFilter : undefined,
+    fromDate: fromDateFilter || undefined,
+    toDate: toDateFilter || undefined,
   });
 
   const getPageNumbers = (meta: { page: number; totalPages: number }) => {
@@ -142,17 +140,23 @@ export default function AuditLogsPage() {
 
   const { columns } = useAuditLogColumns({ onViewDetails: handleViewDetails });
 
-  const handleFilter = () => {
-    setPage(1);
-    refetch();
+  const pushParams = (overrides: Record<string, string | null>) => {
+    const params = new URLSearchParams();
+    const page = overrides.page ?? String(currentPage);
+    params.set("page", page);
+    const action = overrides.action !== undefined ? overrides.action : actionFilter;
+    const resource = overrides.resourceType !== undefined ? overrides.resourceType : resourceFilter;
+    const from = overrides.fromDate !== undefined ? overrides.fromDate : fromDateFilter;
+    const to = overrides.toDate !== undefined ? overrides.toDate : toDateFilter;
+    if (action && action !== "all") params.set("action", action);
+    if (resource && resource !== "all") params.set("resourceType", resource);
+    if (from) params.set("fromDate", from);
+    if (to) params.set("toDate", to);
+    router.push(`/audit-logs?${params.toString()}`);
   };
 
-  const handleReset = () => {
-    setAction("");
-    setResourceType("");
-    setFromDate("");
-    setToDate("");
-    setPage(1);
+  const handlePageChange = (page: number) => {
+    pushParams({ page: String(page) });
   };
 
   return (
@@ -208,7 +212,10 @@ export default function AuditLogsPage() {
               <p className="text-xs font-medium text-muted-foreground">
                 Action
               </p>
-              <Select value={action} onValueChange={setAction}>
+              <Select
+                value={actionFilter}
+                onValueChange={(v) => pushParams({ action: v, page: "1" })}
+              >
                 <SelectTrigger className="w-44 h-10 rounded-lg border-hairline">
                   <SelectValue placeholder="All actions" />
                 </SelectTrigger>
@@ -227,7 +234,10 @@ export default function AuditLogsPage() {
               <p className="text-xs font-medium text-muted-foreground">
                 Resource
               </p>
-              <Select value={resourceType} onValueChange={setResourceType}>
+              <Select
+                value={resourceFilter}
+                onValueChange={(v) => pushParams({ resourceType: v, page: "1" })}
+              >
                 <SelectTrigger className="w-40 h-10 rounded-lg border-hairline">
                   <SelectValue placeholder="All resources" />
                 </SelectTrigger>
@@ -246,8 +256,10 @@ export default function AuditLogsPage() {
               <p className="text-xs font-medium text-muted-foreground">From</p>
               <Input
                 type="date"
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
+                value={fromDateFilter}
+                onChange={(e) =>
+                  pushParams({ fromDate: e.target.value, page: "1" })
+                }
                 className="w-40 h-10 rounded-lg border-hairline"
               />
             </div>
@@ -256,26 +268,21 @@ export default function AuditLogsPage() {
               <p className="text-xs font-medium text-muted-foreground">To</p>
               <Input
                 type="date"
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
+                value={toDateFilter}
+                onChange={(e) =>
+                  pushParams({ toDate: e.target.value, page: "1" })
+                }
                 className="w-40 h-10 rounded-lg border-hairline"
               />
             </div>
 
             <div className="flex items-center gap-2">
               <Button
-                variant="outline"
-                onClick={handleFilter}
-                className="h-10 rounded-full border-hairline bg-canvas px-4 text-sm font-medium text-ink hover:bg-surface-strong"
-              >
-                <FilterIcon className="mr-1.5 h-4 w-4" />
-                Apply
-              </Button>
-              <Button
                 variant="ghost"
-                onClick={handleReset}
+                onClick={() => router.push("/audit-logs")}
                 className="h-10 rounded-full px-4 text-sm text-muted-foreground"
               >
+                <FilterIcon className="mr-1.5 h-4 w-4" />
                 Reset
               </Button>
             </div>
@@ -308,7 +315,7 @@ export default function AuditLogsPage() {
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                 className={
                   !pagination || pagination.page <= 1
                     ? "pointer-events-none opacity-50"
@@ -321,7 +328,7 @@ export default function AuditLogsPage() {
               getPageNumbers(pagination).map((pageNum) => (
                 <PaginationItem key={pageNum}>
                   <PaginationLink
-                    onClick={() => setPage(pageNum)}
+                    onClick={() => handlePageChange(pageNum)}
                     isActive={pagination.page === pageNum}
                     className="cursor-pointer"
                   >
@@ -340,7 +347,7 @@ export default function AuditLogsPage() {
 
             <PaginationItem>
               <PaginationNext
-                onClick={() => setPage((p) => p + 1)}
+                onClick={() => handlePageChange(currentPage + 1)}
                 className={
                   !pagination || pagination.page >= pagination.totalPages
                     ? "pointer-events-none opacity-50"
