@@ -60,7 +60,7 @@ const http = {
     config?: AxiosRequestConfig,
   ): Promise<ApiResponse<T>> => {
     try {
-      logger.info(`GET => ${url}`);
+      logger.debug(`GET => ${url}`);
       const response = await axiosClient.get(url, config);
       return handleResponse<T>(response);
     } catch (error) {
@@ -77,10 +77,11 @@ const http = {
     config?: AxiosRequestConfig,
   ): Promise<ApiResponse<T>> => {
     try {
-      logger.info(`POST => ${url}`);
-      const requestConfig: AxiosRequestConfig = data instanceof FormData
-        ? { ...config, headers: { ...config?.headers, "Content-Type": null } }
-        : { ...config };
+      logger.debug(`POST => ${url}`);
+      const requestConfig: AxiosRequestConfig =
+        data instanceof FormData
+          ? { ...config, headers: { ...config?.headers, "Content-Type": null } }
+          : { ...config };
       const response = await axiosClient.post(url, data, requestConfig);
       return handleResponse<T>(response);
     } catch (error) {
@@ -97,7 +98,7 @@ const http = {
     config?: AxiosRequestConfig,
   ): Promise<ApiResponse<T>> => {
     try {
-      logger.info(`PUT => ${url}`);
+      logger.debug(`PUT => ${url}`);
       const response = await axiosClient.put(url, data, config);
       return handleResponse<T>(response);
     } catch (error) {
@@ -114,10 +115,11 @@ const http = {
     config?: AxiosRequestConfig,
   ): Promise<ApiResponse<T>> => {
     try {
-      logger.info(`PATCH => ${url}`);
-      const requestConfig: AxiosRequestConfig = data instanceof FormData
-        ? { ...config, headers: { ...config?.headers, "Content-Type": null } }
-        : { ...config };
+      logger.debug(`PATCH => ${url}`);
+      const requestConfig: AxiosRequestConfig =
+        data instanceof FormData
+          ? { ...config, headers: { ...config?.headers, "Content-Type": null } }
+          : { ...config };
       const response = await axiosClient.patch(url, data, requestConfig);
       return handleResponse<T>(response);
     } catch (error) {
@@ -133,7 +135,7 @@ const http = {
     config?: AxiosRequestConfig,
   ): Promise<ApiResponse<T>> => {
     try {
-      logger.info(`DELETE => ${url}`);
+      logger.debug(`DELETE => ${url}`);
       const response = await axiosClient.delete(url, config);
       return handleResponse<T>(response);
     } catch (error) {
