@@ -27,6 +27,7 @@
 19. [Import Rules](#import-rules)
 20. [Performance Rules](#performance-rules)
 21. [AI Agent Checklist](#ai-agent-checklist)
+22. [Barrel Export Rules](#barrel-export-rules)
 
 ---
 
@@ -632,6 +633,37 @@ app/api/cron/
 - Barrel exports (`index.ts`) are used only at feature page and component boundaries — not deep inside a feature.
 
 ---
+
+## Barrel Export Rules
+
+- Every folder MUST contain an `index.ts` file.
+- `index.ts` must export all public modules inside that folder.
+- Imports should prefer folder-level exports instead of deep file imports.
+- Deep imports across feature internals are forbidden unless explicitly required.
+- Barrel exports define the public API of a folder — anything not exported is internal.
+- Do not export private/internal implementation details.
+- No circular exports through `index.ts` files.
+
+### Example
+
+```
+
+features/training/components/
+TrainingCard.tsx
+TrainingTable.tsx
+index.ts
+
+```
+
+```ts
+// index.ts
+export * from "./TrainingCard";
+export * from "./TrainingTable";
+```
+
+### Rule
+
+- If a folder exists → it must have `index.ts` (even if empty initially).
 
 ## Performance Rules
 
