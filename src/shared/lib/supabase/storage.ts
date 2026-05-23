@@ -1,4 +1,4 @@
-import { supabase } from ".";
+import { supabase } from "@src/shared/lib/supabase/client";
 import { env } from "@src/env";
 import { logger } from "@src/shared/logger";
 import { BadRequestError } from "@src/shared/errors";

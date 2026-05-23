@@ -1,4 +1,4 @@
-import { logger } from "../logger";
+import { logger } from "@src/shared/logger";
 import { redis } from "./redis";
 
 export interface CacheClient {

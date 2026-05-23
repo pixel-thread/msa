@@ -1,5 +1,6 @@
 import * as crypto from "crypto";
 import { env } from "@src/env";
+import { logger } from "@src/shared/logger";
 
 const ALGORITHM = "aes-256-gcm";
 
@@ -25,12 +26,10 @@ export const encrypt = (plain: string): string => {
 };
 
 export const decrypt = (ciphertext: string): string => {
-  console.log("decrypt input:", ciphertext);
-
   const parts = ciphertext.split(":");
 
   if (parts.length !== 3) {
-    throw new Error(`Invalid 2 encrypted value format`);
+    throw new Error(`Invalid encrypted value format`);
   }
 
   const [ivHex, tagHex, encHex] = parts;
@@ -51,7 +50,7 @@ export const decrypt = (ciphertext: string): string => {
 
     return decrypted.toString("utf8");
   } catch (error) {
-    console.error(error);
+    logger.error("Failed to decrypt value", { error });
 
     throw new Error("Failed to decrypt value");
   }

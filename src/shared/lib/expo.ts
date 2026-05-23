@@ -1,6 +1,6 @@
 import { Expo, ExpoPushMessage, ExpoPushTicket } from "expo-server-sdk";
 import { prisma } from "./prisma";
-import { logger } from "../logger";
+import { logger } from "@src/shared/logger";
 import { NotificationDataT } from "@sharedType/notification";
 
 const expo = new Expo();

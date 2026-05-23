@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 
 import { env } from "@src/env";
-import { logger } from "../logger";
+import { logger } from "@src/shared/logger";
 
 const resend = env.RESEND_API_KEY ? new Resend(env.RESEND_API_KEY) : null;
 
@@ -16,7 +16,7 @@ interface EmailProps {
 
 async function sendEmail({ to, subject, html }: EmailProps) {
   if (!resend) {
-    console.warn("[Email] Resend not configured, skipping email send");
+    logger.warn("[Email] Resend not configured, skipping email send");
     logger.debug(`[Email] Would send to: ${to}`);
     logger.debug(`[Email] Subject: ${subject}`);
     return { success: true };
@@ -31,14 +31,14 @@ async function sendEmail({ to, subject, html }: EmailProps) {
     });
 
     if (result.error) {
-      console.error("[Email] Error:", result.error);
+      logger.error("[Email] Error sending email", { error: result.error, to });
       return { success: false, error: result.error };
     }
 
-    console.log("[Email] Sent successfully to:", to);
+    logger.info("[Email] Sent successfully", { to });
     return { success: true };
   } catch (error) {
-    console.error("[Email] Exception:", error);
+    logger.error("[Email] Exception sending email", { error, to });
     return { success: false, error };
   }
 }

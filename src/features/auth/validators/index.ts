@@ -1,4 +1,4 @@
-import { passwordValidation } from "@src/shared/lib/validations/auth";
+import { passwordValidation } from "@validator/auth";
 import z from "zod";
 
 const associationsSlug = ["mfsa", "mpsa", "mpsc"];

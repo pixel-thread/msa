@@ -1,6 +1,9 @@
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 
+export { generateSecureToken, hashToken } from "./token";
+export { generateOTP, hashOTP } from "./otp";
+
 const BCRYPT_ROUNDS = 12;
 
 export async function hashPassword(password: string): Promise<string> {
@@ -49,29 +52,6 @@ export function validatePasswordStrength(password: string): {
   };
 }
 
-export function generateSecureToken(length: number = 32): string {
-  return crypto.randomBytes(length).toString("hex");
-}
-
-export function hashToken(token: string): string {
-  return crypto.createHash("sha256").update(token).digest("hex");
-}
-
-export function generateOTP(length: number = 6): string {
-  const digits = "0123456789";
-  let otp = "";
-
-  for (let i = 0; i < length; i++) {
-    otp += digits[Math.floor(Math.random() * digits.length)];
-  }
-
-  return otp;
-}
-
-export function hashOTP(code: string): string {
-  return hashToken(code);
-}
-
 export function generateRandomPassword(length: number = 16): string {
   const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const lowercase = "abcdefghijklmnopqrstuvwxyz";
@@ -98,4 +78,3 @@ export function generateRandomPassword(length: number = 16): string {
 
   return chars.join("");
 }
-
