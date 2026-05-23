@@ -20,7 +20,9 @@ export default function MeetingsPage() {
   const [search, setSearch] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
 
-  const { meetings, meta, isLoading } = useMeetings({ page: currentPage });
+  const { meetings, meta, isLoading, isFetching } = useMeetings({
+    page: currentPage,
+  });
   const { columns } = useMeetingTableColumns();
 
   const filteredMeetings = search
@@ -90,7 +92,7 @@ export default function MeetingsPage() {
       </div>
 
       <DataTable
-        loading={isLoading}
+        loading={isLoading || isFetching}
         data={filteredMeetings}
         columns={columns}
       />
