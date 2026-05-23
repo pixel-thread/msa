@@ -15,8 +15,7 @@ export function useMeetings(options: UseMeetingsOptions = {}) {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["meetings", page],
-    queryFn: async () =>
-      http.get<Meeting[]>(`/meetings?page=${page}`),
+    queryFn: async () => http.get<Meeting[]>(`/meetings?page=${page}`),
   });
 
   const createMeetingMutation = useMutation({
@@ -64,7 +63,7 @@ export function useMeetings(options: UseMeetingsOptions = {}) {
 export function useMeetingAttendees(meetingId: string | null) {
   const queryClient = useQueryClient();
 
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading, isFetching, refetch } = useQuery({
     queryKey: ["meeting-attendees", meetingId],
     enabled: !!meetingId,
     queryFn: async () =>
@@ -126,7 +125,7 @@ export function useMeetingAttendees(meetingId: string | null) {
 
   return {
     attendees: data ?? [],
-    isLoading,
+    isLoading: isLoading || isFetching,
     refetch,
     addAttendee: addAttendeeMutation.mutate,
     removeAttendee: removeAttendeeMutation.mutate,
