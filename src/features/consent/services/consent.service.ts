@@ -321,6 +321,8 @@ export class ConsentService {
       prisma.consentReceipt.findMany({
         where: { userId, associationId },
         orderBy: { createdAt: "desc" },
+        skip: (page - 1) * PAGE_SIZE,
+        take: PAGE_SIZE,
         include: {
           user: {
             select: { name: true, email: true },
@@ -330,7 +332,6 @@ export class ConsentService {
 
       prisma.consentReceipt.count({
         where: { userId, associationId },
-        orderBy: { createdAt: "desc" },
       }),
     ]);
     return {

@@ -1,4 +1,5 @@
 import { prisma } from "@lib/prisma";
+import { PAGE_SIZE } from "@src/shared/constants";
 import { AuditAction, Prisma, TrainingAssignmentStatus } from "@prisma/client";
 
 interface CompleteAssignmentProps {
@@ -73,29 +74,43 @@ export async function completeAssignment({
 interface GetAssignedUsersProps {
   associationId: string;
   moduleId: string;
+  page?: number;
 }
 
 export async function getAssignedUsers({
   associationId,
   moduleId,
+  page = 1,
 }: GetAssignedUsersProps) {
-  const assignments = await prisma.trainingAssignment.findMany({
-    where: {
-      moduleId,
-      module: { associationId },
-    },
-    include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          role: true,
+  const skip = (page - 1) * PAGE_SIZE;
+
+  const [assignments, total] = await Promise.all([
+    prisma.trainingAssignment.findMany({
+      where: {
+        moduleId,
+        module: { associationId },
+      },
+      skip,
+      take: PAGE_SIZE,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+          },
         },
       },
-    },
-    orderBy: { assignedAt: "desc" },
-  });
+      orderBy: { assignedAt: "desc" },
+    }),
+    prisma.trainingAssignment.count({
+      where: {
+        moduleId,
+        module: { associationId },
+      },
+    }),
+  ]);
 
   const completions = await prisma.trainingCompletion.findMany({
     where: {
@@ -108,23 +123,26 @@ export async function getAssignedUsers({
     completions.map((c) => [c.userId, c])
   );
 
-  return assignments.map((assignment) => ({
-    id: assignment.id,
-    moduleId: assignment.moduleId,
-    userId: assignment.userId,
-    status: assignment.status,
-    assignedAt: assignment.assignedAt.toISOString(),
-    dueDate: assignment.dueDate?.toISOString() ?? null,
-    startedAt: assignment.startedAt?.toISOString() ?? null,
-    completedAt: assignment.completedAt?.toISOString() ?? null,
-    notes: assignment.notes,
-    user: assignment.user,
-    completion: completionMap.has(assignment.userId)
-      ? {
-          id: completionMap.get(assignment.userId)!.id,
-          scorePercent: completionMap.get(assignment.userId)!.scorePercent?.toNumber() ?? null,
-          completedAt: completionMap.get(assignment.userId)!.completedAt.toISOString(),
-        }
-      : null,
-  }));
+  return {
+    data: assignments.map((assignment) => ({
+      id: assignment.id,
+      moduleId: assignment.moduleId,
+      userId: assignment.userId,
+      status: assignment.status,
+      assignedAt: assignment.assignedAt.toISOString(),
+      dueDate: assignment.dueDate?.toISOString() ?? null,
+      startedAt: assignment.startedAt?.toISOString() ?? null,
+      completedAt: assignment.completedAt?.toISOString() ?? null,
+      notes: assignment.notes,
+      user: assignment.user,
+      completion: completionMap.has(assignment.userId)
+        ? {
+            id: completionMap.get(assignment.userId)!.id,
+            scorePercent: completionMap.get(assignment.userId)!.scorePercent?.toNumber() ?? null,
+            completedAt: completionMap.get(assignment.userId)!.completedAt.toISOString(),
+          }
+        : null,
+    })),
+    total,
+  };
 }

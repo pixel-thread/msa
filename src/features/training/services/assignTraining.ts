@@ -1,33 +1,50 @@
 import { prisma } from "@lib/prisma";
+import { PAGE_SIZE } from "@src/shared/constants";
 import { AuditAction, Prisma } from "@prisma/client";
 
 interface GetTrainingAssignmentsProps {
   associationId: string;
   moduleId: string;
+  page?: number;
 }
 
 export async function getTrainingAssignments({
   associationId,
   moduleId,
+  page = 1,
 }: GetTrainingAssignmentsProps) {
-  return await prisma.trainingAssignment.findMany({
-    where: {
-      moduleId,
-      module: { associationId },
-    },
-    include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          role: true,
-          status: true,
+  const skip = (page - 1) * PAGE_SIZE;
+
+  const [data, total] = await Promise.all([
+    prisma.trainingAssignment.findMany({
+      where: {
+        moduleId,
+        module: { associationId },
+      },
+      skip,
+      take: PAGE_SIZE,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            status: true,
+          },
         },
       },
-    },
-    orderBy: { assignedAt: "desc" },
-  });
+      orderBy: { assignedAt: "desc" },
+    }),
+    prisma.trainingAssignment.count({
+      where: {
+        moduleId,
+        module: { associationId },
+      },
+    }),
+  ]);
+
+  return { data, total };
 }
 
 interface AssignTrainingProps {

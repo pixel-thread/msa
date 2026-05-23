@@ -1,15 +1,19 @@
 import { withAssociation, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils/responses";
+import { buildPagination } from "@src/shared/utils";
 import { UserRole } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
 import { z } from "zod";
 import { NotFoundError, ValidationError } from "@src/shared/errors";
 import { getUserContributionSummary } from "@src/features/payments/services/contribution.service";
+import { pageNumberValidation } from "@src/shared/validators";
+import { PAGE_SIZE } from "@src/shared/constants";
 
 const UserContributionsParamsSchema = z.object({
   userId: z.uuid("Invalid user ID"),
 });
 const UserContributionsQuerySchema = z.object({
+  page: pageNumberValidation,
   fromYear: z.coerce.number().int().min(2020).max(2100).optional(),
   fromMonth: z.coerce.number().int().min(1).max(12).optional(),
   toYear: z.coerce.number().int().min(2020).max(2100).optional(),
@@ -26,7 +30,8 @@ export const GET = withAssociation(
     }
 
     const { userId } = params as { userId: string };
-    const { fromYear, fromMonth, toYear, toMonth } = query as {
+    const { page = 1, fromYear, fromMonth, toYear, toMonth } = query as {
+      page?: number;
       fromYear?: number;
       fromMonth?: number;
       toYear?: number;
@@ -73,9 +78,13 @@ export const GET = withAssociation(
         : [toClause];
     }
 
-    const [contributions, summary] = await Promise.all([
+    const skip = (page - 1) * PAGE_SIZE;
+
+    const [contributions, total, summary] = await Promise.all([
       prisma.contributionPeriod.findMany({
         where: whereClause,
+        skip,
+        take: PAGE_SIZE,
         include: {
           allocations: {
             include: {
@@ -95,6 +104,7 @@ export const GET = withAssociation(
         },
         orderBy: [{ year: "asc" }, { month: "asc" }],
       }),
+      prisma.contributionPeriod.count({ where: whereClause }),
       getUserContributionSummary(userId),
     ]);
 
@@ -104,6 +114,7 @@ export const GET = withAssociation(
         contributions,
         summary,
       },
+      meta: buildPagination(total, page),
     });
   },
 );

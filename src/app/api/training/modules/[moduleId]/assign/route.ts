@@ -1,5 +1,6 @@
 import { withAssociation, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@utils/responses";
+import { buildPagination } from "@src/shared/utils";
 import { ForbiddenError, BadRequestError } from "@src/shared/errors";
 import { UserRole } from "@prisma/client";
 import {
@@ -13,10 +14,15 @@ import {
   AssignTrainingSchema,
   BulkAssignTrainingSchema,
 } from "@feature/training/validators/training";
+import { pageNumberValidation } from "@src/shared/validators";
 import { z } from "zod";
 
 const TrainingParamsSchema = z.object({
   moduleId: z.uuid("Invalid module ID"),
+});
+
+const TrainingQuerySchema = z.object({
+  page: pageNumberValidation,
 });
 
 const RemoveAssignSchema = z.object({
@@ -30,21 +36,26 @@ const BulkRemoveAssignSchema = z.object({
 });
 
 export const GET = withAssociation(
-  { params: TrainingParamsSchema },
-  async (association, { params }, request) => {
+  { params: TrainingParamsSchema, query: TrainingQuerySchema },
+  async (association, { params, query }, request) => {
     if (!params) {
       throw new ForbiddenError("Invalid module ID");
     }
 
     await withRole(request, UserRole.SECRETARY);
     const { moduleId } = params;
+    const page = query?.page || 1;
 
-    const assignments = await getTrainingAssignments({
+    const result = await getTrainingAssignments({
       associationId: association.id,
       moduleId,
+      page,
     });
 
-    return SuccessResponse({ data: assignments });
+    return SuccessResponse({
+      data: result.data,
+      meta: buildPagination(result.total, page),
+    });
   },
 );
 

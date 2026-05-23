@@ -24,6 +24,7 @@ export const GET = withAssociation(
         associationId: association.id,
         userId: userId,
       },
+      page,
     });
 
     return SuccessResponse({
