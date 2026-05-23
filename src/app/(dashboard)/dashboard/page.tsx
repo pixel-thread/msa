@@ -55,7 +55,7 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="rounded-xl border-hairline bg-surface-card">
+        <Card className=" border-hairline bg-surface-card">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Account Status
@@ -77,7 +77,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-xl border-hairline bg-surface-card">
+        <Card className=" border-hairline bg-surface-card">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Role
@@ -91,7 +91,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-xl border-hairline bg-surface-card">
+        <Card className=" border-hairline bg-surface-card">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Email
@@ -104,7 +104,7 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      <div className="rounded-xl border border-hairline bg-surface-soft p-8">
+      <div className=" border border-hairline bg-surface-soft p-8">
         <h2 className="text-2xl font-normal tracking-tight text-ink">
           Quick Actions
         </h2>

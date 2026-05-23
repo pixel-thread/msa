@@ -162,7 +162,7 @@ export function EditMinuteDialog({
                   {actionItems.map((item, index) => (
                     <div
                       key={index}
-                      className="flex items-start gap-2 rounded-lg border border-hairline p-3"
+                      className="flex items-start gap-2 border border-hairline p-3"
                     >
                       <div className="flex-1 space-y-2">
                         <Input

@@ -26,7 +26,7 @@ export function ProviderDetail({
 }: ProviderDetailProps) {
   return (
     <div className="grid gap-6 md:grid-cols-3">
-      <Card className="rounded-xl border-hairline bg-surface-card md:col-span-2">
+      <Card className=" border-hairline bg-surface-card md:col-span-2">
         <CardHeader>
           <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             Provider Information
@@ -84,7 +84,7 @@ export function ProviderDetail({
       </Card>
 
       <div className="space-y-6">
-        <Card className="rounded-xl border-hairline bg-surface-card">
+        <Card className=" border-hairline bg-surface-card">
           <CardHeader>
             <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Actions
@@ -111,7 +111,7 @@ export function ProviderDetail({
           </CardContent>
         </Card>
 
-        <Card className="rounded-xl border-hairline bg-surface-card">
+        <Card className=" border-hairline bg-surface-card">
           <CardHeader>
             <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Timestamps

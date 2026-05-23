@@ -181,7 +181,7 @@ export function CreateAssociationDialog() {
                     <FormControl>
                       <div className="flex gap-2 items-center">
                         <div
-                          className="h-9 w-9 rounded-md border shrink-0"
+                          className="h-9 w-9 border shrink-0"
                           style={{
                             backgroundColor: field.value || "#1f2937",
                           }}
@@ -206,7 +206,7 @@ export function CreateAssociationDialog() {
                     <FormControl>
                       <div className="flex gap-2 items-center">
                         <div
-                          className="h-9 w-9 rounded-md border shrink-0"
+                          className="h-9 w-9 border shrink-0"
                           style={{
                             backgroundColor: field.value || "#3b82f6",
                           }}

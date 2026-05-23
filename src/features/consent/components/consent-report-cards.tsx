@@ -19,7 +19,7 @@ export function ConsentReportCards() {
     return (
       <div className="grid grid-cols-5 gap-4">
         {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-24 rounded-xl" />
+          <Skeleton key={i} className="h-24" />
         ))}
       </div>
     );
@@ -30,7 +30,7 @@ export function ConsentReportCards() {
       {report.map((item) => (
         <div
           key={item.purpose}
-          className="rounded-xl border w-full border-border bg-card p-4"
+          className=" border w-full border-border bg-card p-4"
         >
           <p className="text-xs font-medium text-body uppercase tracking-wider">
             {purposeLabels[item.purpose as ConsentPurpose] || item.purpose}

@@ -25,7 +25,7 @@ export function DeleteMinuteDialog({ minute, open, onOpenChange, onConfirm, isDe
       <DialogContent className="sm:max-w-[450px]">
         <DialogHeader>
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
+            <div className="flex h-10 w-10 items-center justify-center bg-red-100">
               <AlertTriangle className="h-5 w-5 text-red-600" />
             </div>
             <DialogTitle>Delete Minute</DialogTitle>

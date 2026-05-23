@@ -143,7 +143,7 @@ export default function AnnouncementDetailPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
-        <Card className="rounded-xl border-hairline bg-surface-card md:col-span-2">
+        <Card className=" border-hairline bg-surface-card md:col-span-2">
           <CardHeader>
             <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Content
@@ -151,7 +151,7 @@ export default function AnnouncementDetailPage() {
           </CardHeader>
           <CardContent>
             {announcement.imageUrl && (
-              <div className="mb-6 overflow-hidden rounded-lg">
+              <div className="mb-6 overflow-hidden">
                 <img
                   src={announcement.imageUrl}
                   alt={announcement.title}
@@ -173,7 +173,7 @@ export default function AnnouncementDetailPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-xl border-hairline bg-surface-card h-fit">
+        <Card className=" border-hairline bg-surface-card h-fit">
           <CardHeader>
             <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Details
@@ -258,7 +258,7 @@ export default function AnnouncementDetailPage() {
       </div>
 
       {announcement.readReceipts && announcement.readReceipts.length > 0 && (
-        <Card className="rounded-xl border-hairline bg-surface-card">
+        <Card className=" border-hairline bg-surface-card">
           <CardHeader>
             <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Read Receipts
@@ -269,7 +269,7 @@ export default function AnnouncementDetailPage() {
               {announcement.readReceipts.map((receipt) => (
                 <div
                   key={receipt.id}
-                  className="flex items-center justify-between rounded-lg border border-hairline p-3"
+                  className="flex items-center justify-between border border-hairline p-3"
                 >
                   <div>
                     <p className="text-sm font-medium text-ink">

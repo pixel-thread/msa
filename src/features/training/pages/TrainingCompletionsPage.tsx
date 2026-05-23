@@ -79,7 +79,7 @@ export function TrainingCompletionsPage() {
 
       {/* Summary cards */}
       <div className="flex gap-4">
-        <div className="bg-surface-card border border-hairline rounded-xl p-4 flex-1">
+        <div className="bg-surface-card border border-hairline p-4 flex-1">
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
             <Award className="h-4 w-4" />
             Total Completions

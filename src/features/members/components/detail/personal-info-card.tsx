@@ -16,7 +16,7 @@ interface PersonalInfoCardProps {
 
 export function PersonalInfoCard({ member }: PersonalInfoCardProps) {
   return (
-    <Card className="rounded-xl border-hairline bg-surface-card md:col-span-2">
+    <Card className=" border-hairline bg-surface-card md:col-span-2">
       <CardHeader>
         <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           Personal Information

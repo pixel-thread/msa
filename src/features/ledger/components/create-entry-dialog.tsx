@@ -135,7 +135,7 @@ export function CreateEntryDialog({
               {lines.map((line, index) => (
                 <div
                   key={index}
-                  className="flex items-end gap-2 rounded-lg border border-hairline p-3"
+                  className="flex items-end gap-2 border border-hairline p-3"
                 >
                   <div className="flex-1 space-y-1.5">
                     <Label className="text-xs">Account</Label>

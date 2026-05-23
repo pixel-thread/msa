@@ -54,7 +54,7 @@ export function UserRow({
 }: UserRowProps) {
   return (
     <div
-      className={`flex items-center gap-3 p-3 rounded-lg border transition-all cursor-pointer ${
+      className={`flex items-center gap-3 p-3 border transition-all cursor-pointer ${
         isSelected
           ? "bg-primary/5 border-primary/20"
           : "bg-surface-card hover:bg-canvas/50"
@@ -77,7 +77,7 @@ export function UserRow({
       </div>
 
       <div
-        className={`flex items-center justify-center w-8 h-8 rounded-full text-white text-xs font-bold shrink-0 ${getAvatarColor(user.name)}`}
+        className={`flex items-center justify-center w-8 h-8 text-white text-xs font-bold shrink-0 ${getAvatarColor(user.name)}`}
       >
         {getInitials(user.name)}
       </div>

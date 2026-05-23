@@ -11,10 +11,10 @@ export function DsarSlaCards() {
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="rounded-xl border border-border bg-card p-5 animate-pulse"
+            className=" border border-border bg-card p-5 animate-pulse"
           >
-            <div className="h-4 w-20 bg-muted rounded mb-3" />
-            <div className="h-8 w-12 bg-muted rounded" />
+            <div className="h-4 w-20 bg-muted mb-3" />
+            <div className="h-8 w-12 bg-muted" />
           </div>
         ))}
       </div>
@@ -53,7 +53,7 @@ export function DsarSlaCards() {
       {cards.map((card) => (
         <div
           key={card.title}
-          className={`rounded-xl border ${card.border} ${card.bg} p-5`}
+          className={` border ${card.border} ${card.bg} p-5`}
         >
           <p className="text-sm font-medium text-body">{card.title}</p>
           <p className={`text-[32px] font-semibold leading-tight mt-1 ${card.text}`}>

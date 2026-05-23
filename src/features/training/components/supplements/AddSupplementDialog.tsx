@@ -130,7 +130,7 @@ export function AddSupplementDialog({
               <FormLabel>File</FormLabel>
               <FormControl>
                 {file ? (
-                  <div className="flex items-center justify-between rounded-md border border-hairline bg-canvas px-3 py-2">
+                  <div className="flex items-center justify-between border border-hairline bg-canvas px-3 py-2">
                     <div className="flex items-center gap-2 min-w-0">
                       <Paperclip className="h-4 w-4 shrink-0 text-muted-foreground" />
                       <span className="text-sm text-body truncate">
@@ -151,7 +151,7 @@ export function AddSupplementDialog({
                     </Button>
                   </div>
                 ) : (
-                  <label className="flex cursor-pointer items-center justify-center gap-2 rounded-md border border-dashed border-hairline bg-canvas px-3 py-4 text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors">
+                  <label className="flex cursor-pointer items-center justify-center gap-2 border border-dashed border-hairline bg-canvas px-3 py-4 text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors">
                     <Paperclip className="h-4 w-4" />
                     Choose file
                     <input

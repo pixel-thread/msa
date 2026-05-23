@@ -235,7 +235,7 @@ export function EditAnnouncementDialog({
             <div className="space-y-2">
               <FormLabel>Image</FormLabel>
               {previewUrl ? (
-                <div className="relative rounded-lg overflow-hidden border">
+                <div className="relative overflow-hidden border">
                   <img
                     src={previewUrl}
                     alt="Announcement image"
@@ -275,7 +275,7 @@ export function EditAnnouncementDialog({
               ) : (
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:border-muted-foreground/50 transition-colors"
+                  className="border-2 border-dashed p-8 text-center cursor-pointer hover:border-muted-foreground/50 transition-colors"
                 >
                   <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                   <p className="text-sm text-muted-foreground">

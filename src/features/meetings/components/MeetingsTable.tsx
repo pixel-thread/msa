@@ -29,7 +29,7 @@ export function MeetingsTable() {
               Total of {meetings.length} meetings in your association
             </CardDescription>
           </div>
-          <div className="h-9 w-9 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+          <div className="h-9 w-9 bg-emerald-500/10 flex items-center justify-center">
             <Calendar className="h-4 w-4 text-emerald-500" />
           </div>
         </div>

@@ -54,7 +54,7 @@ export function MemberSearch({ onSelect }: MemberSearchProps) {
       </div>
 
       {isOpen && query.length >= 2 && (
-        <div className="absolute z-50 mt-1 w-full rounded-xl border border-hairline bg-surface-card shadow-lg">
+        <div className="absolute z-50 mt-1 w-full border border-hairline bg-surface-card shadow-lg">
           {isLoading ? (
             <div className="flex items-center justify-center py-6">
               <p className="text-sm text-body">Searching...</p>
@@ -73,7 +73,7 @@ export function MemberSearch({ onSelect }: MemberSearchProps) {
                     onClick={() => handleSelect(member)}
                     className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-surface-strong h-auto"
                   >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                    <div className="flex h-8 w-8 items-center justify-center bg-primary/10">
                       <User className="h-4 w-4 text-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -96,7 +96,7 @@ export function MemberSearch({ onSelect }: MemberSearchProps) {
       )}
 
       {isOpen && query.length < 2 && query.length > 0 && (
-        <div className="absolute z-50 mt-1 w-full rounded-xl border border-hairline bg-surface-card p-4 shadow-lg">
+        <div className="absolute z-50 mt-1 w-full border border-hairline bg-surface-card p-4 shadow-lg">
           <p className="text-sm text-muted-foreground text-center">
             Type at least 2 characters to search
           </p>

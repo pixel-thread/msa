@@ -32,10 +32,10 @@ export default function LedgerAccountsPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="rounded-xl border-hairline bg-surface-card">
+        <Card className=" border-hairline bg-surface-card">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
-              <div className="rounded-lg bg-green-50 p-2.5">
+              <div className=" bg-green-50 p-2.5">
                 <BanknoteIcon className="h-5 w-5 text-green-600" />
               </div>
               <div>

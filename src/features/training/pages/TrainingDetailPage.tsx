@@ -147,7 +147,7 @@ export function TrainingDetailPage() {
       </div>
 
       {/* Training Detail Card */}
-      <div className="bg-surface-card border border-hairline rounded-xl p-6">
+      <div className="bg-surface-card border border-hairline p-6">
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2 space-y-4">
             {trainingModule.description && (

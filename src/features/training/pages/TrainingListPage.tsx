@@ -95,7 +95,7 @@ export function TrainingListPage() {
   if (!isDpoOrAdmin) {
     return (
       <div className="flex flex-col items-center justify-center py-24 px-4 text-center">
-        <div className="h-16 w-16 bg-destructive/10 text-destructive flex items-center justify-center rounded-full mb-6">
+        <div className="h-16 w-16 bg-destructive/10 text-destructive flex items-center justify-center mb-6">
           <ShieldAlert className="h-8 w-8" />
         </div>
         <h2 className="text-2xl font-semibold text-ink mb-2">Access Denied</h2>
@@ -181,7 +181,7 @@ export function TrainingListPage() {
                   onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                   className={
                     currentPage <= 1
-                      ? "pointer-events-none opacity-50"
+                     ? "pointer-events-none opacity-50"
                       : "cursor-pointer"
                   }
                 />
@@ -210,7 +210,7 @@ export function TrainingListPage() {
                   onClick={() => handlePageChange(currentPage + 1)}
                   className={
                     currentPage >= pagination.totalPages
-                      ? "pointer-events-none opacity-50"
+                     ? "pointer-events-none opacity-50"
                       : "cursor-pointer"
                   }
                 />

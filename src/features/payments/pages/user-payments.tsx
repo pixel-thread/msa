@@ -94,7 +94,7 @@ export function UserPaymentsPage() {
 
       {summary && (
         <div className="grid gap-4 md:grid-cols-4">
-          <Card className="rounded-xl border-hairline bg-surface-card">
+          <Card className=" border-hairline bg-surface-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <CreditCard className="h-5 w-5 text-muted-foreground" />
@@ -110,7 +110,7 @@ export function UserPaymentsPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-xl border-hairline bg-surface-card">
+          <Card className=" border-hairline bg-surface-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <Receipt className="h-5 w-5 text-green-600" />
@@ -126,7 +126,7 @@ export function UserPaymentsPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-xl border-hairline bg-surface-card">
+          <Card className=" border-hairline bg-surface-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <AlertCircle className="h-5 w-5 text-red-600" />
@@ -142,7 +142,7 @@ export function UserPaymentsPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-xl border-hairline bg-surface-card">
+          <Card className=" border-hairline bg-surface-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <Clock className="h-5 w-5 text-muted-foreground" />
@@ -161,7 +161,7 @@ export function UserPaymentsPage() {
       )}
 
       <div className="grid gap-6 md:grid-cols-3">
-        <Card className="rounded-xl border-hairline bg-surface-card md:col-span-2">
+        <Card className=" border-hairline bg-surface-card md:col-span-2">
           <CardHeader>
             <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Payment Transactions
@@ -173,7 +173,7 @@ export function UserPaymentsPage() {
         </Card>
 
         <div className="space-y-6">
-          <Card className="rounded-xl border-hairline bg-surface-card">
+          <Card className=" border-hairline bg-surface-card">
             <CardHeader>
               <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 Contribution Summary
@@ -214,7 +214,7 @@ export function UserPaymentsPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-xl border-hairline bg-surface-card">
+          <Card className=" border-hairline bg-surface-card">
             <CardHeader>
               <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 Quick Links

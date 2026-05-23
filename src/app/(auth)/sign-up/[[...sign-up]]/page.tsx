@@ -61,7 +61,7 @@ export default function SignUpPage() {
   logger.debug("signUpMutation", form.formState.errors);
   return (
     <div className="flex min-h-screen items-center justify-center bg-canvas px-4 py-24">
-      <Card className="w-full max-w-md rounded-xl border-hairline bg-surface-card">
+      <Card className="w-full max-w-md border-hairline bg-surface-card">
         <CardHeader className="space-y-3">
           <CardTitle className="text-2xl font-normal tracking-tight text-ink">
             Membership Application
@@ -221,7 +221,7 @@ export default function SignUpPage() {
                     </FormLabel>
                     <FormControl>
                       <select
-                        className="h-12 w-full rounded-md border border-hairline bg-canvas px-3 text-ink focus-visible:border-primary"
+                        className="h-12 w-full border border-hairline bg-canvas px-3 text-ink focus-visible:border-primary"
                         {...field}
                       >
                         <option value="MALE">Male</option>

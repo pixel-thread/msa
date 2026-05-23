@@ -39,10 +39,10 @@ export default function LedgerDashboardPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="rounded-xl border-hairline bg-surface-card">
+        <Card className=" border-hairline bg-surface-card">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
-              <div className="rounded-lg bg-blue-50 p-2.5">
+              <div className=" bg-blue-50 p-2.5">
                 <FileTextIcon className="h-5 w-5 text-blue-600" />
               </div>
               <div>
@@ -57,10 +57,10 @@ export default function LedgerDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-xl border-hairline bg-surface-card">
+        <Card className=" border-hairline bg-surface-card">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
-              <div className="rounded-lg bg-amber-50 p-2.5">
+              <div className=" bg-amber-50 p-2.5">
                 <CheckCircleIcon className="h-5 w-5 text-amber-600" />
               </div>
               <div>
@@ -75,10 +75,10 @@ export default function LedgerDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-xl border-hairline bg-surface-card">
+        <Card className=" border-hairline bg-surface-card">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
-              <div className="rounded-lg bg-green-50 p-2.5">
+              <div className=" bg-green-50 p-2.5">
                 <BanknoteIcon className="h-5 w-5 text-green-600" />
               </div>
               <div>
@@ -94,7 +94,7 @@ export default function LedgerDashboardPage() {
         </Card>
       </div>
 
-      <Card className="rounded-xl border-hairline bg-surface-card">
+      <Card className=" border-hairline bg-surface-card">
         <CardContent className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-ink">
@@ -108,7 +108,7 @@ export default function LedgerDashboardPage() {
             </Link>
           </div>
 
-          <div className="overflow-hidden rounded-lg border">
+          <div className="overflow-hidden border">
             <table className="w-full">
               <thead>
                 <tr className="bg-muted/50">
@@ -153,7 +153,7 @@ export default function LedgerDashboardPage() {
                       </td>
                       <td className="px-4 py-3">
                         <span
-                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                          className={`inline-flex items-center px-2.5 py-0.5 text-xs font-medium ${
                             entry.approvalStatus === "APPROVED"
                               ? "bg-green-50 text-green-700"
                               : entry.approvalStatus === "REJECTED"
@@ -181,7 +181,7 @@ export default function LedgerDashboardPage() {
 
       <div className="grid gap-4 md:grid-cols-2">
         <Link href="/ledger/entries">
-          <Card className="rounded-xl border-hairline bg-surface-card hover:bg-surface-soft cursor-pointer transition-colors">
+          <Card className=" border-hairline bg-surface-card hover:bg-surface-soft cursor-pointer transition-colors">
             <CardContent className="p-6 flex items-center justify-between">
               <div>
                 <h3 className="font-semibold text-ink">Manage Entries</h3>
@@ -195,7 +195,7 @@ export default function LedgerDashboardPage() {
         </Link>
 
         <Link href="/ledger/accounts">
-          <Card className="rounded-xl border-hairline bg-surface-card hover:bg-surface-soft cursor-pointer transition-colors">
+          <Card className=" border-hairline bg-surface-card hover:bg-surface-soft cursor-pointer transition-colors">
             <CardContent className="p-6 flex items-center justify-between">
               <div>
                 <h3 className="font-semibold text-ink">

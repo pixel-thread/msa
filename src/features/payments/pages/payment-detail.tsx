@@ -60,7 +60,7 @@ export function PaymentDetailPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
-        <Card className="rounded-xl border-hairline bg-surface-card md:col-span-2">
+        <Card className=" border-hairline bg-surface-card md:col-span-2">
           <CardHeader>
             <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Transaction Information
@@ -164,7 +164,7 @@ export function PaymentDetailPage() {
         </Card>
 
         <div className="space-y-6">
-          <Card className="rounded-xl border-hairline bg-surface-card">
+          <Card className=" border-hairline bg-surface-card">
             <CardHeader>
               <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-2">
                 <User className="h-4 w-4" />
@@ -193,7 +193,7 @@ export function PaymentDetailPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-xl border-hairline bg-surface-card">
+          <Card className=" border-hairline bg-surface-card">
             <CardHeader>
               <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-2">
                 <CreditCard className="h-4 w-4" />
@@ -229,7 +229,7 @@ export function PaymentDetailPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-xl border-hairline bg-surface-card">
+          <Card className=" border-hairline bg-surface-card">
             <CardHeader>
               <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 Timestamps

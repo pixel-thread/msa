@@ -183,7 +183,7 @@ export function EditModuleDialog({
                 control={form.control}
                 name="isActive"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                  <FormItem className="flex flex-row items-center justify-between border p-3 shadow-sm">
                     <div className="space-y-0.5">
                       <FormLabel className="text-sm">Active</FormLabel>
                     </div>
@@ -204,7 +204,7 @@ export function EditModuleDialog({
               render={() => (
                 <FormItem className="flex flex-col gap-2">
                   <FormLabel>Required for Roles</FormLabel>
-                  <div className="grid grid-cols-2 gap-2 p-3 rounded-lg border bg-card/50">
+                  <div className="grid grid-cols-2 gap-2 p-3 border bg-card/50">
                     {ROLES_LIST.map((role) => (
                       <FormField
                         key={role}

@@ -86,7 +86,7 @@ export function ComplianceDetailDialog({
           {details && Object.keys(details).length > 0 && (
             <div>
               <p className="text-xs font-medium text-body uppercase tracking-wider mb-2">Details</p>
-              <div className="rounded-lg bg-muted p-3">
+              <div className=" bg-muted p-3">
                 <pre className="text-xs text-ink whitespace-pre-wrap font-mono leading-relaxed">
                   {JSON.stringify(details, null, 2)}
                 </pre>

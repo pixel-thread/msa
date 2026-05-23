@@ -139,7 +139,7 @@ export default function MeetingDetailPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
-        <Card className="rounded-xl border-hairline bg-surface-card md:col-span-2">
+        <Card className=" border-hairline bg-surface-card md:col-span-2">
           <CardHeader>
             <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Meeting Details
@@ -214,7 +214,7 @@ export default function MeetingDetailPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-xl border-hairline bg-surface-card">
+        <Card className=" border-hairline bg-surface-card">
           <CardHeader>
             <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Agenda Items
@@ -225,7 +225,7 @@ export default function MeetingDetailPage() {
               <div className="space-y-3">
                 {meeting.agendaItems.map((item: AgendaItem, index: number) => (
                   <div key={item.id} className="flex gap-3">
-                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
+                    <div className="flex h-6 w-6 shrink-0 items-center justify-center bg-muted text-xs font-medium text-muted-foreground">
                       {index + 1}
                     </div>
                     <div>
@@ -249,7 +249,7 @@ export default function MeetingDetailPage() {
         </Card>
       </div>
 
-      <Card className="rounded-xl border-hairline bg-surface-card">
+      <Card className=" border-hairline bg-surface-card">
         <CardHeader>
           <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             Attendees
@@ -261,7 +261,7 @@ export default function MeetingDetailPage() {
               {meeting.attendees.map((attendee: Attendee) => (
                 <div
                   key={attendee.id}
-                  className="flex items-center justify-between rounded-lg border border-hairline p-3"
+                  className="flex items-center justify-between border border-hairline p-3"
                 >
                   <div>
                     <p className="text-sm font-medium text-ink">

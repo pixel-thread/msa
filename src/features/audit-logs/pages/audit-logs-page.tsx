@@ -147,8 +147,8 @@ export default function AuditLogsPage() {
         </div>
       </div>
 
-      <div className="flex flex-cols md:flex-row gap-4 ">
-        <Card className="rounded-xl w-full border-hairline bg-surface-card">
+      <div className="flex flex-cols md:flex-row gap-4">
+        <Card className=" w-full border-hairline bg-surface-card">
           <CardContent className="p-4">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               Total
@@ -158,7 +158,7 @@ export default function AuditLogsPage() {
             </p>
           </CardContent>
         </Card>
-        <Card className="rounded-xl w-full border-hairline bg-surface-card">
+        <Card className=" w-full border-hairline bg-surface-card">
           <CardContent className="p-4">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               Last 30 Days
@@ -168,7 +168,7 @@ export default function AuditLogsPage() {
             </p>
           </CardContent>
         </Card>
-        <Card className="rounded-xl w-full border-hairline bg-surface-card">
+        <Card className=" w-full border-hairline bg-surface-card">
           <CardContent className="p-4">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               Last 7 Days
@@ -180,7 +180,7 @@ export default function AuditLogsPage() {
         </Card>
       </div>
 
-      <Card className="rounded-xl border-hairline bg-surface-card">
+      <Card className=" border-hairline bg-surface-card">
         <CardContent className="p-4">
           <div className="flex flex-wrap items-end gap-3">
             <div className="space-y-1.5">
@@ -191,7 +191,7 @@ export default function AuditLogsPage() {
                 value={actionFilter}
                 onValueChange={(v) => pushParams({ action: v, page: "1" })}
               >
-                <SelectTrigger className="w-44 h-10 rounded-lg border-hairline">
+                <SelectTrigger className="w-44 h-10 border-hairline">
                   <SelectValue placeholder="All actions" />
                 </SelectTrigger>
                 <SelectContent>

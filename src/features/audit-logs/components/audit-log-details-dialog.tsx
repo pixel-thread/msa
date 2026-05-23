@@ -36,7 +36,7 @@ export function AuditLogDetailsDialog({
               <h4 className="mb-2 text-sm font-semibold text-red-600">
                 Old Values
               </h4>
-              <pre className="rounded-lg bg-red-50 p-4 text-xs overflow-x-auto whitespace-pre-wrap">
+              <pre className=" bg-red-50 p-4 text-xs overflow-x-auto whitespace-pre-wrap">
                 {JSON.stringify(entry.oldValues, null, 2)}
               </pre>
             </div>
@@ -47,7 +47,7 @@ export function AuditLogDetailsDialog({
               <h4 className="mb-2 text-sm font-semibold text-green-600">
                 New Values
               </h4>
-              <pre className="rounded-lg bg-green-50 p-4 text-xs overflow-x-auto whitespace-pre-wrap">
+              <pre className=" bg-green-50 p-4 text-xs overflow-x-auto whitespace-pre-wrap">
                 {JSON.stringify(entry.newValues, null, 2)}
               </pre>
             </div>

@@ -119,7 +119,7 @@ export function MySubscriptionPage() {
 
       {summary && (
         <div className="grid gap-4 md:grid-cols-3">
-          <Card className="rounded-xl border-hairline bg-surface-card">
+          <Card className=" border-hairline bg-surface-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <CreditCard className="h-5 w-5 text-muted-foreground" />
@@ -133,7 +133,7 @@ export function MySubscriptionPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-xl border-hairline bg-surface-card">
+          <Card className=" border-hairline bg-surface-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <Clock className="h-5 w-5 text-muted-foreground" />
@@ -147,7 +147,7 @@ export function MySubscriptionPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-xl border-hairline bg-surface-card">
+          <Card className=" border-hairline bg-surface-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <AlertCircle className="h-5 w-5 text-muted-foreground" />
@@ -163,7 +163,7 @@ export function MySubscriptionPage() {
         </div>
       )}
 
-      <Card className="rounded-xl border-hairline bg-surface-card">
+      <Card className=" border-hairline bg-surface-card">
         <CardHeader>
           <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             Transactions

@@ -149,7 +149,7 @@ export function DsarDetailDialog({
                   {detail.responses.map((response) => (
                     <div
                       key={response.id}
-                      className="rounded-lg bg-muted p-3 text-sm"
+                      className=" bg-muted p-3 text-sm"
                     >
                       <p className="font-medium text-ink">
                         {response.responseType}

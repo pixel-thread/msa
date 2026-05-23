@@ -194,7 +194,7 @@ export function TrainingAssignPage() {
       {/* Dual pane */}
       <div className="flex-1 flex gap-4 min-h-0">
         {/* Assigned pane */}
-        <div className="flex-1 flex flex-col min-h-0 bg-surface-card border border-hairline rounded-xl p-3">
+        <div className="flex-1 flex flex-col min-h-0 bg-surface-card border border-hairline p-3">
           <PaneHeader
             title="Assigned"
             count={selectedCurrent.length}
@@ -248,7 +248,7 @@ export function TrainingAssignPage() {
         </div>
 
         {/* Available pane */}
-        <div className="flex-1 flex flex-col min-h-0 bg-surface-card border border-hairline rounded-xl p-3">
+        <div className="flex-1 flex flex-col min-h-0 bg-surface-card border border-hairline p-3">
           <PaneHeader
             title="Available"
             count={selectedAdd.length}
@@ -305,7 +305,7 @@ export function TrainingAssignPage() {
       {/* Sticky bottom bar */}
       {totalSelected > 0 && (
         <div className="shrink-0 pt-3">
-          <div className="flex items-center justify-between bg-ink text-white rounded-xl px-5 py-3">
+          <div className="flex items-center justify-between bg-ink text-white px-5 py-3">
             <div className="flex items-center gap-3">
               <span className="text-sm font-medium">
                 {totalSelected} selected

@@ -55,7 +55,7 @@ export default function ChangePasswordPage() {
   if (isSuccess) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-canvas px-4 py-24">
-        <Card className="w-full max-w-md rounded-xl border-hairline bg-surface-card">
+        <Card className="w-full max-w-md border-hairline bg-surface-card">
           <CardHeader className="space-y-3">
             <CardTitle className="text-2xl font-normal tracking-tight text-ink">
               Password Changed
@@ -80,7 +80,7 @@ export default function ChangePasswordPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-canvas px-4 py-24">
-      <Card className="w-full max-w-md rounded-xl border-hairline bg-surface-card">
+      <Card className="w-full max-w-md border-hairline bg-surface-card">
         <CardHeader className="space-y-3">
           <CardTitle className="text-2xl font-normal tracking-tight text-ink">
             Change your password

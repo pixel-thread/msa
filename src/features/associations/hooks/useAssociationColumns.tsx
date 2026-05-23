@@ -54,7 +54,7 @@ export function useAssociationColumns({
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+          className={`inline-flex items-center px-2 py-1 text-xs font-medium ${
             row.original.isActive
               ? "bg-green-50 text-green-700"
               : "bg-red-50 text-red-700"

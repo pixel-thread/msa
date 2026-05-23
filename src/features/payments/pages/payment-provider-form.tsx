@@ -97,7 +97,7 @@ export function PaymentProviderFormPage() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-hairline bg-surface-card p-6 max-w-xl">
+      <div className=" border border-hairline bg-surface-card p-6 max-w-xl">
         <ProviderForm
           initialData={provider ?? undefined}
           isPending={createProvider.isPending || updateProvider.isPending}

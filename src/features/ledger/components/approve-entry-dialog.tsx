@@ -45,7 +45,7 @@ export function ApproveEntryDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="rounded-lg border border-hairline bg-surface-soft p-4">
+        <div className=" border border-hairline bg-surface-soft p-4">
           <p className="text-sm text-ink">
             <span className="font-medium">Description:</span>{" "}
             {entryDescription}

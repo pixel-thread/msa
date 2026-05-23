@@ -72,7 +72,7 @@ export function CompleteAssignmentDialog({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="rounded-lg bg-surface-secondary p-4">
+            <div className=" bg-surface-secondary p-4">
               <p className="text-sm text-body">
                 <span className="font-medium text-ink">User:</span> {userName}
               </p>

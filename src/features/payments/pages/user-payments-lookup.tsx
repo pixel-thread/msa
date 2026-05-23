@@ -35,12 +35,12 @@ export function UserPaymentsLookupPage() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-hairline bg-surface-card p-4">
+      <div className=" border border-hairline bg-surface-card p-4">
         <MemberSearch onSelect={(member) => setSelectedMember(member)} />
       </div>
 
       {!selectedMember ? (
-        <div className="flex flex-col items-center justify-center py-24 rounded-xl border border-dashed border-hairline bg-surface-card">
+        <div className="flex flex-col items-center justify-center py-24 border border-dashed border-hairline bg-surface-card">
           <User className="h-12 w-12 text-muted-foreground mb-4" />
           <p className="text-base text-body">
             Select a member to view their payment history
@@ -59,7 +59,7 @@ export function UserPaymentsLookupPage() {
         <>
           {summary && (
             <div className="grid gap-4 md:grid-cols-4">
-              <Card className="rounded-xl border-hairline bg-surface-card">
+              <Card className=" border-hairline bg-surface-card">
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-3">
                     <CreditCard className="h-5 w-5 text-muted-foreground" />
@@ -74,7 +74,7 @@ export function UserPaymentsLookupPage() {
                   </div>
                 </CardContent>
               </Card>
-              <Card className="rounded-xl border-hairline bg-surface-card">
+              <Card className=" border-hairline bg-surface-card">
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-3">
                     <Receipt className="h-5 w-5 text-green-600" />
@@ -89,7 +89,7 @@ export function UserPaymentsLookupPage() {
                   </div>
                 </CardContent>
               </Card>
-              <Card className="rounded-xl border-hairline bg-surface-card">
+              <Card className=" border-hairline bg-surface-card">
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-3">
                     <AlertCircle className="h-5 w-5 text-red-600" />
@@ -104,7 +104,7 @@ export function UserPaymentsLookupPage() {
                   </div>
                 </CardContent>
               </Card>
-              <Card className="rounded-xl border-hairline bg-surface-card">
+              <Card className=" border-hairline bg-surface-card">
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-3">
                     <Clock className="h-5 w-5 text-muted-foreground" />
@@ -122,7 +122,7 @@ export function UserPaymentsLookupPage() {
             </div>
           )}
 
-          <div className="rounded-xl border border-hairline bg-surface-card">
+          <div className=" border border-hairline bg-surface-card">
             <div className="p-4">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">

@@ -97,7 +97,7 @@ export default function LedgerEntryDetailPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="rounded-xl border-hairline bg-surface-card">
+        <Card className=" border-hairline bg-surface-card">
           <CardContent className="p-4">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               Created
@@ -107,7 +107,7 @@ export default function LedgerEntryDetailPage() {
             </p>
           </CardContent>
         </Card>
-        <Card className="rounded-xl border-hairline bg-surface-card">
+        <Card className=" border-hairline bg-surface-card">
           <CardContent className="p-4">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               Total Debits
@@ -117,7 +117,7 @@ export default function LedgerEntryDetailPage() {
             </p>
           </CardContent>
         </Card>
-        <Card className="rounded-xl border-hairline bg-surface-card">
+        <Card className=" border-hairline bg-surface-card">
           <CardContent className="p-4">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               Total Credits
@@ -129,10 +129,10 @@ export default function LedgerEntryDetailPage() {
         </Card>
       </div>
 
-      <Card className="rounded-xl border-hairline bg-surface-card">
+      <Card className=" border-hairline bg-surface-card">
         <CardContent className="p-6">
           <h2 className="text-lg font-semibold text-ink mb-4">Ledger Lines</h2>
-          <div className="overflow-hidden rounded-lg border">
+          <div className="overflow-hidden border">
             <table className="w-full">
               <thead>
                 <tr className="bg-muted/50">
@@ -155,7 +155,7 @@ export default function LedgerEntryDetailPage() {
                     </td>
                     <td className="px-4 py-3">
                       <span
-                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                        className={`inline-flex items-center px-2.5 py-0.5 text-xs font-medium ${
                           line.isDebit
                             ? "bg-blue-50 text-blue-700"
                             : "bg-orange-50 text-orange-700"

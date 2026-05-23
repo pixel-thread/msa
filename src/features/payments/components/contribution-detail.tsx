@@ -22,7 +22,7 @@ interface ContributionDetailProps {
 export function ContributionDetail({ contribution }: ContributionDetailProps) {
   return (
     <div className="grid gap-6 md:grid-cols-3">
-      <Card className="rounded-xl border-hairline bg-surface-card md:col-span-2">
+      <Card className=" border-hairline bg-surface-card md:col-span-2">
         <CardHeader>
           <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             Period Information
@@ -89,7 +89,7 @@ export function ContributionDetail({ contribution }: ContributionDetailProps) {
       </Card>
 
       <div className="space-y-6">
-        <Card className="rounded-xl border-hairline bg-surface-card">
+        <Card className=" border-hairline bg-surface-card">
           <CardHeader>
             <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-2">
               <User className="h-4 w-4" />
@@ -119,7 +119,7 @@ export function ContributionDetail({ contribution }: ContributionDetailProps) {
         </Card>
 
         {contribution.waivedAt && (
-          <Card className="rounded-xl border-hairline bg-surface-card">
+          <Card className=" border-hairline bg-surface-card">
             <CardHeader>
               <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 Waiver
@@ -143,7 +143,7 @@ export function ContributionDetail({ contribution }: ContributionDetailProps) {
           </Card>
         )}
 
-        <Card className="rounded-xl border-hairline bg-surface-card">
+        <Card className=" border-hairline bg-surface-card">
           <CardHeader>
             <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-2">
               <CreditCard className="h-4 w-4" />

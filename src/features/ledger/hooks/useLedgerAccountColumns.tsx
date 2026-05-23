@@ -26,7 +26,7 @@ export function useLedgerAccountColumns() {
         const type = row.original.type;
         return (
           <span
-            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+            className={`inline-flex items-center px-2.5 py-0.5 text-xs font-medium ${
               type === "ASSET"
                 ? "bg-blue-50 text-blue-700"
                 : type === "LIABILITY"

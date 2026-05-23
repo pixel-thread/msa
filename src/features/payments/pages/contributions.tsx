@@ -126,7 +126,7 @@ export default function ContributionsPage() {
         <ContributionFilters onFilterChange={handleFilterChange} />
       </Card>
 
-      <div className="rounded-xl border border-hairline bg-surface-card">
+      <div className=" border border-hairline bg-surface-card">
         <div className="p-4">
           <div className="flex items-center gap-2 mb-4">
             <CalendarDays className="h-5 w-5 text-muted-foreground" />

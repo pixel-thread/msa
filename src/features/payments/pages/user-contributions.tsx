@@ -128,7 +128,7 @@ export function UserContributionsPage() {
 
       {summary && (
         <div className="grid gap-4 md:grid-cols-4">
-          <Card className="rounded-xl border-hairline bg-surface-card">
+          <Card className=" border-hairline bg-surface-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <CreditCard className="h-5 w-5 text-muted-foreground" />
@@ -144,7 +144,7 @@ export function UserContributionsPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-xl border-hairline bg-surface-card">
+          <Card className=" border-hairline bg-surface-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <Receipt className="h-5 w-5 text-green-600" />
@@ -160,7 +160,7 @@ export function UserContributionsPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-xl border-hairline bg-surface-card">
+          <Card className=" border-hairline bg-surface-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <AlertCircle className="h-5 w-5 text-red-600" />
@@ -176,7 +176,7 @@ export function UserContributionsPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-xl border-hairline bg-surface-card">
+          <Card className=" border-hairline bg-surface-card">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <CalendarDays className="h-5 w-5 text-muted-foreground" />
@@ -194,7 +194,7 @@ export function UserContributionsPage() {
         </div>
       )}
 
-      <div className="rounded-xl border border-hairline bg-surface-card p-4">
+      <div className=" border border-hairline bg-surface-card p-4">
         <div className="flex flex-wrap items-end gap-3">
           <div className="grid gap-1">
             <Label className="text-xs text-muted-foreground">From Year</Label>
@@ -273,7 +273,7 @@ export function UserContributionsPage() {
         </div>
       </div>
 
-      <Card className="rounded-xl border-hairline bg-surface-card">
+      <Card className=" border-hairline bg-surface-card">
         <CardHeader>
           <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             Contribution Periods ({contributions.length})

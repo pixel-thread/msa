@@ -86,7 +86,7 @@ function RsvpStatusBadge({ status }: { status: string | undefined }) {
   return (
     <div
       className={cn(
-        "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium",
+       "inline-flex items-center gap-1.5 px-3 py-1.5  border text-xs font-medium",
         config.bg,
         config.border,
         config.text,
@@ -130,7 +130,7 @@ function AttendeeCard({
   };
 
   return (
-    <div className="flex items-center justify-between p-4 rounded-xl border border-border/60 bg-card hover:bg-muted/30 transition-colors group">
+    <div className="flex items-center justify-between p-4 border border-border/60 bg-card hover:bg-muted/30 transition-colors group">
       <div className="flex items-center gap-4">
         <Avatar className="h-12 w-12">
           <AvatarFallback className="text-sm font-medium bg-muted">
@@ -149,7 +149,7 @@ function AttendeeCard({
         <div className="flex items-center gap-2">
           <span
             className={cn(
-              "text-xs px-2.5 py-1 rounded-full font-medium",
+             "text-xs px-2.5 py-1  font-medium",
               getRoleColor(attendee.attendeeRole),
             )}
           >
@@ -217,19 +217,19 @@ export function ManageAttendeesDialog({
             </div>
             <div className="flex items-center gap-4 text-sm">
               <div className="flex items-center gap-1.5">
-                <div className="h-2 w-2 rounded-full bg-emerald-500" />
+                <div className="h-2 w-2 bg-emerald-500" />
                 <span className="text-muted-foreground">
                   {stats.accepted} Accepted
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="h-2 w-2 rounded-full bg-red-500" />
+                <div className="h-2 w-2 bg-red-500" />
                 <span className="text-muted-foreground">
                   {stats.declined} Declined
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="h-2 w-2 rounded-full bg-amber-500" />
+                <div className="h-2 w-2 bg-amber-500" />
                 <span className="text-muted-foreground">
                   {stats.pending} Pending
                 </span>
@@ -242,7 +242,7 @@ export function ManageAttendeesDialog({
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="flex flex-col w-full gap-4 p-4 rounded-xl border border-border/60 bg-muted/20"
+              className="flex flex-col w-full gap-4 p-4 border border-border/60 bg-muted/20"
             >
               <FormField
                 control={form.control}
@@ -324,7 +324,7 @@ export function ManageAttendeesDialog({
             </div>
 
             {attendees.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center rounded-xl border-2 border-dashed border-muted">
+              <div className="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed border-muted">
                 <Users className="h-12 w-12 text-muted-foreground mb-3" />
                 <p className="text-sm font-medium text-muted-foreground">
                   No attendees assigned yet

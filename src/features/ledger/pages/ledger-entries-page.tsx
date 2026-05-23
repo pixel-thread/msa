@@ -123,7 +123,7 @@ export default function LedgerEntriesPage() {
         </Button>
       </div>
 
-      <Card className="rounded-xl border-hairline bg-surface-card">
+      <Card className=" border-hairline bg-surface-card">
         <CardContent className="p-4">
           <div className="flex flex-wrap items-end gap-3">
             <div className="space-y-1.5">
@@ -136,7 +136,7 @@ export default function LedgerEntriesPage() {
                   pushParams({ status: v, page: "1" })
                 }
               >
-                <SelectTrigger className="w-40 h-10 rounded-lg border-hairline">
+                <SelectTrigger className="w-40 h-10 border-hairline">
                   <SelectValue placeholder="All statuses" />
                 </SelectTrigger>
                 <SelectContent>
@@ -196,7 +196,7 @@ export default function LedgerEntriesPage() {
                 onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                 className={
                   !meta || meta.page <= 1
-                    ? "pointer-events-none opacity-50"
+                   ? "pointer-events-none opacity-50"
                     : "cursor-pointer"
                 }
               />
@@ -228,7 +228,7 @@ export default function LedgerEntriesPage() {
                 onClick={() => handlePageChange(currentPage + 1)}
                 className={
                   !meta || meta.page >= meta.totalPages
-                    ? "pointer-events-none opacity-50"
+                   ? "pointer-events-none opacity-50"
                     : "cursor-pointer"
                 }
               />

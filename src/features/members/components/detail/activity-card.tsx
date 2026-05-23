@@ -12,7 +12,7 @@ interface ActivityCardProps {
 
 export function ActivityCard({ member }: ActivityCardProps) {
   return (
-    <Card className="rounded-xl border-hairline bg-surface-card">
+    <Card className=" border-hairline bg-surface-card">
       <CardHeader>
         <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           Activity

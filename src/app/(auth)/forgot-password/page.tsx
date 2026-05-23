@@ -51,7 +51,7 @@ export default function ForgotPasswordPage() {
   if (isSuccess) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-canvas px-4 py-24">
-        <Card className="w-full max-w-md rounded-xl border-hairline bg-surface-card">
+        <Card className="w-full max-w-md border-hairline bg-surface-card">
           <CardHeader className="space-y-3">
             <CardTitle className="text-2xl font-normal tracking-tight text-ink">
               Check your email
@@ -76,7 +76,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-canvas px-4 py-24">
-      <Card className="w-full max-w-md rounded-xl border-hairline bg-surface-card">
+      <Card className="w-full max-w-md border-hairline bg-surface-card">
         <CardHeader className="space-y-3">
           <CardTitle className="text-2xl font-normal tracking-tight text-ink">
             Forgot your password?

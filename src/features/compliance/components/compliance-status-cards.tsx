@@ -51,7 +51,7 @@ export function ComplianceStatusCards() {
     return (
       <div className="grid grid-cols-4 gap-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <Skeleton key={i} className="h-20 rounded-xl" />
+          <Skeleton key={i} className="h-20" />
         ))}
       </div>
     );
@@ -64,7 +64,7 @@ export function ComplianceStatusCards() {
         return (
           <div
             key={type}
-            className="rounded-xl border border-border bg-card p-4"
+            className=" border border-border bg-card p-4"
           >
             <p className="text-xs font-medium text-body uppercase tracking-wider">
               {checkTypeLabels[type] || type.replace(/_/g, " ")}
@@ -72,7 +72,7 @@ export function ComplianceStatusCards() {
             {latest ? (
               <div className="mt-2 flex items-center gap-2">
                 <span
-                  className={`inline-block h-2.5 w-2.5 rounded-full ${statusBg[latest.status] || "bg-gray-300"}`}
+                  className={`inline-block h-2.5 w-2.5 ${statusBg[latest.status] || "bg-gray-300"}`}
                 />
                 <span
                   className={`text-sm font-semibold ${statusColors[latest.status] || "text-ink"}`}

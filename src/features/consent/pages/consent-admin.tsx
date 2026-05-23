@@ -75,7 +75,7 @@ export default function ConsentAdminPage() {
 
       <ConsentReportCards />
 
-      <div className="rounded-xl border border-border bg-card p-4">
+      <div className=" border border-border bg-card p-4">
         <div className="mb-4 flex items-center gap-3">
           <div className="w-64">
             <Input

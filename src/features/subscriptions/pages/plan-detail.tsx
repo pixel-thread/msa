@@ -74,7 +74,7 @@ export function PlanDetailPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
-        <Card className="rounded-xl border-hairline bg-surface-card md:col-span-2">
+        <Card className=" border-hairline bg-surface-card md:col-span-2">
           <CardHeader>
             <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Plan Details
@@ -124,7 +124,7 @@ export function PlanDetailPage() {
         </Card>
 
         <div className="space-y-6">
-          <Card className="rounded-xl border-hairline bg-surface-card">
+          <Card className=" border-hairline bg-surface-card">
             <CardHeader>
               <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 Features
@@ -146,7 +146,7 @@ export function PlanDetailPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-xl border-hairline bg-surface-card">
+          <Card className=" border-hairline bg-surface-card">
             <CardHeader>
               <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 Metadata
