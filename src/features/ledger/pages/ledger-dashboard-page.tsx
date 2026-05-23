@@ -6,9 +6,7 @@ import { useLedgerEntries } from "../hooks/useLedgerEntries";
 import { Card, CardContent } from "@src/shared/components/ui/card";
 import { Button } from "@src/shared/components/ui/button";
 import { DataTable } from "@src/shared/components/data-table";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import { useRecentLedgerEntryColumns } from "../hooks/useRecentLedgerEntryColumns";
 import {
   ArrowRightIcon,
@@ -19,7 +17,11 @@ import {
 
 export default function LedgerDashboardPage() {
   const { summary, isLoading: summaryLoading } = useLedgerSummary();
-  const { entries, meta, isLoading: entriesLoading } = useLedgerEntries({
+  const {
+    entries,
+    meta,
+    isLoading: entriesLoading,
+  } = useLedgerEntries({
     page: 1,
     pageSize: 10,
   });
@@ -56,7 +58,7 @@ export default function LedgerDashboardPage() {
                   Total Entries
                 </p>
                 <p className="mt-0.5 text-2xl font-semibold text-ink">
-                  {summaryLoading ? "..." : meta?.total.toLocaleString() ?? 0}
+                  {summaryLoading ? "..." : (meta?.total.toLocaleString() ?? 0)}
                 </p>
               </div>
             </div>
@@ -100,38 +102,23 @@ export default function LedgerDashboardPage() {
         </Card>
       </div>
 
-      <Card className=" border-hairline bg-surface-card">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-ink">
-              Recent Entries
-            </h2>
-            <Link href="/ledger/entries">
-              <Button variant="ghost" size="sm" className="text-sm">
-                View All
-                <ArrowRightIcon className="ml-1 h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-
-          <DataTableFilters
-            fields={[
-              {
-                type: "search",
-                id: "search",
-                placeholder: "Search entries...",
-              },
-            ]}
-            onFilterChange={() => {}}
-          />
-
-          <DataTable
-            columns={entryColumns}
-            data={entries}
-            loading={entriesLoading}
-          />
-        </CardContent>
+      <Card className="p-4">
+        <DataTableFilters
+          fields={[
+            {
+              type: "search",
+              id: "search",
+              placeholder: "Search entries...",
+            },
+          ]}
+          onFilterChange={() => {}}
+        />
       </Card>
+      <DataTable
+        columns={entryColumns}
+        data={entries}
+        loading={entriesLoading}
+      />
 
       <div className="grid gap-4 md:grid-cols-2">
         <Link href="/ledger/entries">
@@ -152,9 +139,7 @@ export default function LedgerDashboardPage() {
           <Card className=" border-hairline bg-surface-card hover:bg-surface-soft cursor-pointer transition-colors">
             <CardContent className="p-6 flex items-center justify-between">
               <div>
-                <h3 className="font-semibold text-ink">
-                  Manage Accounts
-                </h3>
+                <h3 className="font-semibold text-ink">Manage Accounts</h3>
                 <p className="text-sm text-muted-foreground mt-1">
                   View and manage Chart of Accounts
                 </p>
