@@ -3,7 +3,11 @@ import { prisma } from "@lib/prisma";
 import { withAssociation } from "@src/shared/api/with-association";
 import { withRole } from "@src/shared/api/with-role";
 import { SuccessResponse } from "@utils/responses";
-import { BadRequestError, ForbiddenError, NotFoundError } from "@src/shared/errors";
+import {
+  BadRequestError,
+  ForbiddenError,
+  NotFoundError,
+} from "@src/shared/errors";
 import { UserRole } from "@prisma/client";
 import {
   findManySupplements,
@@ -11,7 +15,10 @@ import {
   deleteSupplement,
 } from "@feature/training/services";
 import { UpdateSupplementSchema } from "@feature/training/validators/training";
-import { uploadToBucket, deleteFromBucket, mimeToFileType } from "@src/shared/lib/supabase/storage";
+import {
+  uploadToBucket,
+  deleteFromBucket,
+} from "@src/shared/lib/supabase/storage";
 import { z } from "zod";
 
 const TrainingParamsSchema = z.object({
@@ -93,7 +100,6 @@ export const PATCH = withAssociation(
           mimeType: uploadResult.mimeType,
           extension: file.name.split(".").pop() || null,
           sizeBytes: uploadResult.sizeBytes,
-          type: mimeToFileType(uploadResult.mimeType),
           bucket: env.SUPABASE_BUCKET,
           storageKey: uploadResult.storageKey,
           url: uploadResult.url,
@@ -151,6 +157,8 @@ export const DELETE = withAssociation(
       }
     }
 
-    return SuccessResponse({ data: { success: true, message: "Training supplement deleted" } });
+    return SuccessResponse({
+      data: { success: true, message: "Training supplement deleted" },
+    });
   },
 );
