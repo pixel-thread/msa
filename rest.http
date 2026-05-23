@@ -12,6 +12,7 @@
 @announcementId=6fd37ef7-007b-4a2f-8a04-0932e94b4f2a
 @invoiceId=REPLACE_WITH_INVOICE_ID
 @minuitesId=REPLACE_WITH_MINUTES_ID
+@complaintId=REPLACE_WITH_COMPLAINT_ID
 
 
 ### ----------------- AUTH ------------------
@@ -814,6 +815,24 @@ Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 ### ----------------- COMPLIANCE ------------------
+
+###
+# @name List All Complaints (DPO)
+GET {{NEXT_PUBLIC_API_BASE_URL}}/compliance?page=1&limit=20
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name List My Complaints
+GET {{NEXT_PUBLIC_API_BASE_URL}}/compliance/my?page=1&limit=20
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Get Complaint Detail
+GET {{NEXT_PUBLIC_API_BASE_URL}}/compliance/my/{{complaintId}}
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Run Compliance Checks
