@@ -35,11 +35,11 @@
 
 These three principles override everything else. When in doubt, come back to them.
 
-| #   | Principle                         | What it means in practice                                                       |
-| --- | --------------------------------- | ------------------------------------------------------------------------------- |
-| 1   | **Security First**                | Every feature starts with threat modeling. No exceptions for "internal" routes. |
-| 2   | **SOLID / Single Responsibility** | One file does one thing. Period. Split before you ship.                         |
-| 3   | **Kebab-Case Everywhere**         | All file names, folder names, and route segments use `kebab-case`.              |
+| #   | Principle                         | What it means in practice                                                                    |
+| --- | --------------------------------- | -------------------------------------------------------------------------------------------- |
+| 1   | **Security First**                | OWASP Top 10 Every feature starts with threat modeling. No exceptions for "internal" routes. |
+| 2   | **SOLID / Single Responsibility** | One file does one thing. Period. Split before you ship.                                      |
+| 3   | **Kebab-Case Everywhere**         | All file names, folder names, and route segments use `kebab-case`.                           |
 
 ---
 
@@ -58,7 +58,7 @@ These three principles override everything else. When in doubt, come back to the
 
 **Input Validation**
 
-- Every API route must validate its input (body, query, params) with a Zod schema via `withValidation()` before any business logic runs.
+- Every API route must validate its input (body, query, params) with a Zod schema via `withValidation()` or `withAssociation` before any business logic runs.
 - Never trust client-supplied data. Validate shape, type, range, and allowlist values.
 - Reject unknown fields — use Zod `.strict()` on all schemas unless explicitly justified.
 
@@ -444,9 +444,9 @@ Defined in `proxy.ts`, runs on all `/api/*` requests via `shared/middleware/chai
 
 ```
 Request
-  └─ withRateLimiting    ← Block abuse before any work is done
-      └─ withAuth        ← Validate session
-          └─ withCors    ← Set CORS headers
+  └─ withRateLimiting                 ← Block abuse before any work is done
+      └─ withCors                     ← Set CORS headers
+         └─ withAuth                  ← Validate session
               └─ withSecurityHeaders  ← CSP, HSTS, X-Content-Type-Options, etc.
                   └─ withLogging      ← Structured request logging
                       └─ withTraceId  ← Attach trace ID for observability
@@ -723,5 +723,3 @@ Before submitting any code change, verify every item in this list:
 - [ ] No circular dependencies introduced.
 
 ---
-
-_Last updated by project rules. All AI agents must re-read this file at the start of every session._
