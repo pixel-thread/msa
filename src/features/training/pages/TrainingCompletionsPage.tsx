@@ -54,7 +54,7 @@ export function TrainingCompletionsPage() {
         </p>
         <Button
           onClick={() => router.push("/training")}
-          className="rounded-full"
+          className=""
         >
           Back to Portal
         </Button>

@@ -144,7 +144,7 @@ export function AddSupplementDialog({
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="h-6 w-6 p-0 rounded-full"
+                      className="h-6 w-6 p-0"
                       onClick={() => setFile(null)}
                     >
                       <X className="h-4 w-4" />

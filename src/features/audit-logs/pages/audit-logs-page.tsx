@@ -215,7 +215,7 @@ export default function AuditLogsPage() {
                   pushParams({ resourceType: v, page: "1" })
                 }
               >
-                <SelectTrigger className="w-40 h-10 rounded-lg border-hairline">
+                <SelectTrigger className="w-40 h-10 border-hairline">
                   <SelectValue placeholder="All resources" />
                 </SelectTrigger>
                 <SelectContent>
@@ -237,7 +237,7 @@ export default function AuditLogsPage() {
                 onChange={(e) =>
                   pushParams({ fromDate: e.target.value, page: "1" })
                 }
-                className="w-40 h-10 rounded-lg border-hairline"
+                className="w-40 h-10 border-hairline"
               />
             </div>
 
@@ -249,7 +249,7 @@ export default function AuditLogsPage() {
                 onChange={(e) =>
                   pushParams({ toDate: e.target.value, page: "1" })
                 }
-                className="w-40 h-10 rounded-lg border-hairline"
+                className="w-40 h-10 border-hairline"
               />
             </div>
 
@@ -257,7 +257,7 @@ export default function AuditLogsPage() {
               <Button
                 variant="ghost"
                 onClick={() => router.push("/audit-logs")}
-                className="h-10 rounded-full px-4 text-sm text-muted-foreground"
+                className="h-10 px-4 text-sm text-muted-foreground"
               >
                 <FilterIcon className="mr-1.5 h-4 w-4" />
                 Reset

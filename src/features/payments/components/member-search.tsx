@@ -39,7 +39,9 @@ export function MemberSearch({ onSelect }: MemberSearchProps) {
           className="h-10 pl-9 pr-8"
         />
         {query && (
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => {
               setQuery("");
               setIsOpen(false);
@@ -47,7 +49,7 @@ export function MemberSearch({ onSelect }: MemberSearchProps) {
             className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-ink"
           >
             <X className="h-4 w-4" />
-          </button>
+          </Button>
         )}
       </div>
 
@@ -66,9 +68,10 @@ export function MemberSearch({ onSelect }: MemberSearchProps) {
             <ul className="py-1">
               {results.map((member) => (
                 <li key={member.id}>
-                  <button
+                  <Button
+                    variant="ghost"
                     onClick={() => handleSelect(member)}
-                    className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-surface-strong"
+                    className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-surface-strong h-auto"
                   >
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
                       <User className="h-4 w-4 text-primary" />
@@ -84,7 +87,7 @@ export function MemberSearch({ onSelect }: MemberSearchProps) {
                         )}
                       </p>
                     </div>
-                  </button>
+                  </Button>
                 </li>
               ))}
             </ul>

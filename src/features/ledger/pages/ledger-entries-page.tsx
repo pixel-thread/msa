@@ -155,7 +155,7 @@ export default function LedgerEntriesPage() {
               <Button
                 variant="ghost"
                 onClick={() => router.push("/ledger/entries")}
-                className="h-10 rounded-full px-4 text-sm text-muted-foreground"
+                className="h-10 px-4 text-sm text-muted-foreground"
               >
                 <FilterIcon className="mr-1.5 h-4 w-4" />
                 Reset

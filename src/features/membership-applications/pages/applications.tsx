@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
 import { DataTable } from "@src/shared/components/data-table";
+import { Button } from "@src/shared/components/ui/button";
 import { useMembershipApplications } from "../hooks/useMembershipApplications";
 import { useMembershipApplicationColumns } from "../hooks/useMembershipApplicationColumns";
 import { ApplicationReviewDialog } from "../components/application-review-dialog";
@@ -63,20 +64,22 @@ export function MembershipApplicationsPage() {
             of {pagination.total} applications
           </p>
           <div className="flex items-center gap-2">
-            <button
-              className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
+            <Button
+              variant="outline"
+              size="sm"
               disabled={pagination.page <= 1}
               onClick={() => handlePageChange(pagination.page - 1)}
             >
               Previous
-            </button>
-            <button
-              className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               disabled={pagination.page >= pagination.totalPages}
               onClick={() => handlePageChange(pagination.page + 1)}
             >
               Next
-            </button>
+            </Button>
           </div>
         </div>
       )}

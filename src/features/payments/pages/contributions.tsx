@@ -5,7 +5,10 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import http from "@src/shared/utils/http";
 import { useContributions } from "@src/features/payments/hooks/useContributions";
-import { ContributionsTable, ContributionFilters } from "@src/features/payments/components";
+import {
+  ContributionsTable,
+  ContributionFilters,
+} from "@src/features/payments/components";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import { Button } from "@src/shared/components/ui/button";
 import {
@@ -23,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@src/shared/components/ui/select";
+import { Card } from "@components/ui/card";
 import { Label } from "@src/shared/components/ui/label";
 import { CalendarDays, Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -32,7 +36,9 @@ export default function ContributionsPage() {
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const currentPage = Number(searchParams.get("page")) || 1;
-  const [filters, setFilters] = useState<Record<string, string | number | undefined>>({});
+  const [filters, setFilters] = useState<
+    Record<string, string | number | undefined>
+  >({});
   const [generateDialogOpen, setGenerateDialogOpen] = useState(false);
   const [year, setYear] = useState(String(new Date().getFullYear()));
   const [month, setMonth] = useState(String(new Date().getMonth() + 1));
@@ -50,7 +56,9 @@ export default function ContributionsPage() {
       }),
     onSuccess: (response) => {
       if (response.success) {
-        toast.success(response.message || "Contributions generated successfully");
+        toast.success(
+          response.message || "Contributions generated successfully",
+        );
         queryClient.invalidateQueries({ queryKey: ["all-contributions"] });
         setGenerateDialogOpen(false);
       } else {
@@ -68,7 +76,9 @@ export default function ContributionsPage() {
     router.push(`/payments/contributions?${params.toString()}`);
   };
 
-  const handleFilterChange = (newFilters: Record<string, string | number | undefined>) => {
+  const handleFilterChange = (
+    newFilters: Record<string, string | number | undefined>,
+  ) => {
     setFilters(newFilters);
     const params = new URLSearchParams();
     params.set("page", "1");
@@ -112,9 +122,9 @@ export default function ContributionsPage() {
         </Button>
       </div>
 
-      <div className="rounded-xl border border-hairline bg-surface-card p-4">
+      <Card className="p-4">
         <ContributionFilters onFilterChange={handleFilterChange} />
-      </div>
+      </Card>
 
       <div className="rounded-xl border border-hairline bg-surface-card">
         <div className="p-4">
@@ -124,7 +134,10 @@ export default function ContributionsPage() {
               Contribution Periods ({meta?.total || 0})
             </h2>
           </div>
-          <ContributionsTable contributions={contributions} isLoading={isLoading} />
+          <ContributionsTable
+            contributions={contributions}
+            isLoading={isLoading}
+          />
         </div>
       </div>
 
@@ -139,7 +152,8 @@ export default function ContributionsPage() {
           <DialogHeader>
             <DialogTitle>Generate Contributions</DialogTitle>
             <DialogDescription>
-              Create contribution periods for all active members for the selected month.
+              Create contribution periods for all active members for the
+              selected month.
             </DialogDescription>
           </DialogHeader>
 

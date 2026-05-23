@@ -1,6 +1,7 @@
 "use client";
 
 import { CheckSquare, Square } from "lucide-react";
+import { Button } from "@src/shared/components/ui/button";
 
 interface UserDisplay {
   id: string;
@@ -61,16 +62,18 @@ export function UserRow({
       onClick={() => onClickRow?.(user.id)}
     >
       <div onClick={(e) => e.stopPropagation()}>
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => onToggle(user.id)}
-          className="text-muted-foreground hover:text-ink"
+          className="text-muted-foreground hover:text-ink h-auto w-auto"
         >
           {isSelected ? (
             <CheckSquare className="h-4.5 w-4.5 text-primary" />
           ) : (
             <Square className="h-4.5 w-4.5" />
           )}
-        </button>
+        </Button>
       </div>
 
       <div

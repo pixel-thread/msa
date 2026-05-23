@@ -127,7 +127,7 @@ export function TrainingListPage() {
             placeholder="Search training modules..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-11 rounded-md border-hairline bg-canvas pl-10 text-ink placeholder:text-muted-foreground focus-visible:border-primary"
+            className="h-11 border-hairline bg-canvas pl-10 text-ink placeholder:text-muted-foreground focus-visible:border-primary"
           />
         </div>
 
@@ -135,14 +135,14 @@ export function TrainingListPage() {
           <Button
             variant="outline"
             onClick={() => router.push("/training/completions")}
-            className="h-11 rounded-full border-hairline px-4 text-sm font-semibold"
+            className="h-11 border-hairline px-4 text-sm font-semibold"
           >
             <Award className="mr-2 h-4 w-4" />
             Completions
           </Button>
           <Button
             onClick={() => setCreateOpen(true)}
-            className="h-11 rounded-full bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-active"
+            className="h-11 bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-active"
           >
             <Plus className="mr-2 h-4 w-4" />
             Create Module

@@ -26,6 +26,7 @@ import {
   SelectValue,
 } from "@src/shared/components/ui/select";
 import { Button } from "@src/shared/components/ui/button";
+import { Input } from "@src/shared/components/ui/input";
 import { useUpdatePlan } from "@src/features/subscriptions/hooks/useUpdatePlan";
 import { useMemberTypes } from "@src/features/members/hooks/useMemberTypes";
 import { BILLING_CYCLES } from "../utils/constants";
@@ -115,11 +116,7 @@ export function EditPlanDialog({
                 <FormItem>
                   <FormLabel>Plan Name</FormLabel>
                   <FormControl>
-                    <input
-                      type="text"
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      {...field}
-                    />
+                    <Input type="text" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -151,9 +148,8 @@ export function EditPlanDialog({
                   <FormItem>
                     <FormLabel>Amount</FormLabel>
                     <FormControl>
-                      <input
+                      <Input
                         type="number"
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
                       />

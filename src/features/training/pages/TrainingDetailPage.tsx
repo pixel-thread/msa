@@ -106,7 +106,7 @@ export function TrainingDetailPage() {
         </p>
         <Button
           onClick={() => router.push("/training")}
-          className="rounded-full"
+          className=""
         >
           Back to Portal
         </Button>
@@ -131,7 +131,7 @@ export function TrainingDetailPage() {
           <Button
             onClick={() => setEditDialogOpen(true)}
             variant="outline"
-            className="h-10 rounded-full border-hairline px-4 text-sm font-semibold flex items-center gap-2"
+            className="h-10 border-hairline px-4 text-sm font-semibold flex items-center gap-2"
           >
             <Pencil className="h-4 w-4" />
             Edit
@@ -139,7 +139,7 @@ export function TrainingDetailPage() {
           <Button
             onClick={handleDeleteModule}
             variant="destructive"
-            className="h-10 rounded-full px-4 text-sm font-semibold flex items-center gap-2"
+            className="h-10 px-4 text-sm font-semibold flex items-center gap-2"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -239,7 +239,7 @@ export function TrainingDetailPage() {
             <Button
               onClick={() => router.push(`/training/${moduleId}/assign`)}
               variant="outline"
-              className="h-10 rounded-full border-hairline px-4 text-sm font-semibold flex items-center gap-2 hover:bg-canvas/50"
+              className="h-10 border-hairline px-4 text-sm font-semibold flex items-center gap-2 hover:bg-canvas/50"
             >
               <Plus className="h-4 w-4" />
               Assign Users
@@ -251,7 +251,7 @@ export function TrainingDetailPage() {
               placeholder="Search assigned users..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="h-10 rounded-md border-hairline bg-canvas pl-10 text-ink placeholder:text-muted-foreground focus-visible:border-primary"
+              className="h-10 border-hairline bg-canvas pl-10 text-ink placeholder:text-muted-foreground focus-visible:border-primary"
             />
           </div>
           <DataTable
@@ -270,7 +270,7 @@ export function TrainingDetailPage() {
             <Button
               onClick={() => setAddSupplementOpen(true)}
               variant="outline"
-              className="h-10 rounded-full border-hairline px-4 text-sm font-semibold flex items-center gap-2 hover:bg-canvas/50"
+              className="h-10 border-hairline px-4 text-sm font-semibold flex items-center gap-2 hover:bg-canvas/50"
             >
               <Plus className="h-4 w-4" />
               Add Supplement
@@ -290,7 +290,7 @@ export function TrainingDetailPage() {
             </div>
             <Button
               variant="outline"
-              className="h-10 rounded-full border-hairline px-4 text-sm font-semibold flex items-center gap-2 hover:bg-canvas/50"
+              className="h-10 border-hairline px-4 text-sm font-semibold flex items-center gap-2 hover:bg-canvas/50"
               onClick={() => router.push(`/training/${moduleId}/completions`)}
             >
               <Award className="mr-1.5 h-4 w-4" />

@@ -151,7 +151,7 @@ export default function ResetPasswordPage() {
                       <Input
                         type="password"
                         placeholder="New password"
-                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted-foreground focus-visible:border-primary"
+                        className="h-12 border-hairline bg-canvas text-ink placeholder:text-muted-foreground focus-visible:border-primary"
                         {...field}
                       />
                     </FormControl>
@@ -162,7 +162,7 @@ export default function ResetPasswordPage() {
 
               <Button
                 type="submit"
-                className="h-11 w-full rounded-full bg-primary px-5 text-base font-semibold text-on-primary hover:bg-primary-active disabled:bg-primary-disabled"
+                className="h-11 w-full bg-primary px-5 text-base font-semibold text-on-primary hover:bg-primary-active disabled:bg-primary-disabled"
                 disabled={resetPasswordMutation.isPending}
               >
                 {resetPasswordMutation.isPending

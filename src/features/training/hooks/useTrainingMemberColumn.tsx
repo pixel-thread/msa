@@ -135,7 +135,7 @@ export function useTrainingMemberColumn(options: {
               setSelectedUser(assignment);
               setCompleteDialogOpen(true);
             }}
-            className="h-9 rounded-full text-xs font-semibold"
+            className="h-9 text-xs font-semibold"
           >
             {isCompleted ? (
               <>

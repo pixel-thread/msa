@@ -62,7 +62,7 @@ export function UserPaymentsPage() {
         <p className="text-lg text-body">User not found</p>
         <Button
           variant="outline"
-          className="mt-4 h-11 rounded-full border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
+          className="mt-4 h-11 border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
           onClick={() => router.back()}
         >
           Go back

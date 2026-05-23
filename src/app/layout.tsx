@@ -1,9 +1,14 @@
 "use client";
-import { Roboto, Roboto_Mono } from "next/font/google";
+import { Roboto, Roboto_Mono, JetBrains_Mono } from "next/font/google";
 import { AppProviders } from "@src/shared/providers/AppProviders";
 import "./globals.css";
 import { cn } from "@src/shared/lib/utils";
 import { Suspense } from "react";
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+});
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -37,6 +42,8 @@ export default function RootLayout({
         roboto.variable,
         robotoHeading.variable,
         robotoMono.variable,
+        "font-mono",
+        jetbrainsMono.variable,
       )}
     >
       <body className="min-h-full flex flex-col">

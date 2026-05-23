@@ -82,7 +82,7 @@ export function useTrainingCompletionsColumns(options?: {
           <Button
             variant="outline"
             size="sm"
-            className="h-8 rounded-full text-xs font-semibold"
+            className="h-8 text-xs font-semibold"
             onClick={() => window.open(certUrl, "_blank")}
           >
             <Download className="mr-1 h-3.5 w-3.5" />

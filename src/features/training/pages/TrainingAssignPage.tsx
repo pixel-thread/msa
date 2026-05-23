@@ -310,12 +310,14 @@ export function TrainingAssignPage() {
               <span className="text-sm font-medium">
                 {totalSelected} selected
               </span>
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={clearSelection}
-                className="text-white/60 hover:text-white transition-colors"
+                className="text-white/60 hover:text-white h-auto w-auto"
               >
                 <X className="h-4 w-4" />
-              </button>
+              </Button>
             </div>
 
             <div className="flex items-center gap-2">
@@ -323,7 +325,7 @@ export function TrainingAssignPage() {
                 <Button
                   variant="secondary"
                   size="sm"
-                  className="h-8 rounded-full text-xs font-semibold px-3 bg-white/15 text-white hover:bg-white/25"
+                  className="h-8 text-xs font-semibold px-3 bg-white/15 text-white hover:bg-white/25"
                   onClick={handleBulkRemove}
                   disabled={isBulkRemoving}
                 >
@@ -335,7 +337,7 @@ export function TrainingAssignPage() {
                 <Button
                   variant="secondary"
                   size="sm"
-                  className="h-8 rounded-full text-xs font-semibold px-3 bg-white/15 text-white hover:bg-white/25"
+                  className="h-8 text-xs font-semibold px-3 bg-white/15 text-white hover:bg-white/25"
                   onClick={handleBulkAssign}
                   disabled={isBulkAssigning}
                 >

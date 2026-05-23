@@ -1,12 +1,12 @@
 {
   "$schema": "https://ui.shadcn.com/schema.json",
-  "style": "radix-maia",
+  "style": "radix-lyra",
   "rsc": true,
   "tsx": true,
   "tailwind": {
     "config": "",
     "css": "src/app/globals.css",
-    "baseColor": "mist",
+    "baseColor": "taupe",
     "cssVariables": true,
     "prefix": ""
   },
@@ -19,7 +19,7 @@
     "lib": "@src/shared/lib",
     "hooks": "@src/shared/hooks"
   },
-  "menuColor": "default-translucent",
+  "menuColor": "inverted",
   "menuAccent": "subtle",
   "registries": {}
 }

@@ -1,7 +1,12 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 
-import { Card, CardHeader, CardTitle, CardContent } from "@src/shared/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@src/shared/components/ui/card";
 import { Button } from "@src/shared/components/ui/button";
 import { getAuthFromCookies } from "@src/shared/api";
 import { getUserFirst } from "@src/shared/services/user/get-user-first";
@@ -36,13 +41,13 @@ export default async function DashboardPage() {
           <Button
             asChild
             variant="outline"
-            className="h-11 rounded-full border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
+            className="h-11 border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
           >
             <Link href="/change-password">Change Password</Link>
           </Button>
           <Button
             asChild
-            className="h-11 rounded-full bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-active"
+            className="h-11 bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-active"
           >
             <Link href="/dashboard/settings">Account Settings</Link>
           </Button>
@@ -109,21 +114,21 @@ export default async function DashboardPage() {
         <div className="mt-6 flex flex-wrap gap-3">
           <Button
             asChild
-            className="h-11 rounded-full bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-active"
+            className="h-11 bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-active"
           >
             <Link href="/change-password">Change Password</Link>
           </Button>
           <Button
             asChild
             variant="outline"
-            className="h-11 rounded-full border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
+            className="h-11 border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
           >
             <Link href="/dashboard/security">Security Settings</Link>
           </Button>
           <Button
             asChild
             variant="outline"
-            className="h-11 rounded-full border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
+            className="h-11 border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
           >
             <Link href="/dashboard/profile">Edit Profile</Link>
           </Button>

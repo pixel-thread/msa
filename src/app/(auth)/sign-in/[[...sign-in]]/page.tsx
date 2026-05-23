@@ -103,7 +103,7 @@ export default function SignInPage() {
                       <Input
                         type="email"
                         placeholder="Email address"
-                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted-foreground focus-visible:border-primary"
+                        className="h-12 border-hairline bg-canvas text-ink placeholder:text-muted-foreground focus-visible:border-primary"
                         {...field}
                       />
                     </FormControl>
@@ -124,7 +124,7 @@ export default function SignInPage() {
                       <Input
                         type="password"
                         placeholder="Password"
-                        className="h-12 rounded-md border-hairline bg-canvas text-ink placeholder:text-muted-foreground focus-visible:border-primary"
+                        className="h-12 border-hairline bg-canvas text-ink placeholder:text-muted-foreground focus-visible:border-primary"
                         {...field}
                       />
                     </FormControl>
@@ -144,7 +144,7 @@ export default function SignInPage() {
 
               <Button
                 type="submit"
-                className="h-11 w-full rounded-full bg-primary px-5 text-base font-semibold text-on-primary hover:bg-primary-active disabled:bg-primary-disabled"
+                className="h-11 w-full bg-primary px-5 text-base font-semibold text-on-primary hover:bg-primary-active disabled:bg-primary-disabled"
                 disabled={signInMutation.isPending}
               >
                 {signInMutation.isPending ? "Signing in..." : "Sign in"}
@@ -226,7 +226,7 @@ function MfaVerify({
                       <Input
                         type="text"
                         maxLength={6}
-                        className="h-12 rounded-md border-hairline bg-canvas text-center text-2xl tracking-widest text-ink placeholder:text-muted-foreground focus-visible:border-primary"
+                        className="h-12 border-hairline bg-canvas text-center text-2xl tracking-widest text-ink placeholder:text-muted-foreground focus-visible:border-primary"
                         placeholder="000000"
                         {...field}
                         onChange={(e) =>
@@ -243,7 +243,7 @@ function MfaVerify({
 
               <Button
                 type="submit"
-                className="h-11 w-full rounded-full bg-primary px-5 text-base font-semibold text-on-primary hover:bg-primary-active disabled:bg-primary-disabled"
+                className="h-11 w-full bg-primary px-5 text-base font-semibold text-on-primary hover:bg-primary-active disabled:bg-primary-disabled"
                 disabled={
                   verifyMfaMutation.isPending ||
                   form.getValues("code").length !== 6
@@ -253,13 +253,13 @@ function MfaVerify({
               </Button>
 
               <div className="flex flex-col gap-2 text-center">
-                <button
+                <Button
                   type="button"
+                  variant="link"
                   onClick={onBack}
-                  className="text-sm text-body hover:text-body-strong"
                 >
                   Back to sign in
-                </button>
+                </Button>
               </div>
             </form>
           </Form>

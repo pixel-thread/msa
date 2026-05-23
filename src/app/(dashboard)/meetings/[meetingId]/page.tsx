@@ -75,7 +75,7 @@ export default function MeetingDetailPage() {
         <p className="text-lg text-body">Meeting not found</p>
         <Button
           variant="outline"
-          className="mt-4 h-11 rounded-full border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
+          className="mt-4 h-11 border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
           onClick={() => router.back()}
         >
           Go back
@@ -105,7 +105,7 @@ export default function MeetingDetailPage() {
           <Link href={`/meetings/${meetingId}/minutes`}>
             <Button
               variant="outline"
-              className="h-11 rounded-full border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
+              className="h-11 border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
             >
               <ClipboardList className="mr-2 h-4 w-4" />
               Minutes
@@ -114,7 +114,7 @@ export default function MeetingDetailPage() {
           <Link href={`/meetings/${meetingId}/assign`}>
             <Button
               variant="outline"
-              className="h-11 rounded-full border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
+              className="h-11 border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
             >
               <Users className="mr-2 h-4 w-4" />
               Manage Attendees
@@ -123,14 +123,14 @@ export default function MeetingDetailPage() {
           <Button
             variant="outline"
             onClick={() => setDeleteOpen(true)}
-            className="h-11 rounded-full border-hairline bg-canvas px-5 text-sm font-medium text-red-600 hover:bg-red-50 hover:border-red-200"
+            className="h-11 border-hairline bg-canvas px-5 text-sm font-medium text-red-600 hover:bg-red-50 hover:border-red-200"
           >
             <Trash2 className="mr-2 h-4 w-4" />
             Delete
           </Button>
           <Button
             onClick={() => setEditOpen(true)}
-            className="h-11 rounded-full bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-active"
+            className="h-11 bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-active"
           >
             <Pencil className="mr-2 h-4 w-4" />
             Edit Meeting
