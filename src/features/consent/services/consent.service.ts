@@ -1,5 +1,10 @@
 import { prisma } from "@src/shared/lib/prisma";
-import { AuditAction, ConsentPurpose, ConsentStatus, Prisma } from "@prisma/client";
+import {
+  AuditAction,
+  ConsentPurpose,
+  ConsentStatus,
+  Prisma,
+} from "@prisma/client";
 import {
   UserConsentState,
   ConsentReceiptRecord,
@@ -11,6 +16,9 @@ import {
   AllConsentRecordsQueryInput,
 } from "../validators/consent.validators";
 import { NotFoundError, BadRequestError } from "@src/shared/errors";
+import { PAGE_SIZE } from "@src/shared/constants";
+import { buildPagination } from "@src/shared/utils";
+import { PaginationMeta } from "@src/shared/types";
 
 /**
  * Service for managing user consent according to DPDP Act 2023.
@@ -95,18 +103,35 @@ export class ConsentService {
   static async getConsentHistory(
     userId: string,
     associationId: string,
-  ): Promise<ConsentReceiptRecord[]> {
-    const history = await prisma.consentReceipt.findMany({
-      where: {
-        userId,
-        associationId,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    page?: number,
+  ): Promise<{ history: ConsentReceiptRecord[]; pagination: PaginationMeta }> {
+    const pageNumber = page || 1;
 
-    return history as ConsentReceiptRecord[];
+    const [history, total] = await prisma.$transaction([
+      prisma.consentReceipt.findMany({
+        where: {
+          userId,
+          associationId,
+        },
+        skip: (pageNumber - 1) * PAGE_SIZE,
+        take: PAGE_SIZE,
+        orderBy: {
+          createdAt: "desc",
+        },
+      }),
+
+      prisma.consentReceipt.count({
+        where: {
+          userId,
+          associationId,
+        },
+      }),
+    ]);
+
+    return {
+      history,
+      pagination: buildPagination(total, pageNumber),
+    };
   }
 
   /**
@@ -290,16 +315,27 @@ export class ConsentService {
   static async getUserConsentHistoryById(
     userId: string,
     associationId: string,
-  ): Promise<ConsentReceiptRecord[]> {
-    const records = await prisma.consentReceipt.findMany({
-      where: { userId, associationId },
-      orderBy: { createdAt: "desc" },
-      include: {
-        user: {
-          select: { name: true, email: true },
+    page: number,
+  ): Promise<{ records: ConsentReceiptRecord[]; pagination: PaginationMeta }> {
+    const [records, total] = await prisma.$transaction([
+      prisma.consentReceipt.findMany({
+        where: { userId, associationId },
+        orderBy: { createdAt: "desc" },
+        include: {
+          user: {
+            select: { name: true, email: true },
+          },
         },
-      },
-    });
-    return records as unknown as ConsentReceiptRecord[];
+      }),
+
+      prisma.consentReceipt.count({
+        where: { userId, associationId },
+        orderBy: { createdAt: "desc" },
+      }),
+    ]);
+    return {
+      records: records as ConsentReceiptRecord[],
+      pagination: buildPagination(total, page),
+    };
   }
 }

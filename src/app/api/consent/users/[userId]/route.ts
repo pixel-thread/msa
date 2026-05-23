@@ -4,26 +4,32 @@ import { BadRequestError, NotFoundError } from "@src/shared/errors";
 import { UserRole } from "@prisma/client";
 import { ConsentService } from "@src/features/consent";
 import { z } from "zod";
+import { pageNumberValidation } from "@src/shared/validators";
 
 const UserParamsSchema = z.object({
-  userId: z.string().uuid("Invalid user ID"),
+  userId: z.uuid("Invalid user ID"),
+});
+
+const UserQuerySchema = z.object({
+  page: pageNumberValidation,
 });
 
 export const GET = withAssociation(
-  { params: UserParamsSchema },
-  async (association, { params }, request) => {
+  { params: UserParamsSchema, query: UserQuerySchema },
+  async (association, { params, query }, request) => {
     await withRole(request, UserRole.DPO);
     if (!params) throw new BadRequestError("Invalid user ID");
-
-    const records = await ConsentService.getUserConsentHistoryById(
+    const page = query?.page || 1;
+    const data = await ConsentService.getUserConsentHistoryById(
       params.userId,
       association.id,
+      page,
     );
 
-    if (records.length === 0) {
+    if (data.records.length === 0) {
       throw new NotFoundError("No consent records found for this user");
     }
 
-    return SuccessResponse({ data: records });
+    return SuccessResponse({ data: data.records, meta: data.pagination });
   },
 );

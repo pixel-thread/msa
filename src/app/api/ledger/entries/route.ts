@@ -2,16 +2,21 @@ import { withAssociation, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils/responses";
 import { UserRole } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
-import { CreateLedgerEntrySchema, LedgerQueryParams } from "@src/features/ledger/validators";
+import {
+  CreateLedgerEntrySchema,
+  LedgerQueryParams,
+} from "@src/features/ledger/validators";
 import { ValidationError } from "@src/shared/errors";
+import { buildPagination } from "@src/shared/utils";
+import { PAGE_SIZE } from "@src/shared/constants";
 
 export const GET = withAssociation(
   { query: LedgerQueryParams },
-  async (association, { query }, request) => {
+  async (_association, { query }, request) => {
     await withRole(request, UserRole.FINANCE);
 
-    const { page = 1, pageSize = 20 } = query || {};
-    const skip = (page - 1) * pageSize;
+    const { page = 1 } = query || {};
+    const skip = (page - 1) * PAGE_SIZE;
 
     const [entries, total] = await Promise.all([
       prisma.ledgerEntry.findMany({
@@ -21,27 +26,21 @@ export const GET = withAssociation(
         },
         orderBy: { createdAt: "desc" },
         skip,
-        take: pageSize,
+        take: PAGE_SIZE,
       }),
       prisma.ledgerEntry.count(),
     ]);
 
     return SuccessResponse({
       data: entries,
-      meta: {
-        page,
-        pageSize,
-        total,
-        totalPages: Math.ceil(total / pageSize),
-        hasMore: page < Math.ceil(total / pageSize),
-      },
+      meta: buildPagination(total, page),
     });
-  }
+  },
 );
 
 export const POST = withAssociation(
   { body: CreateLedgerEntrySchema },
-  async (association, { body }, request) => {
+  async (_association, { body }, request) => {
     await withRole(request, UserRole.FINANCE);
     const userId = request.headers.get("x-user-id")!;
 
@@ -68,5 +67,5 @@ export const POST = withAssociation(
     });
 
     return SuccessResponse({ data: entry }, 201);
-  }
+  },
 );

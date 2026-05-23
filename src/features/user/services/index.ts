@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { PAGE_SIZE } from "@src/shared/constants";
 import { prisma } from "@src/shared/lib/prisma";
 
 type Props = {
@@ -39,26 +40,39 @@ export async function getUser(where: Prisma.UserWhereUniqueInput) {
 
 type GetUserInvoicesProps = {
   where: Prisma.PaymentTransactionWhereInput;
+  page?: number;
 };
 
-export async function getUserInvoices({ where }: GetUserInvoicesProps) {
-  return await prisma.paymentTransaction.findMany({
-    where,
-    include: {
-      // The "Bill From" details
-      association: true,
-      // The "Bill To" details
-      user: {
-        select: {
-          name: true,
-          email: true,
-          membershipNumber: true,
-          designation: true,
+export async function getUserInvoices({
+  where,
+  page = 1,
+}: GetUserInvoicesProps) {
+  return await prisma.$transaction([
+    prisma.paymentTransaction.findMany({
+      where,
+      include: {
+        association: true,
+        user: {
+          select: {
+            name: true,
+            email: true,
+            membershipNumber: true,
+            designation: true,
+          },
         },
+        allocations: { include: { contributionPeriod: true } },
       },
-      allocations: { include: { contributionPeriod: true } },
-    },
-  });
+      orderBy: {
+        createdAt: "desc",
+      },
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+    }),
+
+    prisma.paymentTransaction.count({
+      where,
+    }),
+  ]);
 }
 
 type GetUserInvoiceProps = {
