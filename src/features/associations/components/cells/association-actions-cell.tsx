@@ -2,13 +2,7 @@
 
 import { Button } from "@src/shared/components/ui/button";
 import { Pencil, Power } from "lucide-react";
-
-interface Association {
-  id: string;
-  name: string;
-  slug: string;
-  isActive: boolean;
-}
+import { Association } from "../../types/association";
 
 interface AssociationActionsCellProps {
   association: Association;
@@ -23,11 +17,7 @@ export function AssociationActionsCell({
 }: AssociationActionsCellProps) {
   return (
     <div className="flex items-center gap-2">
-      <Button
-        size="sm"
-        variant="ghost"
-        onClick={() => onEdit(association)}
-      >
+      <Button size="sm" variant="ghost" onClick={() => onEdit(association)}>
         <Pencil className="h-4 w-4" />
       </Button>
       {association.isActive && (

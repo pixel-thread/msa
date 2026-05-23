@@ -45,7 +45,7 @@ export function ProviderForm({
     onSubmit({
       provider,
       keyId,
-      ...(keySecret ? { keySecret } : {}),
+      ...(keySecret ? { keySecret: keySecret || "" } : {}),
       ...(webhookSecret ? { webhookSecret } : {}),
       isActive,
     });
@@ -56,7 +56,11 @@ export function ProviderForm({
       {!isEdit && (
         <div className="grid gap-2">
           <Label htmlFor="provider">Provider Type</Label>
-          <Select value={provider} onValueChange={setProvider} disabled={isEdit}>
+          <Select
+            value={provider}
+            onValueChange={setProvider}
+            disabled={isEdit}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select provider" />
             </SelectTrigger>
@@ -89,7 +93,9 @@ export function ProviderForm({
           type="password"
           value={keySecret}
           onChange={(e) => setKeySecret(e.target.value)}
-          placeholder={isEdit ? "Leave blank to keep current" : "Enter key secret"}
+          placeholder={
+            isEdit ? "Leave blank to keep current" : "Enter key secret"
+          }
           required={!isEdit}
         />
       </div>
@@ -111,11 +117,7 @@ export function ProviderForm({
       </div>
 
       <Button type="submit" disabled={isPending}>
-        {isPending
-          ? "Saving..."
-          : isEdit
-            ? "Update Provider"
-            : "Add Provider"}
+        {isPending ? "Saving..." : isEdit ? "Update Provider" : "Add Provider"}
       </Button>
     </form>
   );

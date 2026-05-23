@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AuditAction } from "@prisma/client";
-import { prisma } from "@src/shared/lib/prisma";
 import { processWebhookEvent } from "@feature/payments/services/webhook.service";
 import { WebhookSignatureError } from "@src/shared/errors";
 import { logAction } from "@src/shared/services/audit-logs";
@@ -78,7 +77,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ status: result.status }, { status: 200 });
   } catch (error) {
     if (error instanceof WebhookSignatureError) {
-      console.error("[Webhook] Signature verification failed:", error.message);
       return NextResponse.json(
         { error: "Invalid webhook signature" },
         { status: 400 },
@@ -87,7 +85,6 @@ export async function POST(request: NextRequest) {
 
     // For all other errors, still return 200 to prevent infinite retries.
     // The error has already been stored in the webhook event record.
-    console.error("[Webhook] Processing error:", error);
     return NextResponse.json(
       { status: "error", message: "Webhook processing failed" },
       { status: 200 },

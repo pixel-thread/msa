@@ -8,7 +8,7 @@ import { useAssociationColumns } from "@src/features/associations/hooks/useAssoc
 import { CreateAssociationDialog } from "@src/features/associations/components/create-association-dialog";
 import { EditAssociationDialog } from "@src/features/associations/components/edit-association-dialog";
 import { DeactivateAssociationDialog } from "@src/features/associations/components/deactivate-association-dialog";
-import type { Association } from "@src/features/associations/hooks/useAssociationsList";
+import type { Association } from "@src/features/associations/types/association";
 
 export default function AssociationsPage() {
   const [editingAssociation, setEditingAssociation] =

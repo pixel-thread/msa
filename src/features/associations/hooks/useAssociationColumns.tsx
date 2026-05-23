@@ -1,6 +1,6 @@
 import type { ColumnDef } from "@tanstack/react-table";
-import { AssociationActionsCell } from "@src/features/associations/components/cells/association-actions-cell";
-import type { Association } from "./useAssociationsList";
+import { AssociationActionsCell } from "@feature/associations/components/cells/association-actions-cell";
+import { Association } from "@feature/associations/types/association";
 
 interface UseAssociationColumnsOptions {
   onEdit: (association: Association) => void;
@@ -23,7 +23,9 @@ export function useAssociationColumns({
       accessorKey: "slug",
       header: "Slug",
       cell: ({ row }) => (
-        <span className="text-sm text-muted-foreground">{row.original.slug}</span>
+        <span className="text-sm text-muted-foreground">
+          {row.original.slug}
+        </span>
       ),
     },
     {
