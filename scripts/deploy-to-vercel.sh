@@ -12,7 +12,7 @@ pnpm install
 
 # Step 2: Build locally
 echo "🏗️ Building project..."
-vercel build --prod --logs
+vercel build --prod
 
 # Step 3: Validate environment
 if [[ "$ENV" != "production" && "$ENV" != "preview" ]]; then

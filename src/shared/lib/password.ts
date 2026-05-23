@@ -1,11 +1,11 @@
-import argon2 from "argon2";
+import bcrypt from "bcryptjs";
 import crypto from "crypto";
 
 export { generateSecureToken, hashToken } from "./token";
 export { generateOTP, hashOTP } from "./otp";
 
 export async function hashPassword(password: string): Promise<string> {
-  return argon2.hash(password);
+  return bcrypt.hash(password, 12);
 }
 
 export async function verifyPassword(
@@ -15,7 +15,7 @@ export async function verifyPassword(
   if (!password || password === "") {
     return false;
   }
-  return argon2.verify(hash, password);
+  return bcrypt.compare(password, hash);
 }
 
 export function validatePasswordStrength(password: string): {

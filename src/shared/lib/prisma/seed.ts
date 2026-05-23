@@ -26,7 +26,7 @@ import {
 
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
-import argon2 from "argon2";
+import bcrypt from "bcryptjs";
 
 // -----------------------------------------------------------------------------
 // PRISMA INITS
@@ -60,7 +60,7 @@ const ASSOCIATIONS = [
 ];
 
 async function hashPassword(password: string) {
-  return argon2.hash(password);
+  return bcrypt.hash(password, 12);
 }
 
 function buildUserEmail(role: UserRole, association: string) {
