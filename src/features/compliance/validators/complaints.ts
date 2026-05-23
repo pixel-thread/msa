@@ -1,7 +1,4 @@
-import {
-  pageNumberValidation,
-  pageSizeValidation,
-} from "@src/shared/validators/common";
+import { pageNumberValidation } from "@src/shared/validators/common";
 import { ComplaintStatus } from "@prisma/client";
 import { z } from "zod";
 
@@ -11,7 +8,6 @@ export const ComplaintQuerySchema = z.object({
   fromDate: z.coerce.date().optional(),
   toDate: z.coerce.date().optional(),
   page: pageNumberValidation,
-  limit: pageSizeValidation,
 });
 
 export type ComplaintQueryInput = z.infer<typeof ComplaintQuerySchema>;

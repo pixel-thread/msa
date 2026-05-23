@@ -1,5 +1,6 @@
 import { prisma } from "@src/shared/lib/prisma";
 import { DsarRequestType, DsarStatus } from "@prisma/client";
+import { PAGE_SIZE } from "@src/shared/constants";
 import { buildPagination } from "@src/shared/utils/build-pagination";
 
 interface FindDsarTicketsProps {
@@ -11,7 +12,6 @@ interface FindDsarTicketsProps {
   };
   pagination?: {
     page: number;
-    limit: number;
   };
 }
 
@@ -29,7 +29,7 @@ export async function findDsarTickets({
   associationId,
   userId,
   filters,
-  pagination = { page: 1, limit: 10 },
+  pagination = { page: 1 },
 }: FindDsarTicketsProps) {
   const where = {
     associationId,
@@ -58,14 +58,14 @@ export async function findDsarTickets({
         },
       },
       orderBy: { createdAt: "desc" },
-      skip: (pagination.page - 1) * pagination.limit,
-      take: pagination.limit,
+      skip: (pagination.page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
     }),
     prisma.dsarTicket.count({ where }),
   ]);
 
   return {
     tickets,
-    pagination: buildPagination(total, pagination.page, pagination.limit),
+    pagination: buildPagination(total, pagination.page),
   };
 }

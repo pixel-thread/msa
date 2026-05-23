@@ -3,6 +3,7 @@ import { SuccessResponse } from "@src/shared/utils";
 import { buildPagination } from "@src/shared/utils/build-pagination";
 import { UserRole } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
+import { PAGE_SIZE } from "@src/shared/constants";
 import { ComplaintQuerySchema } from "@src/features/compliance/validators";
 
 export const GET = withAssociation(
@@ -36,8 +37,8 @@ export const GET = withAssociation(
     const complaints = await prisma.complaint.findMany({
       where,
       orderBy: { createdAt: "desc" },
-      skip: ((query?.page ?? 1) - 1) * (query?.limit ?? 20),
-      take: query?.limit ?? 20,
+      skip: ((query?.page ?? 1) - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
       include: {
         user: {
           select: { id: true, name: true, email: true },
@@ -49,7 +50,7 @@ export const GET = withAssociation(
 
     return SuccessResponse({
       data: complaints,
-      meta: buildPagination(total, query?.page ?? 1, query?.limit ?? 20),
+      meta: buildPagination(total, query?.page ?? 1),
     });
   },
 );

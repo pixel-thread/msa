@@ -11,6 +11,7 @@ import {
 } from "@src/features/compliance/validators";
 import { prisma } from "@src/shared/lib/prisma";
 import { SuccessResponse } from "@src/shared/utils";
+import { PAGE_SIZE } from "@src/shared/constants";
 import { buildPagination } from "@src/shared/utils/build-pagination";
 
 const DPO_ROLE: UserRole = UserRole.DPO;
@@ -41,15 +42,15 @@ export const GET = withAssociation(
     const checks = await prisma.complianceCheck.findMany({
       where,
       orderBy: { checkedAt: "desc" },
-      skip: ((query?.page ?? 1) - 1) * (query?.limit ?? 20),
-      take: query?.limit ?? 20,
+      skip: ((query?.page ?? 1) - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
     });
 
     const total = await prisma.complianceCheck.count({ where });
 
     return SuccessResponse({
       data: checks,
-      meta: buildPagination(total, query?.page ?? 1, query?.limit ?? 20),
+      meta: buildPagination(total, query?.page ?? 1),
     });
   },
 );

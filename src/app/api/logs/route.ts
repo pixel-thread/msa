@@ -2,13 +2,14 @@ import { withValidation } from "@src/shared/api";
 import { ValidationError } from "@src/shared/errors";
 import { createLogs, getLogs } from "@src/shared/services/logs";
 import { SuccessResponse } from "@src/shared/utils";
+import { PAGE_SIZE } from "@src/shared/constants";
 import { LogIngestSchema, LogQuerySchema } from "@src/shared/validators/logs";
 import type { Log } from "@prisma/client";
 
 export const GET = withValidation(
   { query: LogQuerySchema },
   async (_req, _ctx, { query }) => {
-    const { page, limit, level, search, startDate, endDate, isBackend } =
+    const { page, level, search, startDate, endDate, isBackend } =
       query!;
 
     const where: Parameters<typeof getLogs>[0]["where"] = {};
@@ -38,7 +39,6 @@ export const GET = withValidation(
     const { logs, pagination } = await getLogs({
       where,
       page: page || 1,
-      pageSize: limit || 10,
     });
 
     return SuccessResponse<Log[]>({

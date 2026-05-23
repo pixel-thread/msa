@@ -12,7 +12,6 @@ import { DsarQuerySchema } from "@src/features/dsar/validators";
  * This endpoint is reserved for Data Protection Officers (DPO) and higher roles.
  * 
  * @apiQuery {Number} [page=1] Page number for pagination.
- * @apiQuery {Number} [limit=10] Number of records per page.
  * @apiQuery {String} [status] Filter by ticket status (e.g., PENDING, COMPLETED).
  * @apiQuery {String} [requestType] Filter by request type (e.g., ACCESS, DELETION).
  * @apiQuery {String} [userId] Filter by a specific member's UUID.
@@ -35,7 +34,6 @@ export const GET = withAssociation(
       },
       pagination: {
         page: query?.page ?? 1,
-        limit: query?.limit ?? 10,
       },
     });
 

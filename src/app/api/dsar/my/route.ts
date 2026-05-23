@@ -11,7 +11,6 @@ import { DsarQuerySchema } from "@src/features/dsar/validators";
  * Results are strictly scoped to the current user and their association.
  * 
  * @apiQuery {Number} [page=1] Page number for pagination.
- * @apiQuery {Number} [limit=10] Number of records per page.
  * @apiQuery {String} [status] Filter by ticket status.
  * @apiQuery {String} [requestType] Filter by request type.
  * 
@@ -33,7 +32,6 @@ export const GET = withAssociation(
       },
       pagination: {
         page: query?.page ?? 1,
-        limit: query?.limit ?? 10,
       },
     });
 

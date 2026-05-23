@@ -1,11 +1,11 @@
 import { prisma } from "@lib/prisma";
+import { PAGE_SIZE } from "@src/shared/constants";
 import { buildPagination } from "@src/shared/utils/build-pagination";
 
 interface FindUserCompletionsProps {
   userId: string;
   associationId: string;
   page?: number;
-  limit?: number;
 }
 
 export async function findUserCompletions({
@@ -13,7 +13,6 @@ export async function findUserCompletions({
 
   associationId,
   page = 1,
-  limit = 10,
 }: FindUserCompletionsProps) {
   const [trainingModule, total] = await prisma.$transaction([
     prisma.trainingCompletion.findMany({
@@ -24,8 +23,8 @@ export async function findUserCompletions({
       include: {
         module: true,
       },
-      take: limit,
-      skip: (page - 1) * limit,
+      take: PAGE_SIZE,
+      skip: (page - 1) * PAGE_SIZE,
       orderBy: { completedAt: "desc" },
     }),
 
@@ -38,7 +37,7 @@ export async function findUserCompletions({
     }),
   ]);
   return {
-    pagination: buildPagination(total, page, limit),
+    pagination: buildPagination(total, page),
     module: trainingModule,
   };
 }

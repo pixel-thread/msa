@@ -182,8 +182,7 @@ export class ConsentService {
     query?: AllConsentRecordsQueryInput,
   ): Promise<{ records: ConsentReceiptRecord[]; total: number }> {
     const page = query?.page ?? 1;
-    const pageSize = query?.pageSize ?? 20;
-    const skip = (page - 1) * pageSize;
+    const skip = (page - 1) * PAGE_SIZE;
 
     const where: Prisma.ConsentReceiptWhereInput = { associationId };
 
@@ -207,7 +206,7 @@ export class ConsentService {
         where,
         orderBy: { createdAt: "desc" },
         skip,
-        take: pageSize,
+        take: PAGE_SIZE,
         include: {
           user: {
             select: { name: true, email: true },

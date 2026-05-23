@@ -1,7 +1,4 @@
-import {
-  pageNumberValidation,
-  pageSizeValidation,
-} from "@src/shared/validators/common";
+import { pageNumberValidation } from "@src/shared/validators/common";
 import { z } from "zod";
 
 export const ComplianceCheckStatusEnum = z.enum([
@@ -49,7 +46,6 @@ export type TriggerComplianceCheckInput = z.infer<
 
 export const ComplianceCheckQuerySchema = z.object({
   page: pageNumberValidation,
-  limit: pageSizeValidation,
   checkType: ComplianceCheckTypeEnum.optional(),
   status: ComplianceCheckStatusEnum.optional(),
   fromDate: z.coerce.date().optional(),

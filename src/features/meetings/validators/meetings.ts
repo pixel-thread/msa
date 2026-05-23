@@ -1,9 +1,6 @@
 import { z } from "zod";
 import { MeetingType, MeetingStatus } from "@prisma/client";
-import {
-  pageNumberValidation,
-  pageSizeValidation,
-} from "@src/shared/validators/common";
+import { pageNumberValidation } from "@src/shared/validators/common";
 
 export const agendaItemSchema = z.object({
   title: z
