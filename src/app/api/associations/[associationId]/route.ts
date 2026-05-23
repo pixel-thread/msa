@@ -2,7 +2,7 @@ import { withValidation } from "@src/shared/api";
 import {
   CreateAssociationInput,
   CreateAssociationSchema,
-} from "@src/shared/lib/validations";
+} from "@validator/associations";
 import { findUniqueAssociation } from "@src/features/associations/services/findUniqueAssociation";
 import { findFirstAssociation } from "@src/features/associations/services/findFirstAssociation";
 import { updateAssociation } from "@src/features/associations/services/updateAssociation";
