@@ -12,7 +12,7 @@ export class ValidationError extends AppError {
   }
 }
 
-export class PayLoadTooLargeError extends AppError {
+export class PayloadTooLargeError extends AppError {
   constructor(message = "Payload to Large", details?: unknown) {
     super("PAYLOAD_TOO_LARGE", message, 413, details);
   }
