@@ -9,6 +9,7 @@ import {
   AlertTriangleIcon,
   ScrollTextIcon,
   ShieldCheck,
+  ShieldIcon,
   ClipboardCheck,
 } from "lucide-react";
 
@@ -129,10 +130,20 @@ export const drawrNavMain = [
     isActive: true,
   },
   {
-    title: "Consent",
-    url: "/consent",
-    icon: <ShieldCheck />,
+    title: "Privacy",
+    url: "#",
+    icon: <ShieldIcon />,
     isActive: true,
+    items: [
+      {
+        title: "Consent",
+        url: "/consent",
+      },
+      {
+        title: "DSAR",
+        url: "/dsar",
+      },
+    ],
   },
   {
     title: "Compliance",

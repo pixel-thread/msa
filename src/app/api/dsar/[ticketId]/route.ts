@@ -3,7 +3,7 @@ import { withRole } from "@src/shared/api/with-role";
 import { SuccessResponse } from "@src/shared/utils";
 import { NotFoundError } from "@src/shared/errors";
 import { UserRole } from "@prisma/client";
-import { findUniqueDsarTicket } from "@src/features/dsar/services";
+import { findUniqueDsarTicket, deleteDsarTicket } from "@src/features/dsar/services";
 import { z } from "zod";
 
 const ParamsSchema = z.object({
@@ -45,5 +45,26 @@ export const GET = withAssociation(
     }
 
     return SuccessResponse({ data: ticket });
+  },
+);
+
+export const DELETE = withAssociation(
+  { params: ParamsSchema },
+  async (association, { params }, request) => {
+    const actorId = request.headers.get("x-user-id")!;
+    await withRole(request, UserRole.DPO);
+
+    const ticket = await findUniqueDsarTicket(params!.ticketId, association.id);
+    if (!ticket) {
+      throw new NotFoundError("DSAR ticket not found");
+    }
+
+    await deleteDsarTicket({
+      associationId: association.id,
+      ticketId: params!.ticketId,
+      actorId,
+    });
+
+    return SuccessResponse({ data: null, message: "DSAR ticket deleted successfully" });
   },
 );
