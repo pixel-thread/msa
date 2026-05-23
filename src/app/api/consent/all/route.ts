@@ -1,7 +1,6 @@
-import { withAssociation } from "@src/shared/api/with-association";
+import { withAssociation, withRole } from "@src/shared/api";
 import { ConsentService } from "@src/features/consent";
 import { SuccessResponse } from "@src/shared/utils";
-import { withRole } from "@src/shared/api/with-role";
 import { UserRole } from "@prisma/client";
 import { AllConsentRecordsQuerySchema } from "@src/features/consent/validators/consent.validators";
 

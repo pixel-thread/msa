@@ -1,8 +1,7 @@
-import { withAssociation } from "@src/shared/api/with-association";
+import { withAssociation, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils/responses";
 import { NotFoundError, ValidationError } from "@src/shared/errors";
 import { prisma } from "@src/shared/lib/prisma";
-import { withRole } from "@src/shared/api/with-role";
 import { UserRole } from "@prisma/client";
 import z from "zod";
 

@@ -1,7 +1,6 @@
 import { env } from "@src/env";
 import { prisma } from "@lib/prisma";
-import { withAssociation } from "@src/shared/api/with-association";
-import { withRole } from "@src/shared/api/with-role";
+import { withAssociation, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@utils/responses";
 import {
   BadRequestError,

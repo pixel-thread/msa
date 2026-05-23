@@ -1,10 +1,8 @@
-import { withAssociation } from "@src/shared/api/with-association";
-import { withRole } from "@src/shared/api/with-role";
+import { withAssociation, withRole, withValidation } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils";
 import { UserRole, AuditAction } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
 import { z } from "zod";
-import { withValidation } from "@src/shared/api";
 
 const ParamsSchema = z.object({
   ticketId: z.uuid(),

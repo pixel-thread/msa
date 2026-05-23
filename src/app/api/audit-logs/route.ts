@@ -6,7 +6,7 @@ import {
   getAuditLogStats,
 } from "@src/shared/services/audit-logs";
 import { SuccessResponse } from "@src/shared/utils";
-import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
+import { hasHighRoleAccess } from "@src/shared/utils/has-high-role";
 import { withRole } from "@src/shared/api/with-role";
 
 const AuditLogQuerySchema = {

@@ -1,6 +1,6 @@
 import { SuccessResponse } from "@src/shared/utils";
 import { UnauthorizedError } from "@src/shared/errors";
-import { getUniqueUser } from "@src/shared/services/user/getUniqueUser";
+import { getUniqueUser } from "@src/shared/services/user/get-unique-user";
 import { getAuthCachedUser, cacheAuthUser } from "@src/features/auth/lib/cache";
 import { withAssociation } from "@src/shared/api/with-association";
 

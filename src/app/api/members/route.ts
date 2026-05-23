@@ -1,10 +1,9 @@
-import { withAssociation } from "@src/shared/api/with-association";
+import { withAssociation, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils/responses";
 import { UserRole, UserStatus } from "@prisma/client";
-import { withRole } from "@src/shared/api/with-role";
 import { getMembers } from "@src/features/members/services/getMembers";
 import z from "zod";
-import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
+import { hasHighRoleAccess } from "@src/shared/utils/has-high-role";
 import { pageNumberValidation } from "@src/shared/validators/common";
 
 const QuerySchema = z.object({

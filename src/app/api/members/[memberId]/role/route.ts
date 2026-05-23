@@ -1,6 +1,5 @@
 import { UserRole } from "@prisma/client";
-import { withAssociation } from "@src/shared/api/with-association";
-import { withRole } from "@src/shared/api/with-role";
+import { withAssociation, withRole } from "@src/shared/api";
 import { ConflictError, NotFoundError } from "@src/shared/errors";
 import { prisma } from "@src/shared/lib/prisma";
 import { SuccessResponse } from "@src/shared/utils";

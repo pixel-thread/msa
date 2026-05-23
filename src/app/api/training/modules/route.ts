@@ -5,7 +5,7 @@ import { ForbiddenError } from "@src/shared/errors";
 import { UserRole } from "@prisma/client";
 import { createModule, findManyModules } from "@feature/training/services";
 import { CreateTrainingModuleSchema } from "@feature/training/validators/training";
-import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
+import { hasHighRoleAccess } from "@src/shared/utils/has-high-role";
 
 export const GET = withAssociation({}, async (association, _, request) => {
   const user = await withRole(request, UserRole.MEMBER);

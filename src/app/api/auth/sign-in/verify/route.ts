@@ -13,7 +13,7 @@ import {
   VerifySignInInput,
   VerifySignInSchema,
 } from "@src/features/auth/validators";
-import { getUniqueUser } from "@src/shared/services/user/getUniqueUser";
+import { getUniqueUser } from "@src/shared/services/user/get-unique-user";
 import { getVerificationCodeFirst } from "@src/features/auth/services/get-verification-code-first";
 import { updateVerificationCode } from "@src/features/auth/services/update-verification-code";
 import { createRefreshToken } from "@src/features/auth/services/create-refresh-token";

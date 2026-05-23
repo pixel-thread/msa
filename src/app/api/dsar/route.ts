@@ -1,9 +1,8 @@
-import { withRole } from "@src/shared/api/with-role";
+import { withRole, withAssociation } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils";
 import { UserRole } from "@prisma/client";
 import { findDsarTickets } from "@src/features/dsar/services";
 import { DsarQuerySchema } from "@src/features/dsar/validators";
-import { withAssociation } from "@src/shared/api/with-association";
 
 /**
  * @api {get} /api/dsar List All DSAR Tickets

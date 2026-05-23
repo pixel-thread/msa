@@ -1,6 +1,5 @@
 import { UserRole } from "@prisma/client";
-import { withValidation } from "@src/shared/api";
-import { withRole } from "@src/shared/api/with-role";
+import { withValidation, withRole } from "@src/shared/api";
 import { NotFoundError, UnauthorizedError } from "@src/shared/errors";
 import {
   findUniqueNotification,

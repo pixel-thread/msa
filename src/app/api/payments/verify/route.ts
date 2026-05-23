@@ -1,4 +1,4 @@
-import { withAssociation } from "@src/shared/api/with-association";
+import { withAssociation } from "@src/shared/api";
 import { SuccessResponse } from "@utils/responses";
 import { VerifyPaymentSchema } from "@feature/payments/validators";
 import { verifyAndCompletePayment } from "@feature/payments/services/payment.service";

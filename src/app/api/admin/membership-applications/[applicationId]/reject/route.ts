@@ -4,8 +4,7 @@ import {
   MembershipApplicationParamsSchema,
   RejectApplicationSchema,
 } from "@src/features/membership-applications/validators";
-import { withValidation } from "@src/shared/api";
-import { withRole } from "@src/shared/api/with-role";
+import { withValidation, withRole } from "@src/shared/api";
 import { NotFoundError } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
 

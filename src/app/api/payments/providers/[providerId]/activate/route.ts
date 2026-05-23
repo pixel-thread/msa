@@ -1,11 +1,10 @@
-import { withAssociation } from "@src/shared/api/with-association";
+import { withAssociation, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils/responses";
 import { ProviderIdParamSchema } from "@src/features/payments/validators";
 import {
   getProviderById,
   setActiveProvider,
 } from "@src/features/payments/services/payment-provider.service";
-import { withRole } from "@src/shared/api/with-role";
 import { UserRole } from "@prisma/client";
 import { BadRequestError, NotFoundError } from "@src/shared/errors";
 

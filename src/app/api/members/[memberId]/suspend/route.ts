@@ -1,8 +1,7 @@
 import { UserRole } from "@prisma/client";
 import { findUniqueMember } from "@src/features/members/services/findUniqueMember";
 import { updateMember } from "@src/features/members/services/updateMember";
-import { withAssociation } from "@src/shared/api/with-association";
-import { withRole } from "@src/shared/api/with-role";
+import { withAssociation, withRole } from "@src/shared/api";
 import { BadRequestError, NotFoundError } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
 import z from "zod";

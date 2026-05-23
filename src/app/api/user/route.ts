@@ -1,8 +1,7 @@
 import { UserRole } from "@prisma/client";
 import { getUser, updateUser } from "@src/features/user/services";
 import { UpdateUserSchema } from "@src/features/user/validators";
-import { withValidation } from "@src/shared/api";
-import { withRole } from "@src/shared/api/with-role";
+import { withValidation, withRole } from "@src/shared/api";
 import { UnauthorizedError } from "@src/shared/errors";
 import { prisma } from "@src/shared/lib/prisma";
 import { SuccessResponse } from "@src/shared/utils";

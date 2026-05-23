@@ -1,4 +1,4 @@
-import { withAssociation } from "@src/shared/api/with-association";
+import { withAssociation } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils";
 import { submitDsarTicket } from "@src/features/dsar/services";
 import { SubmitDsarSchema } from "@src/features/dsar/validators";

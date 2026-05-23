@@ -1,6 +1,5 @@
 import { prisma } from "@src/shared/lib/prisma";
-import { withValidation } from "@src/shared/api";
-import { requireAuth } from "@src/shared/api/auth";
+import { withValidation, requireAuth } from "@src/shared/api";
 import { generateOTP, hashToken } from "@src/shared/lib/password";
 import { sendVerificationEmail } from "@src/shared/lib/email";
 import { env } from "@src/env";

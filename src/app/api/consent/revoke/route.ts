@@ -1,5 +1,4 @@
-import { withAssociation } from "@src/shared/api/with-association";
-import { requireAuth } from "@src/shared/api/auth";
+import { withAssociation, requireAuth } from "@src/shared/api";
 import { ConsentService, ConsentUpdateSchema } from "@src/features/consent";
 import { ConsentStatus } from "@prisma/client";
 import { SuccessResponse } from "@src/shared/utils";

@@ -1,4 +1,4 @@
-import { withAssociation } from "@src/shared/api/with-association";
+import { withAssociation } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils";
 import { BadRequestError, NotFoundError, UnauthorizedError } from "@src/shared/errors";
 import { prisma } from "@src/shared/lib/prisma";

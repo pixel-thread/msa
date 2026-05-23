@@ -1,7 +1,6 @@
 import { UserRole } from "@prisma/client";
 import { getUserInvoices } from "@src/features/user/services";
-import { withAssociation } from "@src/shared/api/with-association";
-import { withRole } from "@src/shared/api/with-role";
+import { withAssociation, withRole } from "@src/shared/api";
 import { UnauthorizedError } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
 

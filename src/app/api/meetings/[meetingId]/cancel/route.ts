@@ -1,9 +1,8 @@
-import { withAssociation } from "@src/shared/api/with-association";
-import { withRole } from "@src/shared/api/with-role";
+import { withAssociation, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils/responses";
 import { UserRole, MeetingStatus } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
-import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
+import { hasHighRoleAccess } from "@src/shared/utils/has-high-role";
 import { ForbiddenError } from "@src/shared/errors";
 
 export const POST = withAssociation({}, async (association, _, request, { params }) => {

@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 
 import { env } from "@src/env";
-import { logger } from "../logger";
+import { logger } from "@src/shared/logger";
 
 export const axiosClient: AxiosInstance = axios.create({
   baseURL: env.NEXT_PUBLIC_API_BASE_URL,

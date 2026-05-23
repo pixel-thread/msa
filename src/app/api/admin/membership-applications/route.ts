@@ -1,8 +1,7 @@
 import { UserRole } from "@prisma/client";
 import { getMembershipApplications } from "@src/features/membership-applications/services";
 import { GetMembershipApplicationsQuerySchema } from "@src/features/membership-applications/validators";
-import { withAssociation } from "@src/shared/api/with-association";
-import { withRole } from "@src/shared/api/with-role";
+import { withAssociation, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils";
 
 export const GET = withAssociation(

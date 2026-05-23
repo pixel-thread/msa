@@ -1,5 +1,4 @@
-import { withAssociation } from "@src/shared/api/with-association";
-import { withRole } from "@src/shared/api/with-role";
+import { withAssociation, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@utils/responses";
 import { ForbiddenError } from "@src/shared/errors";
 import { UserRole, MeetingStatus } from "@prisma/client";
@@ -8,7 +7,7 @@ import {
   CreateMeetingSchema,
   MeetingQuerySchema,
 } from "@feature/meetings/validators/meetings";
-import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
+import { hasHighRoleAccess } from "@src/shared/utils/has-high-role";
 
 export const GET = withAssociation(
   { query: MeetingQuerySchema },

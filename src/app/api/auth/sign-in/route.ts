@@ -12,7 +12,7 @@ import { ForbiddenError, UnauthorizedError } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
 import { logger } from "@src/shared/logger";
 import { SignInSchema } from "@src/features/auth/validators";
-import { getUserFirst } from "@src/shared/services/user/getUserFirst";
+import { getUserFirst } from "@src/shared/services/user/get-user-first";
 import { updateUser } from "@src/features/user/services";
 import { createRefreshToken } from "@src/features/auth/services/create-refresh-token";
 import { createVerificationCode } from "@src/features/auth/services/create-verification-code";

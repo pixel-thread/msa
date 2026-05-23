@@ -1,8 +1,7 @@
-import { withAssociation } from "@src/shared/api/with-association";
+import { withAssociation, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@utils/responses";
 import { getUserPaymentHistory } from "@feature/payments/services/payment.service";
 import { getUserContributionSummary } from "@feature/payments/services/contribution.service";
-import { withRole } from "@src/shared/api/with-role";
 import { UserRole } from "@prisma/client";
 import {
   LedgerQueryParams,

@@ -7,3 +7,5 @@ export * from "./withLogging.middleware";
 export * from "./withRateLimiting.middleware";
 export * from "./withSecurityHeaders.middleware";
 export * from "./withTraceId.middleware";
+export * from "./with-request-size-limit";
+export * from "./with-bot-protection";

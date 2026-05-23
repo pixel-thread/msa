@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 
 import { AppError, normalizeUnknownError } from "@src/shared/errors";
 import { AppErrorResponse, getTraceId } from "@src/shared/utils";
-import { logger } from "../logger";
+import { logger } from "@src/shared/logger";
 
 type RouteHandler<TContext> = (
   request: NextRequest,

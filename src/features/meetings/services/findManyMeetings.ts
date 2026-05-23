@@ -1,7 +1,7 @@
 import { prisma } from "@lib/prisma";
 import { MeetingType, MeetingStatus, Prisma, UserRole } from "@prisma/client";
 import { buildPagination } from "@src/shared/utils/build-pagination";
-import { hasHighRoleAccess } from "@src/shared/utils/hasHighRole";
+import { hasHighRoleAccess } from "@src/shared/utils/has-high-role";
 
 interface FindManyMeetingsProps {
   associationId: string;

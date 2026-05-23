@@ -1,4 +1,4 @@
-import { withAssociation } from "@src/shared/api/with-association";
+import { withAssociation, withRole } from "@src/shared/api";
 import {
   UserRole,
   ComplianceCheckStatus as PrismaComplianceCheckStatus,
@@ -10,7 +10,6 @@ import {
   ALL_CHECK_TYPES,
 } from "@src/features/compliance/validators";
 import { prisma } from "@src/shared/lib/prisma";
-import { withRole } from "@src/shared/api/with-role";
 import { SuccessResponse } from "@src/shared/utils";
 import { buildPagination } from "@src/shared/utils/build-pagination";
 

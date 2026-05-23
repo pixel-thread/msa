@@ -1,7 +1,6 @@
-import { withAssociation } from "@src/shared/api/with-association";
+import { withAssociation, withRole } from "@src/shared/api";
 import { UserRole } from "@prisma/client";
 import { generateComplianceEvidence } from "@src/features/compliance/services";
-import { withRole } from "@src/shared/api/with-role";
 import { SuccessResponse } from "@src/shared/utils";
 
 export const GET = withAssociation(

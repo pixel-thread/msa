@@ -1,5 +1,5 @@
 import { prisma } from "@src/shared/lib/prisma";
-import type { AssociationDetails } from "@src/shared/api/with-association";
+import type { AssociationDetails } from "@src/shared/api";
 import { Prisma } from "@prisma/client";
 import { buildPagination } from "@src/shared/utils/build-pagination";
 

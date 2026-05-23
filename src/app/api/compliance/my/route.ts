@@ -1,4 +1,4 @@
-import { withAssociation } from "@src/shared/api/with-association";
+import { withAssociation } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils";
 import { buildPagination } from "@src/shared/utils/build-pagination";
 import { UnauthorizedError } from "@src/shared/errors";

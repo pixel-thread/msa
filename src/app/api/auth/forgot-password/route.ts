@@ -11,7 +11,7 @@ import {
   ForgotPasswordSchema,
 } from "@src/features/auth/validators";
 import { updateUser } from "@src/features/user/services";
-import { getUserFirst } from "@src/shared/services/user/getUserFirst";
+import { getUserFirst } from "@src/shared/services/user/get-user-first";
 
 export const POST = withValidation(
   { body: ForgotPasswordSchema },

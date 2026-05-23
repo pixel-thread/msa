@@ -1,8 +1,7 @@
 import { z } from "zod";
 
 import { prisma } from "@src/shared/lib/prisma";
-import { withValidation } from "@src/shared/api";
-import { requireAuth } from "@src/shared/api/auth";
+import { withValidation, requireAuth } from "@src/shared/api";
 import { hashToken } from "@src/shared/lib/password";
 import { env } from "@src/env";
 import { TooManyRequestsError, UnauthorizedError } from "@src/shared/errors";

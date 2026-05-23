@@ -1,8 +1,8 @@
 import { NextRequest } from "next/server";
 import { UserRole } from "@prisma/client";
 
-import { ForbiddenError, UnauthorizedError } from "../errors";
-import { getUniqueUser } from "../services/user/getUniqueUser";
+import { ForbiddenError, UnauthorizedError } from "@src/shared/errors";
+import { getUniqueUser } from "@src/shared/services/user/get-unique-user";
 
 const ROLE_HIERARCHY: Record<UserRole, number> = {
   SUPER_ADMIN: 0,

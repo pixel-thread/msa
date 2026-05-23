@@ -3,8 +3,8 @@ import Link from "next/link";
 
 import { Card, CardHeader, CardTitle, CardContent } from "@src/shared/components/ui/card";
 import { Button } from "@src/shared/components/ui/button";
-import { getAuthFromCookies } from "@src/shared/api/auth";
-import { getUserFirst } from "@src/shared/services/user/getUserFirst";
+import { getAuthFromCookies } from "@src/shared/api";
+import { getUserFirst } from "@src/shared/services/user/get-user-first";
 
 export default async function DashboardPage() {
   const auth = await getAuthFromCookies();

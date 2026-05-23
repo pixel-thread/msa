@@ -1,4 +1,4 @@
-import { withAssociation } from "@src/shared/api/with-association";
+import { withAssociation } from "@src/shared/api";
 import { SuccessResponse } from "@utils/responses";
 import { getUserPaymentHistory } from "@feature/payments/services/payment.service";
 import { getUserContributionSummary } from "@feature/payments/services/contribution.service";

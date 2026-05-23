@@ -1,6 +1,6 @@
 import { ForbiddenError, UnauthorizedError } from "@src/shared/errors";
-import { withValidation, RouteContext } from "./with-validation";
-import { prisma } from "../lib/prisma";
+import { withValidation, RouteContext } from "@src/shared/api/with-validation";
+import { prisma } from "@src/shared/lib/prisma";
 import type { NextRequest } from "next/server";
 
 export interface AssociationDetails {

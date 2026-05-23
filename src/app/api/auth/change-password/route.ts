@@ -16,7 +16,7 @@ import {
 } from "@src/features/auth/validators";
 import { updateUser } from "@src/features/user/services";
 import { deleteRefreshTokens } from "@src/features/auth/services/delete-refresh-tokens";
-import { getUniqueUserNoFilter } from "@src/shared/services/user/getUniqueUserNoFilter";
+import { getUniqueUserNoFilter } from "@src/shared/services/user/get-unique-user-no-filter";
 
 export const POST = withValidation(
   { body: ChangePasswordSchema },
