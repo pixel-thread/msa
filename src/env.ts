@@ -7,6 +7,7 @@ export const env = createEnv({
     UPSTASH_REDIS_REST_URL: z.url(),
     UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
     SUPABASE_SECRET_KEY: z.string("SUPABASE_KEY"),
+    SUPABASE_URL: z.url("SUPABASE_KEY"),
     SUPABASE_BUCKET: z.string("SUPABASE_BUCKET").default("public"),
     FIELD_ENCRYPTION_KEY: z
       .string()
