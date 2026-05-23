@@ -12,6 +12,12 @@ export class ValidationError extends AppError {
   }
 }
 
+export class PayLoadTooLargeError extends AppError {
+  constructor(message = "Payload to Large", details?: unknown) {
+    super("PAYLOAD_TOO_LARGE", message, 413, details);
+  }
+}
+
 export class UnauthorizedError extends AppError {
   constructor(message = "Authentication required") {
     super("UNAUTHORIZED", message, 401);
