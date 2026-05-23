@@ -3,10 +3,8 @@
 import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { usePayments } from "@src/features/payments/hooks/usePayments";
-import {
-  PaymentFilters,
-  RecordPaymentDialog,
-} from "@src/features/payments/components";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
+import { RecordPaymentDialog } from "@src/features/payments/components";
 import { DataTable } from "@src/shared/components/data-table";
 import { usePaymentTransactionColumns } from "@src/features/payments/hooks/usePaymentTransactionColumns";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
@@ -65,7 +63,49 @@ export default function AllPaymentsPage() {
       </div>
 
       <div className=" border border-hairline bg-surface-card p-4">
-        <PaymentFilters onFilterChange={handleFilterChange} />
+        <DataTableFilters
+          fields={[
+            {
+              type: "search",
+              id: "search",
+              placeholder: "Search member, reference, receipt...",
+            },
+            {
+              type: "select",
+              id: "status",
+              label: "Status",
+              options: [
+                { value: "PENDING", label: "Pending" },
+                { value: "COMPLETED", label: "Completed" },
+                { value: "FAILED", label: "Failed" },
+                { value: "REFUNDED", label: "Refunded" },
+                { value: "WAIVED", label: "Waived" },
+              ],
+            },
+            {
+              type: "select",
+              id: "method",
+              label: "Method",
+              options: [
+                { value: "CASH", label: "Cash" },
+                { value: "BANK_TRANSFER", label: "Bank Transfer" },
+                { value: "UPI", label: "UPI" },
+                { value: "CHEQUE", label: "Cheque" },
+                { value: "ONLINE", label: "Online" },
+              ],
+            },
+            {
+              type: "select",
+              id: "gateway",
+              label: "Gateway",
+              options: [
+                { value: "RAZORPAY", label: "Razorpay" },
+                { value: "MANUAL", label: "Manual" },
+              ],
+            },
+          ]}
+          onFilterChange={handleFilterChange}
+        />
       </div>
 
       <DataTable columns={columns} data={payments} loading={isLoading} />

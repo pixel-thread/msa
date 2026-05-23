@@ -2,14 +2,9 @@
 
 import { useState, useCallback } from "react";
 import { DataTable } from "@src/shared/components/data-table";
-import { Input } from "@src/shared/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@src/shared/components/ui/select";
+  DataTableFilters,
+} from "@src/shared/components/data-table-filters";
 import {
   useConsentRecords,
   useDeleteConsentReceipt,
@@ -76,52 +71,35 @@ export default function ConsentAdminPage() {
       <ConsentReportCards />
 
       <div className=" border border-border bg-card p-4">
-        <div className="mb-4 flex items-center gap-3">
-          <div className="w-64">
-            <Input
-              placeholder="Search by name or email..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
-              }}
-            />
-          </div>
-          <Select
-            value={purposeFilter}
-            onValueChange={(value) => {
-              setPurposeFilter(value === "all" ? "" : value);
-              setPage(1);
-            }}
-          >
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="All Purposes" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Purposes</SelectItem>
-              {Object.values(ConsentPurpose).map((p) => (
-                <SelectItem key={p} value={p}>
-                  {p.charAt(0) + p.slice(1).toLowerCase()}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select
-            value={statusFilter}
-            onValueChange={(value) => {
-              setStatusFilter(value === "all" ? "" : value);
-              setPage(1);
-            }}
-          >
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="All Statuses" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value={ConsentStatus.GRANTED}>Granted</SelectItem>
-              <SelectItem value={ConsentStatus.WITHDRAWN}>Withdrawn</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="mb-4">
+          <DataTableFilters
+            fields={[
+              {
+                type: "search",
+                id: "search",
+                placeholder: "Search by name or email...",
+              },
+              {
+                type: "select",
+                id: "purpose",
+                label: "Purpose",
+                options: Object.values(ConsentPurpose).map((p) => ({
+                  value: p,
+                  label: p.charAt(0) + p.slice(1).toLowerCase(),
+                })),
+              },
+              {
+                type: "select",
+                id: "status",
+                label: "Status",
+                options: [
+                  { value: ConsentStatus.GRANTED, label: "Granted" },
+                  { value: ConsentStatus.WITHDRAWN, label: "Withdrawn" },
+                ],
+              },
+            ]}
+            onFilterChange={() => {}}
+          />
         </div>
 
         <DataTable

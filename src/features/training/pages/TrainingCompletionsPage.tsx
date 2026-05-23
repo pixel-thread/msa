@@ -7,6 +7,9 @@ import { ArrowLeft, Award } from "lucide-react";
 import { Button } from "@src/shared/components/ui/button";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import { DataTable } from "@src/shared/components/data-table";
+import {
+  DataTableFilters,
+} from "@src/shared/components/data-table-filters";
 import { useTrainingModule } from "../hooks/useTrainingModules";
 import { useTrainingCompletions } from "../hooks/completions/useTrainingCompletions";
 import { useTrainingCompletionsColumns } from "../hooks/completions/useTrainingCompletionsColumns";
@@ -91,6 +94,17 @@ export function TrainingCompletionsPage() {
       </div>
 
       {/* Completions table */}
+      <DataTableFilters
+        fields={[
+          {
+            type: "search",
+            id: "search",
+            placeholder: "Search completions...",
+          },
+        ]}
+        onFilterChange={() => {}}
+      />
+
       <DataTable
         loading={isCompletionsLoading}
         data={completions}

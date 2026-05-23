@@ -6,6 +6,9 @@ import { useLedgerEntries } from "../hooks/useLedgerEntries";
 import { Card, CardContent } from "@src/shared/components/ui/card";
 import { Button } from "@src/shared/components/ui/button";
 import { DataTable } from "@src/shared/components/data-table";
+import {
+  DataTableFilters,
+} from "@src/shared/components/data-table-filters";
 import { useRecentLedgerEntryColumns } from "../hooks/useRecentLedgerEntryColumns";
 import {
   ArrowRightIcon,
@@ -110,6 +113,17 @@ export default function LedgerDashboardPage() {
               </Button>
             </Link>
           </div>
+
+          <DataTableFilters
+            fields={[
+              {
+                type: "search",
+                id: "search",
+                placeholder: "Search entries...",
+              },
+            ]}
+            onFilterChange={() => {}}
+          />
 
           <DataTable
             columns={entryColumns}

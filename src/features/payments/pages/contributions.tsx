@@ -5,7 +5,10 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import http from "@src/shared/utils/http";
 import { useContributions } from "@src/features/payments/hooks/useContributions";
-import { ContributionFilters } from "@src/features/payments/components";
+import {
+  DataTableFilters,
+  type FilterField,
+} from "@src/shared/components/data-table-filters";
 import { DataTable } from "@src/shared/components/data-table";
 import { useContributionPeriodColumns } from "@src/features/payments/hooks/useContributionPeriodColumns";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
@@ -38,6 +41,52 @@ export default function ContributionsPage() {
   const [filters, setFilters] = useState<
     Record<string, string | number | undefined>
   >({});
+
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 6 }, (_, i) => currentYear - 5 + i);
+
+  const filterFields: FilterField[] = [
+    {
+      type: "select",
+      id: "status",
+      label: "Status",
+      options: [
+        { value: "DUE", label: "Due" },
+        { value: "PARTIAL", label: "Partial" },
+        { value: "PAID", label: "Paid" },
+        { value: "WAIVED", label: "Waived" },
+        { value: "OVERDUE", label: "Overdue" },
+      ],
+    },
+    {
+      type: "select",
+      id: "year",
+      label: "Year",
+      options: Array.from({ length: 6 }, (_, i) => {
+        const y = currentYear - 5 + i;
+        return { value: String(y), label: String(y) };
+      }),
+    },
+    {
+      type: "select",
+      id: "month",
+      label: "Month",
+      options: [
+        { value: "1", label: "January" },
+        { value: "2", label: "February" },
+        { value: "3", label: "March" },
+        { value: "4", label: "April" },
+        { value: "5", label: "May" },
+        { value: "6", label: "June" },
+        { value: "7", label: "July" },
+        { value: "8", label: "August" },
+        { value: "9", label: "September" },
+        { value: "10", label: "October" },
+        { value: "11", label: "November" },
+        { value: "12", label: "December" },
+      ],
+    },
+  ];
   const [generateDialogOpen, setGenerateDialogOpen] = useState(false);
   const [year, setYear] = useState(String(new Date().getFullYear()));
   const [month, setMonth] = useState(String(new Date().getMonth() + 1));
@@ -78,19 +127,22 @@ export default function ContributionsPage() {
   };
 
   const handleFilterChange = (
-    newFilters: Record<string, string | number | undefined>,
+    newFilters: Record<string, string | undefined>,
   ) => {
-    setFilters(newFilters);
+    const parsed: Record<string, string | number | undefined> = {
+      ...newFilters,
+      year: newFilters.year ? parseInt(newFilters.year, 10) : undefined,
+      month: newFilters.month ? parseInt(newFilters.month, 10) : undefined,
+    };
+    setFilters(parsed);
     const params = new URLSearchParams();
     params.set("page", "1");
-    Object.entries(newFilters).forEach(([key, value]) => {
+    Object.entries(parsed).forEach(([key, value]) => {
       if (value !== undefined) params.set(key, String(value));
     });
     router.push(`/payments/contributions?${params.toString()}`);
   };
 
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 6 }, (_, i) => currentYear - 5 + i);
   const months = [
     { value: "1", label: "January" },
     { value: "2", label: "February" },
@@ -124,7 +176,10 @@ export default function ContributionsPage() {
       </div>
 
       <Card className="p-4">
-        <ContributionFilters onFilterChange={handleFilterChange} />
+        <DataTableFilters
+          fields={filterFields}
+          onFilterChange={handleFilterChange}
+        />
       </Card>
 
       <div className=" border border-hairline bg-surface-card">

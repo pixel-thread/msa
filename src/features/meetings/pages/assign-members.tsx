@@ -13,14 +13,9 @@ import {
   CardContent,
 } from "@src/shared/components/ui/card";
 import { Button } from "@src/shared/components/ui/button";
-import { Input } from "@src/shared/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@src/shared/components/ui/select";
+  DataTableFilters,
+} from "@src/shared/components/data-table-filters";
 import { DataTable } from "@src/shared/components/data-table";
 import { useMeetingAttendeesColumns } from "@src/features/meetings/hooks/useMeetingAttendeesColumns";
 import {
@@ -28,7 +23,6 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
-  Search,
   UserPlus,
 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -232,41 +226,36 @@ export default function AssignMembersPage() {
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Search attendees..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 h-10 w-62.5"
-            />
-          </div>
-
-          <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className="w-40 h-10">
-              <SelectValue placeholder="Role" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Roles</SelectItem>
-              <SelectItem value="REQUIRED">Required</SelectItem>
-              <SelectItem value="OPTIONAL">Optional</SelectItem>
-              <SelectItem value="OBSERVER">Observer</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select value={rsvpFilter} onValueChange={setRsvpFilter}>
-            <SelectTrigger className="w-40 h-10">
-              <SelectValue placeholder="RSVP" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All RSVP</SelectItem>
-              <SelectItem value="ACCEPTED">Accepted</SelectItem>
-              <SelectItem value="DECLINED">Declined</SelectItem>
-              <SelectItem value="PENDING">Pending</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <DataTableFilters
+          fields={[
+            {
+              type: "search",
+              id: "search",
+              placeholder: "Search attendees...",
+            },
+            {
+              type: "select",
+              id: "role",
+              label: "Role",
+              options: [
+                { value: "REQUIRED", label: "Required" },
+                { value: "OPTIONAL", label: "Optional" },
+                { value: "OBSERVER", label: "Observer" },
+              ],
+            },
+            {
+              type: "select",
+              id: "rsvp",
+              label: "RSVP",
+              options: [
+                { value: "ACCEPTED", label: "Accepted" },
+                { value: "DECLINED", label: "Declined" },
+                { value: "PENDING", label: "Pending" },
+              ],
+            },
+          ]}
+          onFilterChange={() => {}}
+        />
 
         <Button onClick={() => setManageOpen(true)} className="h-10">
           <UserPlus className="mr-2 h-4 w-4" />

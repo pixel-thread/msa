@@ -3,6 +3,9 @@
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { useUserPayments } from "@src/features/payments/hooks/useUserPayments";
 import { DataTable } from "@src/shared/components/data-table";
+import {
+  DataTableFilters,
+} from "@src/shared/components/data-table-filters";
 import { usePaymentTransactionColumns } from "@src/features/payments/hooks/usePaymentTransactionColumns";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import {
@@ -171,6 +174,17 @@ export function UserPaymentsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
+            <DataTableFilters
+              fields={[
+                {
+                  type: "search",
+                  id: "search",
+                  placeholder: "Search transactions...",
+                },
+              ]}
+              onFilterChange={() => {}}
+            />
+
             <DataTable columns={columns} data={transactions} loading={isLoading} />
           </CardContent>
         </Card>

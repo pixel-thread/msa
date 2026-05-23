@@ -6,7 +6,9 @@ import { UserRole } from "@prisma/client";
 import { useAuthStore } from "@src/shared/stores/auth";
 import { DataTable } from "@src/shared/components/data-table";
 import { Button } from "@src/shared/components/ui/button";
-import { Input } from "@src/shared/components/ui/input";
+import {
+  DataTableFilters,
+} from "@src/shared/components/data-table-filters";
 import {
   Pagination,
   PaginationContent,
@@ -16,7 +18,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@src/shared/components/ui/pagination";
-import { Plus, Search, ShieldAlert, Award } from "lucide-react";
+import { Plus, ShieldAlert, Award } from "lucide-react";
 
 import {
   useTrainingModules,
@@ -121,15 +123,16 @@ export function TrainingListPage() {
       </div>
 
       <div className="flex items-center justify-between gap-4 mb-6">
-        <div className="relative max-w-sm flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search training modules..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="h-11 border-hairline bg-canvas pl-10 text-ink placeholder:text-muted-foreground focus-visible:border-primary"
-          />
-        </div>
+        <DataTableFilters
+          fields={[
+            {
+              type: "search",
+              id: "search",
+              placeholder: "Search training modules...",
+            },
+          ]}
+          onFilterChange={() => {}}
+        />
 
         <div className="flex items-center gap-2">
           <Button

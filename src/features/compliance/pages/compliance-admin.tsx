@@ -2,14 +2,9 @@
 
 import { useState, useCallback } from "react";
 import { DataTable } from "@src/shared/components/data-table";
-import { Input } from "@src/shared/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@src/shared/components/ui/select";
+  DataTableFilters,
+} from "@src/shared/components/data-table-filters";
 import {
   useComplianceChecks,
   useDeleteComplianceCheck,
@@ -72,45 +67,30 @@ export default function ComplianceAdminPage() {
       <ComplianceStatusCards />
 
       <div className=" border border-border bg-card p-4">
-        <div className="mb-4 flex items-center gap-3">
-          <Select
-            value={checkTypeFilter}
-            onValueChange={(value) => {
-              setCheckTypeFilter(value === "all" ? "" : value);
-              setPage(1);
-            }}
-          >
-            <SelectTrigger className="w-44">
-              <SelectValue placeholder="All Check Types" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Check Types</SelectItem>
-              {ALL_CHECK_TYPES.map((t) => (
-                <SelectItem key={t} value={t}>
-                  {t.replace(/_/g, " ")}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select
-            value={statusFilter}
-            onValueChange={(value) => {
-              setStatusFilter(value === "all" ? "" : value);
-              setPage(1);
-            }}
-          >
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="All Statuses" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              {ComplianceCheckStatusEnum.options.map((s) => (
-                <SelectItem key={s} value={s}>
-                  {s.charAt(0) + s.slice(1).toLowerCase()}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="mb-4">
+          <DataTableFilters
+            fields={[
+              {
+                type: "select",
+                id: "checkType",
+                label: "Check Type",
+                options: ALL_CHECK_TYPES.map((t) => ({
+                  value: t,
+                  label: t.replace(/_/g, " "),
+                })),
+              },
+              {
+                type: "select",
+                id: "status",
+                label: "Status",
+                options: ComplianceCheckStatusEnum.options.map((s) => ({
+                  value: s,
+                  label: s.charAt(0) + s.slice(1).toLowerCase(),
+                })),
+              },
+            ]}
+            onFilterChange={() => {}}
+          />
         </div>
 
         <DataTable

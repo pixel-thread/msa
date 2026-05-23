@@ -4,6 +4,9 @@ import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
 import { DataTable } from "@src/shared/components/data-table";
+import {
+  DataTableFilters,
+} from "@src/shared/components/data-table-filters";
 import { Button } from "@src/shared/components/ui/button";
 import { useMembershipApplications } from "../hooks/useMembershipApplications";
 import { useMembershipApplicationColumns } from "../hooks/useMembershipApplicationColumns";
@@ -53,6 +56,17 @@ export function MembershipApplicationsPage() {
           </p>
         </div>
       </div>
+
+      <DataTableFilters
+        fields={[
+          {
+            type: "search",
+            id: "search",
+            placeholder: "Search applications...",
+          },
+        ]}
+        onFilterChange={() => {}}
+      />
 
       <DataTable loading={isLoading} data={applications} columns={columns} />
 

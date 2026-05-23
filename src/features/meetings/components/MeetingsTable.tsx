@@ -11,6 +11,9 @@ import {
   CardTitle,
 } from "@src/shared/components/ui/card";
 import { DataTable } from "@src/shared/components/data-table";
+import {
+  DataTableFilters,
+} from "@src/shared/components/data-table-filters";
 import { useMeetingTableColumns } from "../hooks/useMeetingTableColumns";
 import { useMeetings } from "../hooks";
 
@@ -43,12 +46,25 @@ export function MeetingsTable() {
             </p>
           </div>
         ) : (
-          <DataTable
-            data={meetings || []}
-            columns={[]}
-            loading={false}
-            meta={{ router }}
-          />
+          <>
+            <DataTableFilters
+              fields={[
+                {
+                  type: "search",
+                  id: "search",
+                  placeholder: "Search meetings...",
+                },
+              ]}
+              onFilterChange={() => {}}
+            />
+
+            <DataTable
+              data={meetings || []}
+              columns={[]}
+              loading={false}
+              meta={{ router }}
+            />
+          </>
         )}
       </CardContent>
     </Card>

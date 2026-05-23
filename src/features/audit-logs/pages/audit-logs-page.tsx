@@ -6,14 +6,9 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { DataTable } from "@src/shared/components/data-table";
 import { Card, CardContent } from "@src/shared/components/ui/card";
 import { Input } from "@src/shared/components/ui/input";
-import { Button } from "@src/shared/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@src/shared/components/ui/select";
+  DataTableFilters,
+} from "@src/shared/components/data-table-filters";
 import { useAuditLogs } from "@src/features/audit-logs/hooks/useAuditLogs";
 import { useAuditLogColumns } from "@src/features/audit-logs/hooks/useAuditLogColumns";
 import { AuditLogDetailsDialog } from "@src/features/audit-logs/components/audit-log-details-dialog";
@@ -183,51 +178,29 @@ export default function AuditLogsPage() {
       <Card className=" border-hairline bg-surface-card">
         <CardContent className="p-4">
           <div className="flex flex-wrap items-end gap-3">
-            <div className="space-y-1.5">
-              <p className="text-xs font-medium text-muted-foreground">
-                Action
-              </p>
-              <Select
-                value={actionFilter}
-                onValueChange={(v) => pushParams({ action: v, page: "1" })}
-              >
-                <SelectTrigger className="w-44 h-10 border-hairline">
-                  <SelectValue placeholder="All actions" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All actions</SelectItem>
-                  {AUDIT_ACTIONS.map((a) => (
-                    <SelectItem key={a} value={a}>
-                      {a.replace(/_/g, " ")}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1.5">
-              <p className="text-xs font-medium text-muted-foreground">
-                Resource
-              </p>
-              <Select
-                value={resourceFilter}
-                onValueChange={(v) =>
-                  pushParams({ resourceType: v, page: "1" })
-                }
-              >
-                <SelectTrigger className="w-40 h-10 border-hairline">
-                  <SelectValue placeholder="All resources" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All resources</SelectItem>
-                  {RESOURCE_TYPES.map((r) => (
-                    <SelectItem key={r} value={r}>
-                      {r}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <DataTableFilters
+              fields={[
+                {
+                  type: "select",
+                  id: "action",
+                  label: "Action",
+                  options: AUDIT_ACTIONS.map((a) => ({
+                    value: a,
+                    label: a.replace(/_/g, " "),
+                  })),
+                },
+                {
+                  type: "select",
+                  id: "resourceType",
+                  label: "Resource",
+                  options: RESOURCE_TYPES.map((r) => ({
+                    value: r,
+                    label: r,
+                  })),
+                },
+              ]}
+              onFilterChange={() => {}}
+            />
 
             <div className="space-y-1.5">
               <p className="text-xs font-medium text-muted-foreground">From</p>
@@ -251,17 +224,6 @@ export default function AuditLogsPage() {
                 }
                 className="w-40 h-10 border-hairline"
               />
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                onClick={() => router.push("/audit-logs")}
-                className="h-10 px-4 text-sm text-muted-foreground"
-              >
-                <FilterIcon className="mr-1.5 h-4 w-4" />
-                Reset
-              </Button>
             </div>
           </div>
         </CardContent>

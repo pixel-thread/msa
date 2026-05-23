@@ -3,12 +3,8 @@
 import { useState, useCallback } from "react";
 import { DataTable } from "@src/shared/components/data-table";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@src/shared/components/ui/select";
+  DataTableFilters,
+} from "@src/shared/components/data-table-filters";
 import {
   useDsarTickets,
   useDeleteDsarTicket,
@@ -83,47 +79,33 @@ export default function DsarAdminPage() {
       <DsarSlaCards />
 
       <div className=" border border-border bg-card p-4">
-        <div className="mb-4 flex items-center gap-3">
-          <Select
-            value={requestTypeFilter}
-            onValueChange={(value) => {
-              setRequestTypeFilter(value === "all" ? "" : value);
-              setPage(1);
-            }}
-          >
-            <SelectTrigger className="w-44">
-              <SelectValue placeholder="All Types" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              {requestTypes.map((t) => (
-                <SelectItem key={t} value={t}>
-                  {t.charAt(0) + t.slice(1).toLowerCase()}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select
-            value={statusFilter}
-            onValueChange={(value) => {
-              setStatusFilter(value === "all" ? "" : value);
-              setPage(1);
-            }}
-          >
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="All Statuses" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              {statuses.map((s) => (
-                <SelectItem key={s} value={s}>
-                  {s === "IN_PROGRESS"
-                    ? "In Progress"
-                    : s.charAt(0) + s.slice(1).toLowerCase()}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="mb-4">
+          <DataTableFilters
+            fields={[
+              {
+                type: "select",
+                id: "requestType",
+                label: "Type",
+                options: requestTypes.map((t) => ({
+                  value: t,
+                  label: t.charAt(0) + t.slice(1).toLowerCase(),
+                })),
+              },
+              {
+                type: "select",
+                id: "status",
+                label: "Status",
+                options: statuses.map((s) => ({
+                  value: s,
+                  label:
+                    s === "IN_PROGRESS"
+                      ? "In Progress"
+                      : s.charAt(0) + s.slice(1).toLowerCase(),
+                })),
+              },
+            ]}
+            onFilterChange={() => {}}
+          />
         </div>
 
         <DataTable

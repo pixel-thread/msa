@@ -6,12 +6,8 @@ import { DataTable } from "@src/shared/components/data-table";
 import { Card, CardContent } from "@src/shared/components/ui/card";
 import { Button } from "@src/shared/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@src/shared/components/ui/select";
+  DataTableFilters,
+} from "@src/shared/components/data-table-filters";
 import {
   Pagination,
   PaginationContent,
@@ -29,7 +25,7 @@ import { useApproveEntry } from "../hooks/useApproveEntry";
 import { useLedgerEntriesColumns } from "../hooks/useLedgerEntriesColumns";
 import { CreateEntryDialog } from "../components/create-entry-dialog";
 import { ApproveEntryDialog } from "../components/approve-entry-dialog";
-import { Plus, FilterIcon } from "lucide-react";
+import { Plus } from "lucide-react";
 
 const STATUS_OPTIONS = ["ALL", "PENDING", "APPROVED", "REJECTED"] as const;
 
@@ -125,43 +121,21 @@ export default function LedgerEntriesPage() {
 
       <Card className=" border-hairline bg-surface-card">
         <CardContent className="p-4">
-          <div className="flex flex-wrap items-end gap-3">
-            <div className="space-y-1.5">
-              <p className="text-xs font-medium text-muted-foreground">
-                Status
-              </p>
-              <Select
-                value={statusFilter}
-                onValueChange={(v) =>
-                  pushParams({ status: v, page: "1" })
-                }
-              >
-                <SelectTrigger className="w-40 h-10 border-hairline">
-                  <SelectValue placeholder="All statuses" />
-                </SelectTrigger>
-                <SelectContent>
-                  {STATUS_OPTIONS.map((s) => (
-                    <SelectItem key={s} value={s}>
-                      {s === "ALL"
-                        ? "All Statuses"
-                        : s.charAt(0) + s.slice(1).toLowerCase()}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                onClick={() => router.push("/ledger/entries")}
-                className="h-10 px-4 text-sm text-muted-foreground"
-              >
-                <FilterIcon className="mr-1.5 h-4 w-4" />
-                Reset
-              </Button>
-            </div>
-          </div>
+          <DataTableFilters
+            fields={[
+              {
+                type: "select",
+                id: "status",
+                label: "Status",
+                options: [
+                  { value: "PENDING", label: "Pending" },
+                  { value: "APPROVED", label: "Approved" },
+                  { value: "REJECTED", label: "Rejected" },
+                ],
+              },
+            ]}
+            onFilterChange={() => {}}
+          />
         </CardContent>
       </Card>
 

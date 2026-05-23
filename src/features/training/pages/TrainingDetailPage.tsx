@@ -26,6 +26,9 @@ import { Input } from "@src/shared/components/ui/input";
 import { Badge } from "@src/shared/components/ui/badge";
 import { DataTable } from "@src/shared/components/data-table";
 import {
+  DataTableFilters,
+} from "@src/shared/components/data-table-filters";
+import {
   Tabs,
   TabsContent,
   TabsList,
@@ -245,15 +248,16 @@ export function TrainingDetailPage() {
               Assign Users
             </Button>
           </div>
-          <div className="relative max-w-sm">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Search assigned users..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="h-10 border-hairline bg-canvas pl-10 text-ink placeholder:text-muted-foreground focus-visible:border-primary"
-            />
-          </div>
+          <DataTableFilters
+            fields={[
+              {
+                type: "search",
+                id: "search",
+                placeholder: "Search assigned users...",
+              },
+            ]}
+            onFilterChange={() => {}}
+          />
           <DataTable
             loading={isAssignedLoading}
             data={filteredUsers}

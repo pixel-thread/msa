@@ -3,6 +3,9 @@
 import { useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { DataTable } from "@src/shared/components/data-table";
+import {
+  DataTableFilters,
+} from "@src/shared/components/data-table-filters";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import { useAnnouncementsList } from "@src/features/announcement/hooks/useAnnouncementsList";
 import { useDeleteAnnouncement } from "@src/features/announcement/hooks/useDeleteAnnouncement";
@@ -65,6 +68,17 @@ export default function AnnouncementsPage({ status }: AnnouncementsPageProps) {
         </div>
         <CreateAnnouncementDialog />
       </div>
+
+      <DataTableFilters
+        fields={[
+          {
+            type: "search",
+            id: "search",
+            placeholder: "Search announcements...",
+          },
+        ]}
+        onFilterChange={() => {}}
+      />
 
       <DataTable loading={isLoading} data={announcements} columns={columns} />
 

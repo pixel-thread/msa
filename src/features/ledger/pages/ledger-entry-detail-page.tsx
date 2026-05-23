@@ -9,6 +9,9 @@ import { Card, CardContent } from "@src/shared/components/ui/card";
 import { Button } from "@src/shared/components/ui/button";
 import { Badge } from "@src/shared/components/ui/badge";
 import { DataTable } from "@src/shared/components/data-table";
+import {
+  DataTableFilters,
+} from "@src/shared/components/data-table-filters";
 import { useLedgerLineColumns } from "../hooks/useLedgerLineColumns";
 import { formatDate } from "@src/shared/utils/format";
 import { ArrowLeftIcon } from "lucide-react";
@@ -136,6 +139,17 @@ export default function LedgerEntryDetailPage() {
       <Card className=" border-hairline bg-surface-card">
         <CardContent className="p-6">
           <h2 className="text-lg font-semibold text-ink mb-4">Ledger Lines</h2>
+          <DataTableFilters
+            fields={[
+              {
+                type: "search",
+                id: "search",
+                placeholder: "Search lines...",
+              },
+            ]}
+            onFilterChange={() => {}}
+          />
+
           <DataTable columns={lineColumns} data={entry.lines} />
         </CardContent>
       </Card>

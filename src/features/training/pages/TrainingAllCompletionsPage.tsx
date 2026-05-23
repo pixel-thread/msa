@@ -8,6 +8,9 @@ import { Button } from "@src/shared/components/ui/button";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import { DataTable } from "@src/shared/components/data-table";
 import {
+  DataTableFilters,
+} from "@src/shared/components/data-table-filters";
+import {
   useTrainingCompletionsColumns,
   useTrainingCompletions,
 } from "../hooks";
@@ -66,6 +69,17 @@ export function TrainingAllCompletionsPage() {
       </div>
 
       {/* Completions table */}
+      <DataTableFilters
+        fields={[
+          {
+            type: "search",
+            id: "search",
+            placeholder: "Search completions...",
+          },
+        ]}
+        onFilterChange={() => {}}
+      />
+
       <DataTable loading={isLoading} data={completions} columns={columns} />
 
       <DataTablePagination

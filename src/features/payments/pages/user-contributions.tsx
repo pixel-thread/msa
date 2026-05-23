@@ -1,7 +1,6 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
 import { useUserContributions } from "@src/features/payments/hooks/useUserContributions";
 import {
   Card,
@@ -11,17 +10,11 @@ import {
 } from "@src/shared/components/ui/card";
 import { Button } from "@src/shared/components/ui/button";
 import { DataTable } from "@src/shared/components/data-table";
+import {
+  DataTableFilters,
+} from "@src/shared/components/data-table-filters";
 import { useUserContributionColumns } from "@src/features/payments/hooks/useUserContributionColumns";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@src/shared/components/ui/select";
-import { Label } from "@src/shared/components/ui/label";
-import {
-  ArrowLeft,
   CalendarDays,
   CreditCard,
   AlertCircle,
@@ -34,22 +27,12 @@ export function UserContributionsPage() {
   const params = useParams();
   const router = useRouter();
   const userId = params.userId as string;
-  const [fromYear, setFromYear] = useState<string>("all");
-  const [fromMonth, setFromMonth] = useState<string>("all");
-  const [toYear, setToYear] = useState<string>("all");
-  const [toMonth, setToMonth] = useState<string>("all");
 
   const { user, contributions, summary, isLoading } = useUserContributions({
     userId,
-    fromYear: fromYear !== "all" ? parseInt(fromYear, 10) : undefined,
-    fromMonth: fromMonth !== "all" ? parseInt(fromMonth, 10) : undefined,
-    toYear: toYear !== "all" ? parseInt(toYear, 10) : undefined,
-    toMonth: toMonth !== "all" ? parseInt(toMonth, 10) : undefined,
   });
 
   const currentYear = new Date().getFullYear();
-
-  const years = Array.from({ length: 6 }, (_, i) => currentYear - 5 + i);
 
   const months = [
     { value: "1", label: "January" },
@@ -67,18 +50,6 @@ export function UserContributionsPage() {
   ];
 
   const { columns } = useUserContributionColumns();
-
-  const applyFilters = () => {
-    router.push(`/payments/users/${userId}/contributions`);
-  };
-
-  const resetFilters = () => {
-    setFromYear("all");
-    setFromMonth("all");
-    setToYear("all");
-    setToMonth("all");
-    router.push(`/payments/users/${userId}/contributions`);
-  };
 
   if (isLoading) {
     return (
@@ -188,82 +159,29 @@ export function UserContributionsPage() {
       )}
 
       <div className=" border border-hairline bg-surface-card p-4">
-        <div className="flex flex-wrap items-end gap-3">
-          <div className="grid gap-1">
-            <Label className="text-xs text-muted-foreground">From Year</Label>
-            <Select value={fromYear} onValueChange={setFromYear}>
-              <SelectTrigger className="w-[120px] h-9">
-                <SelectValue placeholder="Year" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                {years.map((y) => (
-                  <SelectItem key={y} value={String(y)}>
-                    {y}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid gap-1">
-            <Label className="text-xs text-muted-foreground">From Month</Label>
-            <Select value={fromMonth} onValueChange={setFromMonth}>
-              <SelectTrigger className="w-[130px] h-9">
-                <SelectValue placeholder="Month" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                {months.map((m) => (
-                  <SelectItem key={m.value} value={m.value}>
-                    {m.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid gap-1">
-            <Label className="text-xs text-muted-foreground">To Year</Label>
-            <Select value={toYear} onValueChange={setToYear}>
-              <SelectTrigger className="w-[120px] h-9">
-                <SelectValue placeholder="Year" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                {years.map((y) => (
-                  <SelectItem key={y} value={String(y)}>
-                    {y}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid gap-1">
-            <Label className="text-xs text-muted-foreground">To Month</Label>
-            <Select value={toMonth} onValueChange={setToMonth}>
-              <SelectTrigger className="w-[130px] h-9">
-                <SelectValue placeholder="Month" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                {months.map((m) => (
-                  <SelectItem key={m.value} value={m.value}>
-                    {m.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <Button onClick={applyFilters} className="h-9">
-            Apply
-          </Button>
-          <Button variant="outline" onClick={resetFilters} className="h-9">
-            Reset
-          </Button>
-        </div>
+        <DataTableFilters
+          fields={[
+            {
+              type: "select",
+              id: "fromYear",
+              label: "Year",
+              options: Array.from({ length: 6 }, (_, i) => ({
+                value: String(currentYear - 5 + i),
+                label: String(currentYear - 5 + i),
+              })),
+            },
+            {
+              type: "select",
+              id: "fromMonth",
+              label: "Month",
+              options: months.map((m) => ({
+                value: m.value,
+                label: m.label,
+              })),
+            },
+          ]}
+          onFilterChange={() => {}}
+        />
       </div>
 
       <Card className=" border-hairline bg-surface-card">

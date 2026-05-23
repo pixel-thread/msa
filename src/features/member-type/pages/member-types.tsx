@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { DataTable } from "@src/shared/components/data-table";
+import {
+  DataTableFilters,
+} from "@src/shared/components/data-table-filters";
 import { useMemberTypesList } from "@src/features/member-type/hooks/useMemberTypesList";
 import { useDeleteMemberType } from "@src/features/member-type/hooks/useDeleteMemberType";
 import { useMemberTypeColumns } from "@src/features/member-type/hooks/useMemberTypeColumns";
@@ -52,6 +55,17 @@ export default function MemberTypesPage() {
         </div>
         <CreateMemberTypeDialog />
       </div>
+
+      <DataTableFilters
+        fields={[
+          {
+            type: "search",
+            id: "search",
+            placeholder: "Search member types...",
+          },
+        ]}
+        onFilterChange={() => {}}
+      />
 
       <DataTable loading={isLoading} data={memberTypes} columns={columns} />
 

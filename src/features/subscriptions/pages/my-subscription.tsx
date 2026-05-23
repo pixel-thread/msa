@@ -12,6 +12,9 @@ import {
 import { Separator } from "@src/shared/components/ui/separator";
 import { formattedAmount } from "@src/shared/utils";
 import { DataTable } from "@src/shared/components/data-table";
+import {
+  DataTableFilters,
+} from "@src/shared/components/data-table-filters";
 import { useSubscriptionPaymentColumns } from "@src/features/subscriptions/hooks/useSubscriptionPaymentColumns";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import { CreditCard, Clock, Receipt, AlertCircle } from "lucide-react";
@@ -172,6 +175,17 @@ export function MySubscriptionPage() {
             </div>
           ) : (
             <div className="space-y-4">
+              <DataTableFilters
+                fields={[
+                  {
+                    type: "search",
+                    id: "search",
+                    placeholder: "Search transactions...",
+                  },
+                ]}
+                onFilterChange={() => {}}
+              />
+
               <DataTable
                 columns={columns}
                 data={transactions}

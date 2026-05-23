@@ -7,6 +7,9 @@ import {
   useDeleteProvider,
 } from "@src/features/payments/hooks/usePaymentProviders";
 import { DataTable } from "@src/shared/components/data-table";
+import {
+  DataTableFilters,
+} from "@src/shared/components/data-table-filters";
 import { usePaymentProviderColumns } from "@src/features/payments/hooks/usePaymentProviderColumns";
 import { Button } from "@src/shared/components/ui/button";
 import { Plus, Wallet } from "lucide-react";
@@ -85,6 +88,16 @@ export default function PaymentProvidersPage() {
               Provider Configurations ({providers.length})
             </h2>
           </div>
+          <DataTableFilters
+            fields={[
+              {
+                type: "search",
+                id: "search",
+                placeholder: "Search providers...",
+              },
+            ]}
+            onFilterChange={() => {}}
+          />
           <DataTable columns={columns} data={providers} loading={isLoading} />
         </div>
       </div>

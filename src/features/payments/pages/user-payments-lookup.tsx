@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { MemberSearch } from "@src/features/payments/components/member-search";
 import { DataTable } from "@src/shared/components/data-table";
+import {
+  DataTableFilters,
+} from "@src/shared/components/data-table-filters";
 import { usePaymentTransactionColumns } from "@src/features/payments/hooks/usePaymentTransactionColumns";
 import { useUserPayments } from "@src/features/payments/hooks/useUserPayments";
 import { Card, CardContent } from "@src/shared/components/ui/card";
@@ -142,6 +145,17 @@ export function UserPaymentsLookupPage() {
                   </Link>
                 </Button>
               </div>
+              <DataTableFilters
+                fields={[
+                  {
+                    type: "search",
+                    id: "search",
+                    placeholder: "Search transactions...",
+                  },
+                ]}
+                onFilterChange={() => {}}
+              />
+
               <DataTable columns={columns} data={transactions} loading={isLoading} />
             </div>
           </div>
