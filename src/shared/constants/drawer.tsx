@@ -177,6 +177,10 @@ export const drawrNavMain = [
     icon: <Settings2Icon />,
     items: [
       {
+        title: "Associations",
+        url: "/associations",
+      },
+      {
         title: "Member Types",
         url: "/member-types",
       },

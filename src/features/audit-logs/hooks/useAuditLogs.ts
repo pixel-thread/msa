@@ -1,7 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { axiosClient } from "@src/shared/api/axios";
 import type { AuditLogEntry } from "../types";
-import type { PaginationMeta } from "@src/shared/types";
 import http from "@src/shared/utils/http";
 
 interface UseAuditLogsParams {

@@ -1,1 +1,1 @@
-// exports
+export { AssociationsPage } from "./pages";

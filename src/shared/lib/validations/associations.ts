@@ -34,6 +34,13 @@ export const CreateAssociationSchema = z.object({
     })
     .optional(),
 
+  description: z
+    .string()
+    .max(500, {
+      error: "Description cannot exceed 500 characters",
+    })
+    .optional(),
+
   country: z
     .string()
     .length(2, {
