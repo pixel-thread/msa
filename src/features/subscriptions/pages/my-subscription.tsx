@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@src/shared/components/ui/table";
-import { SubscriptionsPagination } from "@src/features/subscriptions/components/subscriptions-pagination";
+import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import { CreditCard, Clock, Receipt, AlertCircle } from "lucide-react";
 import { getStatusBadge } from "@src/shared/utils/helper/get-status-badge";
 import { getMonthName } from "@src/shared/utils/helper/get-month-name";
@@ -254,13 +254,11 @@ export function MySubscriptionPage() {
 
               <Separator className="bg-hairline" />
 
-              {meta && meta.totalPages > 1 && (
-                <SubscriptionsPagination
-                  meta={meta}
-                  onPageChange={handlePageChange}
-                  label="transactions"
-                />
-              )}
+              <DataTablePagination
+                meta={meta}
+                onPageChange={handlePageChange}
+                label="transactions"
+              />
             </div>
           )}
         </CardContent>

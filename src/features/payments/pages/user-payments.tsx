@@ -3,7 +3,7 @@
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { useUserPayments } from "@src/features/payments/hooks/useUserPayments";
 import { PaymentsTable } from "@src/features/payments/components";
-import { SubscriptionsPagination } from "@src/features/subscriptions/components/subscriptions-pagination";
+import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import {
   Card,
   CardHeader,
@@ -240,13 +240,11 @@ export function UserPaymentsPage() {
         </div>
       </div>
 
-      {meta && meta.totalPages > 1 && (
-        <SubscriptionsPagination
-          meta={meta}
-          onPageChange={handlePageChange}
-          label="payments"
-        />
-      )}
+      <DataTablePagination
+        meta={meta}
+        onPageChange={handlePageChange}
+        label="payments"
+      />
     </>
   );
 }

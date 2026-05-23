@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import http from "@src/shared/utils/http";
 import { useContributions } from "@src/features/payments/hooks/useContributions";
 import { ContributionsTable, ContributionFilters } from "@src/features/payments/components";
-import { SubscriptionsPagination } from "@src/features/subscriptions/components/subscriptions-pagination";
+import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import { Button } from "@src/shared/components/ui/button";
 import {
   Dialog,
@@ -128,13 +128,11 @@ export default function ContributionsPage() {
         </div>
       </div>
 
-      {meta && meta.totalPages > 1 && (
-        <SubscriptionsPagination
-          meta={meta}
-          onPageChange={handlePageChange}
-          label="contributions"
-        />
-      )}
+      <DataTablePagination
+        meta={meta}
+        onPageChange={handlePageChange}
+        label="contributions"
+      />
 
       <Dialog open={generateDialogOpen} onOpenChange={setGenerateDialogOpen}>
         <DialogContent className="sm:max-w-[400px]">

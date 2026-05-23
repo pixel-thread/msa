@@ -19,7 +19,7 @@ import { ConsentDetailDialog } from "../components/consent-detail-dialog";
 import { EditConsentDialog } from "../components/edit-consent-dialog";
 import { DeleteConsentDialog } from "../components/delete-consent-dialog";
 import { ConsentReportCards } from "../components/consent-report-cards";
-import { ConsentPagination } from "../components/consent-pagination";
+import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import { ConsentPurpose, ConsentStatus } from "@prisma/client";
 import type { ConsentRecord } from "../types/consent.types";
 
@@ -130,11 +130,9 @@ export default function ConsentAdminPage() {
           columns={columns}
         />
 
-        {meta && (
-          <div className="mt-4">
-            <ConsentPagination meta={meta} onPageChange={setPage} />
-          </div>
-        )}
+        <div className="mt-4">
+          <DataTablePagination meta={meta} onPageChange={setPage} label="records" />
+        </div>
       </div>
 
       <ConsentDetailDialog

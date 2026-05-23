@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
 import { DataTable } from "@src/shared/components/data-table";
-import { SubscriptionsPagination } from "@src/features/subscriptions/components/subscriptions-pagination";
+import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import { usePlans } from "@src/features/subscriptions/hooks/usePlans";
 import { usePlanTableColumns } from "@src/features/subscriptions/hooks/usePlanTableColumns";
 import { usePlanTableActions } from "@src/features/subscriptions/hooks/usePlanTableActions";
@@ -60,13 +60,11 @@ export default function PlansPage() {
 
       <DataTable loading={isLoading} data={plans} columns={columns} />
 
-      {meta && (
-        <SubscriptionsPagination
-          meta={meta}
-          onPageChange={handlePageChange}
-          label="plans"
-        />
-      )}
+      <DataTablePagination
+        meta={meta}
+        onPageChange={handlePageChange}
+        label="plans"
+      />
 
       <EditPlanDialog
         plan={editingPlan}

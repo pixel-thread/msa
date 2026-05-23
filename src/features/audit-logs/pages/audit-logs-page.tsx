@@ -18,15 +18,7 @@ import { useAuditLogs } from "@src/features/audit-logs/hooks/useAuditLogs";
 import { useAuditLogColumns } from "@src/features/audit-logs/hooks/useAuditLogColumns";
 import { AuditLogDetailsDialog } from "@src/features/audit-logs/components/audit-log-details-dialog";
 import type { AuditLogEntry } from "@src/features/audit-logs/types";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@src/shared/components/ui/pagination";
+import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import { FilterIcon } from "lucide-react";
 
 const AUDIT_ACTIONS = [
@@ -110,31 +102,6 @@ export default function AuditLogsPage() {
     fromDate: fromDateFilter || undefined,
     toDate: toDateFilter || undefined,
   });
-
-  const getPageNumbers = (meta: { page: number; totalPages: number }) => {
-    const pages: number[] = [];
-    const maxVisible = 5;
-
-    if (meta.totalPages <= maxVisible) {
-      for (let i = 1; i <= meta.totalPages; i++) {
-        pages.push(i);
-      }
-    } else if (meta.page <= 3) {
-      for (let i = 1; i <= maxVisible; i++) {
-        pages.push(i);
-      }
-    } else if (meta.page >= meta.totalPages - 2) {
-      for (let i = meta.totalPages - 4; i <= meta.totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      for (let i = meta.page - 2; i <= meta.page + 2; i++) {
-        pages.push(i);
-      }
-    }
-
-    return pages;
-  };
 
   const handleViewDetails = useCallback((entry: AuditLogEntry) => {
     setSelectedEntry(entry);
@@ -302,75 +269,11 @@ export default function AuditLogsPage() {
 
       <DataTable loading={isLoading} data={auditLogs} columns={columns} />
 
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-body">
-          Showing{" "}
-          <span className="font-medium text-body-strong">
-            {pagination ? (pagination.page - 1) * pagination.pageSize + 1 : 0}
-          </span>{" "}
-          to{" "}
-          <span className="font-medium text-body-strong">
-            {pagination
-              ? Math.min(
-                  pagination.page * pagination.pageSize,
-                  pagination.total,
-                )
-              : 0}
-          </span>{" "}
-          of{" "}
-          <span className="font-medium text-body-strong">
-            {pagination?.total.toLocaleString()}
-          </span>{" "}
-          audit logs
-        </p>
-
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                className={
-                  !pagination || pagination.page <= 1
-                    ? "pointer-events-none opacity-50"
-                    : "cursor-pointer"
-                }
-              />
-            </PaginationItem>
-
-            {pagination &&
-              getPageNumbers(pagination).map((pageNum) => (
-                <PaginationItem key={pageNum}>
-                  <PaginationLink
-                    onClick={() => handlePageChange(pageNum)}
-                    isActive={pagination.page === pageNum}
-                    className="cursor-pointer"
-                  >
-                    {pageNum}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-
-            {pagination &&
-              pagination.totalPages > 5 &&
-              pagination.page < pagination.totalPages - 2 && (
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-              )}
-
-            <PaginationItem>
-              <PaginationNext
-                onClick={() => handlePageChange(currentPage + 1)}
-                className={
-                  !pagination || pagination.page >= pagination.totalPages
-                    ? "pointer-events-none opacity-50"
-                    : "cursor-pointer"
-                }
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
+      <DataTablePagination
+        meta={pagination}
+        onPageChange={handlePageChange}
+        label="audit logs"
+      />
 
       <AuditLogDetailsDialog
         entry={selectedEntry}

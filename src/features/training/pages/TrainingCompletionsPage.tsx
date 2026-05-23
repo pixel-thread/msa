@@ -5,15 +5,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Award } from "lucide-react";
 
 import { Button } from "@src/shared/components/ui/button";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@src/shared/components/ui/pagination";
+import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import { DataTable } from "@src/shared/components/data-table";
 import { useTrainingModule } from "../hooks/useTrainingModules";
 import { useTrainingCompletions } from "../hooks/completions/useTrainingCompletions";
@@ -43,21 +35,6 @@ export function TrainingCompletionsPage() {
     },
     [router, searchParams, moduleId],
   );
-
-  const getPageNumbers = (page: number, totalPages: number) => {
-    const pages: number[] = [];
-    const maxVisible = 5;
-    if (totalPages <= maxVisible) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
-    } else if (page <= 3) {
-      for (let i = 1; i <= maxVisible; i++) pages.push(i);
-    } else if (page >= totalPages - 2) {
-      for (let i = totalPages - 4; i <= totalPages; i++) pages.push(i);
-    } else {
-      for (let i = page - 2; i <= page + 2; i++) pages.push(i);
-    }
-    return pages;
-  };
 
   if (isModuleLoading) {
     return (
@@ -120,67 +97,11 @@ export function TrainingCompletionsPage() {
         columns={columns}
       />
 
-      {meta && meta.totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-body">
-            Showing{" "}
-            <span className="font-medium text-body-strong">
-              {(meta.page - 1) * meta.pageSize + 1}
-            </span>{" "}
-            to{" "}
-            <span className="font-medium text-body-strong">
-              {Math.min(meta.page * meta.pageSize, meta.total)}
-            </span>{" "}
-            of{" "}
-            <span className="font-medium text-body-strong">{meta.total}</span>{" "}
-            completions
-          </p>
-
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                  className={
-                    currentPage <= 1
-                      ? "pointer-events-none opacity-50"
-                      : "cursor-pointer"
-                  }
-                />
-              </PaginationItem>
-
-              {getPageNumbers(currentPage, meta.totalPages).map((pageNum) => (
-                <PaginationItem key={pageNum}>
-                  <PaginationLink
-                    onClick={() => handlePageChange(pageNum)}
-                    isActive={currentPage === pageNum}
-                    className="cursor-pointer"
-                  >
-                    {pageNum}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-
-              {meta.totalPages > 5 && currentPage < meta.totalPages - 2 && (
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-              )}
-
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  className={
-                    currentPage >= meta.totalPages
-                      ? "pointer-events-none opacity-50"
-                      : "cursor-pointer"
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
-      )}
+      <DataTablePagination
+        meta={meta}
+        onPageChange={handlePageChange}
+        label="completions"
+      />
     </div>
   );
 }

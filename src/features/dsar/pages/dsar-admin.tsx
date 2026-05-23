@@ -20,7 +20,7 @@ import { DsarRejectDialog } from "../components/dsar-reject-dialog";
 import { DsarAssignDialog } from "../components/dsar-assign-dialog";
 import { DsarDeleteDialog } from "../components/dsar-delete-dialog";
 import { DsarSlaCards } from "../components/dsar-sla-cards";
-import { ConsentPagination } from "@src/features/consent/components/consent-pagination";
+import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import type { DsarTicketRecord } from "../types";
 
 const requestTypes = ["ACCESS", "DELETION", "PORTABILITY", "RECTIFICATION", "RESTRICTION", "OBJECTION"];
@@ -132,11 +132,9 @@ export default function DsarAdminPage() {
           columns={columns}
         />
 
-        {meta && (
-          <div className="mt-4">
-            <ConsentPagination meta={meta} onPageChange={setPage} />
-          </div>
-        )}
+        <div className="mt-4">
+          <DataTablePagination meta={meta} onPageChange={setPage} label="requests" />
+        </div>
       </div>
 
       <DsarDetailDialog

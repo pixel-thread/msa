@@ -1,5 +1,6 @@
 "use client";
 
+import type { PaginationMeta } from "@src/shared/types";
 import {
   Pagination,
   PaginationContent,
@@ -10,26 +11,18 @@ import {
   PaginationPrevious,
 } from "@src/shared/components/ui/pagination";
 
-interface PaginationMeta {
-  page: number;
-  pageSize: number;
-  total: number;
-  totalPages: number;
-  hasMore: boolean;
-}
-
-interface MembersPaginationProps {
-  meta: PaginationMeta;
+interface DataTablePaginationProps {
+  meta?: PaginationMeta;
   onPageChange: (page: number) => void;
   label?: string;
 }
 
-export function MembersPagination({
+export function DataTablePagination({
   meta,
   onPageChange,
-  label = "members",
-}: MembersPaginationProps) {
-  if (meta.totalPages <= 1) return null;
+  label = "records",
+}: DataTablePaginationProps) {
+  if (!meta || meta.totalPages <= 1) return null;
 
   const getPageNumbers = () => {
     const pages: number[] = [];
@@ -65,7 +58,9 @@ export function MembersPagination({
         Showing{" "}
         <span className="font-medium text-body-strong">{startItem}</span> to{" "}
         <span className="font-medium text-body-strong">{endItem}</span> of{" "}
-        <span className="font-medium text-body-strong">{meta.total}</span>{" "}
+        <span className="font-medium text-body-strong">
+          {meta.total.toLocaleString()}
+        </span>{" "}
         {label}
       </p>
 

@@ -19,7 +19,7 @@ import { ComplianceDetailDialog } from "../components/compliance-detail-dialog";
 import { DeleteComplianceDialog } from "../components/delete-compliance-dialog";
 import { TriggerChecksDialog } from "../components/trigger-checks-dialog";
 import { ComplianceStatusCards } from "../components/compliance-status-cards";
-import { ConsentPagination } from "@src/features/consent/components/consent-pagination";
+import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import {
   ALL_CHECK_TYPES,
   ComplianceCheckStatusEnum,
@@ -119,11 +119,9 @@ export default function ComplianceAdminPage() {
           columns={columns}
         />
 
-        {meta && (
-          <div className="mt-4">
-            <ConsentPagination meta={meta} onPageChange={setPage} />
-          </div>
-        )}
+        <div className="mt-4">
+          <DataTablePagination meta={meta} onPageChange={setPage} label="checks" />
+        </div>
       </div>
 
       <ComplianceDetailDialog

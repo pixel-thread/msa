@@ -3,7 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 
 import { DataTable } from "@src/shared/components/data-table";
-import { MembersPagination } from "@src/features/members/components/members-pagination";
+import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import { useMembers } from "@src/features/members/hooks/useMembers";
 import { useMemberTableColumns } from "@src/features/members/hooks/useMemberTableColumns";
 import { useMemberTableActions } from "@src/features/members/hooks/useMemberTableActions";
@@ -38,7 +38,7 @@ export default function MembersPage() {
 
       <DataTable loading={isLoading} data={members} columns={columns} />
 
-      {meta && <MembersPagination meta={meta} onPageChange={handlePageChange} />}
+      <DataTablePagination meta={meta} onPageChange={handlePageChange} label="members" />
     </>
   );
 }

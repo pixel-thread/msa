@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { usePayments } from "@src/features/payments/hooks/usePayments";
 import { PaymentsTable, PaymentFilters, RecordPaymentDialog } from "@src/features/payments/components";
-import { SubscriptionsPagination } from "@src/features/subscriptions/components/subscriptions-pagination";
+import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import { Button } from "@src/shared/components/ui/button";
 import { Plus, Receipt } from "lucide-react";
 
@@ -69,13 +69,11 @@ export default function AllPaymentsPage() {
         </div>
       </div>
 
-      {meta && meta.totalPages > 1 && (
-        <SubscriptionsPagination
-          meta={meta}
-          onPageChange={handlePageChange}
-          label="payments"
-        />
-      )}
+      <DataTablePagination
+        meta={meta}
+        onPageChange={handlePageChange}
+        label="payments"
+      />
 
       <RecordPaymentDialog
         open={recordDialogOpen}
