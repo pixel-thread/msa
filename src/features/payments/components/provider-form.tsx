@@ -1,9 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@src/shared/components/ui/button";
 import { Input } from "@src/shared/components/ui/input";
-import { Label } from "@src/shared/components/ui/label";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@src/shared/components/ui/form";
 import {
   Select,
   SelectContent,
@@ -34,91 +43,175 @@ export function ProviderForm({
   onSubmit,
 }: ProviderFormProps) {
   const isEdit = !!initialData;
-  const [provider, setProvider] = useState(initialData?.provider ?? "");
-  const [keyId, setKeyId] = useState(initialData?.keyId ?? "");
-  const [keySecret, setKeySecret] = useState("");
-  const [webhookSecret, setWebhookSecret] = useState("");
-  const [isActive, setIsActive] = useState(initialData?.isActive ?? true);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit({
-      provider,
-      keyId,
-      ...(keySecret ? { keySecret: keySecret || "" } : {}),
-      ...(webhookSecret ? { webhookSecret } : {}),
-      isActive,
-    });
+  const formSchema = isEdit
+    ? z.object({
+        keyId: z.string().optional(),
+        keySecret: z.string().optional(),
+        webhookSecret: z.string().optional(),
+        isActive: z.boolean(),
+      })
+    : z.object({
+        provider: z.string().min(1, "Provider type is required"),
+        keyId: z.string().min(1, "Key ID is required"),
+        keySecret: z.string().min(1, "Key secret is required"),
+        webhookSecret: z.string().optional(),
+        isActive: z.boolean(),
+      });
+
+  type FormData = z.infer<typeof formSchema>;
+
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      ...(isEdit ? {} : { provider: "" }),
+      keyId: initialData?.keyId ?? "",
+      keySecret: "",
+      webhookSecret: "",
+      isActive: initialData?.isActive ?? true,
+    } as FormData,
+  });
+
+  const handleSubmit = (data: FormData) => {
+    if (isEdit) {
+      const payload: Record<string, unknown> = {
+        provider: initialData!.provider,
+        keyId: data.keyId || initialData!.keyId,
+        isActive: data.isActive,
+      };
+
+      if (data.keySecret) payload.keySecret = data.keySecret;
+      if (data.webhookSecret) payload.webhookSecret = data.webhookSecret;
+
+      onSubmit(payload as Parameters<typeof onSubmit>[0]);
+    } else {
+      const payload: Record<string, unknown> = {
+        provider: (data as { provider: string }).provider,
+        keyId: (data as { keyId: string }).keyId,
+        keySecret: (data as { keySecret: string }).keySecret,
+        isActive: data.isActive,
+      };
+
+      if (data.webhookSecret) payload.webhookSecret = data.webhookSecret;
+
+      onSubmit(payload as Parameters<typeof onSubmit>[0]);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {!isEdit && (
-        <div className="grid gap-2">
-          <Label htmlFor="provider">Provider Type</Label>
-          <Select
-            value={provider}
-            onValueChange={setProvider}
-            disabled={isEdit}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select provider" />
-            </SelectTrigger>
-            <SelectContent>
-              {PROVIDER_TYPES.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {type}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        {!isEdit && (
+          <FormField
+            control={form.control}
+            name="provider"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Provider Type</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select provider" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {PROVIDER_TYPES.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
-      <div className="grid gap-2">
-        <Label htmlFor="keyId">Key ID</Label>
-        <Input
-          id="keyId"
-          value={keyId}
-          onChange={(e) => setKeyId(e.target.value)}
-          placeholder={isEdit ? "Leave blank to keep current" : "Enter key ID"}
-          required={!isEdit}
+        <FormField
+          control={form.control}
+          name="keyId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Key ID</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  placeholder={
+                    isEdit ? "Leave blank to keep current" : "Enter key ID"
+                  }
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
 
-      <div className="grid gap-2">
-        <Label htmlFor="keySecret">Key Secret</Label>
-        <Input
-          id="keySecret"
-          type="password"
-          value={keySecret}
-          onChange={(e) => setKeySecret(e.target.value)}
-          placeholder={
-            isEdit ? "Leave blank to keep current" : "Enter key secret"
-          }
-          required={!isEdit}
+        <FormField
+          control={form.control}
+          name="keySecret"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Key Secret</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="password"
+                  placeholder={
+                    isEdit ? "Leave blank to keep current" : "Enter key secret"
+                  }
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
 
-      <div className="grid gap-2">
-        <Label htmlFor="webhookSecret">Webhook Secret</Label>
-        <Input
-          id="webhookSecret"
-          type="password"
-          value={webhookSecret}
-          onChange={(e) => setWebhookSecret(e.target.value)}
-          placeholder="Optional"
+        <FormField
+          control={form.control}
+          name="webhookSecret"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Webhook Secret</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="password"
+                  placeholder="Optional"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
 
-      <div className="flex items-center gap-2">
-        <Switch checked={isActive} onCheckedChange={setIsActive} />
-        <Label>Active</Label>
-      </div>
+        <FormField
+          control={form.control}
+          name="isActive"
+          render={({ field }) => (
+            <FormItem>
+              <div className="flex items-center gap-2">
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel>Active</FormLabel>
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <Button type="submit" disabled={isPending}>
-        {isPending ? "Saving..." : isEdit ? "Update Provider" : "Add Provider"}
-      </Button>
-    </form>
+        <Button type="submit" disabled={isPending}>
+          {isPending
+            ? "Saving..."
+            : isEdit
+              ? "Update Provider"
+              : "Add Provider"}
+        </Button>
+      </form>
+    </Form>
   );
 }
