@@ -26,10 +26,6 @@ export function MemberCombobox({
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!value) setSelectedName("");
-  }, [value]);
-
-  useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setIsOpen(false);
@@ -53,7 +49,7 @@ export function MemberCombobox({
     setSearchQuery("");
   };
 
-  const displayValue = searchQuery || selectedName;
+  const displayValue = searchQuery || (value ? selectedName : "");
 
   return (
     <div ref={containerRef} className="relative">
