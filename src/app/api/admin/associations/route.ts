@@ -12,12 +12,15 @@ import { CreateAssociationSchema } from "@src/shared/validators";
 export const GET = withValidation({}, async (req) => {
   await withRole(req, UserRole.SUPER_ADMIN);
 
-  const associations = await findManyAssociation({
+  const data = await findManyAssociation({
     orderBy: { createdAt: "desc" },
     where: { status: "ACTIVE" },
   });
 
-  return SuccessResponse<Association[]>({ data: associations });
+  return SuccessResponse<Association[]>({
+    data: data.associations,
+    meta: data.pagination,
+  });
 });
 
 export const POST = withValidation(
