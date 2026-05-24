@@ -7,14 +7,6 @@ import { useAuthStore } from "../stores/auth";
 import { Loading } from "@components/loading";
 import { ROUTE_ROLE } from "../constants";
 
-type UserRole =
-  | "SUPER_ADMIN"
-  | "PRESIDENT"
-  | "SECRETARY"
-  | "FINANCE"
-  | "DPO"
-  | "MEMBER";
-
 type PropsT = {
   children: React.ReactNode;
 };
@@ -23,6 +15,7 @@ const pageAccessOnlyIfUnAuthenticated: string[] = [
   "/sign-in",
   "/sign-up",
   "/reset-password",
+  "/forgot-password",
   "/verify-email",
 ];
 
@@ -31,7 +24,7 @@ export const Redirect = ({ children }: PropsT) => {
   const redirectTo = searchParams.get("redirect");
   const router = useRouter();
   const pathName = usePathname();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { user, isLoading: isAuthLoading, isSignedIn } = useAuthStore();
   const userRoles = useMemo(() => user?.role || ["MEMBER"], [user]);
   const isAuthenticated = !!user && isSignedIn;
@@ -41,14 +34,14 @@ export const Redirect = ({ children }: PropsT) => {
     if (isAuthLoading) return;
     // eslint-disable-next-line
     setIsLoading(true);
-    const timer = setTimeout(() => setIsLoading(false), 500);
+    const timer = setTimeout(() => setIsLoading(false), 2000);
     return () => clearTimeout(timer); // Cleanup the timer
   }, [isAuthLoading, pathName]);
 
   // Handle authentication and role-based redirects
   useEffect(() => {
     // Wait until authentication loading is complete to proceed
-    if (isAuthLoading) return;
+    if (isAuthLoading || isLoading) return;
 
     // Step 1: Identify the current route from the `routeRoles` configuration
     const currentRoute = ROUTE_ROLE.find((route) => {
