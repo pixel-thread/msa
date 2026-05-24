@@ -62,51 +62,49 @@ export default function AllPaymentsPage() {
         </Button>
       </div>
 
-      <div className=" border border-hairline bg-surface-card p-4">
-        <DataTableFilters
-          fields={[
-            {
-              type: "search",
-              id: "search",
-              placeholder: "Search member, reference, receipt...",
-            },
-            {
-              type: "select",
-              id: "status",
-              label: "Status",
-              options: [
-                { value: "PENDING", label: "Pending" },
-                { value: "COMPLETED", label: "Completed" },
-                { value: "FAILED", label: "Failed" },
-                { value: "REFUNDED", label: "Refunded" },
-                { value: "WAIVED", label: "Waived" },
-              ],
-            },
-            {
-              type: "select",
-              id: "method",
-              label: "Method",
-              options: [
-                { value: "CASH", label: "Cash" },
-                { value: "BANK_TRANSFER", label: "Bank Transfer" },
-                { value: "UPI", label: "UPI" },
-                { value: "CHEQUE", label: "Cheque" },
-                { value: "ONLINE", label: "Online" },
-              ],
-            },
-            {
-              type: "select",
-              id: "gateway",
-              label: "Gateway",
-              options: [
-                { value: "RAZORPAY", label: "Razorpay" },
-                { value: "MANUAL", label: "Manual" },
-              ],
-            },
-          ]}
-          onFilterChange={handleFilterChange}
-        />
-      </div>
+      <DataTableFilters
+        fields={[
+          {
+            type: "search",
+            id: "search",
+            placeholder: "Search member, reference, receipt...",
+          },
+          {
+            type: "select",
+            id: "status",
+            label: "Status",
+            options: [
+              { value: "PENDING", label: "Pending" },
+              { value: "COMPLETED", label: "Completed" },
+              { value: "FAILED", label: "Failed" },
+              { value: "REFUNDED", label: "Refunded" },
+              { value: "WAIVED", label: "Waived" },
+            ],
+          },
+          {
+            type: "select",
+            id: "method",
+            label: "Method",
+            options: [
+              { value: "CASH", label: "Cash" },
+              { value: "BANK_TRANSFER", label: "Bank Transfer" },
+              { value: "UPI", label: "UPI" },
+              { value: "CHEQUE", label: "Cheque" },
+              { value: "ONLINE", label: "Online" },
+            ],
+          },
+          {
+            type: "select",
+            id: "gateway",
+            label: "Gateway",
+            options: [
+              { value: "RAZORPAY", label: "Razorpay" },
+              { value: "MANUAL", label: "Manual" },
+            ],
+          },
+        ]}
+        onFilterChange={handleFilterChange}
+      />
 
       <DataTable columns={columns} data={payments} loading={isLoading} />
 

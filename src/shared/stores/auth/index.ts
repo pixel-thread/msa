@@ -4,6 +4,7 @@ import { create } from "zustand";
 
 import http from "@src/shared/utils/http";
 import type { UserRole } from "@src/shared/lib/prisma/types";
+import { logger } from "@src/shared/logger";
 
 export interface AuthUser {
   id: string;
@@ -125,8 +126,9 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   signOut: async () => {
     try {
-      await http.post("/auth/logout");
-    } catch {
+      await http.post("/auth/logout", {});
+    } catch (error) {
+      logger.debug("Failed to sign out", { error });
     } finally {
       set({ user: null });
     }

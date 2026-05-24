@@ -78,7 +78,7 @@ export const RefreshTokenSchema = z.object({
 });
 
 export const SignOutSchema = z.object({
-  token: z.string(),
+  token: z.string().optional(),
 });
 
 export const ForgotPasswordSchema = z.object({

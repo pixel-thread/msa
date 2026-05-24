@@ -11,6 +11,7 @@ import {
 } from "@src/shared/components/ui/select";
 import { Button } from "@src/shared/components/ui/button";
 import { Search, Filter } from "lucide-react";
+import { Card } from "@components/ui/card";
 
 export type FilterField =
   | { type: "search"; id: string; placeholder?: string }
@@ -59,7 +60,7 @@ export function DataTableFilters({
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <Card className="gap-3 p-4 flex-row">
       {fields.map((f) => {
         if (f.type === "search") {
           return (
@@ -80,9 +81,7 @@ export function DataTableFilters({
           <Select
             key={f.id}
             value={values[f.id]}
-            onValueChange={(v) =>
-              setValues((prev) => ({ ...prev, [f.id]: v }))
-            }
+            onValueChange={(v) => setValues((prev) => ({ ...prev, [f.id]: v }))}
           >
             <SelectTrigger className="w-[160px] h-10">
               <SelectValue placeholder={f.label} />
@@ -105,6 +104,6 @@ export function DataTableFilters({
       <Button variant="outline" onClick={resetFilters} className="h-10">
         Reset
       </Button>
-    </div>
+    </Card>
   );
 }
