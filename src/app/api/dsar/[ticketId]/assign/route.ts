@@ -1,8 +1,10 @@
-import { withAssociation, withRole, withValidation } from "@src/shared/api";
-import { SuccessResponse } from "@src/shared/utils";
+import { withAssociation, withRole } from "@src/shared/api";
+import { hasHighRoleAccess, SuccessResponse } from "@src/shared/utils";
 import { UserRole, AuditAction } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
 import { z } from "zod";
+import { getUniqueUser, logAction } from "@src/shared/services";
+import { BadRequestError, NotFoundError } from "@src/shared/errors";
 
 const ParamsSchema = z.object({
   ticketId: z.uuid(),
@@ -28,7 +30,16 @@ export const PATCH = withAssociation(
   { params: ParamsSchema, body: AssignSchema },
   async (association, { params, body }, request) => {
     const actorId = request.headers.get("x-user-id")!;
+
     await withRole(request, UserRole.DPO);
+
+    const user = await getUniqueUser({ where: { id: body?.assignedToId } });
+
+    if (!user) throw new NotFoundError("User not found");
+
+    if (!hasHighRoleAccess(user?.role)) {
+      throw new BadRequestError("User does have the required role");
+    }
 
     const ticket = await prisma.$transaction(async (tx) => {
       const updated = await tx.dsarTicket.update({
@@ -38,15 +49,13 @@ export const PATCH = withAssociation(
         },
       });
 
-      await tx.auditLog.create({
-        data: {
-          associationId: association.id,
-          actorId,
-          action: AuditAction.UPDATE,
-          resourceType: "DsarTicket",
-          resourceId: params!.ticketId,
-          newValues: { assignedToId: body!.assignedToId },
-        },
+      await logAction({
+        associationId: association.id,
+        actorId,
+        action: AuditAction.UPDATE,
+        resourceType: "DsarTicket",
+        resourceId: params!.ticketId,
+        newValues: { assignedToId: body!.assignedToId },
       });
 
       return updated;
