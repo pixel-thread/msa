@@ -5,7 +5,10 @@ import "./globals.css";
 import { cn } from "@src/shared/lib/utils";
 import { Suspense } from "react";
 
-const jetbrainsMono = JetBrains_Mono({subsets:['latin'],variable:'--font-mono'});
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+});
 
 const roboto = Roboto({
   subsets: ["latin"],
