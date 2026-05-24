@@ -7,12 +7,10 @@ import {
   useDeleteProvider,
 } from "@src/features/payments/hooks/usePaymentProviders";
 import { DataTable } from "@src/shared/components/data-table";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import { usePaymentProviderColumns } from "@src/features/payments/hooks/usePaymentProviderColumns";
 import { Button } from "@src/shared/components/ui/button";
-import { Plus, Wallet } from "lucide-react";
+import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -80,27 +78,17 @@ export default function PaymentProvidersPage() {
         </Button>
       </div>
 
-      <div className=" border border-hairline bg-surface-card">
-        <div className="p-4">
-          <div className="flex items-center gap-2 mb-4">
-            <Wallet className="h-5 w-5 text-muted-foreground" />
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Provider Configurations ({providers.length})
-            </h2>
-          </div>
-          <DataTableFilters
-            fields={[
-              {
-                type: "search",
-                id: "search",
-                placeholder: "Search providers...",
-              },
-            ]}
-            onFilterChange={() => {}}
-          />
-          <DataTable columns={columns} data={providers} loading={isLoading} />
-        </div>
-      </div>
+      <DataTableFilters
+        fields={[
+          {
+            type: "search",
+            id: "search",
+            placeholder: "Search providers...",
+          },
+        ]}
+        onFilterChange={() => {}}
+      />
+      <DataTable columns={columns} data={providers} loading={isLoading} />
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>

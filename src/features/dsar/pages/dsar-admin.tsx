@@ -2,14 +2,8 @@
 
 import { useState, useCallback } from "react";
 import { DataTable } from "@src/shared/components/data-table";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
-import {
-  useDsarTickets,
-  useDeleteDsarTicket,
-  useDsarColumns,
-} from "../hooks";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
+import { useDsarTickets, useDeleteDsarTicket, useDsarColumns } from "../hooks";
 import { DsarDetailDialog } from "../components/dsar-detail-dialog";
 import { DsarRespondDialog } from "../components/dsar-respond-dialog";
 import { DsarRejectDialog } from "../components/dsar-reject-dialog";
@@ -19,7 +13,14 @@ import { DsarSlaCards } from "../components/dsar-sla-cards";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import type { DsarTicketRecord } from "../types";
 
-const requestTypes = ["ACCESS", "DELETION", "PORTABILITY", "RECTIFICATION", "RESTRICTION", "OBJECTION"];
+const requestTypes = [
+  "ACCESS",
+  "DELETION",
+  "PORTABILITY",
+  "RECTIFICATION",
+  "RESTRICTION",
+  "OBJECTION",
+];
 const statuses = ["PENDING", "IN_PROGRESS", "COMPLETED", "REJECTED"];
 
 export default function DsarAdminPage() {
@@ -27,11 +28,21 @@ export default function DsarAdminPage() {
   const [statusFilter, setStatusFilter] = useState("");
   const [requestTypeFilter, setRequestTypeFilter] = useState("");
 
-  const [detailRecord, setDetailRecord] = useState<DsarTicketRecord | null>(null);
-  const [respondRecord, setRespondRecord] = useState<DsarTicketRecord | null>(null);
-  const [rejectRecord, setRejectRecord] = useState<DsarTicketRecord | null>(null);
-  const [assignRecord, setAssignRecord] = useState<DsarTicketRecord | null>(null);
-  const [deletingRecord, setDeletingRecord] = useState<DsarTicketRecord | null>(null);
+  const [detailRecord, setDetailRecord] = useState<DsarTicketRecord | null>(
+    null,
+  );
+  const [respondRecord, setRespondRecord] = useState<DsarTicketRecord | null>(
+    null,
+  );
+  const [rejectRecord, setRejectRecord] = useState<DsarTicketRecord | null>(
+    null,
+  );
+  const [assignRecord, setAssignRecord] = useState<DsarTicketRecord | null>(
+    null,
+  );
+  const [deletingRecord, setDeletingRecord] = useState<DsarTicketRecord | null>(
+    null,
+  );
 
   const { tickets, meta, isLoading } = useDsarTickets({
     page,
@@ -78,46 +89,44 @@ export default function DsarAdminPage() {
 
       <DsarSlaCards />
 
-      <div className=" border border-border bg-card p-4">
-        <div className="mb-4">
-          <DataTableFilters
-            fields={[
-              {
-                type: "select",
-                id: "requestType",
-                label: "Type",
-                options: requestTypes.map((t) => ({
-                  value: t,
-                  label: t.charAt(0) + t.slice(1).toLowerCase(),
-                })),
-              },
-              {
-                type: "select",
-                id: "status",
-                label: "Status",
-                options: statuses.map((s) => ({
-                  value: s,
-                  label:
-                    s === "IN_PROGRESS"
-                      ? "In Progress"
-                      : s.charAt(0) + s.slice(1).toLowerCase(),
-                })),
-              },
-            ]}
-            onFilterChange={() => {}}
-          />
-        </div>
+      <DataTableFilters
+        fields={[
+          {
+            type: "select",
+            id: "requestType",
+            label: "Type",
+            options: requestTypes.map((t) => ({
+              value: t,
+              label: t.charAt(0) + t.slice(1).toLowerCase(),
+            })),
+          },
+          {
+            type: "select",
+            id: "status",
+            label: "Status",
+            options: statuses.map((s) => ({
+              value: s,
+              label:
+                s === "IN_PROGRESS"
+                  ? "In Progress"
+                  : s.charAt(0) + s.slice(1).toLowerCase(),
+            })),
+          },
+        ]}
+        onFilterChange={() => {}}
+      />
 
-        <DataTable
-          loading={isLoading}
-          data={tickets as unknown as DsarTicketRecord[]}
-          columns={columns}
-        />
+      <DataTable
+        loading={isLoading}
+        data={tickets as unknown as DsarTicketRecord[]}
+        columns={columns}
+      />
 
-        <div className="mt-4">
-          <DataTablePagination meta={meta} onPageChange={setPage} label="requests" />
-        </div>
-      </div>
+      <DataTablePagination
+        meta={meta}
+        onPageChange={setPage}
+        label="requests"
+      />
 
       <DsarDetailDialog
         record={detailRecord}

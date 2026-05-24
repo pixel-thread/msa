@@ -6,9 +6,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { DataTable } from "@src/shared/components/data-table";
 import { Card, CardContent } from "@src/shared/components/ui/card";
 import { Input } from "@src/shared/components/ui/input";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import { useAuditLogs } from "@src/features/audit-logs/hooks/useAuditLogs";
 import { useAuditLogColumns } from "@src/features/audit-logs/hooks/useAuditLogColumns";
 import { AuditLogDetailsDialog } from "@src/features/audit-logs/components/audit-log-details-dialog";
@@ -175,59 +173,29 @@ export default function AuditLogsPage() {
         </Card>
       </div>
 
-      <Card className=" border-hairline bg-surface-card">
-        <CardContent className="p-4">
-          <div className="flex flex-wrap items-end gap-3">
-            <DataTableFilters
-              fields={[
-                {
-                  type: "select",
-                  id: "action",
-                  label: "Action",
-                  options: AUDIT_ACTIONS.map((a) => ({
-                    value: a,
-                    label: a.replace(/_/g, " "),
-                  })),
-                },
-                {
-                  type: "select",
-                  id: "resourceType",
-                  label: "Resource",
-                  options: RESOURCE_TYPES.map((r) => ({
-                    value: r,
-                    label: r,
-                  })),
-                },
-              ]}
-              onFilterChange={() => {}}
-            />
-
-            <div className="space-y-1.5">
-              <p className="text-xs font-medium text-muted-foreground">From</p>
-              <Input
-                type="date"
-                value={fromDateFilter}
-                onChange={(e) =>
-                  pushParams({ fromDate: e.target.value, page: "1" })
-                }
-                className="w-40 h-10 border-hairline"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <p className="text-xs font-medium text-muted-foreground">To</p>
-              <Input
-                type="date"
-                value={toDateFilter}
-                onChange={(e) =>
-                  pushParams({ toDate: e.target.value, page: "1" })
-                }
-                className="w-40 h-10 border-hairline"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <DataTableFilters
+        fields={[
+          {
+            type: "select",
+            id: "action",
+            label: "Action",
+            options: AUDIT_ACTIONS.map((a) => ({
+              value: a,
+              label: a.replace(/_/g, " "),
+            })),
+          },
+          {
+            type: "select",
+            id: "resourceType",
+            label: "Resource",
+            options: RESOURCE_TYPES.map((r) => ({
+              value: r,
+              label: r,
+            })),
+          },
+        ]}
+        onFilterChange={() => {}}
+      />
 
       <DataTable loading={isLoading} data={auditLogs} columns={columns} />
 

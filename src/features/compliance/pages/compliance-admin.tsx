@@ -2,9 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { DataTable } from "@src/shared/components/data-table";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import {
   useComplianceChecks,
   useDeleteComplianceCheck,
@@ -25,8 +23,12 @@ export default function ComplianceAdminPage() {
   const [page, setPage] = useState(1);
   const [checkTypeFilter, setCheckTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [detailRecord, setDetailRecord] = useState<ComplianceRecord | null>(null);
-  const [deletingRecord, setDeletingRecord] = useState<ComplianceRecord | null>(null);
+  const [detailRecord, setDetailRecord] = useState<ComplianceRecord | null>(
+    null,
+  );
+  const [deletingRecord, setDeletingRecord] = useState<ComplianceRecord | null>(
+    null,
+  );
 
   const { checks, meta, isLoading } = useComplianceChecks({
     page,
@@ -66,43 +68,37 @@ export default function ComplianceAdminPage() {
 
       <ComplianceStatusCards />
 
-      <div className=" border border-border bg-card p-4">
-        <div className="mb-4">
-          <DataTableFilters
-            fields={[
-              {
-                type: "select",
-                id: "checkType",
-                label: "Check Type",
-                options: ALL_CHECK_TYPES.map((t) => ({
-                  value: t,
-                  label: t.replace(/_/g, " "),
-                })),
-              },
-              {
-                type: "select",
-                id: "status",
-                label: "Status",
-                options: ComplianceCheckStatusEnum.options.map((s) => ({
-                  value: s,
-                  label: s.charAt(0) + s.slice(1).toLowerCase(),
-                })),
-              },
-            ]}
-            onFilterChange={() => {}}
-          />
-        </div>
+      <DataTableFilters
+        fields={[
+          {
+            type: "select",
+            id: "checkType",
+            label: "Check Type",
+            options: ALL_CHECK_TYPES.map((t) => ({
+              value: t,
+              label: t.replace(/_/g, " "),
+            })),
+          },
+          {
+            type: "select",
+            id: "status",
+            label: "Status",
+            options: ComplianceCheckStatusEnum.options.map((s) => ({
+              value: s,
+              label: s.charAt(0) + s.slice(1).toLowerCase(),
+            })),
+          },
+        ]}
+        onFilterChange={() => {}}
+      />
 
-        <DataTable
-          loading={isLoading}
-          data={checks as unknown as ComplianceRecord[]}
-          columns={columns}
-        />
+      <DataTable
+        loading={isLoading}
+        data={checks as unknown as ComplianceRecord[]}
+        columns={columns}
+      />
 
-        <div className="mt-4">
-          <DataTablePagination meta={meta} onPageChange={setPage} label="checks" />
-        </div>
-      </div>
+      <DataTablePagination meta={meta} onPageChange={setPage} label="checks" />
 
       <ComplianceDetailDialog
         record={detailRecord}

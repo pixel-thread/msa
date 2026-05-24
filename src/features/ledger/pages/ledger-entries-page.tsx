@@ -89,29 +89,26 @@ export default function LedgerEntriesPage() {
         </Button>
       </div>
 
-      <Card className=" border-hairline bg-surface-card">
-        <CardContent className="p-4">
-          <DataTableFilters
-            fields={[
-              {
-                type: "select",
-                id: "status",
-                label: "Status",
-                options: [
-                  { value: "PENDING", label: "Pending" },
-                  { value: "APPROVED", label: "Approved" },
-                  { value: "REJECTED", label: "Rejected" },
-                ],
-              },
-            ]}
-            onFilterChange={() => {}}
-          />
-        </CardContent>
-      </Card>
+      <DataTableFilters
+        fields={[
+          {
+            type: "select",
+            id: "status",
+            label: "Status",
+            options: [
+              { value: "PENDING", label: "Pending" },
+              { value: "APPROVED", label: "Approved" },
+              { value: "REJECTED", label: "Rejected" },
+            ],
+          },
+        ]}
+        onFilterChange={() => {}}
+      />
 
       <DataTable loading={isLoading} data={entries} columns={columns} />
 
       <DataTablePagination meta={meta} onPageChange={handlePageChange} />
+
       <CreateEntryDialog open={createOpen} onOpenChange={setCreateOpen} />
 
       <ApproveEntryDialog

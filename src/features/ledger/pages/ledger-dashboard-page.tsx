@@ -76,7 +76,7 @@ export default function LedgerDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className=" border-hairline bg-surface-card">
+        <Card className="p-4">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
               <div className=" bg-amber-50 p-2.5">
@@ -113,18 +113,16 @@ export default function LedgerDashboardPage() {
         </Card>
       </div>
 
-      <Card className="p-4">
-        <DataTableFilters
-          fields={[
-            {
-              type: "search",
-              id: "search",
-              placeholder: "Search entries...",
-            },
-          ]}
-          onFilterChange={() => {}}
-        />
-      </Card>
+      <DataTableFilters
+        fields={[
+          {
+            type: "search",
+            id: "search",
+            placeholder: "Search entries...",
+          },
+        ]}
+        onFilterChange={() => {}}
+      />
       <DataTable
         columns={entryColumns}
         data={entries}

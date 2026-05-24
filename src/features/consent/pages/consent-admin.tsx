@@ -2,9 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { DataTable } from "@src/shared/components/data-table";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import {
   useConsentRecords,
   useDeleteConsentReceipt,
@@ -70,48 +68,42 @@ export default function ConsentAdminPage() {
 
       <ConsentReportCards />
 
-      <div className=" border border-border bg-card p-4">
-        <div className="mb-4">
-          <DataTableFilters
-            fields={[
-              {
-                type: "search",
-                id: "search",
-                placeholder: "Search by name or email...",
-              },
-              {
-                type: "select",
-                id: "purpose",
-                label: "Purpose",
-                options: Object.values(ConsentPurpose).map((p) => ({
-                  value: p,
-                  label: p.charAt(0) + p.slice(1).toLowerCase(),
-                })),
-              },
-              {
-                type: "select",
-                id: "status",
-                label: "Status",
-                options: [
-                  { value: ConsentStatus.GRANTED, label: "Granted" },
-                  { value: ConsentStatus.WITHDRAWN, label: "Withdrawn" },
-                ],
-              },
-            ]}
-            onFilterChange={() => {}}
-          />
-        </div>
+      <DataTableFilters
+        fields={[
+          {
+            type: "search",
+            id: "search",
+            placeholder: "Search by name or email...",
+          },
+          {
+            type: "select",
+            id: "purpose",
+            label: "Purpose",
+            options: Object.values(ConsentPurpose).map((p) => ({
+              value: p,
+              label: p.charAt(0) + p.slice(1).toLowerCase(),
+            })),
+          },
+          {
+            type: "select",
+            id: "status",
+            label: "Status",
+            options: [
+              { value: ConsentStatus.GRANTED, label: "Granted" },
+              { value: ConsentStatus.WITHDRAWN, label: "Withdrawn" },
+            ],
+          },
+        ]}
+        onFilterChange={() => {}}
+      />
 
-        <DataTable
-          loading={isLoading}
-          data={records as unknown as ConsentRecord[]}
-          columns={columns}
-        />
+      <DataTable
+        loading={isLoading}
+        data={records as unknown as ConsentRecord[]}
+        columns={columns}
+      />
 
-        <div className="mt-4">
-          <DataTablePagination meta={meta} onPageChange={setPage} label="records" />
-        </div>
-      </div>
+      <DataTablePagination meta={meta} onPageChange={setPage} label="records" />
 
       <ConsentDetailDialog
         record={detailRecord}

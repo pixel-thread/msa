@@ -12,9 +12,7 @@ import {
 import { Separator } from "@src/shared/components/ui/separator";
 import { formattedAmount } from "@src/shared/utils";
 import { DataTable } from "@src/shared/components/data-table";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import { useSubscriptionPaymentColumns } from "@src/features/subscriptions/hooks/useSubscriptionPaymentColumns";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import { CreditCard, Clock, Receipt, AlertCircle } from "lucide-react";
@@ -119,7 +117,9 @@ export function MySubscriptionPage() {
               <div className="flex items-center gap-3">
                 <CreditCard className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Total Paid</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Total Paid
+                  </p>
                   <p className="text-lg font-medium text-ink mt-1">
                     {formattedAmount(summary.totalPaid)}
                   </p>
@@ -133,7 +133,9 @@ export function MySubscriptionPage() {
               <div className="flex items-center gap-3">
                 <Clock className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Pending</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Pending
+                  </p>
                   <p className="text-lg font-medium text-ink mt-1">
                     {formattedAmount(summary.totalPending)}
                   </p>
@@ -147,7 +149,9 @@ export function MySubscriptionPage() {
               <div className="flex items-center gap-3">
                 <AlertCircle className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Total Dues</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Total Dues
+                  </p>
                   <p className="text-lg font-medium text-ink mt-1">
                     {formattedAmount(summary.totalDues)}
                   </p>
@@ -158,50 +162,25 @@ export function MySubscriptionPage() {
         </div>
       )}
 
-      <Card className=" border-hairline bg-surface-card">
-        <CardHeader>
-          <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-            Transactions
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {transactions.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12">
-              <Receipt className="h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-base text-body">No payment history found</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Your payment transactions will appear here
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <DataTableFilters
-                fields={[
-                  {
-                    type: "search",
-                    id: "search",
-                    placeholder: "Search transactions...",
-                  },
-                ]}
-                onFilterChange={() => {}}
-              />
+      <Card className="p-4">
+        <DataTableFilters
+          fields={[
+            {
+              type: "search",
+              id: "search",
+              placeholder: "Search transactions...",
+            },
+          ]}
+          onFilterChange={() => {}}
+        />
 
-              <DataTable
-                columns={columns}
-                data={transactions}
-                loading={false}
-              />
+        <DataTable columns={columns} data={transactions} loading={false} />
 
-              <Separator className="bg-hairline" />
-
-              <DataTablePagination
-                meta={meta}
-                onPageChange={handlePageChange}
-                label="transactions"
-              />
-            </div>
-          )}
-        </CardContent>
+        <DataTablePagination
+          meta={meta}
+          onPageChange={handlePageChange}
+          label="transactions"
+        />
       </Card>
     </>
   );
