@@ -26,8 +26,9 @@
 18. [Cron / Scheduled Job Rules](#cron--scheduled-job-rules)
 19. [Import Rules](#import-rules)
 20. [Performance Rules](#performance-rules)
-21. [AI Agent Checklist](#ai-agent-checklist)
-22. [Barrel Export Rules](#barrel-export-rules)
+21. [Documentation & JSDoc Rules](#documentation--jsdoc-rules)
+22. [AI Agent Checklist](#ai-agent-checklist)
+23. [Barrel Export Rules](#barrel-export-rules)
 
 ---
 
@@ -675,6 +676,137 @@ export * from "./TrainingTable";
 
 ---
 
+## Documentation & JSDoc Rules
+
+> All code written or modified by AI agents must include clear, accurate, and maintainable JSDoc documentation.
+
+### General Rules
+
+- Every exported function, class, hook, middleware, service, utility, and React component must include JSDoc.
+- Any existing code modified by the agent must have its JSDoc updated to reflect the new behavior.
+- JSDoc must describe:
+  - Purpose/responsibility
+  - Parameters
+  - Return values
+  - Side effects
+  - Security-sensitive behavior where applicable
+- Do not write redundant comments that merely repeat TypeScript types.
+- Comments must explain intent and business reasoning, not obvious syntax.
+- Private/internal helper functions should include JSDoc if the logic is non-trivial.
+
+### Required Targets
+
+The following always require JSDoc:
+
+| Target                                 | Required |
+| -------------------------------------- | -------- |
+| API route handlers                     | ✅       |
+| Middleware                             | ✅       |
+| Services                               | ✅       |
+| Hooks                                  | ✅       |
+| Shared utilities                       | ✅       |
+| Prisma access functions                | ✅       |
+| Security/auth logic                    | ✅       |
+| Complex React components               | ✅       |
+| Zustand stores                         | ✅       |
+| Validation schemas with business rules | ✅       |
+
+### React Component Documentation
+
+React component JSDoc must explain:
+
+- What the component renders
+- Its responsibility
+- Important props
+- State or side-effect behavior if non-obvious
+
+Example:
+
+```ts
+/**
+ * Displays a searchable list of association members.
+ * Handles debounced member search and member selection state.
+ */
+export function MemberCombobox() {}
+```
+
+### Service Documentation
+
+Service JSDoc must explain:
+
+- Business operation
+- Tenant scoping requirements
+- Authorization assumptions
+- External dependencies used
+- Possible thrown errors
+
+Example:
+
+```ts
+/**
+ * Creates a new training module for an association.
+ *
+ * Requires:
+ * - Authenticated user
+ * - Association-scoped access
+ * - DPO role or higher
+ *
+ * Throws:
+ * - ConflictError when module already exists
+ * - ValidationError when input is invalid
+ */
+export async function createModule() {}
+```
+
+### Security Documentation
+
+Security-sensitive code must explicitly document:
+
+- Authentication assumptions
+- Authorization enforcement
+- Trusted/untrusted inputs
+- Header manipulation
+- Token validation
+- Sensitive side effects
+
+Example:
+
+```ts
+/**
+ * Validates the access token and injects trusted user context
+ * into downstream request headers.
+ *
+ * Security:
+ * - Removes spoofable incoming auth headers
+ * - Verifies JWT signature server-side
+ * - Never trusts client-supplied identity headers
+ */
+```
+
+### Forbidden Documentation Patterns
+
+- Do not add meaningless comments:
+
+  ```ts
+  // increment i
+  i++;
+  ```
+
+- Do not write outdated or speculative comments.
+- Do not copy-paste incorrect JSDoc templates.
+- Do not document obvious TypeScript inference only.
+
+### AI Agent Enforcement
+
+Before completing any task, AI agents must verify:
+
+- [ ] All new exported functions include JSDoc.
+- [ ] Modified functions have updated JSDoc.
+- [ ] Security-sensitive logic is documented.
+- [ ] Complex business rules are explained.
+- [ ] Comments describe intent, not syntax.
+- [ ] No stale or misleading comments exist.
+
 ## AI Agent Checklist
 
 Before submitting any code change, verify every item in this list:
@@ -721,5 +853,12 @@ Before submitting any code change, verify every item in this list:
 - [ ] All imports use path aliases.
 - [ ] No cross-feature direct imports.
 - [ ] No circular dependencies introduced.
+
+### Documentation
+
+- [ ] All new exported functions/components/hooks/services include JSDoc.
+- [ ] Modified code has updated documentation.
+- [ ] Security-sensitive logic includes security notes.
+- [ ] No stale or misleading comments introduced.
 
 ---

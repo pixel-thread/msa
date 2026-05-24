@@ -231,8 +231,6 @@ export const withRateLimiting: MiddlewareFn = async (request, next) => {
 
     const result = await checkRateLimit(identifier, match.config);
 
-    const response = await next(request);
-
     if (!result.success) {
       logger.warn("Rate limit exceeded", {
         identifier,
@@ -244,6 +242,8 @@ export const withRateLimiting: MiddlewareFn = async (request, next) => {
         "Too many requests. Please try again later.",
       );
     }
+
+    const response = await next(request);
 
     response.headers.set("RateLimit-Limit", String(result.limit));
 

@@ -1,14 +1,9 @@
 import { hashToken } from "./token";
 
-export function generateOTP(length: number = 6): string {
-  const digits = "0123456789";
-  let otp = "";
+import crypto from "crypto";
 
-  for (let i = 0; i < length; i++) {
-    otp += digits[Math.floor(Math.random() * digits.length)];
-  }
-
-  return otp;
+export function generateOTP(length = 6): string {
+  return Array.from({ length }, () => crypto.randomInt(0, 10)).join("");
 }
 
 export function hashOTP(code: string): string {

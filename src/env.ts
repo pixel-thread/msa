@@ -33,6 +33,7 @@ export const env = createEnv({
     // JWT Configuration
     JWT_SECRET: z.string().min(32),
     JWT_REFRESH_SECRET: z.string().min(32),
+    JWT_PASSWORD_RESET_SECRET: z.string().min(32),
     ACCESS_TOKEN_EXPIRY: z.string().default("15m"),
     REFRESH_TOKEN_EXPIRY: z.string().default("7d"),
     OTP_EXPIRY: z.string().default("5m"),
@@ -72,6 +73,7 @@ export const env = createEnv({
     // JWT Configuration
     JWT_SECRET: process.env.JWT_SECRET,
     JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
+    JWT_PASSWORD_RESET_SECRET: process.env.JWT_PASSWORD_RESET_SECRET,
     ACCESS_TOKEN_EXPIRY: process.env.ACCESS_TOKEN_EXPIRY,
     REFRESH_TOKEN_EXPIRY: process.env.REFRESH_TOKEN_EXPIRY,
     OTP_EXPIRY: process.env.OTP_EXPIRY,

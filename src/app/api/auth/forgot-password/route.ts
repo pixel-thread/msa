@@ -22,7 +22,10 @@ export const POST = withValidation(
       where: { email },
     });
 
-    if (!user) throw new NotFoundError("User not found");
+    if (!user)
+      throw new NotFoundError(
+        "Reset email has not been sent to your registerd email",
+      );
 
     const resetToken = await signPasswordResetToken(user.id);
     const hashedToken = hashToken(resetToken);

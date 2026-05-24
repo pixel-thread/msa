@@ -1,18 +1,15 @@
 import { SignJWT, jwtVerify, JWTPayload } from "jose";
 
 import { env } from "@src/env";
-import type { UserRole } from "@src/shared/types";
+import { UnauthorizedError } from "../errors";
 
 export interface AccessTokenPayload {
   sub: string;
-  email: string;
-  role: UserRole;
   type: "access";
 }
 
 export interface RefreshTokenPayload {
   sub: string;
-  email: string;
   type: "refresh";
 }
 
@@ -23,6 +20,7 @@ export interface PasswordResetPayload {
 
 const accessTokenSecret = new TextEncoder().encode(env.JWT_SECRET);
 const refreshTokenSecret = new TextEncoder().encode(env.JWT_REFRESH_SECRET);
+const passwordResetSecret = new TextEncoder().encode(env.JWT_SECRET);
 
 export async function signAccessToken(userId: string): Promise<string> {
   return new SignJWT({ sub: userId, type: "access" })
@@ -45,7 +43,7 @@ export async function signPasswordResetToken(userId: string): Promise<string> {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(env.PASSWORD_RESET_TOKEN_EXPIRY)
-    .sign(accessTokenSecret);
+    .sign(passwordResetSecret);
 }
 
 export async function verifyAccessToken(
@@ -54,7 +52,7 @@ export async function verifyAccessToken(
   const { payload } = await jwtVerify(token, accessTokenSecret);
 
   if (payload.type !== "access") {
-    throw new Error("Invalid token type");
+    throw new UnauthorizedError("Invalid token type");
   }
 
   return payload as unknown as AccessTokenPayload;
@@ -66,7 +64,7 @@ export async function verifyRefreshToken(
   const { payload } = await jwtVerify(token, refreshTokenSecret);
 
   if (payload.type !== "refresh") {
-    throw new Error("Invalid token type");
+    throw new UnauthorizedError("Invalid token type");
   }
 
   return payload as unknown as RefreshTokenPayload;
@@ -78,7 +76,7 @@ export async function verifyPasswordResetToken(
   const { payload } = await jwtVerify(token, accessTokenSecret);
 
   if (payload.type !== "password_reset") {
-    throw new Error("Invalid token type");
+    throw new UnauthorizedError("Invalid token type");
   }
 
   return payload as unknown as PasswordResetPayload;
@@ -100,4 +98,3 @@ export async function getTokenExpiry(token: string): Promise<number> {
   const { payload } = await jwtVerify(token, accessTokenSecret);
   return payload.exp ? payload.exp * 1000 : 0;
 }
-
