@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   Table,
@@ -7,46 +7,55 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@src/shared/components/ui/table"
-import { Badge } from "@src/shared/components/ui/badge"
-import type { DashboardOverview } from "@feature/dashboard/services/dashboard.service"
+} from "@src/shared/components/ui/table";
+import { Badge } from "@src/shared/components/ui/badge";
+import type { DashboardOverview } from "@feature/dashboard/services/dashboard.service";
+import { Card } from "@components/ui/card";
 
-const statusColor: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+const statusColor: Record<
+  string,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
   COMPLETED: "default",
   PENDING: "secondary",
   FAILED: "destructive",
   REFUNDED: "outline",
   WAIVED: "outline",
-}
+};
 
 interface RecentPaymentsTableProps {
-  payments: DashboardOverview["recentPayments"]
+  payments: DashboardOverview["recentPayments"];
 }
 
 export function RecentPaymentsTable({ payments }: RecentPaymentsTableProps) {
   return (
-    <div className="rounded-md border border-hairline">
+    <Card className="rounded-none p-4">
       <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Member</TableHead>
-            <TableHead>Amount</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Method</TableHead>
-            <TableHead className="text-right">Date</TableHead>
+        <TableHeader className="text-primary-foreground">
+          <TableRow className="bg-primary text-primary-foreground">
+            <TableHead className="text-inherit">Member</TableHead>
+            <TableHead className="text-inherit">Amount</TableHead>
+            <TableHead className="text-inherit">Status</TableHead>
+            <TableHead className="text-inherit">Method</TableHead>
+            <TableHead className="text-right text-inherit">Date</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {payments.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+              <TableCell
+                colSpan={5}
+                className="h-24 text-center text-muted-foreground"
+              >
                 No payments yet
               </TableCell>
             </TableRow>
           ) : (
             payments.map((payment) => (
               <TableRow key={payment.id}>
-                <TableCell className="font-medium">{payment.userName}</TableCell>
+                <TableCell className="font-medium">
+                  {payment.userName}
+                </TableCell>
                 <TableCell>
                   {new Intl.NumberFormat("en-IN", {
                     style: "currency",
@@ -73,6 +82,6 @@ export function RecentPaymentsTable({ payments }: RecentPaymentsTableProps) {
           )}
         </TableBody>
       </Table>
-    </div>
-  )
+    </Card>
+  );
 }
