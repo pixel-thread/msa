@@ -1,4 +1,4 @@
-import { SignJWT, jwtVerify, JWTPayload } from "jose";
+import { SignJWT, jwtVerify, JWTPayload, decodeJwt } from "jose";
 
 import { env } from "@src/env";
 import { UnauthorizedError } from "../errors";
@@ -85,6 +85,8 @@ export async function signMfaTempToken(userId: string): Promise<string> {
   return new SignJWT({ sub: userId, type: "mfa_temp" })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
+    .setIssuer(env.JWT_ISSUER)
+    .setAudience(env.JWT_AUDIENCE)
     .setExpirationTime("5m")
     .sign(accessTokenSecret);
 }
@@ -118,7 +120,7 @@ export function decodeToken(token: string): JWTPayload | null {
     const parts = token.split(".");
     if (parts.length !== 3) return null;
 
-    const payload = JSON.parse(atob(parts[1]));
+    const payload = JSON.parse(decodeJwt(parts[1]));
     return payload;
   } catch {
     return null;
