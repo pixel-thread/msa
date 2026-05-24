@@ -6,39 +6,49 @@ import { UserRole } from "@prisma/client";
 import { createModule, findManyModules } from "@feature/training/services";
 import { CreateTrainingModuleSchema } from "@feature/training/validators/training";
 import { hasHighRoleAccess } from "@src/shared/utils/has-high-role";
+import { z } from "zod";
+import { pageNumberValidation } from "@src/shared/validators";
 
-export const GET = withAssociation({}, async (association, _, request) => {
-  const user = await withRole(request, UserRole.MEMBER);
+const TraingModuleQuerySchema = z.object({
+  page: pageNumberValidation,
+});
+export const GET = withAssociation(
+  { query: TraingModuleQuerySchema },
+  async (association, { query }, request) => {
+    const user = await withRole(request, UserRole.MEMBER);
 
-  const isManager =
-    hasHighRoleAccess(user.role) || user.role.includes(UserRole.DPO);
-  const isActive = isManager ? undefined : true;
-  const role = isManager ? undefined : user.role;
+    const isManager =
+      hasHighRoleAccess(user.role) || user.role.includes(UserRole.DPO);
+    const isActive = isManager ? undefined : true;
+    const role = isManager ? undefined : user.role;
 
-  if (hasHighRoleAccess(user.role)) {
+    if (hasHighRoleAccess(user.role)) {
+      const modules = await findManyModules({
+        associationId: association.id,
+        isActive,
+        role,
+        page: query?.page || 1,
+      });
+      return SuccessResponse({
+        data: modules.trainingModules,
+        meta: modules.pagination,
+      });
+    }
+
     const modules = await findManyModules({
       associationId: association.id,
+      userId: user.id,
       isActive,
       role,
+      page: query?.page || 1,
     });
+
     return SuccessResponse({
       data: modules.trainingModules,
       meta: modules.pagination,
     });
-  }
-
-  const modules = await findManyModules({
-    associationId: association.id,
-    userId: user.id,
-    isActive,
-    role,
-  });
-
-  return SuccessResponse({
-    data: modules.trainingModules,
-    meta: modules.pagination,
-  });
-});
+  },
+);
 
 export const POST = withAssociation(
   { body: CreateTrainingModuleSchema },

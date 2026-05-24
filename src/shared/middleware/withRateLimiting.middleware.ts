@@ -29,7 +29,7 @@ const routeLimits: Record<
   string,
   { requests: number; window: Duration } | "skip"
 > = {
-  "/api/auth/*": { requests: 20, window: "1 m" },
+  "/api/auth/*": { requests: 20, window: "1 s" },
   "/health": "skip",
   "/favicon.ico": "skip",
   "/api/*": GLOBAL_LIMIT,
