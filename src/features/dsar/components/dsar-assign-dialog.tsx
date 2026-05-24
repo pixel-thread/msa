@@ -18,8 +18,9 @@ import {
 } from "@src/shared/components/ui/select";
 import { Button } from "@src/shared/components/ui/button";
 import { Label } from "@src/shared/components/ui/label";
-import { useAssignDsarTicket, useAssociationAdmins } from "../hooks";
+import { useAssignDsarTicket } from "../hooks";
 import type { DsarTicketRecord } from "../types";
+import { MemberCombobox } from "@src/shared/components/members/member-combobox";
 
 interface DsarAssignDialogProps {
   record: DsarTicketRecord | null;
@@ -34,7 +35,6 @@ export function DsarAssignDialog({
 }: DsarAssignDialogProps) {
   const [selectedAdminId, setSelectedAdminId] = useState("");
 
-  const { admins, isLoading: adminsLoading } = useAssociationAdmins();
   const assignMutation = useAssignDsarTicket();
 
   const handleSubmit = () => {
@@ -66,31 +66,15 @@ export function DsarAssignDialog({
         <DialogHeader>
           <DialogTitle>Assign DSAR Ticket</DialogTitle>
           <DialogDescription>
-            {record.ticketNumber} — Choose an administrator to handle this request
+            {record.ticketNumber} — Choose an administrator to handle this
+            request
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-2">
-          <Label>Assign To</Label>
-          <Select
-            value={selectedAdminId || currentAssigneeId}
-            onValueChange={setSelectedAdminId}
-          >
-            <SelectTrigger>
-              <SelectValue
-                placeholder={adminsLoading ? "Loading..." : "Select administrator"}
-              />
-            </SelectTrigger>
-            <SelectContent>
-              {admins.map((admin) => (
-                <SelectItem key={admin.id} value={admin.id}>
-                  {admin.name || admin.email || "Unknown"}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
+        <MemberCombobox
+          value={selectedAdminId || currentAssigneeId}
+          onValueChange={(id) => setSelectedAdminId(id)}
+        />
         <DialogFooter>
           <Button type="button" variant="outline" onClick={handleClose}>
             Cancel
