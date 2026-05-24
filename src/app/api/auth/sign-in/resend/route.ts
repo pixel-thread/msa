@@ -1,5 +1,5 @@
 import { withValidation } from "@src/shared/api";
-import { verifyPasswordResetToken } from "@src/shared/lib/jwt";
+import { verifyMfaTempToken } from "@src/shared/lib/jwt";
 import { generateOTP, hashToken } from "@src/shared/lib/password";
 import { sendVerificationEmail } from "@src/shared/lib/email";
 import { env } from "@src/env";
@@ -32,7 +32,7 @@ export const POST = withValidation(
     let payload;
 
     try {
-      payload = await verifyPasswordResetToken(mfaCookie);
+      payload = await verifyMfaTempToken(mfaCookie);
     } catch {
       throw new BadRequestError("Session expired. Please signin again");
     }

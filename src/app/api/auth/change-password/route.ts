@@ -30,9 +30,7 @@ export const POST = withValidation(
 
     const passwordValidation = validatePasswordStrength(newPassword);
     if (!passwordValidation.valid) {
-      throw new ValidationError(
-        "Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, and one number",
-      );
+      throw new ValidationError(passwordValidation.errors.join("; "));
     }
 
     const user = await getUniqueUserNoFilter({

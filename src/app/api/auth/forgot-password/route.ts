@@ -23,7 +23,7 @@ export const POST = withValidation(
 
     if (!user) {
       return SuccessResponse({
-        message: "Reset email has not been sent to your registerd email",
+        message: "A reset email will be sent",
         data: null,
       });
     }

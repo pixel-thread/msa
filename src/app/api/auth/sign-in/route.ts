@@ -3,7 +3,7 @@ import { verifyPassword } from "@src/shared/lib/password";
 import {
   signAccessToken,
   signRefreshToken,
-  signPasswordResetToken,
+  signMfaTempToken,
 } from "@src/shared/lib/jwt";
 import { sendVerificationEmail } from "@src/shared/lib/email";
 import { generateOTP, hashToken } from "@src/shared/lib/password";
@@ -24,15 +24,7 @@ export const POST = withValidation(
       where: { email: body?.email },
     });
 
-    if (!user) {
-      throw new UnauthorizedError("User not found");
-    }
-
-    if (!user.password) {
-      throw new UnauthorizedError("Please reset your password");
-    }
-
-    if (user.lockedUntil && user.lockedUntil > new Date()) {
+    if (user?.lockedUntil && user.lockedUntil > new Date()) {
       const remainingMinutes = Math.ceil(
         (user.lockedUntil.getTime() - Date.now()) / 1000 / 60,
       );
@@ -41,33 +33,37 @@ export const POST = withValidation(
       );
     }
 
-    if (user.status !== "ACTIVE") {
-      throw new UnauthorizedError("User not found");
-    }
-
-    const isPasswordValid = await verifyPassword(
-      body?.password || "",
-      user.password,
-    );
+    const isPasswordValid = user?.password
+      ? await verifyPassword(body?.password || "", user.password)
+      : false;
 
     if (!isPasswordValid) {
-      const failedAttempts = user.failedLoginAttempts + 1;
-      const shouldLock = failedAttempts >= 5;
+      if (user) {
+        const failedAttempts = user.failedLoginAttempts + 1;
+        const shouldLock = failedAttempts >= 5;
 
-      await updateUser({
-        where: { id: user.id },
-        data: {
-          failedLoginAttempts: shouldLock ? 0 : failedAttempts,
-          lockedUntil: shouldLock
-            ? new Date(Date.now() + 15 * 60 * 1000)
-            : null,
-        },
-      });
+        await updateUser({
+          where: { id: user.id },
+          data: {
+            failedLoginAttempts: shouldLock ? 0 : failedAttempts,
+            lockedUntil: shouldLock
+              ? new Date(Date.now() + 15 * 60 * 1000)
+              : null,
+          },
+        });
 
-      if (shouldLock) {
-        throw new ForbiddenError("Too many failed attempts. Account locked");
+        if (shouldLock) {
+          throw new ForbiddenError(
+            "Too many failed attempts. Account locked",
+          );
+        }
       }
 
+      throw new UnauthorizedError("Invalid email or password");
+    }
+
+    // Password was verified against a user — user is guaranteed non-null here
+    if (!user) {
       throw new UnauthorizedError("Invalid email or password");
     }
 
@@ -105,7 +101,7 @@ export const POST = withValidation(
         await sendVerificationEmail(user.email, otp, "LOGIN_MFA");
       }
 
-      const mfaTempToken = await signPasswordResetToken(user.id);
+      const mfaTempToken = await signMfaTempToken(user.id);
 
       const mfaResponse = SuccessResponse({
         message: "MFA verification required",
