@@ -1,25 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUrlFilters } from "@src/shared/hooks";
-import { UserRole } from "@prisma/client";
-import { useAuthStore } from "@src/shared/stores/auth";
 import { DataTable } from "@src/shared/components/data-table";
 import { Button } from "@src/shared/components/ui/button";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@src/shared/components/ui/pagination";
-import { Plus, ShieldAlert, Award } from "lucide-react";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
+import { Plus, Award } from "lucide-react";
 
 import {
   useTrainingModules,
@@ -27,24 +14,23 @@ import {
   useModuleTableColumns,
 } from "../hooks";
 import { CreateModuleDialog } from "../components";
+import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 
 export function TrainingListPage() {
   const router = useRouter();
-  const { page, setPage } = useUrlFilters({ basePath: "/training" });
-  const { user } = useAuthStore();
-  const userRoles = user?.role || [];
 
-  const isDpoOrAdmin =
-    userRoles.includes(UserRole.DPO) ||
-    userRoles.includes(UserRole.SUPER_ADMIN) ||
-    userRoles.includes(UserRole.SECRETARY) ||
-    userRoles.includes(UserRole.PRESIDENT);
+  const { page, setPage, setFilters } = useUrlFilters({
+    basePath: "/training",
+  });
 
-  const [search, setSearch] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
 
-  const { modules: allModules, pagination, isLoading: isModulesLoading } =
-    useTrainingModules({ page });
+  const {
+    modules: allModules,
+    isLoading: isModulesLoading,
+    meta,
+  } = useTrainingModules({ page });
+
   const { updateModule } = useUpdateTrainingModule();
 
   const { columns: moduleColumns } = useModuleTableColumns({
@@ -58,46 +44,6 @@ export function TrainingListPage() {
       });
     },
   });
-
-  const filteredModules = useMemo(() => {
-    const query = search.toLowerCase().trim();
-    if (!query) return allModules;
-    return allModules.filter(
-      (m) =>
-        m.title.toLowerCase().includes(query) ||
-        m.description?.toLowerCase().includes(query),
-    );
-  }, [allModules, search]);
-
-  const getPageNumbers = (page: number, totalPages: number) => {
-    const pages: number[] = [];
-    const maxVisible = 5;
-    if (totalPages <= maxVisible) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
-    } else if (page <= 3) {
-      for (let i = 1; i <= maxVisible; i++) pages.push(i);
-    } else if (page >= totalPages - 2) {
-      for (let i = totalPages - 4; i <= totalPages; i++) pages.push(i);
-    } else {
-      for (let i = page - 2; i <= page + 2; i++) pages.push(i);
-    }
-    return pages;
-  };
-
-  if (!isDpoOrAdmin) {
-    return (
-      <div className="flex flex-col items-center justify-center py-24 px-4 text-center">
-        <div className="h-16 w-16 bg-destructive/10 text-destructive flex items-center justify-center mb-6">
-          <ShieldAlert className="h-8 w-8" />
-        </div>
-        <h2 className="text-2xl font-semibold text-ink mb-2">Access Denied</h2>
-        <p className="text-body max-w-md mb-8">
-          You do not have the required permissions to view the training modules
-          management panel.
-        </p>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -121,7 +67,7 @@ export function TrainingListPage() {
               placeholder: "Search training modules...",
             },
           ]}
-          onFilterChange={() => {}}
+          onFilterChange={(f) => setFilters(f)}
         />
 
         <div className="flex items-center gap-2">
@@ -145,73 +91,11 @@ export function TrainingListPage() {
 
       <DataTable
         loading={isModulesLoading}
-        data={filteredModules}
+        data={allModules}
         columns={moduleColumns}
       />
 
-      {pagination && pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-body">
-            Showing{" "}
-            <span className="font-medium text-body-strong">
-              {(pagination.page - 1) * pagination.pageSize + 1}
-            </span>{" "}
-            to{" "}
-            <span className="font-medium text-body-strong">
-              {Math.min(pagination.page * pagination.pageSize, pagination.total)}
-            </span>{" "}
-            of{" "}
-            <span className="font-medium text-body-strong">
-              {pagination.total}
-            </span>{" "}
-            modules
-          </p>
-
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => setPage(Math.max(1, page - 1))}
-                  className={
-                    currentPage <= 1
-                     ? "pointer-events-none opacity-50"
-                      : "cursor-pointer"
-                  }
-                />
-              </PaginationItem>
-
-              {getPageNumbers(page, pagination.totalPages).map((pageNum) => (
-                <PaginationItem key={pageNum}>
-                  <PaginationLink
-                    onClick={() => setPage(pageNum)}
-                    isActive={page === pageNum}
-                    className="cursor-pointer"
-                  >
-                    {pageNum}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-
-              {pagination.totalPages > 5 && page < pagination.totalPages - 2 && (
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-              )}
-
-              <PaginationItem>
-                <PaginationNext
-                    onClick={() => setPage(page + 1)}
-                    className={
-                      page >= pagination.totalPages
-                     ? "pointer-events-none opacity-50"
-                      : "cursor-pointer"
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
-      )}
+      <DataTablePagination meta={meta} onPageChange={setPage} />
 
       <CreateModuleDialog open={createOpen} onOpenChange={setCreateOpen} />
     </>

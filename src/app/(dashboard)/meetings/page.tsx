@@ -53,7 +53,7 @@ export default function MeetingsPage() {
 
       <DataTable loading={isLoading} data={meetings} columns={columns} />
 
-      <DataTablePagination meta={meta}         onPageChange={setPage} />
+      <DataTablePagination meta={meta} onPageChange={setPage} />
     </>
   );
 }

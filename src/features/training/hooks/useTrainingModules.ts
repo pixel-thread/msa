@@ -21,7 +21,7 @@ export function useTrainingModules(
 
   return {
     modules: data?.data ?? [],
-    pagination: data?.meta,
+    meta: data?.meta,
     isLoading,
     error,
     refetch,
