@@ -2,6 +2,7 @@ import { prisma } from "@src/shared/lib/prisma";
 import { encrypt } from "@src/shared/lib/crypto";
 import { PaymentProviderType } from "@prisma/client";
 import { NotFoundError } from "@src/shared/errors";
+import { env } from "@src/env";
 
 export interface UpsertProviderInput {
   associationId: string;
@@ -223,9 +224,9 @@ export async function migrateFromEnv(): Promise<number> {
     return 0;
   }
 
-  const keyId = process.env.RAZORPAY_KEY_ID;
-  const keySecret = process.env.RAZORPAY_KEY_SECRET;
-  const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+  const keyId = env.RAZORPAY_KEY_ID;
+  const keySecret = env.RAZORPAY_KEY_SECRET;
+  const webhookSecret = env.RAZORPAY_WEBHOOK_SECRET;
 
   if (!keyId || !keySecret) {
     console.log("No global credentials to migrate");

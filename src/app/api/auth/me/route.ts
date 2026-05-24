@@ -3,6 +3,7 @@ import { UnauthorizedError } from "@src/shared/errors";
 import { getUniqueUser } from "@src/shared/services/user/get-unique-user";
 import { getAuthCachedUser, cacheAuthUser } from "@src/features/auth/lib/cache";
 import { withAssociation } from "@src/shared/api/with-association";
+import { env } from "@src/env";
 
 export const GET = withAssociation({}, async (_association, _params, req) => {
   const userId = req.headers.get("x-user-id");
@@ -11,7 +12,7 @@ export const GET = withAssociation({}, async (_association, _params, req) => {
     throw new UnauthorizedError("Unauthorized");
   }
 
-  if (process.env.NODE_ENV === "production") {
+  if (env.NODE_ENV === "production") {
     const cachedUser = await getAuthCachedUser(userId);
     if (cachedUser) {
       return SuccessResponse({
@@ -29,11 +30,10 @@ export const GET = withAssociation({}, async (_association, _params, req) => {
     throw new UnauthorizedError("User not found or inactive");
   }
 
-  if (process.env.NODE_ENV === "production") {
+  if (env.NODE_ENV === "production") {
     await cacheAuthUser(userId, user);
   }
 
-  console.log("User fetched from db");
   return SuccessResponse({
     message: "User fetched successfully",
     data: user,

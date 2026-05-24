@@ -1,6 +1,7 @@
 import Razorpay from "razorpay";
 import * as crypto from "crypto";
 import { NotFoundError } from "@src/shared/errors";
+import { env } from "@src/env";
 
 // ---------------------------------------------------------------------------
 // Razorpay SDK factory (replaces singleton for multi-tenant support)
@@ -14,8 +15,8 @@ export const createRazorpayClient = (
 };
 
 const getRazorpayInstance = (): Razorpay => {
-  const keyId = process.env.RAZORPAY_KEY_ID;
-  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+  const keyId = env.RAZORPAY_KEY_ID;
+  const keySecret = env.RAZORPAY_KEY_SECRET;
 
   if (!keyId || !keySecret) {
     throw new Error(
@@ -91,7 +92,7 @@ export function verifyPaymentSignature(
   params: VerifySignatureParams,
   keySecret?: string,
 ): boolean {
-  const secret = keySecret ?? process.env.RAZORPAY_KEY_SECRET;
+  const secret = keySecret ?? env.RAZORPAY_KEY_SECRET;
 
   if (!secret) {
     throw new Error("RAZORPAY_KEY_SECRET is not configured");
@@ -118,7 +119,7 @@ export function verifyWebhookSignature(
   signature: string,
   webhookSecret?: string,
 ): boolean {
-  const secret = webhookSecret ?? process.env.RAZORPAY_WEBHOOK_SECRET;
+  const secret = webhookSecret ?? env.RAZORPAY_WEBHOOK_SECRET;
 
   if (!secret) {
     throw new Error("RAZORPAY_WEBHOOK_SECRET is not configured");

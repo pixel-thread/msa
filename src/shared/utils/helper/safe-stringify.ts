@@ -1,4 +1,6 @@
-const isProduction = process.env.NODE_ENV === "production";
+import { env } from "@src/env";
+
+const isProduction = env.NEXT_PUBLIC_NODE_ENV === "production";
 
 export const safeStringify = (obj: unknown): string => {
   const sensitiveKeys = [

@@ -1,5 +1,9 @@
 import { withValidation } from "@src/shared/api";
-import { verifyMfaTempToken, signAccessToken, signRefreshToken } from "@src/shared/lib/jwt";
+import {
+  verifyMfaTempToken,
+  signAccessToken,
+  signRefreshToken,
+} from "@src/shared/lib/jwt";
 import { hashToken } from "@src/shared/lib/password";
 import { env } from "@src/env";
 import {
@@ -105,7 +109,7 @@ export const POST = withValidation(
 
     response.cookies.set("access_token", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 15 * 60,
       path: "/",
@@ -113,7 +117,7 @@ export const POST = withValidation(
 
     response.cookies.set("refresh_token", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60,
       path: "/",

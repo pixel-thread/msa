@@ -3,6 +3,7 @@ import { hashToken } from "@src/shared/lib/password";
 import { SuccessResponse } from "@src/shared/utils";
 import { SignOutSchema } from "@src/features/auth/validators";
 import { updateRefreshTokens } from "@src/features/auth/services/update-refresh-tokens";
+import { env } from "@src/env";
 
 export const POST = withValidation(
   { body: SignOutSchema },
@@ -26,7 +27,7 @@ export const POST = withValidation(
 
     response.cookies.set("access_token", "", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 0,
       path: "/",
@@ -34,7 +35,7 @@ export const POST = withValidation(
 
     response.cookies.set("refresh_token", "", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 0,
       path: "/",

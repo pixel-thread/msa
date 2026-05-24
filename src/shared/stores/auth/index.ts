@@ -1,7 +1,6 @@
 "use client";
 
 import { create } from "zustand";
-import cookie from "react-cookies";
 import http from "@src/shared/utils/http";
 import type { UserRole } from "@src/shared/lib/prisma/types";
 import { logger } from "@src/shared/logger";
@@ -22,7 +21,7 @@ export interface AuthState {
   setUser: (user: AuthUser | null) => void;
   setLoading: (isLoading: boolean) => void;
   fetchUser: () => Promise<void>;
-  isSignedIn: () => boolean;
+  isSignedIn: boolean;
   signIn: (
     email: string,
     password: string,
@@ -44,7 +43,7 @@ export interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isLoading: false,
-  isSignedIn: () => false,
+  isSignedIn: false,
 
   setUser: (user: AuthUser | null) => set({ user }),
 
@@ -57,11 +56,11 @@ export const useAuthStore = create<AuthState>((set) => ({
       const res = await http.get<AuthUser>("/auth/me");
 
       if (!res.success || !res.data) {
-        set({ user: null });
+        set({ user: null, isSignedIn: false, isLoading: false });
         return;
       }
 
-      set({ user: res.data });
+      set({ user: res.data, isSignedIn: true, isLoading: false });
     } catch {
       set({ user: null });
     } finally {

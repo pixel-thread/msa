@@ -53,9 +53,7 @@ export const POST = withValidation(
         });
 
         if (shouldLock) {
-          throw new ForbiddenError(
-            "Too many failed attempts. Account locked",
-          );
+          throw new ForbiddenError("Too many failed attempts. Account locked");
         }
       }
 
@@ -113,7 +111,7 @@ export const POST = withValidation(
 
       mfaResponse.cookies.set("mfa_temp_token", mfaTempToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: env.NODE_ENV === "production",
         sameSite: "strict",
         maxAge: 5 * 60,
         path: "/",
@@ -158,7 +156,7 @@ export const POST = withValidation(
 
     response.cookies.set("refresh_token", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60,
       path: "/",

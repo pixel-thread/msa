@@ -13,6 +13,7 @@ import { updateRefreshToken } from "@src/features/auth/services/update-refresh-t
 import { createRefreshToken } from "@src/features/auth/services/create-refresh-token";
 import { revokedRefreshTokens } from "@src/features/auth/services/revoked-refresh-tokens";
 import { cacheClient } from "@src/shared/lib/cache";
+import { env } from "@src/env";
 
 export const POST = withValidation(
   { body: RefreshTokenSchema },
@@ -36,16 +37,23 @@ export const POST = withValidation(
 
     // 1. Check Grace Period Cache to handle race conditions
     const GRACE_PERIOD_KEY = `refresh_grace:${hashedToken}`;
-    const cachedTokens = await cacheClient.get<{accessToken: string, refreshToken: string}>(GRACE_PERIOD_KEY);
-    
+    const cachedTokens = await cacheClient.get<{
+      accessToken: string;
+      refreshToken: string;
+    }>(GRACE_PERIOD_KEY);
+
     if (cachedTokens) {
       const response = SuccessResponse({
         message: "Token refreshed successfully",
+        data: {
+          access_token: cachedTokens.accessToken,
+          refresh_token: cachedTokens.refreshToken,
+        },
       });
 
       response.cookies.set("access_token", cachedTokens.accessToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: env.NODE_ENV === "production",
         sameSite: "strict",
         maxAge: 15 * 60,
         path: "/",
@@ -53,7 +61,7 @@ export const POST = withValidation(
 
       response.cookies.set("refresh_token", cachedTokens.refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: env.NODE_ENV === "production",
         sameSite: "strict",
         maxAge: 7 * 24 * 60 * 60,
         path: "/",
@@ -73,7 +81,7 @@ export const POST = withValidation(
 
     if (storedToken.revokedAt) {
       const gracePeriodMs = 30 * 1000; // 30 seconds
-      // If the token was revoked very recently but missed the cache, 
+      // If the token was revoked very recently but missed the cache,
       // don't trigger the family revocation fail-safe to prevent logging out the user
       // due to a parallel API request race condition.
       if (Date.now() - storedToken.revokedAt.getTime() > gracePeriodMs) {
@@ -103,10 +111,14 @@ export const POST = withValidation(
 
     // Cache the new tokens BEFORE updating the DB to prevent the race condition
     // where a parallel request reads the DB before the cache is populated.
-    await cacheClient.set(GRACE_PERIOD_KEY, {
+    await cacheClient.set(
+      GRACE_PERIOD_KEY,
+      {
         accessToken: newAccessToken,
         refreshToken: newRefreshToken,
-    }, 30);
+      },
+      30,
+    );
 
     await updateRefreshToken({
       where: { id: storedToken.id },
@@ -131,7 +143,7 @@ export const POST = withValidation(
 
     response.cookies.set("access_token", newAccessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 15 * 60,
       path: "/",
@@ -139,7 +151,7 @@ export const POST = withValidation(
 
     response.cookies.set("refresh_token", newRefreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60,
       path: "/",
@@ -147,6 +159,5 @@ export const POST = withValidation(
 
     return response;
   },
-);    return response;
-  },
 );
+

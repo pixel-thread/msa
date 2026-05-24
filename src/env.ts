@@ -51,6 +51,7 @@ export const env = createEnv({
     NEXT_PUBLIC_ASSOCIATION_SLUG: z.string().min(2).max(10),
     NEXT_PUBLIC_API_BASE_URL: z.url().default("http://localhost:3000/api"),
     NEXT_PUBLIC_ACCESS_TOKEN_EXPIRY: z.number().default(900),
+    NEXT_PUBLIC_NODE_ENV: z.enum(["development", "test", "production"]),
   },
   runtimeEnv: {
     SUPABASE_BUCKET: process.env.SUPABASE_BUCKET,
@@ -71,6 +72,7 @@ export const env = createEnv({
     NEXT_PUBLIC_ASSOCIATION_SLUG: process.env.NEXT_PUBLIC_ASSOCIATION_SLUG,
     NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
     NODE_ENV: process.env.NODE_ENV,
+    NEXT_PUBLIC_NODE_ENV: process.env.NODE_ENV,
 
     // JWT Configuration
     JWT_SECRET: process.env.JWT_SECRET,

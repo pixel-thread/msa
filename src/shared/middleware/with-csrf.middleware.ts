@@ -1,6 +1,7 @@
 import { ForbiddenError } from "@src/shared/errors";
 import { generateCsrfToken, verifyCsrfToken } from "../lib/csrf";
 import type { MiddlewareFn } from "./chain";
+import { env } from "@src/env";
 
 /**
  * CSRF protection middleware using the double-submit cookie pattern.
@@ -37,7 +38,7 @@ export const withCsrf: MiddlewareFn = async (request, next) => {
       const token = generateCsrfToken();
       response.cookies.set("csrf-token", token, {
         httpOnly: false,
-        secure: process.env.NODE_ENV === "production",
+        secure: env.NODE_ENV === "production",
         sameSite: "strict",
         path: "/",
         maxAge: 60 * 60,

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { useAuthStore } from "../stores/auth";
+import { Loading } from "@components/loading";
 
 type UserRole =
   | "SUPER_ADMIN"
@@ -32,7 +33,7 @@ const routeRoles: {
 }[] = [
   {
     url: "/",
-    role: ["MEMBER", "PRESIDENT", "SECRETARY", "SUPER_ADMIN", "DPO", "FINANCE"],
+    role: ["PRESIDENT", "SECRETARY", "SUPER_ADMIN", "DPO", "FINANCE"],
     redirect: "/",
     needAuth: true,
   },
@@ -44,9 +45,9 @@ export const Redirect = ({ children }: PropsT) => {
   const router = useRouter();
   const pathName = usePathname();
   const [isLoading, setIsLoading] = useState(false);
-  const { user, isLoading: isAuthLoading } = useAuthStore();
+  const { user, isLoading: isAuthLoading, isSignedIn } = useAuthStore();
   const userRoles = useMemo(() => user?.role || ["MEMBER"], [user]);
-  const isAuthenticated = !!user;
+  const isAuthenticated = !!user && isSignedIn;
 
   // Show loader during route changes or delays
   useEffect(() => {
@@ -108,7 +109,7 @@ export const Redirect = ({ children }: PropsT) => {
 
   // Display preloader if authentication or loading is in progress
   if (isAuthLoading || isLoading) {
-    return null;
+    return <Loading />;
   }
 
   return <>{children}</>;
