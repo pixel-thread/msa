@@ -5,7 +5,6 @@ import { sendPasswordResetEmail } from "@src/shared/lib/email";
 import { SuccessResponse } from "@src/shared/utils";
 import { env } from "@src/env";
 import { logger } from "@src/shared/logger";
-import { NotFoundError } from "@src/shared/errors";
 import {
   ForgotPasswordInput,
   ForgotPasswordSchema,
@@ -22,10 +21,12 @@ export const POST = withValidation(
       where: { email },
     });
 
-    if (!user)
-      throw new NotFoundError(
-        "Reset email has not been sent to your registerd email",
-      );
+    if (!user) {
+      return SuccessResponse({
+        message: "Reset email has not been sent to your registerd email",
+        data: null,
+      });
+    }
 
     const resetToken = await signPasswordResetToken(user.id);
     const hashedToken = hashToken(resetToken);
