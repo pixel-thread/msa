@@ -6,11 +6,12 @@ import { updateRefreshTokens } from "@src/features/auth/services/update-refresh-
 
 export const POST = withValidation(
   { body: SignOutSchema },
-  async (_request, _context, { body }) => {
-    const refreshCookie = body?.token;
+  async (request, _context, { body }) => {
+    const bodyToken =
+      body?.token || request?.cookies?.get("refresh_token")?.value;
 
-    if (refreshCookie) {
-      const hashedToken = hashToken(refreshCookie);
+    if (bodyToken) {
+      const hashedToken = hashToken(bodyToken);
 
       await updateRefreshTokens({
         where: { token: hashedToken },
@@ -42,4 +43,3 @@ export const POST = withValidation(
     return response;
   },
 );
-
