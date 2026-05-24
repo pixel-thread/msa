@@ -33,9 +33,9 @@ export const withCsrf: MiddlewareFn = async (request, next) => {
   if (["GET", "HEAD", "OPTIONS"].includes(method)) {
     const response = await next(request);
 
-    if (!request.cookies.has("__HOST-csrf-token")) {
+    if (!request.cookies.has("csrf-token")) {
       const token = generateCsrfToken();
-      response.cookies.set("__HOST-csrf-token", token, {
+      response.cookies.set("csrf-token", token, {
         httpOnly: false,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",

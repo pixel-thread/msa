@@ -106,7 +106,7 @@ export async function verifyMfaTempToken(
 export async function verifyPasswordResetToken(
   token: string,
 ): Promise<PasswordResetPayload> {
-  const { payload } = await jwtVerify(token, passwordResetSecret);
+  const { payload } = await jwtVerify(token, passwordResetSecret, { algorithms: ["HS256"] });
 
   if (payload.type !== "password_reset") {
     throw new UnauthorizedError("Invalid token type");
@@ -129,5 +129,8 @@ export function decodeToken(token: string): JWTPayload | null {
 
 export async function getTokenExpiry(token: string): Promise<number> {
   const { payload } = await jwtVerify(token, accessTokenSecret);
+  return payload.exp ? payload.exp * 1000 : 0;
+}
+ });
   return payload.exp ? payload.exp * 1000 : 0;
 }

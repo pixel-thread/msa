@@ -15,12 +15,12 @@ export default chain([
   withCors,
   withSecurityHeaders,
   withTraceId,
+  withLogging,
   withRateLimiting,
   withRequestSizeLimit,
   withBotProtection,
   withCsrf,
   withAuth,
-  withLogging,
 ]);
 
 export const config = {

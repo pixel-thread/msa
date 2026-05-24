@@ -12,6 +12,7 @@ import { getUniqueRefreshToken } from "@src/features/auth/services/get-unique-re
 import { updateRefreshToken } from "@src/features/auth/services/update-refresh-token";
 import { createRefreshToken } from "@src/features/auth/services/create-refresh-token";
 import { revokedRefreshTokens } from "@src/features/auth/services/revoked-refresh-tokens";
+import { cacheClient } from "@src/shared/lib/cache";
 
 export const POST = withValidation(
   { body: RefreshTokenSchema },
@@ -33,6 +34,34 @@ export const POST = withValidation(
 
     const hashedToken = hashToken(refreshCookie);
 
+    // 1. Check Grace Period Cache to handle race conditions
+    const GRACE_PERIOD_KEY = `refresh_grace:${hashedToken}`;
+    const cachedTokens = await cacheClient.get<{accessToken: string, refreshToken: string}>(GRACE_PERIOD_KEY);
+    
+    if (cachedTokens) {
+      const response = SuccessResponse({
+        message: "Token refreshed successfully",
+      });
+
+      response.cookies.set("access_token", cachedTokens.accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 15 * 60,
+        path: "/",
+      });
+
+      response.cookies.set("refresh_token", cachedTokens.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60,
+        path: "/",
+      });
+
+      return response;
+    }
+
     const storedToken = await getUniqueRefreshToken({
       where: { token: hashedToken },
       include: { user: true },
@@ -42,10 +71,16 @@ export const POST = withValidation(
       throw new UnauthorizedError("Invalid refresh token");
     }
 
-    if (!storedToken || storedToken.revokedAt) {
-      await revokedRefreshTokens({
-        where: { userId: storedToken.userId },
-      });
+    if (storedToken.revokedAt) {
+      const gracePeriodMs = 30 * 1000; // 30 seconds
+      // If the token was revoked very recently but missed the cache, 
+      // don't trigger the family revocation fail-safe to prevent logging out the user
+      // due to a parallel API request race condition.
+      if (Date.now() - storedToken.revokedAt.getTime() > gracePeriodMs) {
+        await revokedRefreshTokens({
+          where: { userId: storedToken.userId },
+        });
+      }
       throw new UnauthorizedError("Invalid refresh token");
     }
 
@@ -59,17 +94,24 @@ export const POST = withValidation(
       throw new UnauthorizedError("User is not active");
     }
 
-    await updateRefreshToken({
-      where: { id: storedToken.id },
-      data: { revokedAt: new Date() },
-    });
-
     const newAccessToken = await signAccessToken(user.id);
     const newRefreshToken = await signRefreshToken(user.id);
     const hashedNewRefreshToken = hashToken(newRefreshToken);
 
     const refreshTokenExpiry = new Date();
     refreshTokenExpiry.setDate(refreshTokenExpiry.getDate() + 7);
+
+    // Cache the new tokens BEFORE updating the DB to prevent the race condition
+    // where a parallel request reads the DB before the cache is populated.
+    await cacheClient.set(GRACE_PERIOD_KEY, {
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
+    }, 30);
+
+    await updateRefreshToken({
+      where: { id: storedToken.id },
+      data: { revokedAt: new Date() },
+    });
 
     await createRefreshToken({
       data: {
@@ -81,10 +123,6 @@ export const POST = withValidation(
 
     const response = SuccessResponse({
       message: "Token refreshed successfully",
-      data: {
-        refreshToken: newRefreshToken,
-        accessToken: newAccessToken,
-      },
     });
 
     response.cookies.set("access_token", newAccessToken, {

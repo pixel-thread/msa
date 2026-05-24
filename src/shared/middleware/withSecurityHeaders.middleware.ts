@@ -26,7 +26,7 @@ export const withSecurityHeaders: MiddlewareFn = async (req, next, _event) => {
   // CSP
   const csp = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.com https://*.clerk.com",
+    "script-src 'self' https://clerk.com https://*.clerk.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "img-src 'self' data: https://*.clerk.com https://*.public.blob.vercel-storage.com",
     "font-src 'self' https://fonts.gstatic.com",

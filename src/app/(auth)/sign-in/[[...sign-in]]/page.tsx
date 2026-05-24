@@ -34,7 +34,6 @@ import { useSignIn, useVerifyMfa } from "@src/features/auth/hooks";
 import { logger } from "@src/shared/logger";
 
 export default function SignInPage() {
-  const router = useRouter();
   const signInMutation = useSignIn();
   const [mfaTempToken, setMfaTempToken] = useState<string | null>(null);
 
@@ -52,8 +51,6 @@ export default function SignInPage() {
 
       if (result.data?.mfaRequired) {
         setMfaTempToken(result.data.tempToken || null);
-      } else {
-        router.push("/dashboard");
       }
     } catch (e) {
       logger.error("Sign in failed", { error: e });
@@ -253,11 +250,7 @@ function MfaVerify({
               </Button>
 
               <div className="flex flex-col gap-2 text-center">
-                <Button
-                  type="button"
-                  variant="link"
-                  onClick={onBack}
-                >
+                <Button type="button" variant="link" onClick={onBack}>
                   Back to sign in
                 </Button>
               </div>

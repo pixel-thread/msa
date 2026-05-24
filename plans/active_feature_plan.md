@@ -2,9 +2,9 @@
 
 **Status:** ACTIVE
 **PRD Reference:** .agents/prd/features/<filename>.md
-**Model Used:** Gemini 3 Pro
+**Model Used:** [AGENT FILLS THIS]
 **Tech Stack Confirmed:** brain/stack.md read ✅
-**Last Updated:** 2026-05-20
+**Last Updated:** YYYY-MM-DD
 
 ## Tasks
 
