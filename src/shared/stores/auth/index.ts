@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-
+import cookie from "react-cookies";
 import http from "@src/shared/utils/http";
 import type { UserRole } from "@src/shared/lib/prisma/types";
 import { logger } from "@src/shared/logger";
