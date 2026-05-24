@@ -1,12 +1,13 @@
-import type { MiddlewareFn } from "./chain";
-
-import { verifyAccessToken } from "@src/shared/lib/jwt";
-import { normalizeUnknownError, UnauthorizedError } from "@src/shared/errors";
-import { isApiPublicRoute, isPublicRoute } from "./route-matchers";
+import { NextResponse } from "next/server";
+import { MiddlewareFn } from "./chain";
 import { AppErrorResponse, getTraceId } from "../utils";
+import { isApiPublicRoute, isPublicRoute } from "./route-matchers";
+import { normalizeUnknownError, UnauthorizedError } from "../errors";
+import { verifyAccessToken } from "../lib";
 
 export const withAuth: MiddlewareFn = async (request, next) => {
   const traceId = getTraceId(request);
+
   try {
     if (isPublicRoute(request.nextUrl.pathname)) {
       return next(request);
@@ -18,12 +19,11 @@ export const withAuth: MiddlewareFn = async (request, next) => {
 
     let accessToken: string | undefined;
 
-    // Check cookie first
     accessToken = request.cookies.get("access_token")?.value;
 
-    // If not in cookie, check Authorization header (Bearer token)
     if (!accessToken) {
-      const authHeader = request.headers.get("Authorization");
+      const authHeader = request.headers.get("authorization");
+
       if (authHeader?.startsWith("Bearer ")) {
         accessToken = authHeader.split(" ")[1];
       }
@@ -35,11 +35,23 @@ export const withAuth: MiddlewareFn = async (request, next) => {
 
     const payload = await verifyAccessToken(accessToken);
 
-    request.headers.set("x-user-id", payload.sub);
+    // clone headers
+    const requestHeaders = new Headers(request.headers);
 
-    return next(request);
+    // remove spoofed header
+    requestHeaders.delete("x-user-id");
+
+    // inject trusted identity
+    requestHeaders.set("x-user-id", payload.sub);
+
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
   } catch (error) {
     const apperror = normalizeUnknownError(error);
+
     return AppErrorResponse(apperror, traceId);
   }
 };

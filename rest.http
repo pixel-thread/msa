@@ -1,6 +1,6 @@
 @associationsId=4364ffdc-eb65-45b7-8205-8d121cbb522c
 @meetingId=505cc596-f978-45fa-b891-9fd3e3a4ad36
-@userId=0d627af0-bcb4-4b11-8934-0a3f3bfc53e8
+@userId=7e534916-ffcc-467a-811a-b2544840777d
 @test3UserId=9a6043b7-2b58-425a-9912-3275dd4153fe
 @test2UserId=0d627af0-bcb4-4b11-8934-0a3f3bfc53e8
 @moduleId=b5063e33-f356-4a30-9256-fbbb1abb3fa4
@@ -47,6 +47,7 @@ Content-Type: application/json
 GET {{NEXT_PUBLIC_API_BASE_URL}}/auth/me
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
+x-user-id: {{userId}}
 
 ###
 # @name Logout
