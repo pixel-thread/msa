@@ -25,12 +25,16 @@ export interface MfaTempPayload {
 
 const accessTokenSecret = new TextEncoder().encode(env.JWT_SECRET);
 const refreshTokenSecret = new TextEncoder().encode(env.JWT_REFRESH_SECRET);
-const passwordResetSecret = new TextEncoder().encode(env.JWT_PASSWORD_RESET_SECRET);
+const passwordResetSecret = new TextEncoder().encode(
+  env.JWT_PASSWORD_RESET_SECRET,
+);
 
 export async function signAccessToken(userId: string): Promise<string> {
   return new SignJWT({ sub: userId, type: "access" })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
+    .setAudience(env.JWT_AUDIENCE)
+    .setIssuer(env.JWT_ISSUER)
     .setExpirationTime(env.ACCESS_TOKEN_EXPIRY)
     .sign(accessTokenSecret);
 }
@@ -39,6 +43,7 @@ export async function signRefreshToken(userId: string): Promise<string> {
   return new SignJWT({ sub: userId, type: "refresh" })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
+    .setIssuer(env.JWT_ISSUER)
     .setExpirationTime(env.REFRESH_TOKEN_EXPIRY)
     .sign(refreshTokenSecret);
 }
@@ -47,6 +52,7 @@ export async function signPasswordResetToken(userId: string): Promise<string> {
   return new SignJWT({ sub: userId, type: "password_reset" })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
+    .setIssuer(env.JWT_ISSUER)
     .setExpirationTime(env.PASSWORD_RESET_TOKEN_EXPIRY)
     .sign(passwordResetSecret);
 }

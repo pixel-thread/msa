@@ -23,8 +23,9 @@ export const withCsrf: MiddlewareFn = async (request, next) => {
 
   // Skip CSRF for non-browser clients
   const authHeader = request.headers.get("authorization");
+  const clientType = request.headers.get("x-client-type");
 
-  if (authHeader?.startsWith("Bearer ")) {
+  if (authHeader?.startsWith("Bearer ") || clientType === "mobile") {
     return next(request);
   }
 
@@ -39,7 +40,7 @@ export const withCsrf: MiddlewareFn = async (request, next) => {
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
         path: "/",
-        maxAge: 60 * 60, // 1 hour
+        maxAge: 60 * 60,
       });
     }
 
