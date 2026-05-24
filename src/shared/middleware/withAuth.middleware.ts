@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
 import { MiddlewareFn } from "./chain";
 import { AppErrorResponse, getTraceId } from "../utils";
 import { isApiPublicRoute, isPublicRoute } from "./route-matchers";
 import { normalizeUnknownError, UnauthorizedError } from "../errors";
 import { verifyAccessToken } from "../lib";
+import { NextRequest } from "next/server";
 
 export const withAuth: MiddlewareFn = async (request, next) => {
   const traceId = getTraceId(request);
@@ -44,11 +44,8 @@ export const withAuth: MiddlewareFn = async (request, next) => {
     // inject trusted identity
     requestHeaders.set("x-user-id", payload.sub);
 
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    });
+    const newRequest = new NextRequest(request, { headers: requestHeaders });
+    return next(newRequest);
   } catch (error) {
     const apperror = normalizeUnknownError(error);
 

@@ -12,15 +12,15 @@ import {
 } from "./shared/middleware";
 
 export default chain([
-  withCors,
-  withSecurityHeaders,
   withTraceId,
-  withLogging,
+  withCors,
   withRateLimiting,
+  withAuth,
+  withSecurityHeaders,
   withRequestSizeLimit,
   withBotProtection,
   withCsrf,
-  withAuth,
+  withLogging,
 ]);
 
 export const config = {
