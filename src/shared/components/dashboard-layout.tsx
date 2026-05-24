@@ -23,6 +23,12 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { setTheme, themeMode } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const toggleTheme = () => {
     setTheme(themeMode === "light" ? "dark" : "light");
   };
@@ -41,7 +47,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               />
             </div>
             <Button variant={"ghost"} onClick={() => toggleTheme()}>
-              {themeMode === "light" ? <SunIcon /> : <MoonIcon />}
+              {mounted ? (
+                themeMode === "light" ? <SunIcon /> : <MoonIcon />
+              ) : (
+                <div className="size-5" />
+              )}
             </Button>
           </div>
         </header>
