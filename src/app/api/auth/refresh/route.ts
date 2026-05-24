@@ -123,6 +123,10 @@ export const POST = withValidation(
 
     const response = SuccessResponse({
       message: "Token refreshed successfully",
+      data: {
+        access_token: newAccessToken,
+        refresh_token: newRefreshToken,
+      },
     });
 
     response.cookies.set("access_token", newAccessToken, {
@@ -142,5 +146,7 @@ export const POST = withValidation(
     });
 
     return response;
+  },
+);    return response;
   },
 );

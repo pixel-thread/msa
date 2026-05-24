@@ -142,6 +142,10 @@ export const POST = withValidation(
 
     const response = SuccessResponse({
       message: "Signed in successfully",
+      data: {
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      },
     });
 
     response.cookies.set("access_token", accessToken, {

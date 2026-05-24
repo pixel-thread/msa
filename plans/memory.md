@@ -20,3 +20,4 @@ This is an append-only log of model actions, files created, and security finding
 * **2026-05-24 10:15** - [IMPL] Implemented a 30-second Redis-backed grace period for refresh token rotation to prevent race conditions causing unintended family revocations.
 * **2026-05-24 10:20** - [REVIEW] Validated all security hotfixes against OWASP Top 10 and project rules.
 * **2026-05-24 10:25** - [ARCHIVED] Auth Security & Architecture Remediation plan archived to plans/completed/2026-05-24-auth-security-remediation.md.
+* **2026-05-24 10:30** - [IMPL] Reverted removal of tokens from JSON response body in /sign-in and /refresh to support mobile app token consumption.
