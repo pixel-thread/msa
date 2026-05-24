@@ -42,7 +42,7 @@ export default function AllPaymentsPage() {
     Object.entries(newFilters).forEach(([key, value]) => {
       if (value) params.set(key, value);
     });
-    router.push(`/payments?${params.toString()}`);
+    router.push(`?${params.toString()}`);
   };
 
   return (
