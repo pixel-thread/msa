@@ -3,9 +3,7 @@
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { useUserPayments } from "@src/features/payments/hooks/useUserPayments";
 import { DataTable } from "@src/shared/components/data-table";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import { usePaymentTransactionColumns } from "@src/features/payments/hooks/usePaymentTransactionColumns";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import {
@@ -17,13 +15,7 @@ import {
 import { Badge } from "@src/shared/components/ui/badge";
 import { Separator } from "@src/shared/components/ui/separator";
 import { Button } from "@src/shared/components/ui/button";
-import {
-  ArrowLeft,
-  CreditCard,
-  Clock,
-  AlertCircle,
-  Receipt,
-} from "lucide-react";
+import { CreditCard, Clock, AlertCircle, Receipt } from "lucide-react";
 import Link from "next/link";
 
 export function UserPaymentsPage() {
@@ -166,95 +158,84 @@ export function UserPaymentsPage() {
         </div>
       )}
 
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card className=" border-hairline bg-surface-card md:col-span-2">
+      <DataTableFilters
+        fields={[
+          {
+            type: "search",
+            id: "search",
+            placeholder: "Search transactions...",
+          },
+        ]}
+        onFilterChange={() => {}}
+      />
+
+      <DataTable columns={columns} data={transactions} loading={isLoading} />
+
+      <div className="space-y-6">
+        <Card className=" border-hairline bg-surface-card">
           <CardHeader>
             <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Payment Transactions
+              Contribution Summary
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <DataTableFilters
-              fields={[
-                {
-                  type: "search",
-                  id: "search",
-                  placeholder: "Search transactions...",
-                },
-              ]}
-              onFilterChange={() => {}}
-            />
-
-            <DataTable columns={columns} data={transactions} loading={isLoading} />
+            {summary && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">
+                    Paid Months
+                  </span>
+                  <Badge variant="default">{summary.paidMonths}</Badge>
+                </div>
+                <Separator className="bg-hairline" />
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">
+                    Partial Months
+                  </span>
+                  <Badge variant="outline">{summary.partialMonths}</Badge>
+                </div>
+                <Separator className="bg-hairline" />
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">
+                    Overdue Months
+                  </span>
+                  <Badge variant="destructive">{summary.overdueMonths}</Badge>
+                </div>
+                <Separator className="bg-hairline" />
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">
+                    Waived Months
+                  </span>
+                  <Badge variant="secondary">{summary.waivedMonths}</Badge>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
-        <div className="space-y-6">
-          <Card className=" border-hairline bg-surface-card">
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                Contribution Summary
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {summary && (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">
-                      Paid Months
-                    </span>
-                    <Badge variant="default">{summary.paidMonths}</Badge>
-                  </div>
-                  <Separator className="bg-hairline" />
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">
-                      Partial Months
-                    </span>
-                    <Badge variant="outline">{summary.partialMonths}</Badge>
-                  </div>
-                  <Separator className="bg-hairline" />
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">
-                      Overdue Months
-                    </span>
-                    <Badge variant="destructive">{summary.overdueMonths}</Badge>
-                  </div>
-                  <Separator className="bg-hairline" />
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">
-                      Waived Months
-                    </span>
-                    <Badge variant="secondary">{summary.waivedMonths}</Badge>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card className=" border-hairline bg-surface-card">
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                Quick Links
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Link
-                  href={`/payments/users/${userId}/contributions`}
-                  className="block text-sm text-primary hover:underline"
-                >
-                  View Contributions →
-                </Link>
-                <Link
-                  href={`/members/${userId}`}
-                  className="block text-sm text-primary hover:underline"
-                >
-                  View Member Profile →
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <Card className=" border-hairline bg-surface-card">
+          <CardHeader>
+            <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              Quick Links
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <Link
+                href={`/payments/users/${userId}/contributions`}
+                className="block text-sm text-primary hover:underline"
+              >
+                View Contributions →
+              </Link>
+              <Link
+                href={`/members/${userId}`}
+                className="block text-sm text-primary hover:underline"
+              >
+                View Member Profile →
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <DataTablePagination

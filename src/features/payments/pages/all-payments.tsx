@@ -1,49 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
 import { usePayments } from "@src/features/payments/hooks/usePayments";
 import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import { RecordPaymentDialog } from "@src/features/payments/components";
 import { DataTable } from "@src/shared/components/data-table";
 import { usePaymentTransactionColumns } from "@src/features/payments/hooks/usePaymentTransactionColumns";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
+import { useUrlFilters } from "@src/shared/hooks";
 import { Button } from "@src/shared/components/ui/button";
-import { Plus, Receipt } from "lucide-react";
+import { Plus } from "lucide-react";
 
 export default function AllPaymentsPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const currentPage = Number(searchParams.get("page")) || 1;
   const [recordDialogOpen, setRecordDialogOpen] = useState(false);
-  const [filters, setFilters] = useState<Record<string, string | undefined>>(
-    {},
-  );
+  const { filters, page, setPage, setFilters } = useUrlFilters({
+    basePath: "/payments",
+  });
 
   const { payments, meta, isLoading } = usePayments({
-    page: currentPage,
+    page,
     ...filters,
   });
 
   const { columns } = usePaymentTransactionColumns();
-
-  const handlePageChange = (page: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", String(page));
-    router.push(`/payments?${params.toString()}`);
-  };
-
-  const handleFilterChange = (
-    newFilters: Record<string, string | undefined>,
-  ) => {
-    setFilters(newFilters);
-    const params = new URLSearchParams();
-    params.set("page", "1");
-    Object.entries(newFilters).forEach(([key, value]) => {
-      if (value) params.set(key, value);
-    });
-    router.push(`?${params.toString()}`);
-  };
 
   return (
     <>
@@ -103,14 +82,14 @@ export default function AllPaymentsPage() {
             ],
           },
         ]}
-        onFilterChange={handleFilterChange}
+        onFilterChange={setFilters}
       />
 
       <DataTable columns={columns} data={payments} loading={isLoading} />
 
       <DataTablePagination
         meta={meta}
-        onPageChange={handlePageChange}
+        onPageChange={setPage}
         label="payments"
       />
 
