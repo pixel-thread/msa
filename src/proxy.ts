@@ -14,12 +14,12 @@ import {
 export default chain([
   withTraceId,
   withCors,
+  withCsrf,
   withRateLimiting,
   withAuth,
   withSecurityHeaders,
   withRequestSizeLimit,
   withBotProtection,
-  withCsrf,
   withLogging,
 ]);
 

@@ -12,13 +12,10 @@ import {
 import { useTheme } from "../providers/theme-provider";
 import { Button } from "./ui/button";
 import { MoonIcon, SunIcon } from "lucide-react";
+import { Ternary } from "./Ternary";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
-  breadcrumbs?: Array<{
-    href?: string;
-    label: string;
-  }>;
 }
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
@@ -47,11 +44,17 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               />
             </div>
             <Button variant={"ghost"} onClick={() => toggleTheme()}>
-              {mounted ? (
-                themeMode === "light" ? <SunIcon /> : <MoonIcon />
-              ) : (
-                <div className="size-5" />
-              )}
+              <Ternary
+                condition={mounted}
+                ifTrue={
+                  <Ternary
+                    condition={themeMode === "light"}
+                    ifTrue={<MoonIcon />}
+                    ifFalse={<SunIcon />}
+                  />
+                }
+                ifFalse={<div className="size-5" />}
+              />
             </Button>
           </div>
         </header>

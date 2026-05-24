@@ -8,7 +8,6 @@ import {
   WalletIcon,
   AlertTriangleIcon,
   ScrollTextIcon,
-  ShieldCheck,
   ShieldIcon,
   ClipboardCheck,
 } from "lucide-react";
@@ -35,7 +34,7 @@ export const DRAWER_NAV_MAIN = [
       },
       {
         title: "Archive",
-        url: "/announcement/archive",
+        url: "/announcement/archived",
       },
     ],
   },

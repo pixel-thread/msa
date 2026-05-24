@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { prisma } from "@src/shared/lib/prisma";
-import { withValidation, requireAuth } from "@src/shared/api";
+import { withValidation } from "@src/shared/api";
 import { verifyPassword } from "@src/shared/lib/password";
 import { generateOTP, hashToken } from "@src/shared/lib/password";
 import { sendVerificationEmail } from "@src/shared/lib/email";
@@ -9,6 +9,7 @@ import { env } from "@src/env";
 import {
   BadRequestError,
   ConflictError,
+  UnauthorizedError,
   ValidationError,
 } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
@@ -22,8 +23,9 @@ type SetupMfaBody = z.infer<typeof SetupMfaSchema>;
 
 export const POST = withValidation(
   { body: SetupMfaSchema },
-  async (_, _ctx, { body }) => {
-    const { userId } = await requireAuth();
+  async (request, _ctx, { body }) => {
+    const userId = request.headers.get("x-user-id");
+    if (!userId) throw new UnauthorizedError("Unauthorized");
 
     const { password } = body as SetupMfaBody;
 

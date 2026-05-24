@@ -1,3 +1,5 @@
+import { UserRole } from "@prisma/client";
+
 /**
  * Admin-only routes that require the 'admin' role.
  */
@@ -43,3 +45,119 @@ export const AUTH_ROUTES = [
   "/settings(.*)",
   "/profile(.*)",
 ] as const;
+
+type RouteRole = {
+  url: string;
+  role: UserRole[];
+  redirect: string;
+  needAuth: boolean;
+};
+
+const nonMemberRoles = [
+  UserRole.SUPER_ADMIN,
+  UserRole.PRESIDENT,
+  UserRole.SECRETARY,
+  UserRole.FINANCE,
+  UserRole.DPO,
+];
+
+const allRoles = [
+  UserRole.SUPER_ADMIN,
+  UserRole.PRESIDENT,
+  UserRole.SECRETARY,
+  UserRole.FINANCE,
+  UserRole.DPO,
+];
+
+export const ROUTE_ROLE: RouteRole[] = [
+  {
+    url: "/",
+    role: allRoles,
+    redirect: "/",
+    needAuth: false,
+  },
+  {
+    url: "/dashboard/*",
+    role: nonMemberRoles,
+    redirect: "/forbidden",
+    needAuth: true,
+  },
+  {
+    url: "/announcement/*",
+    role: nonMemberRoles,
+    redirect: "/forbidden",
+    needAuth: true,
+  },
+  {
+    url: "/associations/*",
+    role: nonMemberRoles,
+    redirect: "/forbidden",
+    needAuth: true,
+  },
+  {
+    url: "/audit-logs/*",
+    role: nonMemberRoles,
+    redirect: "/forbidden",
+    needAuth: true,
+  },
+  {
+    url: "/compliance/*",
+    role: nonMemberRoles,
+    redirect: "/forbidden",
+    needAuth: true,
+  },
+  {
+    url: "/consent/*",
+    role: nonMemberRoles,
+    redirect: "/forbidden",
+    needAuth: true,
+  },
+  {
+    url: "/dsar/*",
+    role: nonMemberRoles,
+    redirect: "/forbidden",
+    needAuth: true,
+  },
+  {
+    url: "/ledger/*",
+    role: nonMemberRoles,
+    redirect: "/forbidden",
+    needAuth: true,
+  },
+  {
+    url: "/meetings/*",
+    role: nonMemberRoles,
+    redirect: "/forbidden",
+    needAuth: true,
+  },
+  {
+    url: "/member-types/*",
+    role: nonMemberRoles,
+    redirect: "/forbidden",
+    needAuth: true,
+  },
+  {
+    url: "/members/*",
+    role: nonMemberRoles,
+    redirect: "/forbidden",
+    needAuth: true,
+  },
+  {
+    url: "/payments/*",
+    role: nonMemberRoles,
+    redirect: "/forbidden",
+    needAuth: true,
+  },
+  {
+    url: "/subscriptions/*",
+    role: nonMemberRoles,
+    redirect: "/forbidden",
+    needAuth: true,
+  },
+  {
+    url: "/training/*",
+    role: nonMemberRoles,
+    redirect: "/forbidden",
+    needAuth: true,
+  },
+];

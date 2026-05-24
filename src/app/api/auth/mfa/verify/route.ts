@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { prisma } from "@src/shared/lib/prisma";
-import { withValidation, requireAuth } from "@src/shared/api";
+import { withValidation } from "@src/shared/api";
 import { hashToken } from "@src/shared/lib/password";
 import { env } from "@src/env";
 import { TooManyRequestsError, UnauthorizedError } from "@src/shared/errors";
@@ -15,8 +15,9 @@ type VerifyMfaBody = z.infer<typeof VerifyMfaSchema>;
 
 export const POST = withValidation(
   { body: VerifyMfaSchema },
-  async (_, _ctx, { body }) => {
-    const { userId } = await requireAuth();
+  async (request, _ctx, { body }) => {
+    const userId = request.headers.get("x-user-id");
+    if (!userId) throw new UnauthorizedError("Unauthorized");
 
     const { code } = body as VerifyMfaBody;
 

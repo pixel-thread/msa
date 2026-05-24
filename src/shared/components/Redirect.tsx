@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { useAuthStore } from "../stores/auth";
 import { Loading } from "@components/loading";
+import { ROUTE_ROLE } from "../constants";
 
 type UserRole =
   | "SUPER_ADMIN"
@@ -23,20 +24,6 @@ const pageAccessOnlyIfUnAuthenticated: string[] = [
   "/sign-up",
   "/reset-password",
   "/verify-email",
-];
-
-const routeRoles: {
-  url: string;
-  role: UserRole[];
-  redirect: string;
-  needAuth: boolean;
-}[] = [
-  {
-    url: "/",
-    role: ["PRESIDENT", "SECRETARY", "SUPER_ADMIN", "DPO", "FINANCE"],
-    redirect: "/",
-    needAuth: true,
-  },
 ];
 
 export const Redirect = ({ children }: PropsT) => {
@@ -64,7 +51,7 @@ export const Redirect = ({ children }: PropsT) => {
     if (isAuthLoading) return;
 
     // Step 1: Identify the current route from the `routeRoles` configuration
-    const currentRoute = routeRoles.find((route) => {
+    const currentRoute = ROUTE_ROLE.find((route) => {
       if (route.url === pathName) return true; // Direct match for the route
       if (route.url.endsWith("/*")) {
         const basePath = route.url.replace("/*", ""); // Handle wildcard route (e.g., `/dashboard/*`)
@@ -72,7 +59,6 @@ export const Redirect = ({ children }: PropsT) => {
       }
       return false; // No match found
     });
-
     // Step 2: Handle authentication-based redirection
     if (currentRoute) {
       // If the route requires authentication and the user is not authenticated
@@ -86,7 +72,7 @@ export const Redirect = ({ children }: PropsT) => {
       if (isAuthenticated) {
         // Check if the user has at least one of the required roles for the current route
         const hasRequiredRole = currentRoute.role.some((role) =>
-          userRoles.includes(role),
+          userRoles.some((userRole) => userRole === role),
         );
 
         // If the user does not have the required role(s)
@@ -108,7 +94,7 @@ export const Redirect = ({ children }: PropsT) => {
   }, [isAuthenticated, pathName, redirectTo, router, isAuthLoading, isLoading]);
 
   // Display preloader if authentication or loading is in progress
-  if (isAuthLoading || isLoading) {
+  if (isAuthLoading) {
     return <Loading />;
   }
 

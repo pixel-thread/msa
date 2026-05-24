@@ -19,7 +19,7 @@ const DPO_ROLE: UserRole = UserRole.DPO;
 export const GET = withAssociation(
   { query: ComplianceCheckQuerySchema },
   async (_association, { query }, req) => {
-    withRole(req, DPO_ROLE);
+    await withRole(req, DPO_ROLE);
 
     const where: Record<string, unknown> = {};
 

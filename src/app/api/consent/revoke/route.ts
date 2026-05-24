@@ -1,8 +1,8 @@
-import { withAssociation, requireAuth } from "@src/shared/api";
+import { withAssociation } from "@src/shared/api";
 import { ConsentService, ConsentUpdateSchema } from "@src/features/consent";
 import { ConsentStatus } from "@prisma/client";
 import { SuccessResponse } from "@src/shared/utils";
-import { BadRequestError } from "@src/shared/errors";
+import { BadRequestError, UnauthorizedError } from "@src/shared/errors";
 
 /**
  * POST /api/consent/revoke
@@ -14,8 +14,8 @@ export const POST = withAssociation(
     body: ConsentUpdateSchema.omit({ action: true }),
   },
   async (association, { body }, request) => {
-    const auth = await requireAuth();
-
+    const userId = request.headers.get("x-user-id");
+    if (!userId) throw new UnauthorizedError("Unauthorized");
     if (!body) {
       throw new BadRequestError("Request body is required");
     }
@@ -24,7 +24,7 @@ export const POST = withAssociation(
     const userAgent = request.headers.get("user-agent") || "unknown";
 
     const receipts = await ConsentService.updateConsent(
-      auth.userId,
+      userId,
       association.id,
       {
         ...body,

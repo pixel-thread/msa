@@ -18,7 +18,7 @@ export function AppProviders({ children }: AppProvidersProps) {
         <QueryProvider>
           <AuthProvider>
             <Redirect>{children}</Redirect>
-            <Toaster />
+            <Toaster position="top-right" />
           </AuthProvider>
         </QueryProvider>
       </TooltipProvider>

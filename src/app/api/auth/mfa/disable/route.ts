@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { prisma } from "@src/shared/lib/prisma";
-import { withValidation, requireAuth } from "@src/shared/api";
+import { withValidation } from "@src/shared/api";
 import { verifyPassword } from "@src/shared/lib/password";
 import { BadRequestError, UnauthorizedError } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
@@ -14,8 +14,10 @@ type DisableMfaBody = z.infer<typeof DisableMfaSchema>;
 
 export const POST = withValidation(
   { body: DisableMfaSchema },
-  async (_, _ctx, { body }) => {
-    const { userId } = await requireAuth();
+  async (request, _ctx, { body }) => {
+    const userId = request.headers.get("x-user-id");
+
+    if (!userId) throw new UnauthorizedError("Unauthorized");
 
     const { password } = body as DisableMfaBody;
 

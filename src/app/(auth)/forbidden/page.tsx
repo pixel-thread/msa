@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 
 import { Button } from "@src/shared/components/ui/button";
@@ -9,8 +10,10 @@ import {
   CardContent,
   CardFooter,
 } from "@src/shared/components/ui/card";
+import { useAuthStore } from "@src/shared/stores";
 
 export default function ForbiddenPage() {
+  const { isSignedIn } = useAuthStore();
   return (
     <div className="flex min-h-screen items-center justify-center bg-canvas px-4 py-24">
       <Card className="w-full max-w-md border-hairline bg-surface-card">
@@ -37,12 +40,14 @@ export default function ForbiddenPage() {
           >
             <Link href="/">Go back home</Link>
           </Button>
-          <Button
-            asChild
-            className="h-11 bg-primary px-5 text-base font-semibold text-on-primary hover:bg-primary-active"
-          >
-            <Link href="/sign-in">Sign in</Link>
-          </Button>
+          {!isSignedIn && (
+            <Button
+              asChild
+              className="h-11 bg-primary px-5 text-base font-semibold text-on-primary hover:bg-primary-active"
+            >
+              <Link href="/sign-in">Sign in</Link>
+            </Button>
+          )}
         </CardFooter>
       </Card>
     </div>

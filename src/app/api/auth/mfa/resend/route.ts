@@ -1,14 +1,19 @@
 import { prisma } from "@src/shared/lib/prisma";
-import { withValidation, requireAuth } from "@src/shared/api";
+import { withValidation } from "@src/shared/api";
 import { generateOTP, hashToken } from "@src/shared/lib/password";
 import { sendVerificationEmail } from "@src/shared/lib/email";
 import { env } from "@src/env";
-import { ForbiddenError, NotFoundError } from "@src/shared/errors";
+import {
+  ForbiddenError,
+  NotFoundError,
+  UnauthorizedError,
+} from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
 import { logger } from "@src/shared/logger";
 
-export const POST = withValidation({}, async () => {
-  const { userId } = await requireAuth();
+export const POST = withValidation({}, async (request) => {
+  const userId = request.headers.get("x-user-id");
+  if (!userId) throw new UnauthorizedError("Unauthorized");
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -73,4 +78,3 @@ export const POST = withValidation({}, async () => {
     },
   });
 });
-
