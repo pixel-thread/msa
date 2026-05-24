@@ -12,14 +12,14 @@ import {
 } from "./shared/middleware";
 
 export default chain([
+  withCors,
+  withSecurityHeaders,
   withTraceId,
   withRateLimiting,
   withRequestSizeLimit,
   withBotProtection,
   withCsrf,
   withAuth,
-  withCors,
-  withSecurityHeaders,
   withLogging,
 ]);
 

@@ -11,7 +11,6 @@ import { RefreshTokenSchema } from "@src/features/auth/validators";
 import { getUniqueRefreshToken } from "@src/features/auth/services/get-unique-refresh-token";
 import { updateRefreshToken } from "@src/features/auth/services/update-refresh-token";
 import { createRefreshToken } from "@src/features/auth/services/create-refresh-token";
-import { updateRefreshTokens } from "@src/features/auth/services/update-refresh-tokens";
 import { revokedRefreshTokens } from "@src/features/auth/services/revoked-refresh-tokens";
 
 export const POST = withValidation(
