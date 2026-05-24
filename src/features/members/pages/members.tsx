@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
+import { useUrlFilters } from "@src/shared/hooks";
 
 import { DataTable } from "@src/shared/components/data-table";
 import {
@@ -12,19 +12,11 @@ import { useMemberTableColumns } from "@src/features/members/hooks/useMemberTabl
 import { useMemberTableActions } from "@src/features/members/hooks/useMemberTableActions";
 
 export default function MembersPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const currentPage = Number(searchParams.get("page")) || 1;
+  const { page, setPage } = useUrlFilters({ basePath: "/members" });
 
-  const { members, meta, isLoading } = useMembers({ page: currentPage });
+  const { members, meta, isLoading } = useMembers({ page });
   const { onRoleChange, onStatusChange } = useMemberTableActions();
   const { columns } = useMemberTableColumns({ onRoleChange, onStatusChange });
-
-  const handlePageChange = (page: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", String(page));
-    router.push(`/members?${params.toString()}`);
-  };
 
   return (
     <>
@@ -52,7 +44,7 @@ export default function MembersPage() {
 
       <DataTable loading={isLoading} data={members} columns={columns} />
 
-      <DataTablePagination meta={meta} onPageChange={handlePageChange} label="members" />
+      <DataTablePagination meta={meta} onPageChange={setPage} label="members" />
     </>
   );
 }

@@ -10,26 +10,13 @@ import { CreateAccountDialog } from "../components/create-account-dialog";
 import { useLedgerAccountColumns } from "../hooks/useLedgerAccountColumns";
 import { Plus, BanknoteIcon } from "lucide-react";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useUrlFilters } from "@src/shared/hooks";
 
 export default function LedgerAccountsPage() {
+  const { page, setPage } = useUrlFilters({ basePath: "/ledger/accounts" });
   const { accounts, isLoading, meta } = useLedgerAccounts();
   const [createOpen, setCreateOpen] = useState(false);
   const { columns } = useLedgerAccountColumns();
-
-  const searchParams = useSearchParams();
-
-  const currentPage = Number(searchParams.get("page")) || 1;
-
-  const pushParams = (overrides: Record<string, string>) => {
-    const params = new URLSearchParams();
-    const page = overrides.page ?? String(currentPage);
-    params.set("page", page);
-  };
-
-  const handlePageChange = (page: number) => {
-    pushParams({ page: String(page) });
-  };
 
   return (
     <>
@@ -80,7 +67,7 @@ export default function LedgerAccountsPage() {
       />
 
       <DataTable loading={isLoading} data={accounts} columns={columns} />
-      <DataTablePagination meta={meta} onPageChange={handlePageChange} />
+      <DataTablePagination meta={meta} onPageChange={setPage} />
 
       <CreateAccountDialog open={createOpen} onOpenChange={setCreateOpen} />
     </>

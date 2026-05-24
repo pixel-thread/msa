@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useUrlFilters } from "@src/shared/hooks";
 
 import { DataTable } from "@src/shared/components/data-table";
 import {
@@ -15,24 +15,16 @@ import { useRejectApplication } from "../hooks/useRejectApplication";
 import { MembershipApplicationListItem } from "../types";
 
 export function MembershipApplicationsPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const currentPage = Number(searchParams.get("page")) || 1;
+  const { page, setPage } = useUrlFilters({ basePath: "/members/applications" });
   const [selectedApplication, setSelectedApplication] =
     useState<MembershipApplicationListItem | null>(null);
 
   const rejectApplication = useRejectApplication();
 
   const { applications, pagination, isLoading } = useMembershipApplications({
-    page: currentPage,
+    page,
     status: "PENDING",
   });
-
-  const handlePageChange = (page: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", String(page));
-    router.push(`/members/applications?${params.toString()}`);
-  };
 
   const { columns } = useMembershipApplicationColumns({
     onReview: setSelectedApplication,
@@ -82,7 +74,7 @@ export function MembershipApplicationsPage() {
               variant="outline"
               size="sm"
               disabled={pagination.page <= 1}
-              onClick={() => handlePageChange(pagination.page - 1)}
+              onClick={() => setPage(pagination.page - 1)}
             >
               Previous
             </Button>
@@ -90,7 +82,7 @@ export function MembershipApplicationsPage() {
               variant="outline"
               size="sm"
               disabled={pagination.page >= pagination.totalPages}
-              onClick={() => handlePageChange(pagination.page + 1)}
+              onClick={() => setPage(pagination.page + 1)}
             >
               Next
             </Button>

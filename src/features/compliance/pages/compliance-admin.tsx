@@ -18,12 +18,10 @@ import {
   ComplianceCheckStatusEnum,
 } from "../validators/compliance";
 import type { ComplianceRecord } from "../types/compliance.types";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useUrlFilters } from "@src/shared/hooks";
 
 export default function ComplianceAdminPage() {
-  const searchParams = useSearchParams();
-  const page = parseInt(searchParams.get("page") || "1") || 1;
-  const router = useRouter();
+  const { page, setPage } = useUrlFilters();
 
   const [checkTypeFilter, setCheckTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -56,11 +54,7 @@ export default function ComplianceAdminPage() {
     }
   }, [deletingRecord, deleteComplianceCheck]);
 
-  const handlePageChange = (page: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", String(page));
-    router.push(`?${params.toString()}`);
-  };
+  
 
   return (
     <>
@@ -110,7 +104,7 @@ export default function ComplianceAdminPage() {
 
       <DataTablePagination
         meta={meta}
-        onPageChange={handlePageChange}
+        onPageChange={setPage}
         label="checks"
       />
 

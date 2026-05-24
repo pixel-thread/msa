@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useState } from "react";
+import { useUrlFilters } from "@src/shared/hooks";
 import { DataTable } from "@src/shared/components/data-table";
 import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import { Button } from "@src/shared/components/ui/button";
@@ -12,26 +12,14 @@ import { CreateMeetingDialog } from "@src/features/meetings/components/CreateMee
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 
 export default function MeetingsPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const currentPage = Number(searchParams.get("page")) || 1;
+  const { page, setPage } = useUrlFilters({ basePath: "/meetings" });
 
   const [createOpen, setCreateOpen] = useState(false);
 
   const { meetings, meta, isLoading } = useMeetings({
-    page: currentPage,
+    page,
   });
   const { columns } = useMeetingTableColumns();
-
-  const handlePageChange = useCallback(
-    (page: number) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("page", String(page));
-      router.push(`/meetings?${params.toString()}`);
-    },
-    [router, searchParams],
-  );
 
   return (
     <>
@@ -65,7 +53,7 @@ export default function MeetingsPage() {
 
       <DataTable loading={isLoading} data={meetings} columns={columns} />
 
-      <DataTablePagination meta={meta} onPageChange={handlePageChange} />
+      <DataTablePagination meta={meta}         onPageChange={setPage} />
     </>
   );
 }

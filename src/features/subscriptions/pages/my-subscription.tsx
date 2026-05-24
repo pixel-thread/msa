@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
+import { useUrlFilters } from "@src/shared/hooks";
 import { useQuery } from "@tanstack/react-query";
 import http from "@src/shared/utils/http";
 import {
@@ -65,15 +65,13 @@ interface PaginationMeta {
 }
 
 export function MySubscriptionPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const currentPage = Number(searchParams.get("page")) || 1;
+  const { page, setPage } = useUrlFilters({ basePath: "/subscriptions/my" });
 
   const { data, isLoading } = useQuery({
-    queryKey: ["payment-history", currentPage],
+    queryKey: ["payment-history", page],
     queryFn: () =>
       http.get<PaymentHistoryResponse>(
-        `/payments/history?page=${currentPage}&pageSize=20`,
+        `/payments/history?page=${page}&pageSize=20`,
       ),
   });
 
@@ -82,12 +80,6 @@ export function MySubscriptionPage() {
   const meta = data?.meta as PaginationMeta | undefined;
 
   const { columns } = useSubscriptionPaymentColumns();
-
-  const handlePageChange = (page: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", String(page));
-    router.push(`/subscriptions/my?${params.toString()}`);
-  };
 
   if (isLoading) {
     return (
@@ -178,7 +170,7 @@ export function MySubscriptionPage() {
 
         <DataTablePagination
           meta={meta}
-          onPageChange={handlePageChange}
+          onPageChange={setPage}
           label="transactions"
         />
       </Card>

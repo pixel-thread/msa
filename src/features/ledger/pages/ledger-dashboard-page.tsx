@@ -14,19 +14,17 @@ import {
   BanknoteIcon,
 } from "lucide-react";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
-import { useSearchParams, useRouter } from "next/navigation";
-import { useCallback } from "react";
+import { useUrlFilters } from "@src/shared/hooks";
 
 export default function LedgerDashboardPage() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
+  const { page, setPage } = useUrlFilters({ basePath: "/ledger" });
   const { summary, isLoading: summaryLoading } = useLedgerSummary();
   const {
     entries,
     meta,
     isLoading: entriesLoading,
   } = useLedgerEntries({
-    page: searchParams.get("page") ? Number(searchParams.get("page")) : 1,
+    page,
   });
 
   const totalAccounts = summary?.accounts?.length ?? 0;
@@ -35,15 +33,6 @@ export default function LedgerDashboardPage() {
   ).length;
 
   const { columns: entryColumns } = useRecentLedgerEntryColumns();
-
-  const onPageChange = useCallback(
-    (page: number) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("page", String(page));
-      router.push(`/ledger?${params.toString()}`);
-    },
-    [router, searchParams],
-  );
   return (
     <>
       <div className="flex items-center justify-between">
@@ -128,7 +117,7 @@ export default function LedgerDashboardPage() {
         data={entries}
         loading={entriesLoading}
       />
-      <DataTablePagination meta={meta} onPageChange={onPageChange} />
+      <DataTablePagination meta={meta} onPageChange={setPage} />
 
       <div className="grid gap-4 md:grid-cols-2">
         <Link href="/ledger/entries">

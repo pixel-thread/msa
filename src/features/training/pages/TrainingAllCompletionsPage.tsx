@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useUrlFilters } from "@src/shared/hooks";
 import { Award, ArrowLeft } from "lucide-react";
 
 import { Button } from "@src/shared/components/ui/button";
@@ -17,23 +17,12 @@ import {
 
 export function TrainingAllCompletionsPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const currentPage = Number(searchParams.get("page")) || 1;
+  const { page, setPage } = useUrlFilters({ basePath: "/training/completions" });
 
   const { completions, meta, isLoading } = useTrainingCompletions(null, {
-    page: currentPage,
+    page,
   });
   const { columns } = useTrainingCompletionsColumns({ showModule: true });
-
-  const handlePageChange = useCallback(
-    (page: number) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("page", String(page));
-      router.push(`/training/completions?${params.toString()}`);
-    },
-    [router, searchParams],
-  );
 
   return (
     <div className="mx-auto pb-12 w-full h-full space-y-6">
@@ -84,7 +73,7 @@ export function TrainingAllCompletionsPage() {
 
       <DataTablePagination
         meta={meta}
-        onPageChange={handlePageChange}
+        onPageChange={setPage}
         label="completions"
       />
     </div>

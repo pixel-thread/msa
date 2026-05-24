@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { useUrlFilters } from "@src/shared/hooks";
 import { UserRole } from "@prisma/client";
 import { useAuthStore } from "@src/shared/stores/auth";
 import { DataTable } from "@src/shared/components/data-table";
@@ -29,11 +30,9 @@ import { CreateModuleDialog } from "../components";
 
 export function TrainingListPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const { page, setPage } = useUrlFilters({ basePath: "/training" });
   const { user } = useAuthStore();
   const userRoles = user?.role || [];
-
-  const currentPage = Number(searchParams.get("page")) || 1;
 
   const isDpoOrAdmin =
     userRoles.includes(UserRole.DPO) ||
@@ -45,7 +44,7 @@ export function TrainingListPage() {
   const [createOpen, setCreateOpen] = useState(false);
 
   const { modules: allModules, pagination, isLoading: isModulesLoading } =
-    useTrainingModules({ page: currentPage });
+    useTrainingModules({ page });
   const { updateModule } = useUpdateTrainingModule();
 
   const { columns: moduleColumns } = useModuleTableColumns({
@@ -69,15 +68,6 @@ export function TrainingListPage() {
         m.description?.toLowerCase().includes(query),
     );
   }, [allModules, search]);
-
-  const handlePageChange = useCallback(
-    (page: number) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("page", String(page));
-      router.push(`/training?${params.toString()}`);
-    },
-    [router, searchParams],
-  );
 
   const getPageNumbers = (page: number, totalPages: number) => {
     const pages: number[] = [];
@@ -181,7 +171,7 @@ export function TrainingListPage() {
             <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious
-                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                  onClick={() => setPage(Math.max(1, page - 1))}
                   className={
                     currentPage <= 1
                      ? "pointer-events-none opacity-50"
@@ -190,11 +180,11 @@ export function TrainingListPage() {
                 />
               </PaginationItem>
 
-              {getPageNumbers(currentPage, pagination.totalPages).map((pageNum) => (
+              {getPageNumbers(page, pagination.totalPages).map((pageNum) => (
                 <PaginationItem key={pageNum}>
                   <PaginationLink
-                    onClick={() => handlePageChange(pageNum)}
-                    isActive={currentPage === pageNum}
+                    onClick={() => setPage(pageNum)}
+                    isActive={page === pageNum}
                     className="cursor-pointer"
                   >
                     {pageNum}
@@ -202,7 +192,7 @@ export function TrainingListPage() {
                 </PaginationItem>
               ))}
 
-              {pagination.totalPages > 5 && currentPage < pagination.totalPages - 2 && (
+              {pagination.totalPages > 5 && page < pagination.totalPages - 2 && (
                 <PaginationItem>
                   <PaginationEllipsis />
                 </PaginationItem>
@@ -210,9 +200,9 @@ export function TrainingListPage() {
 
               <PaginationItem>
                 <PaginationNext
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  className={
-                    currentPage >= pagination.totalPages
+                    onClick={() => setPage(page + 1)}
+                    className={
+                      page >= pagination.totalPages
                      ? "pointer-events-none opacity-50"
                       : "cursor-pointer"
                   }

@@ -1,6 +1,7 @@
 "use client";
 
-import { useParams, useSearchParams, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useUrlFilters } from "@src/shared/hooks";
 import { useUserPayments } from "@src/features/payments/hooks/useUserPayments";
 import { DataTable } from "@src/shared/components/data-table";
 import { DataTableFilters } from "@src/shared/components/data-table-filters";
@@ -21,22 +22,17 @@ import Link from "next/link";
 export function UserPaymentsPage() {
   const params = useParams();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const currentPage = Number(searchParams.get("page")) || 1;
   const userId = params.userId as string;
+  const { page, setPage } = useUrlFilters({
+    basePath: `/payments/users/${userId}`,
+  });
 
   const { user, transactions, summary, meta, isLoading } = useUserPayments({
     userId,
-    page: currentPage,
+    page,
   });
 
   const { columns } = usePaymentTransactionColumns();
-
-  const handlePageChange = (page: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", String(page));
-    router.push(`/payments/users/${userId}?${params.toString()}`);
-  };
 
   const formatAmount = (amount: number, currency: string = "INR") => {
     return new Intl.NumberFormat("en-IN", {
@@ -240,7 +236,7 @@ export function UserPaymentsPage() {
 
       <DataTablePagination
         meta={meta}
-        onPageChange={handlePageChange}
+        onPageChange={setPage}
         label="payments"
       />
     </>

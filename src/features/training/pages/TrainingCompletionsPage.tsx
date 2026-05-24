@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useUrlFilters } from "@src/shared/hooks";
 import { ArrowLeft, Award } from "lucide-react";
 
 import { Button } from "@src/shared/components/ui/button";
@@ -17,27 +17,18 @@ import { useTrainingCompletionsColumns } from "../hooks/completions/useTrainingC
 export function TrainingCompletionsPage() {
   const router = useRouter();
   const params = useParams();
-  const searchParams = useSearchParams();
   const moduleId = params.id as string;
-
-  const currentPage = Number(searchParams.get("page")) || 1;
+  const { page, setPage } = useUrlFilters({
+    basePath: `/training/${moduleId}/completions`,
+  });
 
   const { module: trainingModule, isLoading: isModuleLoading } =
     useTrainingModule(moduleId);
 
   const { completions, meta, isLoading: isCompletionsLoading } =
-    useTrainingCompletions(moduleId, { page: currentPage });
+    useTrainingCompletions(moduleId, { page });
 
   const { columns } = useTrainingCompletionsColumns();
-
-  const handlePageChange = useCallback(
-    (page: number) => {
-      const sp = new URLSearchParams(searchParams.toString());
-      sp.set("page", String(page));
-      router.push(`/training/${moduleId}/completions?${sp.toString()}`);
-    },
-    [router, searchParams, moduleId],
-  );
 
   if (isModuleLoading) {
     return (
@@ -113,7 +104,7 @@ export function TrainingCompletionsPage() {
 
       <DataTablePagination
         meta={meta}
-        onPageChange={handlePageChange}
+        onPageChange={setPage}
         label="completions"
       />
     </div>

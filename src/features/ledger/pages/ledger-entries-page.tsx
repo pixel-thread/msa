@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useUrlFilters } from "@src/shared/hooks";
 import { DataTable } from "@src/shared/components/data-table";
 import { Card, CardContent } from "@src/shared/components/ui/card";
 import { Button } from "@src/shared/components/ui/button";
@@ -27,10 +28,7 @@ import { DataTablePagination } from "@src/shared/components/data-table-paginatio
 
 export default function LedgerEntriesPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const currentPage = Number(searchParams.get("page")) || 1;
-  const statusFilter = searchParams.get("status") ?? "ALL";
+  const { page, setPage } = useUrlFilters({ basePath: "/ledger/entries" });
 
   const [createOpen, setCreateOpen] = useState(false);
   const [approveTarget, setApproveTarget] = useState<{
@@ -39,22 +37,8 @@ export default function LedgerEntriesPage() {
   } | null>(null);
 
   const { entries, meta, isLoading } = useLedgerEntries({
-    page: currentPage,
+    page,
   });
-
-  const pushParams = (overrides: Record<string, string>) => {
-    const params = new URLSearchParams();
-    const page = overrides.page ?? String(currentPage);
-    params.set("page", page);
-    const status =
-      overrides.status !== undefined ? overrides.status : statusFilter;
-    if (status && status !== "ALL") params.set("status", status);
-    router.push(`/ledger/entries?${params.toString()}`);
-  };
-
-  const handlePageChange = (page: number) => {
-    pushParams({ page: String(page) });
-  };
 
   const handleViewDetails = useCallback(
     (entry: LedgerEntryResponse) => {
@@ -107,7 +91,7 @@ export default function LedgerEntriesPage() {
 
       <DataTable loading={isLoading} data={entries} columns={columns} />
 
-      <DataTablePagination meta={meta} onPageChange={handlePageChange} />
+      <DataTablePagination meta={meta} onPageChange={setPage} />
 
       <CreateEntryDialog open={createOpen} onOpenChange={setCreateOpen} />
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useUrlFilters } from "@src/shared/hooks";
 
 import { DataTable } from "@src/shared/components/data-table";
 import {
@@ -17,13 +17,11 @@ import { DeletePlanDialog } from "@src/features/subscriptions/components/delete-
 import { SubscriptionPlan } from "@src/features/subscriptions/types";
 
 export default function PlansPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const currentPage = Number(searchParams.get("page")) || 1;
+  const { page, setPage } = useUrlFilters({ basePath: "/subscriptions/plans" });
   const [editingPlan, setEditingPlan] = useState<SubscriptionPlan | null>(null);
   const [deletingPlan, setDeletingPlan] = useState<SubscriptionPlan | null>(null);
 
-  const { plans, meta, isLoading } = usePlans({ page: currentPage });
+  const { plans, meta, isLoading } = usePlans({ page });
   const { onStatusChange, onDelete, isPending } = usePlanTableActions();
   const { columns } = usePlanTableColumns({
     onStatusChange,
@@ -33,12 +31,6 @@ export default function PlansPage() {
     },
     onEdit: (plan: SubscriptionPlan) => setEditingPlan(plan),
   });
-
-  const handlePageChange = (page: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", String(page));
-    router.push(`/subscriptions/plans?${params.toString()}`);
-  };
 
   const handleDeleteConfirm = () => {
     if (deletingPlan) {
@@ -76,7 +68,7 @@ export default function PlansPage() {
 
       <DataTablePagination
         meta={meta}
-        onPageChange={handlePageChange}
+        onPageChange={setPage}
         label="plans"
       />
 

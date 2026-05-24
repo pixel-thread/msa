@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useState, useMemo } from "react";
+import { useUrlFilters } from "@src/shared/hooks";
 import { DataTable } from "@src/shared/components/data-table";
 import {
   DataTableFilters,
@@ -20,17 +20,18 @@ interface AnnouncementsPageProps {
 }
 
 export default function AnnouncementsPage({ status }: AnnouncementsPageProps) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const currentPage = Number(searchParams.get("page")) || 1;
+  const basePath = useMemo(
+    () => `/announcement${status ? `/${status.toLowerCase()}` : ""}`,
+    [status],
+  );
+  const { page, setPage } = useUrlFilters({ basePath });
 
   const [editingAnnouncement, setEditingAnnouncement] =
     useState<Announcement | null>(null);
   const [deletingAnnouncement, setDeletingAnnouncement] =
     useState<Announcement | null>(null);
 
-  const { announcements, meta, isLoading } = useAnnouncementsList(status, currentPage);
+  const { announcements, meta, isLoading } = useAnnouncementsList(status, page);
   const deleteAnnouncement = useDeleteAnnouncement();
 
   const { columns } = useAnnouncementColumns({
@@ -45,15 +46,6 @@ export default function AnnouncementsPage({ status }: AnnouncementsPageProps) {
       });
     }
   };
-
-  const handlePageChange = useCallback(
-    (page: number) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("page", String(page));
-      router.push(`/announcement${status ? `/${status.toLowerCase()}` : ""}?${params.toString()}`);
-    },
-    [router, searchParams, status],
-  );
 
   return (
     <>
@@ -84,7 +76,7 @@ export default function AnnouncementsPage({ status }: AnnouncementsPageProps) {
 
       <DataTablePagination
         meta={meta}
-        onPageChange={handlePageChange}
+        onPageChange={setPage}
         label="announcements"
       />
 

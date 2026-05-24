@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useState, useMemo } from "react";
+import { useUrlFilters } from "@src/shared/hooks";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import http from "@src/shared/utils/http";
 import { useContributions } from "@src/features/payments/hooks/useContributions";
@@ -34,13 +34,10 @@ import { CalendarDays, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 export default function ContributionsPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
-  const currentPage = Number(searchParams.get("page")) || 1;
-  const [filters, setFilters] = useState<
-    Record<string, string | number | undefined>
-  >({});
+  const { filters, page, setPage, setFilters } = useUrlFilters({
+    basePath: "/payments/contributions",
+  });
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 6 }, (_, i) => currentYear - 5 + i);
@@ -91,9 +88,16 @@ export default function ContributionsPage() {
   const [year, setYear] = useState(String(new Date().getFullYear()));
   const [month, setMonth] = useState(String(new Date().getMonth() + 1));
 
+  const apiFilters = useMemo(() => {
+    const result: Record<string, string | number | undefined> = { ...filters };
+    if (filters.year) result.year = parseInt(filters.year, 10);
+    if (filters.month) result.month = parseInt(filters.month, 10);
+    return result;
+  }, [filters]);
+
   const { contributions, meta, isLoading } = useContributions({
-    page: currentPage,
-    ...filters,
+    page,
+    ...apiFilters,
   });
 
   const { columns } = useContributionPeriodColumns();
@@ -120,28 +124,7 @@ export default function ContributionsPage() {
     },
   });
 
-  const handlePageChange = (page: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", String(page));
-    router.push(`/payments/contributions?${params.toString()}`);
-  };
-
-  const handleFilterChange = (
-    newFilters: Record<string, string | undefined>,
-  ) => {
-    const parsed: Record<string, string | number | undefined> = {
-      ...newFilters,
-      year: newFilters.year ? parseInt(newFilters.year, 10) : undefined,
-      month: newFilters.month ? parseInt(newFilters.month, 10) : undefined,
-    };
-    setFilters(parsed);
-    const params = new URLSearchParams();
-    params.set("page", "1");
-    Object.entries(parsed).forEach(([key, value]) => {
-      if (value !== undefined) params.set(key, String(value));
-    });
-    router.push(`/payments/contributions?${params.toString()}`);
-  };
+  
 
   const months = [
     { value: "1", label: "January" },
@@ -177,14 +160,14 @@ export default function ContributionsPage() {
 
       <DataTableFilters
         fields={filterFields}
-        onFilterChange={handleFilterChange}
+        onFilterChange={setFilters}
       />
 
       <DataTable columns={columns} data={contributions} loading={isLoading} />
 
       <DataTablePagination
         meta={meta}
-        onPageChange={handlePageChange}
+        onPageChange={setPage}
         label="contributions"
       />
 

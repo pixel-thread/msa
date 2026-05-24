@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useUrlFilters } from "@src/shared/hooks";
 
 import { DataTable } from "@src/shared/components/data-table";
 import { Card, CardContent } from "@src/shared/components/ui/card";
@@ -69,26 +69,24 @@ const RESOURCE_TYPES = [
 ] as const;
 
 export default function AuditLogsPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const currentPage = Number(searchParams.get("page")) || 1;
-  const actionFilter = searchParams.get("action") ?? "";
-  const resourceFilter = searchParams.get("resourceType") ?? "";
-  const fromDateFilter = searchParams.get("fromDate") ?? "";
-  const toDateFilter = searchParams.get("toDate") ?? "";
+  const { filters, page, setPage } = useUrlFilters({ basePath: "/audit-logs" });
 
   const [selectedEntry, setSelectedEntry] = useState<AuditLogEntry | null>(
     null,
   );
   const [detailsOpen, setDetailsOpen] = useState(false);
 
+  const actionFilter = filters.action ?? "";
+  const resourceFilter = filters.resourceType ?? "";
+  const fromDateFilter = filters.fromDate ?? "";
+  const toDateFilter = filters.toDate ?? "";
+
   const {
     logs: auditLogs,
     meta: pagination,
     isLoading,
   } = useAuditLogs({
-    page: currentPage,
+    page,
     action: actionFilter && actionFilter !== "all" ? actionFilter : undefined,
     resourceType:
       resourceFilter && resourceFilter !== "all" ? resourceFilter : undefined,
@@ -102,30 +100,6 @@ export default function AuditLogsPage() {
   }, []);
 
   const { columns } = useAuditLogColumns({ onViewDetails: handleViewDetails });
-
-  const pushParams = (overrides: Record<string, string | null>) => {
-    const params = new URLSearchParams();
-    const page = overrides.page ?? String(currentPage);
-    params.set("page", page);
-    const action =
-      overrides.action !== undefined ? overrides.action : actionFilter;
-    const resource =
-      overrides.resourceType !== undefined
-        ? overrides.resourceType
-        : resourceFilter;
-    const from =
-      overrides.fromDate !== undefined ? overrides.fromDate : fromDateFilter;
-    const to = overrides.toDate !== undefined ? overrides.toDate : toDateFilter;
-    if (action && action !== "all") params.set("action", action);
-    if (resource && resource !== "all") params.set("resourceType", resource);
-    if (from) params.set("fromDate", from);
-    if (to) params.set("toDate", to);
-    router.push(`/audit-logs?${params.toString()}`);
-  };
-
-  const handlePageChange = (page: number) => {
-    pushParams({ page: String(page) });
-  };
 
   return (
     <>
@@ -201,7 +175,7 @@ export default function AuditLogsPage() {
 
       <DataTablePagination
         meta={pagination}
-        onPageChange={handlePageChange}
+        onPageChange={setPage}
         label="audit logs"
       />
 
