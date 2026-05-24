@@ -44,6 +44,7 @@ import {
 import { useSignIn, useVerifyMfa } from "@src/features/auth/hooks";
 import { logger } from "@src/shared/logger";
 import { PublicFooter } from "@src/shared/components/public-footer";
+import { toast } from "sonner";
 
 const BENEFITS = [
   {
@@ -260,7 +261,15 @@ function MfaVerify({
 
   const onSubmit = async (values: VerifySignInInput) => {
     try {
-      await verifyMfaMutation.mutateAsync(values);
+      await verifyMfaMutation.mutateAsync(values, {
+        onSuccess: (data) => {
+          if (data.success) {
+            toast.success(data.message);
+            return;
+          }
+          toast.error(data.message);
+        },
+      });
       router.push("/dashboard");
     } catch {}
   };

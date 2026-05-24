@@ -49,7 +49,7 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_APP_URL: z.url(),
     NEXT_PUBLIC_ASSOCIATION_SLUG: z.string().min(2).max(10),
-    NEXT_PUBLIC_API_BASE_URL: z.url().default("http://localhost:3000/api"),
+    NEXT_PUBLIC_API_BASE_URL: z.url(),
     NEXT_PUBLIC_ACCESS_TOKEN_EXPIRY: z.number().default(900),
     NEXT_PUBLIC_NODE_ENV: z.enum(["development", "test", "production"]),
   },
