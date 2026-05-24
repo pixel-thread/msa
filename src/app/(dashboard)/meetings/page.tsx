@@ -3,9 +3,7 @@
 import { useCallback, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { DataTable } from "@src/shared/components/data-table";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import { Button } from "@src/shared/components/ui/button";
 import { Plus } from "lucide-react";
 import { useMeetings } from "@src/features/meetings/hooks";
@@ -34,21 +32,6 @@ export default function MeetingsPage() {
     },
     [router, searchParams],
   );
-
-  const getPageNumbers = (page: number, totalPages: number) => {
-    const pages: number[] = [];
-    const maxVisible = 5;
-    if (totalPages <= maxVisible) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
-    } else if (page <= 3) {
-      for (let i = 1; i <= maxVisible; i++) pages.push(i);
-    } else if (page >= totalPages - 2) {
-      for (let i = totalPages - 4; i <= totalPages; i++) pages.push(i);
-    } else {
-      for (let i = page - 2; i <= page + 2; i++) pages.push(i);
-    }
-    return pages;
-  };
 
   return (
     <>
@@ -80,11 +63,7 @@ export default function MeetingsPage() {
         onFilterChange={() => {}}
       />
 
-      <DataTable
-        loading={isLoading}
-        data={meetings}
-        columns={columns}
-      />
+      <DataTable loading={isLoading} data={meetings} columns={columns} />
 
       <DataTablePagination meta={meta} onPageChange={handlePageChange} />
     </>

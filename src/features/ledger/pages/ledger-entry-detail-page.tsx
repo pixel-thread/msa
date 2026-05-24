@@ -9,9 +9,7 @@ import { Card, CardContent } from "@src/shared/components/ui/card";
 import { Button } from "@src/shared/components/ui/button";
 import { Badge } from "@src/shared/components/ui/badge";
 import { DataTable } from "@src/shared/components/data-table";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import { useLedgerLineColumns } from "../hooks/useLedgerLineColumns";
 import { formatDate } from "@src/shared/utils/format";
 import { ArrowLeftIcon } from "lucide-react";
@@ -24,7 +22,6 @@ export default function LedgerEntryDetailPage() {
 
   const { entries, isLoading: entriesLoading } = useLedgerEntries({
     page: 1,
-    pageSize: 100,
   });
   const { accounts, isLoading: accountsLoading } = useLedgerAccounts();
   const approveEntry = useApproveEntry();
@@ -50,7 +47,10 @@ export default function LedgerEntryDetailPage() {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4">
         <p className="text-lg text-muted-foreground">Entry not found</p>
-        <Button variant="outline" onClick={() => router.push("/ledger/entries")}>
+        <Button
+          variant="outline"
+          onClick={() => router.push("/ledger/entries")}
+        >
           <ArrowLeftIcon className="h-4 w-4 mr-2" />
           Back to Entries
         </Button>
@@ -98,7 +98,11 @@ export default function LedgerEntryDetailPage() {
           </h1>
           <p className="mt-1 text-base text-body">{entry.description}</p>
         </div>
-        <Badge variant={statusVariant as "default" | "secondary" | "destructive" | "outline"}>
+        <Badge
+          variant={
+            statusVariant as "default" | "secondary" | "destructive" | "outline"
+          }
+        >
           {entry.approvalStatus}
         </Badge>
       </div>

@@ -6,11 +6,11 @@ export function useAssociationsList() {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["associations-list"],
     queryFn: async () => http.get<Association[]>("/associations"),
-    select: (data) => data.data,
   });
 
   return {
-    associations: data ?? [],
+    associations: data?.data ?? [],
+    meta: data?.meta,
     isLoading,
     error,
     refetch,

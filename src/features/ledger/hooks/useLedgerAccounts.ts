@@ -9,7 +9,8 @@ export function useLedgerAccounts() {
   });
 
   return {
-    accounts: (data?.data ?? []) as Account[],
+    accounts: data?.data ?? [],
+    meta: data?.meta,
     isLoading,
     error,
     refetch,

@@ -2,9 +2,7 @@
 
 import { useState } from "react";
 import { DataTable } from "@src/shared/components/data-table";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import { useAssociationsList } from "@src/features/associations/hooks/useAssociationsList";
 import { useDeactivateAssociation } from "@src/features/associations/hooks/useDeactivateAssociation";
 import { useAssociationColumns } from "@src/features/associations/hooks/useAssociationColumns";

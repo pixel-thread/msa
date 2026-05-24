@@ -25,18 +25,16 @@ export interface LedgerEntryResponse {
 
 interface UseLedgerEntriesParams {
   page?: number;
-  pageSize?: number;
 }
 
 export function useLedgerEntries(params: UseLedgerEntriesParams = {}) {
-  const { page = 1, pageSize = 20 } = params;
+  const { page = 1 } = params;
 
   const queryParams = new URLSearchParams();
   queryParams.set("page", String(page));
-  queryParams.set("pageSize", String(pageSize));
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["ledger-entries", page, pageSize],
+    queryKey: ["ledger-entries", page],
     queryFn: () =>
       http.get<LedgerEntryResponse[]>(
         `/ledger/entries?${queryParams.toString()}`,

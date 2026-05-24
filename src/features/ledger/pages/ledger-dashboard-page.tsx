@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useLedgerSummary } from "../hooks/useLedgerSummary";
 import { useLedgerEntries } from "../hooks/useLedgerEntries";
 import { Card, CardContent } from "@src/shared/components/ui/card";
-import { Button } from "@src/shared/components/ui/button";
 import { DataTable } from "@src/shared/components/data-table";
 import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import { useRecentLedgerEntryColumns } from "../hooks/useRecentLedgerEntryColumns";
@@ -14,16 +13,20 @@ import {
   CheckCircleIcon,
   BanknoteIcon,
 } from "lucide-react";
+import { DataTablePagination } from "@src/shared/components/data-table-pagination";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useCallback } from "react";
 
 export default function LedgerDashboardPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const { summary, isLoading: summaryLoading } = useLedgerSummary();
   const {
     entries,
     meta,
     isLoading: entriesLoading,
   } = useLedgerEntries({
-    page: 1,
-    pageSize: 10,
+    page: searchParams.get("page") ? Number(searchParams.get("page")) : 1,
   });
 
   const totalAccounts = summary?.accounts?.length ?? 0;
@@ -33,6 +36,14 @@ export default function LedgerDashboardPage() {
 
   const { columns: entryColumns } = useRecentLedgerEntryColumns();
 
+  const onPageChange = useCallback(
+    (page: number) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("page", String(page));
+      router.push(`/ledger?${params.toString()}`);
+    },
+    [router, searchParams],
+  );
   return (
     <>
       <div className="flex items-center justify-between">
@@ -119,6 +130,7 @@ export default function LedgerDashboardPage() {
         data={entries}
         loading={entriesLoading}
       />
+      <DataTablePagination meta={meta} onPageChange={onPageChange} />
 
       <div className="grid gap-4 md:grid-cols-2">
         <Link href="/ledger/entries">
