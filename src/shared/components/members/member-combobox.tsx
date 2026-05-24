@@ -21,8 +21,13 @@ export function MemberCombobox({
 }: MemberComboboxProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedName, setSelectedName] = useState("");
   const { results, isLoading } = useMemberSearch(searchQuery);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!value) setSelectedName("");
+  }, [value]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -34,25 +39,28 @@ export function MemberCombobox({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const selectedMember = results.find((m) => m.id === value);
-
   const handleSelect = (id: string) => {
+    const member = results.find((m) => m.id === id);
+    if (member) setSelectedName(member.name);
     onValueChange?.(id);
     setSearchQuery("");
     setIsOpen(false);
   };
 
   const handleClear = () => {
+    setSelectedName("");
     onValueChange?.("");
     setSearchQuery("");
   };
+
+  const displayValue = searchQuery || selectedName;
 
   return (
     <div ref={containerRef} className="relative">
       <div className="relative">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          value={!searchQuery && selectedMember ? selectedMember.name : searchQuery}
+          value={displayValue}
           onChange={(e) => {
             setSearchQuery(e.target.value);
             setIsOpen(true);
