@@ -1,11 +1,16 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
-
 import { env } from "@src/env";
 import { logger } from "@src/shared/logger";
+import cookie from "react-cookies";
+
+const csrfToken = cookie.load("csrf-token");
 
 export const axiosClient: AxiosInstance = axios.create({
   baseURL: env.NEXT_PUBLIC_API_BASE_URL,
-  headers: { "Content-Type": "application/json" },
+  headers: {
+    "Content-Type": "application/json",
+    "X-CSRF-Token": csrfToken,
+  },
   withCredentials: true,
 });
 

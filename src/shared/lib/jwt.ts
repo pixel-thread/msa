@@ -18,9 +18,14 @@ export interface PasswordResetPayload {
   type: "password_reset";
 }
 
+export interface MfaTempPayload {
+  sub: string;
+  type: "mfa_temp";
+}
+
 const accessTokenSecret = new TextEncoder().encode(env.JWT_SECRET);
 const refreshTokenSecret = new TextEncoder().encode(env.JWT_REFRESH_SECRET);
-const passwordResetSecret = new TextEncoder().encode(env.JWT_SECRET);
+const passwordResetSecret = new TextEncoder().encode(env.JWT_PASSWORD_RESET_SECRET);
 
 export async function signAccessToken(userId: string): Promise<string> {
   return new SignJWT({ sub: userId, type: "access" })
@@ -70,10 +75,30 @@ export async function verifyRefreshToken(
   return payload as unknown as RefreshTokenPayload;
 }
 
+export async function signMfaTempToken(userId: string): Promise<string> {
+  return new SignJWT({ sub: userId, type: "mfa_temp" })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("5m")
+    .sign(accessTokenSecret);
+}
+
+export async function verifyMfaTempToken(
+  token: string,
+): Promise<MfaTempPayload> {
+  const { payload } = await jwtVerify(token, accessTokenSecret);
+
+  if (payload.type !== "mfa_temp") {
+    throw new UnauthorizedError("Invalid token type");
+  }
+
+  return payload as unknown as MfaTempPayload;
+}
+
 export async function verifyPasswordResetToken(
   token: string,
 ): Promise<PasswordResetPayload> {
-  const { payload } = await jwtVerify(token, accessTokenSecret);
+  const { payload } = await jwtVerify(token, passwordResetSecret);
 
   if (payload.type !== "password_reset") {
     throw new UnauthorizedError("Invalid token type");
