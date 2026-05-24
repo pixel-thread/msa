@@ -33,7 +33,7 @@ import {
 import { Textarea } from "@src/shared/components/ui/textarea";
 import { toast } from "sonner";
 import { RecordManualPaymentSchema } from "@src/features/payments/validators";
-import { MemberCombobox } from "@src/features/members/components/member-combobox";
+import { MemberCombobox } from "@src/shared/components/members/member-combobox";
 
 type RecordManualPaymentInput = z.infer<typeof RecordManualPaymentSchema>;
 
