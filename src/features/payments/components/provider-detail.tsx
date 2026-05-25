@@ -9,18 +9,19 @@ import {
   CardContent,
 } from "@src/shared/components/ui/card";
 import { Separator } from "@src/shared/components/ui/separator";
-import { Pencil, Trash2, Building2, Key, Globe } from "lucide-react";
-import Link from "next/link";
+import { Pencil, Trash2 } from "lucide-react";
 import { ProviderResponse } from "../types";
 
 interface ProviderDetailProps {
   provider: ProviderResponse;
+  onEdit?: () => void;
   onDelete: () => void;
   isDeleting: boolean;
 }
 
 export function ProviderDetail({
   provider,
+  onEdit,
   onDelete,
   isDeleting,
 }: ProviderDetailProps) {
@@ -92,11 +93,13 @@ export function ProviderDetail({
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <Button variant="outline" className="w-full justify-start" asChild>
-                <Link href={`/payments/providers/${provider.id}/edit`}>
-                  <Pencil className="mr-2 h-4 w-4" />
-                  Edit Provider
-                </Link>
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={onEdit}
+              >
+                <Pencil className="mr-2 h-4 w-4" />
+                Edit Provider
               </Button>
               <Button
                 variant="destructive"

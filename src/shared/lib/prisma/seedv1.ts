@@ -19,6 +19,7 @@ import {
   AnnouncementStatus,
   AnnouncementPriority,
   NotificationType,
+  ComplaintCategory,
   ComplaintStatus,
   ComplianceCheckStatus,
   TrainingAssignmentStatus,
@@ -623,7 +624,8 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     data: {
       associationId: association.id,
       userId: users[UserRole.MEMBER].id,
-      title: "Unable to download receipt",
+      category: ComplaintCategory.PAYMENT_DISPUTE,
+      subject: "Unable to download receipt",
       description: "Receipt PDF download failing",
       status: ComplaintStatus.OPEN,
       priority: "HIGH",

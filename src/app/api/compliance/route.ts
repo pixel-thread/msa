@@ -4,7 +4,8 @@ import { buildPagination } from "@src/shared/utils/build-pagination";
 import { UserRole } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
 import { PAGE_SIZE } from "@src/shared/constants";
-import { ComplaintQuerySchema } from "@src/features/compliance/validators";
+import { ComplaintQuerySchema, CreateComplaintSchema } from "@src/features/compliance/validators";
+import { createComplaint } from "@src/features/compliance/services";
 
 export const GET = withAssociation(
   { query: ComplaintQuerySchema },
@@ -52,5 +53,20 @@ export const GET = withAssociation(
       data: complaints,
       meta: buildPagination(total, query?.page ?? 1),
     });
+  },
+);
+
+export const POST = withAssociation(
+  { body: CreateComplaintSchema },
+  async (association, { body }, request) => {
+    const userId = request.headers.get("x-user-id")!;
+
+    const complaint = await createComplaint({
+      associationId: association.id,
+      userId,
+      data: body!,
+    });
+
+    return SuccessResponse({ data: complaint }, 201);
   },
 );

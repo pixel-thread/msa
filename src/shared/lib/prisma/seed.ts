@@ -19,6 +19,7 @@ import {
   AnnouncementStatus,
   AnnouncementPriority,
   NotificationType,
+  ComplaintCategory,
   ComplaintStatus,
   ComplianceCheckStatus,
   TrainingAssignmentStatus,
@@ -966,7 +967,8 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     data: {
       associationId: association.id,
       userId: memberUser.id,
-      title: "Unable to download receipt",
+      category: ComplaintCategory.PAYMENT_DISPUTE,
+      subject: "Unable to download receipt",
       description: "Receipt PDF download failing",
       status: ComplaintStatus.OPEN,
       priority: "HIGH",
@@ -981,7 +983,8 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
     complaintsToInsert.push({
       associationId: association.id,
       userId: getRandomElement(allUsers).id,
-      title: `Operational Processing Connection Failure interface-${i}`,
+      category: ComplaintCategory.ADMINISTRATIVE,
+      subject: `Operational Processing Connection Failure interface-${i}`,
       description:
         "User interaction tracking dashboard telemetry object structural parameters parsing delays.",
       status: i % 3 === 0 ? ComplaintStatus.RESOLVED : ComplaintStatus.OPEN,
@@ -1204,8 +1207,8 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
   console.log("-> Creating additional complaints...");
   await prisma.complaint.createMany({
     data: [
-      { associationId: association.id, userId: memberUser.id, title: "App login issue", description: "Unable to login to mobile app", status: ComplaintStatus.IN_PROGRESS, priority: "HIGH", assignedToId: secretaryUser.id },
-      { associationId: association.id, userId: secretaryUser.id, title: "Duplicate payment", description: "Payment was deducted twice", status: ComplaintStatus.CLOSED, priority: "URGENT", assignedToId: financeUser.id, resolvedAt: new Date() },
+      { associationId: association.id, userId: memberUser.id, category: ComplaintCategory.OTHER, subject: "App login issue", description: "Unable to login to mobile app", status: ComplaintStatus.IN_PROGRESS, priority: "HIGH", assignedToId: secretaryUser.id },
+      { associationId: association.id, userId: secretaryUser.id, category: ComplaintCategory.PAYMENT_DISPUTE, subject: "Duplicate payment", description: "Payment was deducted twice", status: ComplaintStatus.CLOSED, priority: "URGENT", assignedToId: financeUser.id, resolvedAt: new Date() },
     ],
   });
 
@@ -1707,7 +1710,8 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
       bulkComplaintData.push({
         associationId: association.id,
         userId: getRandomElement(allBulkUsers).id,
-        title: `Bulk complaint #${compIdx}`,
+        category: ComplaintCategory.OTHER,
+        subject: `Bulk complaint #${compIdx}`,
         description: `Automated complaint - ${cStatus}`,
         status: cStatus,
         priority: ["LOW", "MEDIUM", "HIGH", "URGENT"][compIdx % 4],

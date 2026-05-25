@@ -477,6 +477,12 @@ Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 ###
+# @name Get Payment Provider
+GET {{NEXT_PUBLIC_API_BASE_URL}}/payments/providers/status
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
 # @name Update Payment Provider
 PATCH {{NEXT_PUBLIC_API_BASE_URL}}/payments/providers/{{providerId}}
 Content-Type: application/json

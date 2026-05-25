@@ -6,5 +6,4 @@ export * from "./payment-detail";
 export * from "./user-payments";
 export * from "./user-contributions";
 export * from "./contribution-detail";
-export * from "./payment-provider-detail";
-export * from "./payment-provider-form";
+

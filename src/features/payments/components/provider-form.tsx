@@ -33,7 +33,6 @@ interface ProviderFormProps {
     keyId: string;
     keySecret: string;
     webhookSecret?: string;
-    isActive?: boolean;
   }) => void;
 }
 
@@ -49,14 +48,12 @@ export function ProviderForm({
         keyId: z.string().optional(),
         keySecret: z.string().optional(),
         webhookSecret: z.string().optional(),
-        isActive: z.boolean(),
       })
     : z.object({
         provider: z.string().min(1, "Provider type is required"),
         keyId: z.string().min(1, "Key ID is required"),
         keySecret: z.string().min(1, "Key secret is required"),
         webhookSecret: z.string().optional(),
-        isActive: z.boolean(),
       });
 
   type FormData = z.infer<typeof formSchema>;
@@ -77,7 +74,6 @@ export function ProviderForm({
       const payload: Record<string, unknown> = {
         provider: initialData!.provider,
         keyId: data.keyId || initialData!.keyId,
-        isActive: data.isActive,
       };
 
       if (data.keySecret) payload.keySecret = data.keySecret;
@@ -89,7 +85,6 @@ export function ProviderForm({
         provider: (data as { provider: string }).provider,
         keyId: (data as { keyId: string }).keyId,
         keySecret: (data as { keySecret: string }).keySecret,
-        isActive: data.isActive,
       };
 
       if (data.webhookSecret) payload.webhookSecret = data.webhookSecret;
@@ -174,31 +169,8 @@ export function ProviderForm({
             <FormItem>
               <FormLabel>Webhook Secret</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  type="password"
-                  placeholder="Optional"
-                />
+                <Input {...field} type="password" placeholder="Optional" />
               </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="isActive"
-          render={({ field }) => (
-            <FormItem>
-              <div className="flex items-center gap-2">
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <FormLabel>Active</FormLabel>
-              </div>
               <FormMessage />
             </FormItem>
           )}

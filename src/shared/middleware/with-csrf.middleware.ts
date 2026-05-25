@@ -35,14 +35,7 @@ export const withCsrf: MiddlewareFn = async (request, next) => {
       authHeader?.startsWith("Bearer ") ||
       clientType === "mobile"
     ) {
-      const reqHeaders = new Headers(request.headers);
-
-      reqHeaders.delete("x-client-type");
-
-      reqHeaders.set("x-client-type", "mobile");
-
-      const newRequest = new NextRequest(request, { headers: reqHeaders });
-      return next(newRequest);
+      return next(request);
     }
 
     // SAFE METHODS
@@ -74,14 +67,7 @@ export const withCsrf: MiddlewareFn = async (request, next) => {
       throw new ForbiddenError("Invalid or missing CSRF token");
     }
 
-    const reqHeaders = new Headers(request.headers);
-
-    reqHeaders.delete("x-client-type");
-
-    reqHeaders.set("x-client-type", "web");
-
-    const newRequest = new NextRequest(request, { headers: reqHeaders });
-    return next(newRequest);
+    return next(request);
   } catch (error) {
     const traceId = getTraceId(request);
     const apperror = normalizeUnknownError(error);

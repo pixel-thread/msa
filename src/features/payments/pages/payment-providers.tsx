@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   usePaymentProviders,
   useDeleteProvider,
@@ -20,13 +19,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@src/shared/components/ui/dialog";
+import { CreateProviderDialog } from "../components/create-provider-dialog";
+import { EditProviderDialog } from "../components/edit-provider-dialog";
+import { ProviderDetailDialog } from "../components/provider-detail-dialog";
 
 export default function PaymentProvidersPage() {
-  const router = useRouter();
   const { providers, isLoading } = usePaymentProviders();
   const deleteProvider = useDeleteProvider();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [detailId, setDetailId] = useState<string | null>(null);
 
   const handleDelete = (providerId: string) => {
     setDeletingId(providerId);
@@ -54,6 +58,8 @@ export default function PaymentProvidersPage() {
   };
 
   const { columns } = usePaymentProviderColumns({
+    onEdit: (id) => setEditingId(id),
+    onViewDetail: (id) => setDetailId(id),
     onDelete: handleDelete,
     isDeleting: deleteProvider.isPending,
   });
@@ -70,7 +76,7 @@ export default function PaymentProvidersPage() {
           </p>
         </div>
         <Button
-          onClick={() => router.push("/payments/providers/new")}
+          onClick={() => setCreateDialogOpen(true)}
           className="h-10"
         >
           <Plus className="mr-2 h-4 w-4" />
@@ -89,6 +95,27 @@ export default function PaymentProvidersPage() {
         onFilterChange={() => {}}
       />
       <DataTable columns={columns} data={providers} loading={isLoading} />
+
+      <CreateProviderDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+      />
+
+      <EditProviderDialog
+        open={!!editingId}
+        onOpenChange={(open) => { if (!open) setEditingId(null); }}
+        providerId={editingId ?? ""}
+      />
+
+      <ProviderDetailDialog
+        open={!!detailId}
+        onOpenChange={(open) => { if (!open) setDetailId(null); }}
+        providerId={detailId ?? ""}
+        onEdit={(id) => {
+          setDetailId(null);
+          setEditingId(id);
+        }}
+      />
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>

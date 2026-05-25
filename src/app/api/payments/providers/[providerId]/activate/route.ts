@@ -25,6 +25,11 @@ export const POST = withAssociation(
 
     const result = await setActiveProvider(provderExist.id, association.id);
 
-    return SuccessResponse({ data: result });
+    const activatedMessage = "Provider successfully activated";
+    const deActivatedMessage = "Provider successfully de-activated";
+    return SuccessResponse({
+      data: result,
+      message: result.isActive ? activatedMessage : deActivatedMessage,
+    });
   },
 );

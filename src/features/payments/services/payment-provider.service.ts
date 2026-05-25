@@ -13,6 +13,15 @@ export interface UpsertProviderInput {
   isActive?: boolean;
 }
 
+export interface CreateProviderInput {
+  associationId: string;
+  provider: PaymentProviderType;
+  keyId: string;
+  keySecret: string;
+  webhookSecret?: string;
+  isActive?: boolean;
+}
+
 export interface UpdateProviderInput {
   keyId?: string;
   keySecret?: string;
@@ -43,6 +52,28 @@ function maskProvider(provider: any): ProviderResponse {
   };
 }
 
+export async function createProvider(
+  input: CreateProviderInput,
+): Promise<ProviderResponse> {
+  const encryptedKeySecret = encrypt(input.keySecret);
+
+  const encryptedWebhookSecret = input.webhookSecret
+    ? encrypt(input.webhookSecret)
+    : null;
+
+  const provider = await prisma.paymentProvider.create({
+    data: {
+      associationId: input.associationId,
+      provider: input.provider,
+      keyId: input.keyId,
+      encryptedKeySecret,
+      encryptedWebhookSecret,
+      isActive: input.isActive ?? true,
+    },
+  });
+
+  return maskProvider(provider);
+}
 export async function upsertProvider(
   input: UpsertProviderInput,
 ): Promise<ProviderResponse> {
@@ -152,7 +183,7 @@ export async function setActiveProvider(
 
   const updated = await prisma.paymentProvider.update({
     where: { id: providerId },
-    data: { isActive: true },
+    data: { isActive: provider.isActive ? false : true },
   });
 
   return maskProvider(updated);
