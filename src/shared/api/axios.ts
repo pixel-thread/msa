@@ -3,13 +3,10 @@ import { env } from "@src/env";
 import { logger } from "@src/shared/logger";
 import cookie from "react-cookies";
 
-const csrfToken = cookie.load("csrf-token");
-
 export const axiosClient: AxiosInstance = axios.create({
   baseURL: env.NEXT_PUBLIC_API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
-    "X-CSRF-Token": csrfToken,
   },
   withCredentials: true,
 });
@@ -46,7 +43,11 @@ async function attemptTokenRefresh(): Promise<boolean> {
 
 axiosClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    console.debug(`[Axios] -> ${config.method?.toUpperCase()} ${config.url}`);
+    logger.debug(`[Axios] -> ${config.method?.toUpperCase()} ${config.url}`);
+    const token = cookie.load("csrf-token");
+    if (token) {
+      config.headers["X-CSRF-Token"] = token;
+    }
     return config;
   },
   (error) => Promise.reject(error),
@@ -73,6 +74,19 @@ axiosClient.interceptors.response.use(
       hasConfig: !!originalRequest,
       retry: originalRequest?._retry,
     });
+
+    if (
+      error.response?.status === 403 &&
+      originalRequest &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
+      const token = cookie.load("csrf-token");
+      if (token) {
+        originalRequest.headers["X-CSRF-Token"] = token;
+        return axiosClient(originalRequest);
+      }
+    }
 
     if (
       error.response?.status === 401 &&
