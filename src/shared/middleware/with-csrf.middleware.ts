@@ -3,6 +3,8 @@ import { generateCsrfToken, verifyCsrfToken } from "../lib/csrf";
 import type { MiddlewareFn } from "./chain";
 import { env } from "@src/env";
 import { AppErrorResponse, getTraceId } from "../utils";
+import { API_PUBLIC_ROUTES } from "../constants";
+import { logger } from "../logger";
 
 /**
  * CSRF protection middleware using the double-submit cookie pattern.
@@ -19,41 +21,49 @@ import { AppErrorResponse, getTraceId } from "../utils";
  *   - CSRF check is skipped when x-client-type: mobile header is set (explicit mobile flag)
  *   - Cookie is non-httpOnly (browser JS needs to read it to set the header) with SameSite=Strict
  *   - Token comparison uses constant-time verification (crypto.timingSafeEqual)
- */
+ **/
+
 export const withCsrf: MiddlewareFn = async (request, next) => {
   try {
     const method = request.method.toUpperCase();
-
-    // Skip CSRF for non-browser clients
+    const pathname = request.nextUrl.pathname;
+    const isPublicPath = pathname.startsWith("/api/auth");
     const authHeader = request.headers.get("authorization");
     const clientType = request.headers.get("x-client-type");
 
-    if (authHeader?.startsWith("Bearer ") || clientType === "mobile") {
+    if (
+      isPublicPath ||
+      authHeader?.startsWith("Bearer ") ||
+      clientType === "mobile"
+    ) {
       return next(request);
     }
 
-    // Safe methods: set CSRF token cookie if not already present
+    // SAFE METHODS
     if (["GET", "HEAD", "OPTIONS"].includes(method)) {
       const response = await next(request);
 
-      if (!request.cookies.has("csrf-token")) {
-        const token = generateCsrfToken();
-        response.cookies.set("csrf-token", token, {
-          httpOnly: false,
-          secure: env.NODE_ENV === "production",
-          sameSite: "strict",
-          path: "/",
-          maxAge: 60 * 60,
-        });
-      }
+      const token = generateCsrfToken();
+
+      response.cookies.set("csrf-token", token, {
+        httpOnly: false,
+        secure: env.NODE_ENV === "production",
+        sameSite: "strict",
+        path: "/",
+        maxAge: 60 * 60 * 24,
+      });
 
       return response;
     }
 
-    // State-changing methods: validate CSRF token
+    // MUTATING METHODS
     const csrfCookie = request.cookies.get("csrf-token")?.value;
     const csrfHeader = request.headers.get("x-csrf-token");
 
+    logger.debug("CSRF", {
+      csrfCookie,
+      csrfHeader,
+    });
     if (
       !csrfCookie ||
       !csrfHeader ||

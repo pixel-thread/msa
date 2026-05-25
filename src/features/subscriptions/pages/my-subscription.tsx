@@ -3,19 +3,13 @@
 import { useUrlFilters } from "@src/shared/hooks";
 import { useQuery } from "@tanstack/react-query";
 import http from "@src/shared/utils/http";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@src/shared/components/ui/card";
-import { Separator } from "@src/shared/components/ui/separator";
+import { Card, CardContent } from "@src/shared/components/ui/card";
 import { formattedAmount } from "@src/shared/utils";
 import { DataTable } from "@src/shared/components/data-table";
 import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import { useSubscriptionPaymentColumns } from "@src/features/subscriptions/hooks/useSubscriptionPaymentColumns";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
-import { CreditCard, Clock, Receipt, AlertCircle } from "lucide-react";
+import { CreditCard, Clock, AlertCircle } from "lucide-react";
 
 interface PaymentAllocation {
   id: string;
@@ -129,7 +123,7 @@ export function MySubscriptionPage() {
                     Pending
                   </p>
                   <p className="text-lg font-medium text-ink mt-1">
-                    {formattedAmount(summary.totalPending)}
+                    {formattedAmount(summary.totalPending || 0)}
                   </p>
                 </div>
               </div>
@@ -145,7 +139,7 @@ export function MySubscriptionPage() {
                     Total Dues
                   </p>
                   <p className="text-lg font-medium text-ink mt-1">
-                    {formattedAmount(summary.totalDues)}
+                    {formattedAmount(summary.totalDues || 0)}
                   </p>
                 </div>
               </div>

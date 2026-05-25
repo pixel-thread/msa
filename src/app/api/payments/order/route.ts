@@ -5,6 +5,7 @@ import { CreateOrderSchema } from "@feature/payments/validators";
 import { createPaymentOrder } from "@feature/payments/services/payment.service";
 import { prisma } from "@src/shared/lib/prisma";
 import { NotFoundError } from "@src/shared/errors";
+import { getActiveProvider } from "@src/features/payments/services/payment-provider.service";
 
 /**
  * POST /api/payments/order
@@ -19,6 +20,13 @@ export const POST = withAssociation(
   async (association, { body }, request) => {
     const user = await withRole(request, UserRole.MEMBER);
     const typeId = user?.memberTypeId;
+
+    const associationActivePaymentProvider = getActiveProvider(association.id);
+
+    if (!associationActivePaymentProvider)
+      throw new NotFoundError(
+        "No payment provider set up for this association.",
+      );
 
     if (!typeId)
       throw new NotFoundError(

@@ -17,6 +17,8 @@ import { useTrainingModule } from "../hooks/useTrainingModules";
 import { useMembers } from "@src/features/members/hooks/useMembers";
 import { UserRow } from "../components/UserRow";
 import { PaneHeader } from "../components/PaneHeader";
+import { DataTablePagination } from "@src/shared/components/data-table-pagination";
+import { useUrlFilters } from "@hooks/use-url-filters";
 
 interface UserDisplay {
   id: string;
@@ -28,6 +30,7 @@ export function TrainingAssignPage() {
   const router = useRouter();
   const params = useParams();
   const moduleId = params.id as string;
+  const { page, setPage } = useUrlFilters();
 
   const { module: trainingModule, isLoading: isModuleLoading } =
     useTrainingModule(moduleId);
@@ -35,20 +38,27 @@ export function TrainingAssignPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCurrent, setSelectedCurrent] = useState<string[]>([]);
   const [selectedAdd, setSelectedAdd] = useState<string[]>([]);
+  const [assignmentPage, setAssignmentPage] = useState(1);
 
-  const { assignments, isLoading: isAssignmentsLoading } =
-    useTrainingAssignmentsQuery(moduleId);
+  const {
+    assignments,
+    isLoading: isAssignmentsLoading,
+    assignmentMeta,
+  } = useTrainingAssignmentsQuery({ moduleId, page: assignmentPage });
   const { assignUser, isAssigning } = useAssignTrainingModule(moduleId);
-  const { bulkAssignUsers, isBulkAssigning } = useBulkAssignTrainingModule(
-    moduleId,
-  );
+  const { bulkAssignUsers, isBulkAssigning } =
+    useBulkAssignTrainingModule(moduleId);
   const { removeUser, isRemoving } = useRemoveTrainingAssignment(moduleId);
-  const { bulkRemoveUsers, isBulkRemoving } = useBulkRemoveTrainingAssignment(
-    moduleId,
-  );
+  const { bulkRemoveUsers, isBulkRemoving } =
+    useBulkRemoveTrainingAssignment(moduleId);
 
-  const { members, isLoading: isMembersLoading } = useMembers({
+  const {
+    members,
+    meta,
+    isLoading: isMembersLoading,
+  } = useMembers({
     status: "ACTIVE",
+    page,
   });
 
   const assignedUserIds = useMemo(
@@ -156,14 +166,6 @@ export function TrainingAssignPage() {
     <div className="mx-auto pb-12 w-full h-full flex flex-col min-h-0">
       {/* Header */}
       <div className="flex items-center gap-3 pb-4 shrink-0">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-9 w-9"
-          onClick={() => router.push(`/training/${moduleId}`)}
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
         <div>
           <h1 className="text-2xl font-bold text-ink">Manage Assignees</h1>
           {isModuleLoading ? (
@@ -202,7 +204,7 @@ export function TrainingAssignPage() {
             onToggleAll={toggleAllCurrent}
           />
 
-          <div className="flex-1 space-y-1 overflow-y-auto mt-2 pr-1">
+          <div className="flex-1 space-y-2 overflow-y-auto mt-2 pr-1">
             {isLoading ? (
               <p className="text-center text-sm text-muted-foreground py-8">
                 Loading...
@@ -244,11 +246,15 @@ export function TrainingAssignPage() {
                 />
               ))
             )}
+            <DataTablePagination
+              meta={assignmentMeta}
+              onPageChange={setAssignmentPage}
+            />
           </div>
         </div>
 
         {/* Available pane */}
-        <div className="flex-1 flex flex-col min-h-0 bg-surface-card border border-hairline p-3">
+        <div className="flex-1 space-y-2 flex flex-col min-h-0 bg-surface-card border border-hairline p-3">
           <PaneHeader
             title="Available"
             count={selectedAdd.length}
@@ -299,6 +305,7 @@ export function TrainingAssignPage() {
               ))
             )}
           </div>
+          <DataTablePagination meta={meta} onPageChange={setPage} />
         </div>
       </div>
 

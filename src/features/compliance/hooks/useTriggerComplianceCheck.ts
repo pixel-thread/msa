@@ -9,13 +9,14 @@ export function useTriggerComplianceCheck() {
     mutationFn: (checkTypes?: string[]) =>
       http.post("/compliance/checks", checkTypes ? { checkTypes } : {}),
     onSuccess: (response) => {
-      if ((response as { success: boolean }).success) {
+      if (response.success) {
         toast.success("Compliance checks completed successfully");
         queryClient.invalidateQueries({ queryKey: ["compliance-checks"] });
         queryClient.invalidateQueries({ queryKey: ["compliance-evidence"] });
         return;
       }
-      toast.error((response as { message: string }).message);
+      toast.error(response.message);
+      return;
     },
     onError: () => {
       toast.error("Failed to run compliance checks");

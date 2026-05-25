@@ -5,7 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import {
   Clock,
   Users,
-  Search,
   Pencil,
   Trash2,
   Plus,
@@ -22,12 +21,9 @@ import {
   useTrainingCompletionsColumns,
 } from "../hooks";
 import { Button } from "@src/shared/components/ui/button";
-import { Input } from "@src/shared/components/ui/input";
 import { Badge } from "@src/shared/components/ui/badge";
 import { DataTable } from "@src/shared/components/data-table";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import {
   Tabs,
   TabsContent,
@@ -70,8 +66,6 @@ export function TrainingDetailPage() {
 
   const {
     memberColumns,
-    search,
-    setSearch,
     filteredUsers,
     selectedUser,
     completeDialogOpen,
@@ -107,10 +101,7 @@ export function TrainingDetailPage() {
           The training module you are trying to access does not exist or has
           been removed.
         </p>
-        <Button
-          onClick={() => router.push("/training")}
-          className=""
-        >
+        <Button onClick={() => router.push("/training")} className="">
           Back to Portal
         </Button>
       </div>
@@ -352,7 +343,5 @@ function CompletionsTabContent({ moduleId }: { moduleId: string }) {
   const { completions, isLoading } = useTrainingCompletions(moduleId);
   const { columns } = useTrainingCompletionsColumns();
 
-  return (
-    <DataTable loading={isLoading} data={completions} columns={columns} />
-  );
+  return <DataTable loading={isLoading} data={completions} columns={columns} />;
 }

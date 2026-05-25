@@ -23,6 +23,8 @@ export function generateCsrfToken(): string {
  */
 export function verifyCsrfToken(token: string, cookie: string): boolean {
   if (!token || !cookie) return false;
+
   if (token.length !== cookie.length) return false;
+
   return crypto.timingSafeEqual(Buffer.from(token), Buffer.from(cookie));
 }

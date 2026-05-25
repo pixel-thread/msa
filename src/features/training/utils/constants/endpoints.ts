@@ -7,7 +7,8 @@ export const trainingEndpoints = {
       `/training/modules/${moduleId}/supplements/${supplementId}`,
   },
   assignments: {
-    base: (moduleId: string) => `/training/modules/${moduleId}/assign`,
+    base: (moduleId: string, page: number) =>
+      `/training/modules/${moduleId}/assign?page=${page}`,
   },
   assignedUsers: {
     list: (moduleId: string) => `/training/modules/${moduleId}/assigned-users`,
