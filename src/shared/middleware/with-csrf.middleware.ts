@@ -3,8 +3,7 @@ import { generateCsrfToken, verifyCsrfToken } from "../lib/csrf";
 import type { MiddlewareFn } from "./chain";
 import { env } from "@src/env";
 import { AppErrorResponse, getTraceId } from "../utils";
-import { API_PUBLIC_ROUTES } from "../constants";
-import { logger } from "../logger";
+import { NextRequest } from "next/server";
 
 /**
  * CSRF protection middleware using the double-submit cookie pattern.
@@ -36,7 +35,14 @@ export const withCsrf: MiddlewareFn = async (request, next) => {
       authHeader?.startsWith("Bearer ") ||
       clientType === "mobile"
     ) {
-      return next(request);
+      const reqHeaders = new Headers(request.headers);
+
+      reqHeaders.delete("x-client-type");
+
+      reqHeaders.set("x-client-type", "mobile");
+
+      const newRequest = new NextRequest(request, { headers: reqHeaders });
+      return next(newRequest);
     }
 
     // SAFE METHODS
@@ -60,10 +66,6 @@ export const withCsrf: MiddlewareFn = async (request, next) => {
     const csrfCookie = request.cookies.get("csrf-token")?.value;
     const csrfHeader = request.headers.get("x-csrf-token");
 
-    logger.debug("CSRF", {
-      csrfCookie,
-      csrfHeader,
-    });
     if (
       !csrfCookie ||
       !csrfHeader ||
@@ -72,7 +74,14 @@ export const withCsrf: MiddlewareFn = async (request, next) => {
       throw new ForbiddenError("Invalid or missing CSRF token");
     }
 
-    return next(request);
+    const reqHeaders = new Headers(request.headers);
+
+    reqHeaders.delete("x-client-type");
+
+    reqHeaders.set("x-client-type", "web");
+
+    const newRequest = new NextRequest(request, { headers: reqHeaders });
+    return next(newRequest);
   } catch (error) {
     const traceId = getTraceId(request);
     const apperror = normalizeUnknownError(error);
