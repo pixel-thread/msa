@@ -1,0 +1,148 @@
+{
+  "system": "MFSA Connect Design System — Complete Animation & Motion System",
+  "version": "1.0.0",
+
+  "philosophy": "Minimal, fast, purposeful. Animations are subtle and serve functional purposes (indicating state change, direction, hierarchy). Duration is consistently 100-200ms. No decorative animations. The system uses CSS transitions + Tailwind animate classes + Radix UI built-in animation primitives.",
+
+  "imports": {
+    "animation_library": "tw-animate-css (Tailwind plugin)",
+    "import_statement": "@import 'tw-animate-css'; in globals.css"
+  },
+
+  "transition_defaults": {
+    "duration_base": "100ms (most common — dropdowns, menus, overlays)",
+    "duration_sidebar": "200ms (sidebar collapse/expand, more complex)",
+    "duration_short": "75ms (instant feedback)",
+    "duration_medium": "150ms",
+    "easing_default": "ease-linear (sidebar transitions)",
+    "easing_ui": "ease-in-out (sheet transitions)",
+    "duration_sheet": "200ms (sheet slide animation)"
+  },
+
+  "component_animations": {
+    "dropdown_content": {
+      "open": "animate-in fade-in-0 zoom-in-95",
+      "close": "animate-out fade-out-0 zoom-out-95",
+      "side_slide": "slide-in-from-top-2, slide-in-from-bottom-2, etc.",
+      "duration": "100ms",
+      "trigger": "Radix UI data-open / data-closed states"
+    },
+    "select_content": {
+      "open": "animate-in fade-in-0 zoom-in-95",
+      "close": "animate-out fade-out-0 zoom-out-95",
+      "side_slide": "slide-in-from-top-2, etc.",
+      "duration": "100ms",
+      "note": "Also uses data-[align-trigger=true]:animate-none for aligned-popper mode"
+    },
+    "dialog_overlay": {
+      "open": "animate-in fade-in-0",
+      "close": "animate-out fade-out-0",
+      "duration": "100ms"
+    },
+    "dialog_content": {
+      "open": "animate-in fade-in-0 zoom-in-95",
+      "close": "animate-out fade-out-0 zoom-out-95",
+      "duration": "100ms"
+    },
+    "sheet_overlay": {
+      "open": "animate-in fade-in-0",
+      "close": "animate-out fade-out-0",
+      "duration": "100ms"
+    },
+    "sheet_content": {
+      "open": "animate-in fade-in-0 slide-in-from-right-10 (or from-left/bottom/top)",
+      "close": "animate-out fade-out-0 slide-out-to-right-10",
+      "duration": "200ms",
+      "easing": "ease-in-out"
+    },
+    "tooltip": {
+      "open": "animate-in fade-in-0 zoom-in-95",
+      "close": "animate-out fade-out-0 zoom-out-95",
+      "side_slide": "slide-in-from-top-2, etc.",
+      "delay": "0ms (TooltipProvider delayDuration=0)",
+      "duration": "100ms"
+    },
+    "combobox_content": {
+      "open": "animate-in fade-in-0 zoom-in-95",
+      "close": "animate-out fade-out-0 zoom-out-95",
+      "side_slide": "slide-in-from-top-2, etc.",
+      "duration": "100ms"
+    },
+    "skeleton": {
+      "animation": "animate-pulse",
+      "color": "bg-muted",
+      "type": "CSS pulse (opacity oscillation)"
+    },
+    "spinner": {
+      "animation": "animate-spin",
+      "icon": "Loading03Icon from HugeIcons",
+      "size": "size-4 (default), size-8 (Loading component)"
+    },
+    "progress_bar": {
+      "animation": "transition-all",
+      "mechanics": "CSS transform translateX for indicator movement"
+    }
+  },
+
+  "hover_animations": {
+    "button": "transition-all (transform and background)",
+    "scale_on_hover": "none (button does not scale on hover)",
+    "active_press": "active:not-aria-[haspopup]:translate-y-px (subtle 1px press-down)",
+    "card_hover": "group transition-shadow hover:shadow-md",
+    "link_hover": "transition-colors (standard color change)",
+    "sidebar_menu": "transition-[width,height,padding] duration-200 ease-linear",
+    "sidebar_chevron": "transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
+  },
+
+  "focus_animations": {
+    "focus_ring": "outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30",
+    "focus_transition": "transition-[color,border-color] (inputs)",
+    "input_focus": "focus-visible:border-b-ring (bottom border highlight)"
+  },
+
+  "input_transitions": {
+    "default": "transition-[color,border-color] outline-none",
+    "duration": "implicit (CSS default, ~150ms)"
+  },
+
+  "sidebar_transitions": {
+    "width_transition": "transition-[width] duration-200 ease-linear",
+    "gap_transition": "transition-[width,height] ease-linear",
+    "group_transition": "group-has-data-[collapsible=icon]/sidebar-wrapper:h-12"
+  },
+
+  "loading_states": {
+    "table_loading": "TableSkeleton component renders skeleton rows matching page size",
+    "dashboard_loading": "DashboardSkeleton renders full skeleton layout matching section structure",
+    "full_screen_loading": "Loading component with Spinner + optional label",
+    "button_loading": "Disabled state + text change ('Creating...', 'Saving...')",
+    "data_fetching": "react-query isLoading/isPending pattern"
+  },
+
+  "motion_density": {
+    "overall_level": "Low. Minimal entrance animations. No parallax, no stagger, no scroll-triggered animations. Page transitions are instant (no layout animations).",
+    "excluded_animations": [
+      "No page transition animations",
+      "No stagger list animations",
+      "No parallax effects",
+      "No scroll-triggered reveals",
+      "No spring physics animations",
+      "No morphing transitions"
+    ]
+  },
+
+  "radix_animation_primitives": {
+    "description": "All floating UI uses Radix primitives with data-[state] attributes for animation control. The tw-animate-css plugin provides the animate-in/animate-out utility classes that respond to data-open/data-closed states.",
+    "state_attributes": [
+      "data-open (→ animate-in group)",
+      "data-closed (→ animate-out group)",
+      "data-side (bottom, top, left, right → slide-in-from-* variants)"
+    ]
+  },
+
+  "custom_property_animations": {
+    "input_otp_fake_caret": "animate-caret-blink duration-1000",
+    "chart_gradient_opacity": "CSS linearGradient with stopOpacity (0.1 to 1.0)",
+    "sidebar_header_height": "transition-[width,height] ease-linear"
+  }
+}

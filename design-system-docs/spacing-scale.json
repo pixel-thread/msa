@@ -1,0 +1,154 @@
+{
+  "system": "MFSA Connect Design System — Complete Spacing Scale & Conventions",
+  "version": "1.0.0",
+
+  "tailwind_spacing_base": {
+    "description": "Uses Tailwind v4 default spacing scale (1 rem = 16px base). No custom spacing overrides.",
+    "default_scale": "0, 0.5(2px), 1(4px), 1.5(6px), 2(8px), 2.5(10px), 3(12px), 3.5(14px), 4(16px), 5(20px), 6(24px), 7(28px), 8(32px), 9(36px), 10(40px), 11(44px), 12(48px), 14(56px), 16(64px), 20(80px), 24(96px), 28(112px), 32(128px), 36(144px), 40(160px), 44(176px), 48(192px), 52(208px), 56(224px), 60(240px), 64(256px), 72(288px), 80(320px), 96(384px)"
+  },
+
+  "dominant_spacing_units_observed": {
+    "description": "Real-world spacing usage frequency across the codebase, sorted by dominance.",
+    "px_0": "10+ occurrences — various zero-margin resets",
+    "px_1": "15+ occurrences — tiny gaps, icon spacing",
+    "px_1.5": "12+ occurrences — form item gaps, card gaps",
+    "px_2": "30+ occurrences — sidebar padding, general gaps, card internal",
+    "px_2.5": "5+ occurrences — dropdown item gaps",
+    "px_3": "25+ occurrences — padding in menu items, inputs, table cells",
+    "px_4": "35+ occurrences — primary spacing: page padding, card padding, grid gaps, section padding",
+    "px_5": "5+ occurrences — form spacing",
+    "px_6": "20+ occurrences — section padding, layout containers, page content X padding",
+    "px_8": "10+ occurrences — card header/content padding X, larger gaps",
+    "px_10": "3+ occurrences — button padding X (default: px-6, lg: px-8)",
+    "px_12": "5+ occurrences — section vertical padding, large gaps",
+    "px_16": "8+ occurrences — footer padding, section vertical padding (py-16)",
+    "px_24": "5+ occurrences — section vertical padding (py-24), hero sections",
+    "px_36": "1 occurrence — page title font-size",
+    "px_48": "rare",
+    "px_64": "rare",
+    "px_96": "rare"
+  },
+
+  "padding_conventions": {
+    "page_content_padding": {
+      "dashboard": "p-6",
+      "landing_sections": "px-6",
+      "landing_containers": "px-6 max-w-7xl mx-auto"
+    },
+    "card_padding": {
+      "default_card": "py-8 (Card), px-8 (CardHeader, CardContent, CardFooter)",
+      "sm_card": "py-5 (Card), px-5 (CardHeader, CardContent, CardFooter)",
+      "compact": "p-4 (DataTable uses Card with p-4)"
+    },
+    "input_padding": {
+      "internal_x": "pl-2 (left padding for text)",
+      "with_icon_leading": "pl-9 (space for leading icon)"
+    },
+    "dialog_padding": "p-6",
+    "sheet_padding": "p-8 for header/footer",
+    "dropdown_padding": "p-1.5 (content container), px-3 py-2 (items)"
+  },
+
+  "gap_conventions": {
+    "grid_gaps": {
+      "tight": "gap-1 (pagination items)",
+      "compact": "gap-2 (sidebar menu items, form items)",
+      "default": "gap-4 (card grids, stat cards)",
+      "loose": "gap-6 (dashboard charts, feature cards)",
+      "section": "gap-8 (footer columns, large card groups)",
+      "form": "gap-4 (form layouts), gap-5 (input groups)"
+    },
+    "flex_gaps": {
+      "button_icon_gap": "gap-1.5 (default button), gap-1 (sm button)",
+      "badge_gap": "gap-1.5",
+      "avatar_text_gap": "gap-2",
+      "sidebar_items": "gap-0.5"
+    },
+    "stack_spacing": {
+      "stack_default": "space-y-6 (dashboard pages)",
+      "stack_compact": "space-y-4 (forms)",
+      "stack_loose": "space-y-16 (landing sections)"
+    }
+  },
+
+  "margin_conventions": {
+    "page_title_bottom": "mb-4 (for heading after title area)",
+    "description_below_title": "mt-1",
+    "card_header_internal": "mb-2 (icon to title gap)",
+    "section_badge_top": "mb-4, mb-6 (badge above heading)",
+    "form_internal": "mb-1.5 (label to input)",
+    "button_icon_margin": "mr-2 (icon before text)"
+  },
+
+  "height_conventions": {
+    "input_default": "h-10",
+    "input_small": "h-9",
+    "button_default": "h-10",
+    "button_xs": "h-7",
+    "button_sm": "h-9",
+    "button_lg": "h-11",
+    "toggle_default": "h-10",
+    "toggle_sm": "h-9",
+    "toggle_lg": "h-11",
+    "sidebar_menu_item": "h-9 (default), h-8 (sm), h-14 (lg)",
+    "sidebar_sub_menu_item": "h-7",
+    "sidebar_header_bar": "h-16 (expanded), h-12 (collapsed)",
+    "table_header_cell": "h-12",
+    "select_trigger": "h-10 (default), h-9 (sm)",
+    "textarea_min": "min-h-16",
+    "chart_height": "h-[300px] (area/bar charts), h-[250px] (interactive chart)",
+    "separator_vertical": "h-4 (typical)",
+    "avatar_default": "size-8 (32px)",
+    "avatar_lg": "size-10 (40px)",
+    "avatar_sm": "size-6 (24px)",
+    "checkbox": "size-4.5",
+    "switch_default": "h-4.5 w-8.25",
+    "switch_sm": "h-3.5 w-6.25",
+    "icon_wrapper": "size-10 (feature icon containers), size-8 (sidebar brand)"
+  },
+
+  "border_radius": {
+    "system": "Custom radius scale defined in @theme directive. ALL components use rounded-none (0px border-radius) as the default.",
+    "sm": "4px (used for chart indicators, badge dot)",
+    "md": "12px (unused in practice — replaced by rounded-none)",
+    "lg": "16px (unused in practice)",
+    "xl": "24px (unused in practice)",
+    "full": "9999px (used only for Avatar — rounded-full)",
+    "default_component": "0 ! important (rounded-none is the dominant philosophy)"
+  },
+
+  "border_radius_philosophy": {
+    "description": "The design system uses ZERO border radius (rounded-none) for virtually ALL UI components by explicit design. This is the single most distinctive visual characteristic.",
+    "components_with_rounded_none": [
+      "Button", "Card", "Dialog", "Sheet", "Dropdown menu", "Select",
+      "Combobox", "Input", "Textarea", "Badge", "Toggle", "Tooltip",
+      "Popover", "Alert dialog", "Sidebar all elements", "Table",
+      "Progress bar", "Checkbox", "Switch", "Tabs", "Pagination",
+      "Skeleton", "Avatar group count"
+    ],
+    "exceptions": {
+      "Avatar": "rounded-full (circular)",
+      "Avatar_fallback_bg": "rounded-full",
+      "Chart_indicator_dot": "rounded-[2px] (small corner radius)"
+    }
+  },
+
+  "responsive_spacing_behavior": {
+    "mobile_breakpoint": "768px (defined in use-mobile.ts)",
+    "pattern": "Uses md: prefix for responsive overrides. On mobile, spacing typically stays the same or reduces padding.",
+    "examples": [
+      "md:grid-cols-2 → switches from single to multi-column",
+      "sm:max-w-md (dialog max-width on mobile)",
+      "sm:flex-row (dialog footer buttons)",
+      "sm:grid-cols-2 (form input rows)",
+      "md:peer-data-[variant=inset]:m-2 (sidebar inset padding)"
+    ],
+    "container_queries": "Used for card-level responsive layout (e.g., @container/card, @[540px]/card:block, @[250px]/card:text-3xl, @5xl/main:grid-cols-4)"
+  },
+
+  "whitespace_philosophy": {
+    "density": "Moderate-to-low density. Generous padding in cards (py-8 px-8). Comfortable grid gaps (gap-4 to gap-6). Large section padding (py-24 for landing sections).",
+    "breathing_room": "Pages have consistent space-y-6 between major sections. Dashboard content has p-6 padding. Card groups have gap-4 spacing.",
+    "mobile_handling": "Dashboard p-6 reduces to implicit padding. Login forms use max-w-md with consistent padding. No hamburger menu — sidebar collapses to icon-only."
+  }
+}

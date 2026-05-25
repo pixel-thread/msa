@@ -34,14 +34,14 @@ export const Redirect = ({ children }: PropsT) => {
     if (isAuthLoading) return;
     // eslint-disable-next-line
     setIsLoading(true);
-    const timer = setTimeout(() => setIsLoading(false), 2000);
+    const timer = setTimeout(() => setIsLoading(false), 500);
     return () => clearTimeout(timer); // Cleanup the timer
   }, [isAuthLoading, pathName]);
 
   // Handle authentication and role-based redirects
   useEffect(() => {
     // Wait until authentication loading is complete to proceed
-    if (isAuthLoading || isLoading) return;
+    if (isAuthLoading) return;
 
     // Step 1: Identify the current route from the `routeRoles` configuration
     const currentRoute = ROUTE_ROLE.find((route) => {
@@ -88,7 +88,7 @@ export const Redirect = ({ children }: PropsT) => {
 
   // Display preloader if authentication or loading is in progress
   if (isAuthLoading) {
-    return <Loading />;
+    return <Loading label={"Loading..."} />;
   }
 
   return <>{children}</>;

@@ -1,0 +1,166 @@
+{
+  "system": "MFSA Connect Design System — Master Composite Reference",
+  "version": "1.0.0",
+  "last_updated": "2026-05-24",
+  "framework": "Next.js 15 + Tailwind CSS v4 + Radix UI + shadcn/sera",
+  "icon_library": "hugeicons (primary) + lucide-react + @radix-ui/react-icons",
+  "theme_engine": "Custom ThemeProvider (light/dark/auto via localStorage + prefers-color-scheme)",
+  "font_loading": "next/font/google (Roboto for sans+heading, JetBrains Mono for mono, Roboto Mono for geist-mono)",
+
+  "design_philosophy": {
+    "border_radius": "Zero border-radius (rounded-none) on ALL components — the single most distinctive visual characteristic. Only exceptions: Avatar (rounded-full) and chart indicator dots (rounded-[2px]).",
+    "typography_approach": "Uppercase + tracking-wider for ALL label-level text: buttons, badges, dropdown items, table headers, form labels, tabs, sidebar labels, toggle text.",
+    "input_style": "Underline-style inputs — only bottom border visible (border border-transparent border-b-input). Focus reveals bottom border color change to ring color.",
+    "elevation": "Flat-with-shadow. Cards get shadow-sm + ring-1. Floating UI gets shadow-md + ring-1. No heavy box-shadows or extreme depth.",
+    "spacing_density": "Moderate-to-low density. Generous card padding (py-8 px-8). Comfortable grid gaps (gap-4 to gap-6). Dashboard uses p-6, sections use py-24.",
+    "animation": "Minimal, fast (100-200ms), purposeful. No decorative animations, no parallax, no scroll-triggered reveals. Every animation serves a functional purpose.",
+    "color_contrast": "Moderate-to-high contrast. Primary is vivid #0052ff. Text uses near-black #0a0b0d on white. Muted foreground at #7c828a for secondary content.",
+    "component_variant_system": "CVA (class-variance-authority) for all variant-driven components: Button, Text, Badge, Toggle, TabsList, Alert."
+  },
+
+  "token_inventory": {
+    "color_tokens": {
+      "file": "design-system-docs/color-tokens.json",
+      "total_core_semantic": 20,
+      "total_extended_semantic": 12,
+      "total_indicator": 3,
+      "total_chart": 5,
+      "total_sidebar": 8,
+      "total_all_tokens": 48,
+      "definition_location": "src/app/globals.css @theme inline directive + :root/.dark CSS custom properties",
+      "value_formats": ["HEX", "OKLCH"],
+      "dark_mode_strategy": "Inverted luminance for backgrounds/foregrounds. Saturated colors (primary, destructive, semantic-up/down, accent-yellow) remain identical across modes."
+    },
+    "typography_tokens": {
+      "file": "design-system-docs/typography-scale.json",
+      "total_text_variants": 14,
+      "total_font_families": 3,
+      "total_component_conventions": 30,
+      "font_sizes_range": "10px (badge) to 80px (display-mega)",
+      "dominant_size": "14px (text-sm) — body default"
+    },
+    "spacing_tokens": {
+      "file": "design-system-docs/spacing-scale.json",
+      "uses_tailwind_default_scale": true,
+      "dominant_unit": "16px (spacing-4) — cards, grids, sections",
+      "border_radius_philosophy": "rounded-none for ALL components",
+      "height_conventions_documented": 20
+    },
+    "elevation_tokens": {
+      "file": "design-system-docs/elevation-system.json",
+      "card_shadow": "shadow-sm ring-1 ring-foreground/5",
+      "floating_ui_shadow": "shadow-md ring-1 ring-foreground/10",
+      "z_index_layers": 12,
+      "overlay_system": "z-50 bg-black/20 backdrop-blur-sm"
+    },
+    "animation_tokens": {
+      "file": "design-system-docs/animation-system.json",
+      "animation_library": "tw-animate-css",
+      "default_duration": "100ms",
+      "easing_default": "ease-linear",
+      "easing_sheets": "ease-in-out",
+      "sidebar_duration": "200ms",
+      "component_animations_documented": 12
+    },
+    "component_patterns": {
+      "file": "design-system-docs/component-patterns.md",
+      "ui_components": 53,
+      "composite_components": 12,
+      "fully_documented": 30,
+      "repeated_class_combinations": 10
+    },
+    "layout_patterns": {
+      "file": "design-system-docs/layout-patterns.md",
+      "page_strategies": 2,
+      "grid_systems": 8,
+      "breakpoint_strategy": "Tailwind defaults + container queries",
+      "mobile_detection": "768px breakpoint in use-mobile.ts",
+      "dashboard_section_count": 5
+    }
+  },
+
+  "architecture_overview": {
+    "project_type": "Next.js 15 App Router with client-side rendering (all 'use client' pages)",
+    "api_layer": "src/proxy.ts for API client configuration + src/features/ with feature-based API modules",
+    "state_management": "React Query (QueryProvider) for server state + React Context (ThemeProvider, AuthProvider, SidebarProvider) for client state",
+    "styling_approach": "Tailwind CSS v4 via @import + CSS custom properties for theme tokens + CVA for component variants + cn() utility for class merging",
+    "component_hierarchy": "ThemeProvider → TooltipProvider → QueryProvider → AuthProvider → Redirect → children",
+    "page_composition": "layout.tsx sets providers → page.tsx composes shared components → features/ handles business logic",
+    "sidebar_pattern": "SidebarProvider → AppSidebar + SidebarInset (with header + content area)",
+    "data_table_pattern": "Page header → DataTableFilters → DataTable → DataTablePagination (repeated across 8+ feature pages)"
+  },
+
+  "file_manifest": {
+    "description": "Complete list of generated design system documentation files",
+    "files": [
+      {
+        "filename": "design-system-docs/color-tokens.json",
+        "purpose": "Complete color system: core semantic, extended, sidebar, chart, indicator tokens with HEX/OKLCH values, light/dark variants, and purpose descriptions"
+      },
+      {
+        "filename": "design-system-docs/typography-scale.json",
+        "purpose": "Complete typography scale: 14 Text component CVA variants, 3 font families, 30+ component-level text conventions, and typography philosophy"
+      },
+      {
+        "filename": "design-system-docs/spacing-scale.json",
+        "purpose": "Spacing conventions: dominant units, padding/gap/height conventions, border-radius philosophy, responsive behavior, and whitespace density"
+      },
+      {
+        "filename": "design-system-docs/elevation-system.json",
+        "purpose": "Elevation and depth: card shadows, floating UI shadows, overlay system, z-index layers, blur usage, and depth hierarchy"
+      },
+      {
+        "filename": "design-system-docs/animation-system.json",
+        "purpose": "Animation and motion: transition timings, easing curves, component-specific enter/exit animations, hover/focus animations, loading states"
+      },
+      {
+        "filename": "design-system-docs/component-patterns.md",
+        "purpose": "30+ component specifications: variant tables, sizing, states, text styles, and repeated class combinations for copy-paste reuse"
+      },
+      {
+        "filename": "design-system-docs/layout-patterns.md",
+        "purpose": "Layout and page structure: page width strategy, grid systems, dashboard layout, sidebar navigation, data table page pattern, spacing conventions"
+      },
+      {
+        "filename": "design-system-docs/interaction-patterns.md",
+        "purpose": "UX interaction patterns: feedback states (loading, empty, error, success), navigation, data entry, confirmation, notifications"
+      },
+      {
+        "filename": "design-system-docs/dark-mode-system.md",
+        "purpose": "Dark mode strategy: theme provider mechanics, color inversion rules, component-specific adjustments, contrast handling, sidebar adaptation"
+      },
+      {
+        "filename": "design-system-docs/mobile-design-mapping.md",
+        "purpose": "Mobile framework mapping: tokens translated to React Native (NativeWind, Tamagui, Expo), component mapping, platform considerations"
+      },
+      {
+        "filename": "design-system-docs/ui-architecture.md",
+        "purpose": "UI architecture: component tree, provider hierarchy, folder structure, file organization conventions, import patterns, page composition"
+      }
+    ]
+  },
+
+  "design_token_summary": {
+    "total_documentation_files": 11,
+    "total_color_tokens": 48,
+    "total_typography_variants": 44,
+    "total_component_documentation_entries": "30+ components, 53 UI primitives, 12 composite components",
+    "total_animation_durations_documented": 8,
+    "total_z_index_layers_documented": 12,
+    "total_elevation_variants": 7,
+    "total_grid_systems_documented": 8,
+    "total_layout_page_patterns": 2,
+    "total_repeated_page_patterns": "8+ pages follow identical data-table structure"
+  },
+
+  "design_system_distinctives": {
+    "most_distinctive_visual_characteristic": "Zero border-radius (rounded-none) on ALL UI components",
+    "most_defining_text_pattern": "Uppercase + tracking-wider on every button, badge, label, table header, tab, dropdown item, sidebar label, and toggle",
+    "input_signature": "Bottom-border-only inputs (underline style) with transparent top/right/left borders",
+    "elevation_signature": "shadow-sm + ring-1 for cards, shadow-md + ring-1 for floating UI",
+    "color_signature": "Vivid blue (#0052ff) primary with moderate-contrast neutrals and white backgrounds",
+    "animation_signature": "100ms fade+zoom for all floating UI, 200ms slide for sheets, 200ms linear for sidebar collapse",
+    "responsive_signature": "Container queries (@container) for card-level adaptation alongside Tailwind breakpoints",
+    "icon_signature": "HugeIcons library (hugeicons) as primary icon set, supplemented by lucide-react and radix-ui icons"
+  }
+}

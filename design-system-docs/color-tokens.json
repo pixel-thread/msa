@@ -1,0 +1,422 @@
+{
+  "system": "MFSA Connect Design System — Complete Color Token Reference",
+  "version": "1.0.0",
+  "framework": "Tailwind CSS v4 + CSS Custom Properties",
+  "theme_engine": "Custom ThemeProvider (light/dark/auto via localStorage + prefers-color-scheme)",
+  "dark_mode_selector": ".dark",
+
+  "semantic_color_system": {
+    "description": "All semantic tokens map to CSS custom properties. Values are stored as HEX. Tailwind v4 @theme directive creates utility classes from CSS variables.",
+    "token_definition_location": "src/app/globals.css (custom properties) via @theme inline {} directive",
+    "tailwind_mapping": "All --color-* variables in @theme directive map 1:1 with Tailwind utilities (e.g., bg-primary, text-muted-foreground, border-border)"
+  },
+
+  "core_semantic_tokens": {
+    "primary": {
+      "light_hex": "#0052ff",
+      "dark_hex": "#0052ff",
+      "css_var": "--primary",
+      "tailwind": "primary",
+      "oklch": "oklch(0.488 0.243 264.376)",
+      "purpose": "Primary action color, brand identity, link color, active states"
+    },
+    "primary_foreground": {
+      "light_hex": "#ffffff",
+      "dark_hex": "#ffffff",
+      "css_var": "--primary-foreground",
+      "tailwind": "primary-foreground",
+      "purpose": "Text on primary backgrounds"
+    },
+    "primary_active": {
+      "light_hex": "#003ecc",
+      "dark_hex": "#003ecc",
+      "css_var": "--primary-active",
+      "tailwind": "primary-active",
+      "purpose": "Primary hover/active state (darker variant)"
+    },
+    "primary_disabled": {
+      "light_hex": "#a8b8cc",
+      "dark_hex": "#3a4a5c",
+      "css_var": "--primary-disabled",
+      "tailwind": "primary-disabled",
+      "purpose": "Primary disabled state (desaturated)"
+    },
+    "on_primary": {
+      "light_hex": "#ffffff",
+      "dark_hex": "#ffffff",
+      "css_var": "--on-primary",
+      "tailwind": "on-primary",
+      "purpose": "Text and icons on primary color surfaces"
+    },
+    "on_dark": {
+      "light_hex": "#ffffff",
+      "dark_hex": "#0a0b0d",
+      "css_var": "--on-dark",
+      "tailwind": "on-dark",
+      "purpose": "Text on dark surfaces (inverts in dark mode so text on white bg)"
+    },
+    "on_dark_soft": {
+      "light_hex": "#a8acb3",
+      "dark_hex": "#5b616e",
+      "css_var": "--on-dark-soft",
+      "tailwind": "on-dark-soft",
+      "purpose": "Secondary text on dark surfaces"
+    },
+    "background": {
+      "light_hex": "#ffffff",
+      "dark_hex": "#0a0b0d",
+      "css_var": "--background",
+      "tailwind": "background",
+      "oklch_light": "oklch(1 0 0)",
+      "oklch_dark": "oklch(0.141 0.005 285.823)",
+      "purpose": "Page background"
+    },
+    "foreground": {
+      "light_hex": "#0a0b0d",
+      "dark_hex": "#ffffff",
+      "css_var": "--foreground",
+      "tailwind": "foreground",
+      "oklch_light": "oklch(0.141 0.005 285.823)",
+      "oklch_dark": "oklch(0.985 0 0)",
+      "purpose": "Primary text color (near-black in light, white in dark)"
+    },
+    "card": {
+      "light_hex": "#ffffff",
+      "dark_hex": "#16181c",
+      "css_var": "--card",
+      "tailwind": "card",
+      "purpose": "Card surface background"
+    },
+    "card_foreground": {
+      "light_hex": "#0a0b0d",
+      "dark_hex": "#ffffff",
+      "css_var": "--card-foreground",
+      "tailwind": "card-foreground",
+      "purpose": "Text on card surfaces"
+    },
+    "popover": {
+      "light_hex": "#ffffff",
+      "dark_hex": "#16181c",
+      "css_var": "--popover",
+      "tailwind": "popover",
+      "purpose": "Floating UI (dropdowns, dialogs, sheets, tooltips)"
+    },
+    "popover_foreground": {
+      "light_hex": "#0a0b0d",
+      "dark_hex": "#ffffff",
+      "css_var": "--popover-foreground",
+      "tailwind": "popover-foreground",
+      "purpose": "Text on floating UI surfaces"
+    },
+    "secondary": {
+      "light_hex": "#eef0f3",
+      "dark_hex": "#16181c",
+      "css_var": "--secondary",
+      "tailwind": "secondary",
+      "purpose": "Secondary button/surface (subtle gray)"
+    },
+    "secondary_foreground": {
+      "light_hex": "#0a0b0d",
+      "dark_hex": "#ffffff",
+      "css_var": "--secondary-foreground",
+      "tailwind": "secondary-foreground",
+      "purpose": "Text on secondary surfaces"
+    },
+    "muted": {
+      "light_hex": "#f7f7f7",
+      "dark_hex": "#16181c",
+      "css_var": "--muted",
+      "tailwind": "muted",
+      "purpose": "Muted background (subtle highlight)"
+    },
+    "muted_foreground": {
+      "light_hex": "#7c828a",
+      "dark_hex": "#a8acb3",
+      "css_var": "--muted-foreground",
+      "tailwind": "muted-foreground",
+      "purpose": "Secondary/muted text, placeholder text, descriptions"
+    },
+    "accent": {
+      "light_hex": "#f7f7f7",
+      "dark_hex": "#16181c",
+      "css_var": "--accent",
+      "tailwind": "accent",
+      "purpose": "Highlight/selected item background (menus, comboboxes)"
+    },
+    "accent_foreground": {
+      "light_hex": "#0a0b0d",
+      "dark_hex": "#ffffff",
+      "css_var": "--accent-foreground",
+      "tailwind": "accent-foreground",
+      "purpose": "Text on accent backgrounds"
+    },
+    "destructive": {
+      "light_hex": "#cf202f",
+      "dark_hex": "#cf202f",
+      "css_var": "--destructive",
+      "tailwind": "destructive",
+      "oklch_light": "oklch(0.577 0.245 27.325)",
+      "oklch_dark": "oklch(0.704 0.191 22.216)",
+      "purpose": "Destructive actions, error states, critical alerts"
+    },
+    "destructive_foreground": {
+      "light_hex": "#ffffff",
+      "dark_hex": "#ffffff",
+      "css_var": "--destructive-foreground",
+      "tailwind": "destructive-foreground",
+      "purpose": "Text on destructive backgrounds"
+    },
+    "border": {
+      "light_hex": "#dee1e6",
+      "dark_hex": "#2b2d31",
+      "css_var": "--border",
+      "tailwind": "border",
+      "oklch_light": "oklch(0.92 0.004 286.32)",
+      "oklch_dark": "oklch(1 0 0 / 10%)",
+      "purpose": "Default border color for all components"
+    },
+    "input": {
+      "light_hex": "#dee1e6",
+      "dark_hex": "#2b2d31",
+      "css_var": "--input",
+      "tailwind": "input",
+      "purpose": "Input field border (can differ from border in dark mode)"
+    },
+    "ring": {
+      "light_hex": "#0052ff",
+      "dark_hex": "#0052ff",
+      "css_var": "--ring",
+      "tailwind": "ring",
+      "purpose": "Focus ring color (matches primary)"
+    }
+  },
+
+  "extended_semantic_tokens": {
+    "ink": {
+      "light_hex": "#0a0b0d",
+      "dark_hex": "#ffffff",
+      "css_var": "--ink",
+      "tailwind": "ink",
+      "purpose": "Strongest text — headings and primary content (same as foreground)"
+    },
+    "body": {
+      "light_hex": "#5b616e",
+      "dark_hex": "#a8acb3",
+      "css_var": "--body",
+      "tailwind": "body",
+      "purpose": "Body text — slightly muted for comfortable reading"
+    },
+    "body_strong": {
+      "light_hex": "#0a0b0d",
+      "dark_hex": "#ffffff",
+      "css_var": "--body-strong",
+      "tailwind": "body-strong",
+      "purpose": "Emphasized body text (same as foreground/ink)"
+    },
+    "muted_soft": {
+      "light_hex": "#a8acb3",
+      "dark_hex": "#5b616e",
+      "css_var": "--muted-soft",
+      "tailwind": "muted-soft",
+      "purpose": "Very soft muted text — labels, secondary metadata"
+    },
+    "hairline": {
+      "light_hex": "#dee1e6",
+      "dark_hex": "#2b2d31",
+      "css_var": "--hairline",
+      "tailwind": "hairline",
+      "purpose": "Thin separator/dividing lines (same as border)"
+    },
+    "hairline_soft": {
+      "light_hex": "#eef0f3",
+      "dark_hex": "#16181c",
+      "css_var": "--hairline-soft",
+      "tailwind": "hairline-soft",
+      "purpose": "Softer separators — secondary dividers"
+    },
+    "canvas": {
+      "light_hex": "#ffffff",
+      "dark_hex": "#0a0b0d",
+      "css_var": "--canvas",
+      "tailwind": "canvas",
+      "purpose": "Dashboard/content area background (same as background)"
+    },
+    "surface_soft": {
+      "light_hex": "#f7f7f7",
+      "dark_hex": "#0a0b0d",
+      "css_var": "--surface-soft",
+      "tailwind": "surface-soft",
+      "purpose": "Soft surface — subtle background tint"
+    },
+    "surface_card": {
+      "light_hex": "#ffffff",
+      "dark_hex": "#16181c",
+      "css_var": "--surface-card",
+      "tailwind": "surface-card",
+      "purpose": "Card surface (same as card)"
+    },
+    "surface_strong": {
+      "light_hex": "#eef0f3",
+      "dark_hex": "#2b2d31",
+      "css_var": "--surface-strong",
+      "tailwind": "surface-strong",
+      "purpose": "Strong surface — pressed/active states"
+    },
+    "surface_dark": {
+      "light_hex": "#0a0b0d",
+      "dark_hex": "#ffffff",
+      "css_var": "--surface-dark",
+      "tailwind": "surface-dark",
+      "purpose": "Inverted dark surface — inverts crossing mode boundary"
+    },
+    "surface_dark_elevated": {
+      "light_hex": "#16181c",
+      "dark_hex": "#f7f7f7",
+      "css_var": "--surface-dark-elevated",
+      "tailwind": "surface-dark-elevated",
+      "purpose": "Elevated dark surface — cards on dark"
+    }
+  },
+
+  "semantic_indicator_tokens": {
+    "semantic_up": {
+      "light_hex": "#05b169",
+      "dark_hex": "#05b169",
+      "css_var": "--semantic-up",
+      "tailwind": "semantic-up",
+      "purpose": "Positive/growth indicators — green up-trend"
+    },
+    "semantic_down": {
+      "light_hex": "#cf202f",
+      "dark_hex": "#cf202f",
+      "css_var": "--semantic-down",
+      "tailwind": "semantic-down",
+      "purpose": "Negative/decline indicators — red down-trend (same as destructive)"
+    },
+    "accent_yellow": {
+      "light_hex": "#f4b000",
+      "dark_hex": "#f4b000",
+      "css_var": "--accent-yellow",
+      "tailwind": "accent-yellow",
+      "purpose": "Warning/accent yellow — star ratings, caution indicators"
+    }
+  },
+
+  "chart_color_tokens": {
+    "chart_1": {
+      "light_hex": "#0052ff",
+      "dark_hex": "#0052ff",
+      "css_var": "--chart-1",
+      "tailwind": "chart-1",
+      "purpose": "Primary chart series — matches primary brand blue"
+    },
+    "chart_2": {
+      "light_hex": "#05b169",
+      "dark_hex": "#05b169",
+      "css_var": "--chart-2",
+      "tailwind": "chart-2",
+      "purpose": "Secondary chart series — green"
+    },
+    "chart_3": {
+      "light_hex": "#f4b000",
+      "dark_hex": "#f4b000",
+      "css_var": "--chart-3",
+      "tailwind": "chart-3",
+      "purpose": "Tertiary chart series — yellow/amber"
+    },
+    "chart_4": {
+      "light_hex": "#cf202f",
+      "dark_hex": "#cf202f",
+      "css_var": "--chart-4",
+      "tailwind": "chart-4",
+      "purpose": "Quarterly chart series — red"
+    },
+    "chart_5": {
+      "light_hex": "#a8b8cc",
+      "dark_hex": "#3a4a5c",
+      "css_var": "--chart-5",
+      "tailwind": "chart-5",
+      "purpose": "Fifth chart series — desaturated blue-gray"
+    }
+  },
+
+  "sidebar_color_system": {
+    "sidebar": {
+      "light_hex": "#f7f7f7",
+      "dark_hex": "#16181c",
+      "css_var": "--sidebar",
+      "tailwind": "sidebar",
+      "purpose": "Sidebar panel background"
+    },
+    "sidebar_foreground": {
+      "light_hex": "#0a0b0d",
+      "dark_hex": "#ffffff",
+      "css_var": "--sidebar-foreground",
+      "tailwind": "sidebar-foreground",
+      "purpose": "Sidebar text"
+    },
+    "sidebar_primary": {
+      "light_hex": "#0052ff",
+      "dark_hex": "#0052ff",
+      "css_var": "--sidebar-primary",
+      "tailwind": "sidebar-primary",
+      "purpose": "Sidebar brand/logo background"
+    },
+    "sidebar_primary_foreground": {
+      "light_hex": "#ffffff",
+      "dark_hex": "#ffffff",
+      "css_var": "--sidebar-primary-foreground",
+      "tailwind": "sidebar-primary-foreground",
+      "purpose": "Text on sidebar primary"
+    },
+    "sidebar_accent": {
+      "light_hex": "#eef0f3",
+      "dark_hex": "#2b2d31",
+      "css_var": "--sidebar-accent",
+      "tailwind": "sidebar-accent",
+      "purpose": "Sidebar hovered/active item background"
+    },
+    "sidebar_accent_foreground": {
+      "light_hex": "#0a0b0d",
+      "dark_hex": "#ffffff",
+      "css_var": "--sidebar-accent-foreground",
+      "tailwind": "sidebar-accent-foreground",
+      "purpose": "Text on sidebar accent"
+    },
+    "sidebar_border": {
+      "light_hex": "#dee1e6",
+      "dark_hex": "#2b2d31",
+      "css_var": "--sidebar-border",
+      "tailwind": "sidebar-border",
+      "purpose": "Sidebar separators and borders"
+    },
+    "sidebar_ring": {
+      "light_hex": "#0052ff",
+      "dark_hex": "#0052ff",
+      "css_var": "--sidebar-ring",
+      "tailwind": "sidebar-ring",
+      "purpose": "Sidebar focus ring"
+    }
+  },
+
+  "color_philosophy": {
+    "contrast": "Moderate-to-high contrast ratio. Primary blue is vivid (#0052ff). Text colors use near-black (#0a0b0d) on white for maximum readability.",
+    "saturation": "Selectively saturated. Primary is fully saturated blue. Destructive is vivid red. Chart colors are distinct. Neutrals are warm-cool balanced (slightly blue-tinted grays).",
+    "dark_mode_strategy": "Inverted luminance. Light backgrounds become dark (#0a0b0d → #ffffff). Card surfaces get a subtle dark elevation (#16181c). Borders become darker (#dee1e6 → #2b2d31). Saturated colors (primary, destructive, semantic up/down) remain identical across modes. Chart-5 desaturates in dark mode.",
+    "hover_interaction": "Opacity-based hover for primary (80% opacity). For destructive, uses transparent backgrounds (10% → 20% on hover).",
+    "focus_indicators": "Ring color matches primary blue. Uses combo: focus-visible:border-ring + focus-visible:ring-2 + focus-visible:ring-ring/30 for accessibility."
+  },
+
+  "rgb_conversions": {
+    "primary": "rgb(0, 82, 255)",
+    "destructive": "rgb(207, 32, 47)",
+    "semantic_up": "rgb(5, 177, 105)",
+    "accent_yellow": "rgb(244, 176, 0)",
+    "ink": "rgb(10, 11, 13)",
+    "body": "rgb(91, 97, 110)",
+    "muted_foreground": "rgb(124, 130, 138)",
+    "muted_soft": "rgb(168, 172, 179)",
+    "border_hairline": "rgb(222, 225, 230)",
+    "hairline_soft": "rgb(238, 240, 243)"
+  }
+}

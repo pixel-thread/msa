@@ -38,6 +38,7 @@ export const GET = withAssociation(
       const myAttendance = meeting.attendees.find(
         (a: { user: { id: string } }) => a.user.id === user.id,
       );
+
       if (!myAttendance) {
         throw new ForbiddenError("You are not assigned to this meeting");
       }

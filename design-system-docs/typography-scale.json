@@ -1,0 +1,232 @@
+{
+  "system": "MFSA Connect Design System — Complete Typography Scale",
+  "version": "1.0.0",
+  "font_families": {
+    "sans": {
+      "css_var": "--font-sans",
+      "font_name": "Roboto",
+      "source": "next/font/google (Google Fonts)",
+      "file": "src/app/layout.tsx",
+      "weights_loaded": ["400", "500", "700"],
+      "purpose": "Primary UI text — body content, labels, navigation"
+    },
+    "heading": {
+      "css_var": "--font-heading",
+      "font_name": "Roboto (same font, separate variable)",
+      "source": "next/font/google (Roboto same instance)",
+      "weights_loaded": ["400", "500", "700"],
+      "tailwind_class": "font-heading",
+      "purpose": "Heading/display typography — cards, dialogs, page titles"
+    },
+    "mono": {
+      "css_var": "--font-mono",
+      "font_name": "JetBrains Mono",
+      "source": "next/font/google",
+      "weights_loaded": ["400", "500", "700"],
+      "tailwind_class": "font-mono",
+      "purpose": "Monospace — numbers, code, financial data, tabular data"
+    }
+  },
+  "global_text_styling": {
+    "base_setting": "html { @apply font-sans; }",
+    "antialiasing": "antialiased class on <html>",
+    "default_text_size": "14px (text-sm applied at body level via utility classes)"
+  },
+
+  "text_component_scale": {
+    "description": "All typography variants are defined via the <Text> component using CVA (class-variance-authority). File: src/shared/components/ui/text.tsx",
+    "display_mega": {
+      "className": "font-heading text-[80px] leading-[1.0] tracking-[-2px] font-normal",
+      "mobile_equivalent": "text-5xl",
+      "usage": "Hero headlines (landing page only)",
+      "font": "Roboto (via --font-heading)",
+      "size_px": 80,
+      "line_height": 1.0,
+      "tracking_px": -2,
+      "weight": 400
+    },
+    "display_xl": {
+      "className": "font-heading text-[64px] leading-[1.0] tracking-[-1.6px] font-normal",
+      "mobile_equivalent": "text-5xl",
+      "usage": "Large hero sub-headlines",
+      "font": "Roboto (--font-heading)",
+      "size_px": 64,
+      "line_height": 1.0,
+      "tracking_px": -1.6,
+      "weight": 400
+    },
+    "display_lg": {
+      "className": "font-heading text-[52px] leading-[1.0] tracking-[-1.3px] font-normal",
+      "mobile_equivalent": "text-4xl",
+      "usage": "Section headings (features, testimonials, security sections)",
+      "size_px": 52,
+      "line_height": 1.0,
+      "tracking_px": -1.3,
+      "weight": 400
+    },
+    "display_md": {
+      "className": "font-heading text-[44px] leading-[1.09] tracking-[-1px] font-normal",
+      "mobile_equivalent": "text-3xl",
+      "usage": "Stats display numbers, medium section headings",
+      "size_px": 44,
+      "line_height": 1.09,
+      "tracking_px": -1,
+      "weight": 400
+    },
+    "display_sm": {
+      "className": "text-4xl leading-[1.11] tracking-[-0.5px] font-normal",
+      "size_px": 36,
+      "line_height": 1.11,
+      "tracking_px": -0.5,
+      "weight": 400,
+      "usage": "Card stat displays, emphasized numbers"
+    },
+    "title_lg": {
+      "className": "text-[32px] leading-[1.13] tracking-[-0.4px] font-normal",
+      "size_px": 32,
+      "line_height": 1.13,
+      "tracking_px": -0.4,
+      "weight": 400,
+      "usage": "Page-level headings, welcome text"
+    },
+    "title_md": {
+      "className": "text-lg leading-[1.33] font-semibold",
+      "size_px": 18,
+      "line_height": 1.33,
+      "tracking_px": 0,
+      "weight": 600,
+      "usage": "Sub-section headings, card titles"
+    },
+    "title_sm": {
+      "className": "text-base leading-[1.25] font-semibold",
+      "size_px": 16,
+      "line_height": 1.25,
+      "tracking_px": 0,
+      "weight": 600,
+      "usage": "Small card headings, contact section titles"
+    },
+    "body_md": {
+      "className": "text-base leading-[1.5] font-normal",
+      "size_px": 16,
+      "line_height": 1.5,
+      "tracking_px": 0,
+      "weight": 400,
+      "usage": "Standard body text, paragraph content"
+    },
+    "body_strong": {
+      "className": "text-base leading-[1.5] font-bold",
+      "size_px": 16,
+      "line_height": 1.5,
+      "tracking_px": 0,
+      "weight": 700,
+      "usage": "Emphasized body text"
+    },
+    "body_sm": {
+      "className": "text-sm leading-[1.5] font-normal",
+      "size_px": 14,
+      "line_height": 1.5,
+      "tracking_px": 0,
+      "weight": 400,
+      "usage": "Small body text, metadata, descriptions"
+    },
+    "caption": {
+      "className": "text-[13px] leading-[1.5] font-normal",
+      "size_px": 13,
+      "line_height": 1.5,
+      "tracking_px": 0,
+      "weight": 400,
+      "usage": "Fine print, timestamps, secondary metadata"
+    },
+    "caption_strong": {
+      "className": "text-xs leading-[1.5] font-semibold",
+      "size_px": 12,
+      "line_height": 1.5,
+      "tracking_px": 0,
+      "weight": 600,
+      "usage": "Label text, section headers in footers, uppercase labels"
+    },
+    "number_display": {
+      "className": "font-mono text-lg leading-[1.4] font-medium",
+      "size_px": 18,
+      "line_height": 1.4,
+      "tracking_px": 0,
+      "weight": 500,
+      "font": "JetBrains Mono",
+      "usage": "Financial figures, statistical numbers, tabular data"
+    },
+    "button": {
+      "className": "text-base leading-[1.15] font-semibold",
+      "usage": "Button text (overridden by button's own text-xs uppercase)"
+    },
+    "nav_link": {
+      "className": "text-sm leading-[1.4] font-medium",
+      "usage": "Navigation link text"
+    }
+  },
+
+  "text_color_variants": {
+    "description": "Color tokens available to the Text component via CVA",
+    "available_colors": [
+      "default", "ink", "body", "body-strong", "muted", "muted-soft",
+      "primary", "on-primary", "on-dark", "on-dark-soft",
+      "semantic-up", "semantic-down"
+    ]
+  },
+
+  "text_alignment": {
+    "left": "text-left",
+    "center": "text-center",
+    "right": "text-right"
+  },
+
+  "text_transform": {
+    "none": "normal-case",
+    "uppercase": "uppercase",
+    "lowercase": "lowercase",
+    "capitalize": "capitalize"
+  },
+
+  "component_typography_conventions": {
+    "page_title": "text-[36px] font-normal leading-tight tracking-tight text-ink",
+    "page_description": "mt-1 text-base text-body",
+    "card_title": "font-heading text-lg font-semibold tracking-wider uppercase",
+    "card_description": "text-sm leading-relaxed text-muted-foreground",
+    "section_title": "text-xl font-semibold text-ink",
+    "dialog_title": "font-heading text-lg leading-none font-semibold tracking-wider uppercase",
+    "dialog_description": "mt-0.5 text-sm leading-relaxed text-muted-foreground",
+    "sheet_title": "font-heading text-lg font-semibold tracking-wider text-foreground uppercase",
+    "empty_title": "font-heading text-lg font-semibold tracking-wider uppercase",
+    "empty_description": "mt-0.5 text-sm/relaxed text-muted-foreground",
+    "label_default": "text-xs font-semibold tracking-wide uppercase",
+    "label_form": "text-xs font-semibold tracking-wide uppercase",
+    "badge_text": "text-[0.625rem] font-semibold tracking-widest uppercase",
+    "button_text": "text-xs font-semibold tracking-widest uppercase",
+    "toggle_text": "text-xs font-semibold tracking-widest uppercase",
+    "table_header": "text-xs font-medium tracking-wider uppercase text-muted-foreground",
+    "table_cell": "text-sm",
+    "dropdown_item": "text-xs font-medium tracking-wider uppercase",
+    "dropdown_label": "text-xs font-semibold tracking-wider uppercase text-muted-foreground",
+    "sidebar_group_label": "text-xs font-semibold tracking-wider uppercase text-sidebar-foreground/70",
+    "sidebar_menu_item": "text-sm",
+    "sidebar_sub_menu": "text-sm",
+    "pagination_info": "text-sm text-body",
+    "pagination_emphasis": "font-medium text-body-strong",
+    "form_message": "text-[0.8rem] font-medium text-destructive",
+    "form_description": "text-[0.8rem] text-muted-foreground",
+    "progress_label": "text-xs font-medium text-foreground",
+    "input_placeholder": "placeholder:text-muted-foreground",
+    "combobox_label": "text-xs font-semibold tracking-wider text-muted-foreground uppercase",
+    "select_label": "text-xs font-semibold tracking-wider text-muted-foreground uppercase",
+    "select_item": "text-sm",
+    "toast_text": "text-sm text-popover-foreground"
+  },
+
+  "typography_philosophy": {
+    "readability": "Relaxed line heights (1.5 for body text). Adequate spacing between sections. Muted colors for secondary text reduce visual noise.",
+    "hierarchy": "Strong size contrast between display and body copy. Uppercase + tracking-wider used for labels, buttons, and metadata to visually distinguish from body text.",
+    "uppercase_pattern": "Heavy use of uppercase with letter-spacing for UI labels: buttons, badges, dropdown items, table headers, form labels, sidebar labels, select labels, tabs. This is a defining characteristic of the design system.",
+    "monospace_numbers": "Financial figures and data table values use JetBrains Mono (tabular-nums) for alignment and visual distinction.",
+    "heading_font": "Heading uses Roboto (same as sans) but via a separate CSS variable to allow independent font-family swapping. Currently renders identically to body but is architecturally distinct.",
+    "mobile_scaling": "Display sizes remain large on mobile (no distinct mobile scale defined — relies on container queries @container for card responsiveness). Page title uses fixed 36px without breakpoint reduction."
+  }
+}

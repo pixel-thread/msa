@@ -17,10 +17,11 @@ import {
 import { GalleryVerticalEndIcon } from "lucide-react";
 import { useAuthStore } from "@src/shared/stores/auth";
 import { DRAWER_NAV_MAIN } from "../constants/drawer";
-import { env } from "@src/env";
+import { useAssociation } from "@hooks/use-association";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuthStore();
+  const { data } = useAssociation();
 
   const sidebarUser = {
     name: user?.name || "",
@@ -42,9 +43,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">
-                  {env.NEXT_PUBLIC_ASSOCIATION_SLUG.toUpperCase()}
+                  {data?.slug.toUpperCase()}
                 </span>
-                <span className="truncate text-xs">Association Portal</span>
+                <span className="truncate text-xs">{data?.name}</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>

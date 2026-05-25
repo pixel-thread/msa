@@ -1,0 +1,101 @@
+{
+  "system": "MFSA Connect Design System — Complete Elevation & Depth System",
+  "version": "1.0.0",
+
+  "philosophy": "Flat-with-shadow. Minimal elevation — cards and floating UI get shallow shadows with thin rings. No heavy box-shadows or extreme depth layering. The dominant elevation is shadow-sm with ring-1 ring-foreground/5 for cards, and shadow-md with ring-1 ring-foreground/10 for floating elements.",
+
+  "card_elevation": {
+    "default_card": {
+      "classes": "shadow-sm ring-1 ring-foreground/5",
+      "description": "Standard card elevation: subtle shadow + thin outline ring",
+      "components": ["Card", "DataTable wrapper"]
+    },
+    "card_group": {
+      "classes": "shadow-xs",
+      "description": "Lighter shadow for grouped/card-grid variants (SectionCards gradient cards)"
+    },
+    "hover_card": {
+      "classes": "group transition-shadow hover:shadow-md",
+      "description": "Cards that elevate on hover (used in landing page feature cards)"
+    },
+    "stats_card": {
+      "classes": "border-hairline bg-surface-card (no shadow, uses border instead)",
+      "description": "Dashboard stat cards use border-only styling instead of shadow"
+    }
+  },
+
+  "floating_ui_elevation": {
+    "description": "All dropdowns, popovers, dialogs, sheets, comboboxes, tooltips, and floating panels",
+    "default_float": {
+      "classes": "shadow-md ring-1 ring-foreground/10",
+      "components": [
+        "DropdownMenuContent", "SelectContent", "ComboboxContent",
+        "DialogContent", "SheetContent", "PopoverContent",
+        "HoverCardContent", "TooltipContent",
+        "DropdownMenuSubContent"
+      ]
+    },
+    "tooltip": {
+      "classes": "bg-foreground text-background (inverted colors instead of shadow)",
+      "description": "Tooltips use inverted foreground/background instead of shadow for emphasis"
+    },
+    "sidebar_floating": {
+      "classes": "group-data-[variant=floating]:shadow-sm group-data-[variant=floating]:ring-1 group-data-[variant=floating]:ring-sidebar-border",
+      "description": "Floating sidebar variant has minimal shadow"
+    }
+  },
+
+  "overlay_system": {
+    "dialog_overlay": {
+      "classes": "fixed inset-0 z-50 bg-black/20 duration-100 supports-backdrop-filter:backdrop-blur-sm",
+      "z_index": 50,
+      "description": "Dialogs use semi-transparent black overlay with optional backdrop blur"
+    },
+    "sheet_overlay": {
+      "classes": "fixed inset-0 z-50 bg-black/20 duration-100 supports-backdrop-filter:backdrop-blur-sm",
+      "z_index": 50,
+      "description": "Sheets use identical overlay as dialogs"
+    }
+  },
+
+  "z_index_layers": {
+    "dropdown": 50,
+    "select": 50,
+    "combobox": 50,
+    "dialog_overlay": 50,
+    "dialog_content": 50,
+    "sheet_overlay": 50,
+    "sheet_content": 50,
+    "tooltip": 50,
+    "popover": 50,
+    "sidebar_rail": 20,
+    "sidebar_container": 10,
+    "public_header": 50,
+    "member_combobox_dropdown": 50
+  },
+
+  "blur_usage": {
+    "dialog_backdrop": "backdrop-blur-sm (subtle blur on dialog/sheet overlays)",
+    "public_header": "backdrop-blur supports-backdrop-filter:bg-background/60 (glass header on landing)"
+  },
+
+  "border_usage": {
+    "card_border_alt": "border border-hairline bg-surface-card (dashboard cards with border instead of shadow)",
+    "section_separator": "border-y border-border (full-width section dividers)",
+    "sidebar_edge": "group-data-[side=left]:border-r group-data-[side=right]:border-l",
+    "sheet_edge": "data-[side=right]:border-l, etc.",
+    "table_container": "border (table wrapper in DataTable)"
+  },
+
+  "depth_hierarchy": {
+    "0_page_content": "background / canvas (z: auto)",
+    "1_card_surface": "shadow-sm + ring-1",
+    "2_hover_card": "hover:shadow-md",
+    "3_header": "z-50 (public nav)",
+    "4_sidebar": "z-10 (desktop), z-50 (sheet on mobile)",
+    "5_overlay": "z-50 (semi-transparent backdrop)",
+    "6_floating_ui": "z-50 (dropdowns, dialogs, sheets, tooltips)",
+    "7_toast": "implicit z-index from sonner library",
+    "8_loading_overlay": "fixed inset-0 (full-screen loading spinner)"
+  }
+}

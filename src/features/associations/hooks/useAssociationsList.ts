@@ -5,7 +5,7 @@ import { Association } from "../types/association";
 export function useAssociationsList() {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["associations-list"],
-    queryFn: async () => http.get<Association[]>("/associations"),
+    queryFn: async () => http.get<Association[]>("/admin/associations"),
   });
 
   return {
