@@ -43,13 +43,13 @@ export function DataTable<TData>({
     <Card className="overflow-visible p-4">
       <div className="w-full min-w-0 overflow-x-auto border">
         <Table>
-          <TableHeader className="bg-primary/80">
+          <TableHeader className="bg-primary/80 text-black">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="text-inherit">
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    className="text-primary-foreground"
+                    className="text-primary-foreground hover:text-inherit"
                   >
                     {header.isPlaceholder
                       ? null
