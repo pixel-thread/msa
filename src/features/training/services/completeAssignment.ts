@@ -32,8 +32,13 @@ export async function completeAssignment({
         module: {
           select: {
             associationId: true,
-            globalCertificateUrl: true,
-            globalCertificateFileId: true,
+            certificateTemplateId: true,
+            certificateTemplate: {
+              select: {
+                certificateUrl: true,
+                fileId: true,
+              },
+            },
           },
         },
       },
@@ -68,9 +73,9 @@ export async function completeAssignment({
     let certUrl = certificateUrl;
     let certFileId = certificateFileId;
 
-    if (certificateOption === "global" && assignment.module.globalCertificateUrl) {
-      certUrl = assignment.module.globalCertificateUrl;
-      certFileId = assignment.module.globalCertificateFileId || undefined;
+    if (certificateOption === "global" && assignment.module.certificateTemplate?.certificateUrl) {
+      certUrl = assignment.module.certificateTemplate.certificateUrl;
+      certFileId = assignment.module.certificateTemplate.fileId || undefined;
     }
 
     if (certificateOption !== "none" && certUrl) {

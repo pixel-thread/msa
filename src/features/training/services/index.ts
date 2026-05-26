@@ -17,3 +17,6 @@ export * from "./findManyCertificates";
 export * from "./createCertificate";
 export * from "./updateCertificate";
 export * from "./deleteCertificate";
+export * from "./findCertificateTemplate";
+export * from "./createCertificateTemplate";
+export * from "./deleteCertificateTemplate";

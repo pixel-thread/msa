@@ -17,8 +17,11 @@ export interface TrainingModuleListItem {
   requiredForRoles: string[];
   isActive: boolean;
   version: number;
-  globalCertificateUrl: string | null;
-  globalCertificateFileId: string | null;
+  certificateTemplate: {
+    id: string;
+    certificateUrl: string;
+    name: string;
+  } | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -71,6 +74,17 @@ export interface TrainingSupplementItem {
   fileSize: number | null;
   sortOrder: number;
   isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TrainingCertificateTemplateItem {
+  id: string;
+  associationId: string;
+  name: string;
+  certificateUrl: string;
+  thumbnailUrl: string | null;
+  fileId: string | null;
   createdAt: string;
   updatedAt: string;
 }

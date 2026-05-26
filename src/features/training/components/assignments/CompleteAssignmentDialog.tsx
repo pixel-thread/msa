@@ -39,7 +39,7 @@ interface CompleteAssignmentDialogProps {
   userId: string;
   userName: string;
   moduleId: string;
-  hasGlobalCertificate: boolean;
+  certificateTemplate: { id: string; certificateUrl: string; name: string } | null;
   onComplete: (data: {
     userId: string;
     scorePercent?: number;
@@ -55,7 +55,7 @@ export function CompleteAssignmentDialog({
   userId,
   userName,
   moduleId,
-  hasGlobalCertificate,
+  certificateTemplate,
   onComplete,
   isCompleting,
 }: CompleteAssignmentDialogProps) {
@@ -65,7 +65,7 @@ export function CompleteAssignmentDialog({
     resolver: zodResolver(CompleteAssignmentSchema),
     defaultValues: {
       scorePercent: undefined,
-      certificateOption: hasGlobalCertificate ? "global" : "none",
+      certificateOption: certificateTemplate ? "global" : "none",
     },
   });
 
@@ -157,15 +157,15 @@ export function CompleteAssignmentDialog({
                         </Label>
                       </div>
 
-                      {hasGlobalCertificate && (
+                      {certificateTemplate && (
                         <div className="flex items-center space-x-2 border border-hairline rounded-md p-3">
                           <RadioGroupItem value="global" id="cert-global" />
                           <Label htmlFor="cert-global" className="flex items-center gap-2 cursor-pointer">
                             <Globe className="h-4 w-4 text-primary" />
                             <div>
-                              <span className="text-sm font-medium">Use global certificate</span>
+                              <span className="text-sm font-medium">Use template certificate</span>
                               <p className="text-xs text-muted-foreground">
-                                Auto-assign the module's default certificate
+                                {certificateTemplate.name}
                               </p>
                             </div>
                           </Label>

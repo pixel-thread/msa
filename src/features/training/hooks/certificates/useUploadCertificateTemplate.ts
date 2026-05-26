@@ -3,41 +3,41 @@ import http from "@src/shared/utils/http";
 import { toast } from "sonner";
 import { trainingQueryKeys } from "../../utils/constants";
 
-export function useUploadGlobalCertificate(moduleId: string | null) {
+export function useUploadCertificateTemplate(moduleId: string | null) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (formData: FormData) =>
-      http.post(`/training/modules/${moduleId}/global-certificate`, formData),
+      http.post(`/training/modules/${moduleId}/certificate-template`, formData),
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({
           queryKey: trainingQueryKeys.modules.detail(moduleId),
         });
-        toast.success(res.message || "Global certificate uploaded");
+        toast.success(res.message || "Certificate template uploaded");
         return res;
       }
-      toast.error(res.message || "Failed to upload global certificate");
+      toast.error(res.message || "Failed to upload certificate template");
       return res;
     },
   });
 }
 
-export function useRemoveGlobalCertificate(moduleId: string | null) {
+export function useRemoveCertificateTemplate(moduleId: string | null) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: () =>
-      http.delete(`/training/modules/${moduleId}/global-certificate`),
+      http.delete(`/training/modules/${moduleId}/certificate-template`),
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({
           queryKey: trainingQueryKeys.modules.detail(moduleId),
         });
-        toast.success("Global certificate removed");
+        toast.success("Certificate template removed");
         return res;
       }
-      toast.error(res.message || "Failed to remove global certificate");
+      toast.error(res.message || "Failed to remove certificate template");
       return res;
     },
   });

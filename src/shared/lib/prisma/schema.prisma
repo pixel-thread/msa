@@ -967,9 +967,8 @@ model TrainingModule {
   version          Int                  @default(1)
   isActive         Boolean              @default(true)
 
-  globalCertificateUrl    String?
-  globalCertificateFileId String? @unique
-  globalCertificate       File?   @relation("ModuleGlobalCertificate", fields: [globalCertificateFileId], references: [id], onDelete: SetNull)
+  certificateTemplateId String?                    @unique
+  certificateTemplate   TrainingCertificateTemplate? @relation(fields: [certificateTemplateId], references: [id], onDelete: SetNull)
 
   createdAt        DateTime             @default(now())
   updatedAt        DateTime             @updatedAt
@@ -1103,6 +1102,28 @@ model TrainingCertificate {
   @@index([moduleId])
 
   @@map("training_certificates")
+}
+
+model TrainingCertificateTemplate {
+  id String @id @default(uuid())
+
+  associationId String
+
+  name String
+
+  certificateUrl String
+  thumbnailUrl   String?
+
+  fileId String? @unique
+  file   File?   @relation(fields: [fileId], references: [id], onDelete: SetNull)
+
+  trainingModule TrainingModule?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([associationId])
+  @@map("training_certificate_templates")
 }
 
 model AnnouncementRead {
@@ -1276,7 +1297,7 @@ model File {
   trainingCertificateId String?
   trainingCertificate TrainingCertificate?
 
-  moduleGlobalCertificate TrainingModule? @relation("ModuleGlobalCertificate")
+  trainingCertificateTemplate TrainingCertificateTemplate?
 
   trainingSupplement TrainingSupplement[]
   announcement       Announcement?       @relation("AnnouncementImage")
