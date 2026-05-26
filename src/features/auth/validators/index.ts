@@ -52,38 +52,50 @@ export const SignUpSchema = z
 
 export type SignUpInput = z.infer<typeof SignUpSchema>;
 
-export const ResetPasswordSchema = z.object({
-  token: z.string().min(1, "Token is required"),
-  password: passwordValidation,
-});
+export const ResetPasswordSchema = z
+  .object({
+    token: z.string().min(1, "Token is required"),
+    password: passwordValidation,
+  })
+  .strict();
 
 export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>;
 
-export const SignInSchema = z.object({
-  email: z.email("Invalid email address"),
-  password: passwordValidation,
-});
+export const SignInSchema = z
+  .object({
+    email: z.email("Invalid email address"),
+    password: passwordValidation,
+  })
+  .strict();
 
 export type SignInInput = z.infer<typeof SignInSchema>;
 
-export const VerifySignInSchema = z.object({
-  code: z.string().length(6, "Code must be 6 digits"),
-  mfa_temp_token: z.string().optional(),
-});
+export const VerifySignInSchema = z
+  .object({
+    code: z.string().length(6, "Code must be 6 digits"),
+    mfa_temp_token: z.string().optional(),
+  })
+  .strict();
 
 export type VerifySignInInput = z.infer<typeof VerifySignInSchema>;
 
-export const RefreshTokenSchema = z.object({
-  token: z.string().optional(),
-});
+export const RefreshTokenSchema = z
+  .object({
+    token: z.string().optional(),
+  })
+  .strict();
 
-export const SignOutSchema = z.object({
-  token: z.string().optional(),
-});
+export const SignOutSchema = z
+  .object({
+    token: z.string().optional(),
+  })
+  .strict();
 
-export const ForgotPasswordSchema = z.object({
-  email: z.email("Invalid email address"),
-});
+export const ForgotPasswordSchema = z
+  .object({
+    email: z.email("Invalid email address"),
+  })
+  .strict();
 
 export type ForgotPasswordInput = z.infer<typeof ForgotPasswordSchema>;
 
@@ -96,6 +108,7 @@ export const ChangePasswordSchema = z
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
-  });
+  })
+  .strict();
 
 export type ChangePasswordInput = z.infer<typeof ChangePasswordSchema>;

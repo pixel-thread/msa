@@ -20,7 +20,7 @@ const NAV_ITEMS = [
 ];
 
 export function PublicHeader() {
-  const user = useAuthStore((state) => state.user);
+  const { user, signOut: logout, isLoading: isAuthLoading } = useAuthStore();
   const pathname = usePathname();
   const isSignIn = pathname.startsWith("/sign-in");
   const isSignUp = pathname.startsWith("/sign-up");
@@ -52,9 +52,19 @@ export function PublicHeader() {
 
         <div className="flex items-center gap-3">
           {user ? (
-            <Button asChild variant="default" size="sm">
-              <Link href="/dashboard">Dashboard</Link>
-            </Button>
+            <div className="flex items-center gap-x-2">
+              <Button asChild variant="default" size="sm">
+                <Link href="/dashboard">Dashboard</Link>
+              </Button>
+              <Button
+                disabled={isAuthLoading}
+                onClick={logout}
+                variant="destructive"
+                size="sm"
+              >
+                Logout
+              </Button>
+            </div>
           ) : (
             <>
               {!isSignIn && (
