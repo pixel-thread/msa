@@ -5,6 +5,7 @@ import { NotFoundError } from "@src/shared/errors";
 import { env } from "@src/env";
 
 export interface UpsertProviderInput {
+  id: string;
   associationId: string;
   provider: PaymentProviderType;
   keyId: string;
@@ -85,10 +86,9 @@ export async function upsertProvider(
 
   const provider = await prisma.paymentProvider.upsert({
     where: {
-      associationId_provider: {
-        associationId: input.associationId,
-        provider: input.provider,
-      },
+      id: input.id,
+      provider: input.provider,
+      associationId: input.associationId,
     },
     create: {
       associationId: input.associationId,

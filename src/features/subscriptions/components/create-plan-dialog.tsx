@@ -35,6 +35,7 @@ import {
   CreateSubscriptionPlanInput,
   CreateSubscriptionPlanSchema,
 } from "../validators";
+import { logger } from "@src/shared/logger";
 
 export function CreatePlanDialog() {
   const [open, setOpen] = useState(false);
@@ -71,7 +72,6 @@ export function CreatePlanDialog() {
       },
     );
   };
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>

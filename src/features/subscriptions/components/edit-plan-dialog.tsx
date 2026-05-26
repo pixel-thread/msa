@@ -78,8 +78,11 @@ export function EditPlanDialog({
         description: plan.description || "",
         amount: plan.activeVersion?.amount ?? 0,
         currency: plan.activeVersion?.currency ?? "INR",
-        billingCycle: (plan.activeVersion?.billingCycle ?? "YEARLY") as "MONTHLY" | "YEARLY",
-        features: (plan.activeVersion?.features as Record<string, unknown>) || {},
+        billingCycle: (plan.activeVersion?.billingCycle ?? "YEARLY") as
+          | "MONTHLY"
+          | "YEARLY",
+        features:
+          (plan.activeVersion?.features as Record<string, unknown>) || {},
         memberTypeId: plan.memberTypeId || "",
       });
     }

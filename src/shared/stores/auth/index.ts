@@ -3,7 +3,6 @@
 import { create } from "zustand";
 import http from "@src/shared/utils/http";
 import type { UserRole } from "@src/shared/lib/prisma/types";
-import { logger } from "@src/shared/logger";
 import { SHARED_ENDPOINTS } from "@src/shared/constants";
 
 export interface AuthUser {
@@ -32,7 +31,7 @@ export interface AuthState {
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
-  isLoading: true,
+  isLoading: false,
   isSignedIn: false,
 
   setUser: (user: AuthUser | null) => set({ user }),
@@ -52,7 +51,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       set({ user: res.data, isSignedIn: true, isLoading: false });
     } catch {
-      set({ user: null });
+      set({ user: null, isLoading: false });
     } finally {
       set({ isLoading: false });
     }
