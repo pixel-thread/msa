@@ -1,5 +1,6 @@
 import { prisma } from "@lib/prisma";
 import { AuditAction, Prisma } from "@prisma/client";
+import { NotFoundError } from "@src/shared/errors";
 
 interface CreateCertificateTemplateProps {
   associationId: string;
@@ -34,7 +35,7 @@ export async function createCertificateTemplate({
     });
 
     if (!mod) {
-      throw new Error("Training module not found");
+      throw new NotFoundError("Training module not found");
     }
 
     if (mod.certificateTemplateId) {
