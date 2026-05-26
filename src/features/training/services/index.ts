@@ -13,3 +13,7 @@ export * from "./createSupplement";
 export * from "./updateSupplement";
 export * from "./deleteSupplement";
 export * from "./deleteModule";
+export * from "./findManyCertificates";
+export * from "./createCertificate";
+export * from "./updateCertificate";
+export * from "./deleteCertificate";

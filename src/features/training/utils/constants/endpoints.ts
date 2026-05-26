@@ -19,4 +19,9 @@ export const trainingEndpoints = {
     byId: (id: string) => `training/modules/${id}/complete`,
     all: () => "/training/completions" as const,
   },
+  certificates: {
+    list: (moduleId: string) => `/training/modules/${moduleId}/certificates`,
+    byId: (moduleId: string, certificateId: string) =>
+      `/training/modules/${moduleId}/certificates/${certificateId}`,
+  },
 } as const;

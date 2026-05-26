@@ -23,7 +23,7 @@ export function useUpdateTrainingModule() {
     onSuccess: (res, variables) => {
       if (res.success) {
         queryClient.invalidateQueries({
-          queryKey: trainingQueryKeys.modules.all,
+          queryKey: trainingQueryKeys.modules.all(),
         });
         queryClient.invalidateQueries({
           queryKey: trainingQueryKeys.modules.detail(variables.moduleId),

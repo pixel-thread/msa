@@ -25,4 +25,8 @@ export const trainingQueryKeys = {
     byModule: (moduleId: string | null, page?: number) =>
       ["training-completions", moduleId, page] as const,
   },
+  certificates: {
+    all: (moduleId: string | null) =>
+      ["training-certificates", moduleId] as const,
+  },
 } as const;

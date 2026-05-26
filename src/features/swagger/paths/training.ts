@@ -614,6 +614,193 @@ export const trainingPaths = {
       },
     },
   },
+  "/training/modules/{moduleId}/certificates": {
+    get: {
+      tags: ["Training"],
+      summary: "List training certificates",
+      description: "List all certificates for a training module",
+      parameters: [
+        {
+          name: "moduleId",
+          in: "path",
+          required: true,
+          schema: { type: "string", format: "uuid" },
+        },
+      ],
+      responses: {
+        "200": {
+          description: "List of certificates",
+        },
+      },
+    },
+    post: {
+      tags: ["Training"],
+      summary: "Create a training certificate",
+      description: "Upload a certificate for a user on a training module (requires DPO or higher). Accepts multipart/form-data with a file and a metadata JSON string.",
+      parameters: [
+        {
+          name: "moduleId",
+          in: "path",
+          required: true,
+          schema: { type: "string", format: "uuid" },
+        },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          "multipart/form-data": {
+            schema: {
+              type: "object",
+              required: ["file", "metadata"],
+              properties: {
+                file: {
+                  type: "string",
+                  format: "binary",
+                  description: "The certificate file (PDF, image, etc.)",
+                },
+                metadata: {
+                  type: "string",
+                  description: "JSON string containing certificate metadata",
+                  schema: {
+                    type: "object",
+                    required: ["userId"],
+                    properties: {
+                      userId: { type: "string", format: "uuid", description: "User to issue the certificate to" },
+                      certificateNumber: { type: "string", description: "Optional certificate number" },
+                      issuedAt: { type: "string", format: "date-time", description: "Issue date (defaults to now)" },
+                      thumbnailUrl: { type: "string", format: "uri", description: "Optional thumbnail URL" },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        "201": {
+          description: "Certificate created",
+        },
+      },
+    },
+  },
+  "/training/modules/{moduleId}/certificates/{certificateId}": {
+    get: {
+      tags: ["Training"],
+      summary: "Get a training certificate by ID",
+      parameters: [
+        {
+          name: "moduleId",
+          in: "path",
+          required: true,
+          schema: { type: "string", format: "uuid" },
+        },
+        {
+          name: "certificateId",
+          in: "path",
+          required: true,
+          schema: { type: "string", format: "uuid" },
+        },
+      ],
+      responses: {
+        "200": {
+          description: "Certificate details",
+        },
+      },
+    },
+    patch: {
+      tags: ["Training"],
+      summary: "Update a training certificate",
+      description: "Update a certificate (requires DPO or higher). Accepts multipart/form-data with an optional file and a required metadata JSON string.",
+      parameters: [
+        {
+          name: "moduleId",
+          in: "path",
+          required: true,
+          schema: { type: "string", format: "uuid" },
+        },
+        {
+          name: "certificateId",
+          in: "path",
+          required: true,
+          schema: { type: "string", format: "uuid" },
+        },
+      ],
+      requestBody: {
+        content: {
+          "multipart/form-data": {
+            schema: {
+              type: "object",
+              properties: {
+                file: {
+                  type: "string",
+                  format: "binary",
+                  description: "Optional new certificate file to replace the existing one",
+                },
+                metadata: {
+                  type: "string",
+                  description: "JSON string containing certificate metadata fields to update",
+                  schema: {
+                    type: "object",
+                    properties: {
+                      certificateNumber: { type: "string" },
+                      issuedAt: { type: "string", format: "date-time" },
+                      thumbnailUrl: { type: "string", format: "uri" },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        "200": {
+          description: "Certificate updated",
+        },
+      },
+    },
+    delete: {
+      tags: ["Training"],
+      summary: "Delete a training certificate",
+      description: "Delete a certificate and its associated file from storage (requires DPO or higher)",
+      parameters: [
+        {
+          name: "moduleId",
+          in: "path",
+          required: true,
+          schema: { type: "string", format: "uuid" },
+        },
+        {
+          name: "certificateId",
+          in: "path",
+          required: true,
+          schema: { type: "string", format: "uuid" },
+        },
+      ],
+      responses: {
+        "200": {
+          description: "Certificate deleted successfully",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  data: {
+                    type: "object",
+                    properties: {
+                      success: { type: "boolean" },
+                      message: { type: "string" },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
   "/training/my-assignments": {
     get: {
       tags: ["Training"],

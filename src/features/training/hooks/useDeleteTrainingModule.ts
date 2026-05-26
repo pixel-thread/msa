@@ -12,7 +12,7 @@ export function useDeleteTrainingModule() {
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({
-          queryKey: trainingQueryKeys.modules.all,
+          queryKey: trainingQueryKeys.modules.all(),
         });
         toast.success("Training module deleted successfully");
         return res;
