@@ -3,7 +3,8 @@ import { generateCsrfToken, verifyCsrfToken } from "../lib/csrf";
 import type { MiddlewareFn } from "./chain";
 import { env } from "@src/env";
 import { AppErrorResponse, getTraceId } from "../utils";
-import { NextRequest } from "next/server";
+import { logger } from "../logger";
+import { cookies } from "next/headers";
 
 /**
  * CSRF protection middleware using the double-submit cookie pattern.
@@ -29,6 +30,7 @@ export const withCsrf: MiddlewareFn = async (request, next) => {
     const isPublicPath = pathname.startsWith("/api/auth");
     const authHeader = request.headers.get("authorization");
     const clientType = request.headers.get("x-client-type");
+    const traceId = getTraceId(request);
 
     if (
       isPublicPath ||
@@ -64,6 +66,11 @@ export const withCsrf: MiddlewareFn = async (request, next) => {
       !csrfHeader ||
       !verifyCsrfToken(csrfHeader, csrfCookie)
     ) {
+      logger.info("Invalid or missing CSRF token", {
+        traceId,
+        cookies: !!csrfCookie,
+        hearder: !!csrfHeader,
+      });
       throw new ForbiddenError("Invalid or missing CSRF token");
     }
 

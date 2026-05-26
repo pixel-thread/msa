@@ -14,8 +14,8 @@ export const trainingQueryKeys = {
       ["training-assignments", moduleId, page] as const,
   },
   assignedUsers: {
-    all: (moduleId: string | null) =>
-      ["module-assigned-users", moduleId] as const,
+    all: (moduleId: string | null, page?: number) =>
+      ["module-assigned-users", moduleId, page] as const,
     base: ["module-assigned-users"] as const,
   },
   completions: {

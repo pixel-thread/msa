@@ -38,6 +38,8 @@ import {
 import type { TrainingModuleListItem } from "../types";
 import { RemoveSupplementAlertDialog } from "../components/supplements/RemoveSupplementAlertDialog";
 import { RemoveModuleAlertDialog } from "../components/RemoveModuleAlertDialog";
+import { DataTablePagination } from "@src/shared/components/data-table-pagination";
+import { useUrlFilters } from "@hooks/use-url-filters";
 
 export function TrainingDetailPage() {
   const router = useRouter();
@@ -47,16 +49,29 @@ export function TrainingDetailPage() {
 
   const { module: trainingModule, isLoading: isModuleLoading } =
     useTrainingModule(moduleId);
+  const { setPage: setSupplementPage, page: supplemetPage } = useUrlFilters({
+    pageKey: "supplement",
+    basePath: `/training/${moduleId}`,
+  });
+
+  const { setPage: setAssignUserPage, page: assignUserPage } = useUrlFilters({
+    pageKey: "user",
+    basePath: `/training/${moduleId}`,
+  });
 
   const {
     assignedUsers,
     isLoading: isAssignedLoading,
     completeAssignment,
+    meta: assignedUserMeta,
     isCompleting: isCompletingAssignment,
-  } = useModuleAssignedUsers(moduleId);
+  } = useModuleAssignedUsers(moduleId, assignUserPage);
 
-  const { data: supplements = [], isFetching: isSupplementsLoading } =
-    useTrainingSupplements(moduleId);
+  const {
+    data: supplements = [],
+    meta: supplementMeta,
+    isFetching: isSupplementsLoading,
+  } = useTrainingSupplements(moduleId, supplemetPage);
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
@@ -254,6 +269,11 @@ export function TrainingDetailPage() {
             data={filteredUsers}
             columns={memberColumns}
           />
+
+          <DataTablePagination
+            meta={assignedUserMeta}
+            onPageChange={setAssignUserPage}
+          />
         </TabsContent>
 
         <TabsContent value="supplements" className="space-y-4">
@@ -275,6 +295,11 @@ export function TrainingDetailPage() {
             loading={isSupplementsLoading}
             data={supplements || []}
             columns={supplementColumns}
+          />
+
+          <DataTablePagination
+            meta={supplementMeta}
+            onPageChange={setSupplementPage}
           />
         </TabsContent>
 

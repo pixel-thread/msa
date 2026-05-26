@@ -4,17 +4,16 @@ import { toast } from "sonner";
 import { trainingEndpoints, trainingQueryKeys } from "../utils/constants";
 import type { AssignedUserWithCompletion } from "../types";
 
-export function useModuleAssignedUsers(moduleId: string | null) {
+export function useModuleAssignedUsers(moduleId: string | null, page?: number) {
   const queryClient = useQueryClient();
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: trainingQueryKeys.assignedUsers.all(moduleId),
+    queryKey: trainingQueryKeys.assignedUsers.all(moduleId, page),
     queryFn: async () =>
       http.get<AssignedUserWithCompletion[]>(
-        trainingEndpoints.assignedUsers.list(moduleId!),
+        trainingEndpoints.assignedUsers.list(moduleId!, page),
       ),
     enabled: !!moduleId,
-    select: (res) => res.data,
   });
 
   const completeAssignmentMutation = useMutation({
@@ -47,9 +46,12 @@ export function useModuleAssignedUsers(moduleId: string | null) {
     },
   });
 
+  const meta = data?.meta;
+  const users = data?.data;
   return {
-    assignedUsers: data ?? [],
+    assignedUsers: users ?? [],
     isLoading,
+    meta: meta,
     completeAssignment: completeAssignmentMutation.mutate,
     isCompleting: completeAssignmentMutation.isPending,
     refetch,

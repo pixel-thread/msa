@@ -2,7 +2,8 @@ export const trainingEndpoints = {
   base: "/training/modules" as const,
   byId: (id: string) => `/training/modules/${id}`,
   supplements: {
-    list: (moduleId: string) => `/training/modules/${moduleId}/supplements`,
+    list: (moduleId: string, page?: number) =>
+      `/training/modules/${moduleId}/supplements?page=${page}`,
     byId: (moduleId: string, supplementId: string) =>
       `/training/modules/${moduleId}/supplements/${supplementId}`,
   },
@@ -11,7 +12,8 @@ export const trainingEndpoints = {
       `/training/modules/${moduleId}/assign?page=${page ?? 1}`,
   },
   assignedUsers: {
-    list: (moduleId: string) => `/training/modules/${moduleId}/assigned-users`,
+    list: (moduleId: string, page?: number) =>
+      `/training/modules/${moduleId}/assigned-users?page=${page}`,
     complete: (moduleId: string, userId: string) =>
       `/training/modules/${moduleId}/assignments/${userId}/complete`,
   },

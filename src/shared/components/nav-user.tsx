@@ -1,12 +1,9 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-import {
-  Avatar,
-  AvatarFallback,
-} from "@src/shared/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@src/shared/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,15 +12,21 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@src/shared/components/ui/dropdown-menu"
+} from "@src/shared/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@src/shared/components/ui/sidebar"
-import { ChevronsUpDownIcon, BadgeCheckIcon, CreditCardIcon, LogOutIcon } from "lucide-react"
-import { useAuthStore } from "@src/shared/stores/auth"
+} from "@src/shared/components/ui/sidebar";
+import {
+  ChevronsUpDownIcon,
+  BadgeCheckIcon,
+  CreditCardIcon,
+  LogOutIcon,
+} from "lucide-react";
+import { useSignOut } from "@src/features/auth/hooks";
+import { toast } from "sonner";
 
 const getInitials = (name: string) => {
   return name
@@ -31,26 +34,32 @@ const getInitials = (name: string) => {
     .map((n) => n[0])
     .join("")
     .toUpperCase()
-    .slice(0, 2)
-}
+    .slice(0, 2);
+};
 
 export function NavUser({
   user,
 }: {
   user: {
-    name: string
-    email: string
-    avatar: string
-  }
+    name: string;
+    email: string;
+    avatar: string;
+  };
 }) {
-  const { isMobile } = useSidebar()
-  const router = useRouter()
-  const { signOut } = useAuthStore()
+  const { isMobile } = useSidebar();
+  const { mutate: signOut, isPending } = useSignOut();
 
   const handleSignOut = async () => {
-    await signOut()
-    router.push("/sign-in")
-  }
+    signOut(undefined, {
+      onSuccess: (data) => {
+        if (data.success) {
+          toast.success(data.message);
+          return;
+        }
+        toast.error(data?.message);
+      },
+    });
+  };
 
   return (
     <SidebarMenu>
@@ -108,7 +117,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut}>
+            <DropdownMenuItem disabled={isPending} onClick={handleSignOut}>
               <LogOutIcon />
               Log out
             </DropdownMenuItem>
@@ -116,5 +125,5 @@ export function NavUser({
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }
