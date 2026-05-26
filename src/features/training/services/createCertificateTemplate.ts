@@ -29,17 +29,17 @@ export async function createCertificateTemplate({
   fileId,
 }: CreateCertificateTemplateProps) {
   return await prisma.$transaction(async (tx) => {
-    const module = await tx.trainingModule.findFirst({
+    const mod = await tx.trainingModule.findFirst({
       where: { id: moduleId, associationId },
     });
 
-    if (!module) {
+    if (!mod) {
       throw new Error("Training module not found");
     }
 
-    if (module.certificateTemplateId) {
+    if (mod.certificateTemplateId) {
       const old = await tx.trainingCertificateTemplate.findUnique({
-        where: { id: module.certificateTemplateId },
+        where: { id: mod.certificateTemplateId },
         include: { file: true },
       });
       if (old) {

@@ -92,7 +92,7 @@ export const DELETE = withAssociation(
     const { moduleId } = params;
     const user = await withRole(request, UserRole.DPO);
 
-    const result = await deleteCertificateTemplate({
+    await deleteCertificateTemplate({
       associationId: association.id,
       moduleId,
       actorId: user.id,

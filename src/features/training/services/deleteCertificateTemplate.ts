@@ -20,16 +20,16 @@ export async function deleteCertificateTemplate({
   actorId,
 }: DeleteCertificateTemplateProps) {
   return await prisma.$transaction(async (tx) => {
-    const module = await tx.trainingModule.findFirst({
+    const mod = await tx.trainingModule.findFirst({
       where: { id: moduleId, associationId },
     });
 
-    if (!module || !module.certificateTemplateId) {
+    if (!mod || !mod.certificateTemplateId) {
       throw new Error("No certificate template found");
     }
 
     const template = await tx.trainingCertificateTemplate.findUnique({
-      where: { id: module.certificateTemplateId },
+      where: { id: mod.certificateTemplateId },
       include: { file: true },
     });
 
