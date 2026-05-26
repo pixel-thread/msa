@@ -20,13 +20,34 @@ export function useModuleAssignedUsers(moduleId: string | null, page?: number) {
     mutationFn: ({
       userId,
       scorePercent,
+      certificateOption,
+      certificateFile,
     }: {
       userId: string;
       scorePercent?: number;
-    }) =>
-      http.post(trainingEndpoints.assignedUsers.complete(moduleId!, userId), {
+      certificateOption?: "none" | "global" | "custom";
+      certificateFile?: File | null;
+    }) => {
+      const metadata = {
         scorePercent,
-      }),
+        certificateOption: certificateOption || "none",
+      };
+
+      if (certificateOption === "custom" && certificateFile) {
+        const formData = new FormData();
+        formData.append("file", certificateFile);
+        formData.append("metadata", JSON.stringify(metadata));
+        return http.post(
+          trainingEndpoints.assignedUsers.complete(moduleId!, userId),
+          formData,
+        );
+      }
+
+      return http.post(
+        trainingEndpoints.assignedUsers.complete(moduleId!, userId),
+        metadata,
+      );
+    },
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({

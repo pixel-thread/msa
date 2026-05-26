@@ -10,6 +10,10 @@ import {
   Plus,
   Paperclip,
   Award,
+  Globe,
+  Download,
+  Upload,
+  X,
 } from "lucide-react";
 import {
   useTrainingModule,
@@ -19,6 +23,8 @@ import {
   useTrainingSupplementsColumns,
   useTrainingCompletions,
   useTrainingCompletionsColumns,
+  useTrainingCertificates,
+  useTrainingCertificatesColumns,
 } from "../hooks";
 import { Button } from "@src/shared/components/ui/button";
 import { Badge } from "@src/shared/components/ui/badge";
@@ -34,7 +40,10 @@ import {
   CompleteAssignmentDialog,
   EditModuleDialog,
   AddSupplementDialog,
+  AddCertificateDialog,
+  RemoveCertificateAlertDialog,
 } from "../components";
+import { useUploadGlobalCertificate, useRemoveGlobalCertificate } from "../hooks";
 import type { TrainingModuleListItem } from "../types";
 import { RemoveSupplementAlertDialog } from "../components/supplements/RemoveSupplementAlertDialog";
 import { RemoveModuleAlertDialog } from "../components/RemoveModuleAlertDialog";
@@ -76,8 +85,15 @@ export function TrainingDetailPage() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   const [addSupplementOpen, setAddSupplementOpen] = useState(false);
+  const [addCertificateOpen, setAddCertificateOpen] = useState(false);
 
   const [deleteModuleDialogOpen, setDeleteModuleDialogOpen] = useState(false);
+
+  const { mutate: uploadGlobalCert, isPending: isUploadingGlobal } =
+    useUploadGlobalCertificate(moduleId);
+  const { mutate: removeGlobalCert, isPending: isRemovingGlobal } =
+    useRemoveGlobalCertificate(moduleId);
+  const [globalCertFile, setGlobalCertFile] = useState<File | null>(null);
 
   const {
     memberColumns,
@@ -94,6 +110,16 @@ export function TrainingDetailPage() {
   const { supplementColumns, supplementToDelete, setSupplementToDelete } =
     useTrainingSupplementsColumns({
       supplements: supplements || [],
+    });
+
+  const {
+    certificates,
+    isLoading: isCertificatesLoading,
+  } = useTrainingCertificates(moduleId);
+
+  const { certificateColumns, certificateToDelete, setCertificateToDelete } =
+    useTrainingCertificatesColumns({
+      certificates: certificates || [],
     });
 
   const handleDeleteModule = () => {
@@ -222,6 +248,109 @@ export function TrainingDetailPage() {
         </div>
       </div>
 
+      {/* Global Certificate Section */}
+      <div className="bg-surface-card border border-hairline p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Globe className="h-5 w-5 text-primary" />
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+              Global Certificate
+            </h2>
+          </div>
+        </div>
+
+        {trainingModule.globalCertificateUrl ? (
+          <div className="flex items-center justify-between border border-hairline bg-canvas p-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <Award className="h-4 w-4 shrink-0 text-primary" />
+              <span className="text-sm text-body truncate">
+                Global certificate set
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <a
+                href={trainingModule.globalCertificateUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+              </a>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => removeGlobalCert()}
+                disabled={isRemovingGlobal}
+                className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        ) : null}
+
+        {globalCertFile ? (
+          <div className="flex items-center justify-between border border-hairline bg-canvas px-3 py-2 mt-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <Paperclip className="h-4 w-4 shrink-0 text-muted-foreground" />
+              <span className="text-sm text-body truncate">
+                {globalCertFile.name}
+              </span>
+              <span className="text-xs text-muted-foreground shrink-0">
+                ({(globalCertFile.size / 1024).toFixed(1)} KB)
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Button
+                type="button"
+                variant="default"
+                size="sm"
+                disabled={isUploadingGlobal}
+                onClick={() => {
+                  const formData = new FormData();
+                  formData.append("file", globalCertFile);
+                  uploadGlobalCert(formData, {
+                    onSuccess: (res) => {
+                      if (res.success) setGlobalCertFile(null);
+                    },
+                  });
+                }}
+                className="h-8 text-xs"
+              >
+                {isUploadingGlobal ? "Uploading..." : "Upload"}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0"
+                onClick={() => setGlobalCertFile(null)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <label className="flex cursor-pointer items-center justify-center gap-2 border border-dashed border-hairline bg-canvas px-3 py-4 text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors mt-2">
+            <Upload className="h-4 w-4" />
+            {trainingModule.globalCertificateUrl
+              ? "Replace global certificate"
+              : "Upload global certificate"}
+            <input
+              type="file"
+              accept=".pdf,.png,.jpg,.jpeg"
+              className="sr-only"
+              onChange={(e) => setGlobalCertFile(e.target.files?.[0] ?? null)}
+            />
+          </label>
+        )}
+      </div>
+
       {/* Tabs: Members | Supplements */}
       <Tabs defaultValue="members" className="space-y-6">
         <TabsList>
@@ -236,6 +365,10 @@ export function TrainingDetailPage() {
           <TabsTrigger value="completions" className="flex items-center gap-2">
             <Award className="h-4 w-4" />
             Completions
+          </TabsTrigger>
+          <TabsTrigger value="certificates" className="flex items-center gap-2">
+            <Award className="h-4 w-4" />
+            Certificates
           </TabsTrigger>
         </TabsList>
 
@@ -319,6 +452,28 @@ export function TrainingDetailPage() {
           </div>
           <CompletionsTabContent moduleId={moduleId} />
         </TabsContent>
+
+        <TabsContent value="certificates" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-muted-foreground">
+              {certificates?.length} certificate
+              {certificates?.length !== 1 ? "s" : ""}
+            </div>
+            <Button
+              onClick={() => setAddCertificateOpen(true)}
+              variant="outline"
+              className="h-10 border-hairline px-4 text-sm font-semibold flex items-center gap-2 hover:bg-canvas/50"
+            >
+              <Plus className="h-4 w-4" />
+              Add Certificate
+            </Button>
+          </div>
+          <DataTable
+            loading={isCertificatesLoading}
+            data={certificates || []}
+            columns={certificateColumns}
+          />
+        </TabsContent>
       </Tabs>
 
       {selectedUser && (
@@ -328,6 +483,7 @@ export function TrainingDetailPage() {
           userId={selectedUser.userId}
           userName={selectedUser.user.name}
           moduleId={moduleId}
+          hasGlobalCertificate={!!trainingModule?.globalCertificateUrl}
           onComplete={handleComplete}
           isCompleting={isCompletingAssignment}
         />
@@ -358,6 +514,21 @@ export function TrainingDetailPage() {
         moduleId={supplementToDelete?.id || ""}
         onValueChange={(v) =>
           setSupplementToDelete(!v ? supplementToDelete : null)
+        }
+      />
+
+      <AddCertificateDialog
+        open={addCertificateOpen}
+        onOpenChange={setAddCertificateOpen}
+        moduleId={moduleId}
+      />
+
+      <RemoveCertificateAlertDialog
+        isOpen={!!certificateToDelete}
+        moduleId={moduleId}
+        certificateId={certificateToDelete?.id || ""}
+        onValueChange={(v) =>
+          setCertificateToDelete(!v ? certificateToDelete : null)
         }
       />
     </div>

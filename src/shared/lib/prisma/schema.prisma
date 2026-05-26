@@ -966,6 +966,11 @@ model TrainingModule {
   requiredForRoles UserRole[]           @default([MEMBER])
   version          Int                  @default(1)
   isActive         Boolean              @default(true)
+
+  globalCertificateUrl    String?
+  globalCertificateFileId String? @unique
+  globalCertificate       File?   @relation("ModuleGlobalCertificate", fields: [globalCertificateFileId], references: [id], onDelete: SetNull)
+
   createdAt        DateTime             @default(now())
   updatedAt        DateTime             @updatedAt
   association      Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
@@ -1270,6 +1275,8 @@ model File {
 
   trainingCertificateId String?
   trainingCertificate TrainingCertificate?
+
+  moduleGlobalCertificate TrainingModule? @relation("ModuleGlobalCertificate")
 
   trainingSupplement TrainingSupplement[]
   announcement       Announcement?       @relation("AnnouncementImage")

@@ -17,6 +17,8 @@ export interface TrainingModuleListItem {
   requiredForRoles: string[];
   isActive: boolean;
   version: number;
+  globalCertificateUrl: string | null;
+  globalCertificateFileId: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -69,6 +71,24 @@ export interface TrainingSupplementItem {
   fileSize: number | null;
   sortOrder: number;
   isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TrainingCertificateItem {
+  id: string;
+  userId: string;
+  moduleId: string;
+  certificateNumber: string | null;
+  issuedAt: string;
+  certificateUrl: string;
+  thumbnailUrl: string | null;
+  fileId: string | null;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
   createdAt: string;
   updatedAt: string;
 }

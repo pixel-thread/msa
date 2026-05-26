@@ -11,7 +11,12 @@ import type { AssignedUserWithCompletion } from "../types";
 export function useTrainingMemberColumn(options: {
   assignedUsers: AssignedUserWithCompletion[];
 
-  completeAssignment: (data: { userId: string; scorePercent?: number }) => void;
+  completeAssignment: (data: {
+    userId: string;
+    scorePercent?: number;
+    certificateOption?: "none" | "global" | "custom";
+    certificateFile?: File | null;
+  }) => void;
 }) {
   const { assignedUsers, completeAssignment } = options;
 
@@ -30,7 +35,12 @@ export function useTrainingMemberColumn(options: {
     );
   }, [assignedUsers, search]);
 
-  const handleComplete = (data: { userId: string; scorePercent?: number }) => {
+  const handleComplete = (data: {
+    userId: string;
+    scorePercent?: number;
+    certificateOption?: "none" | "global" | "custom";
+    certificateFile?: File | null;
+  }) => {
     completeAssignment(data);
   };
 

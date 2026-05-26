@@ -8,6 +8,10 @@ interface CompleteAssignmentProps {
   userId: string;
   actorId: string;
   scorePercent?: number;
+  certificateOption?: "none" | "global" | "custom";
+  certificateUrl?: string;
+  certificateFileId?: string;
+  certificateNumber?: string;
 }
 
 export async function completeAssignment({
@@ -16,11 +20,23 @@ export async function completeAssignment({
   userId,
   actorId,
   scorePercent,
+  certificateOption = "none",
+  certificateUrl,
+  certificateFileId,
+  certificateNumber,
 }: CompleteAssignmentProps) {
   return await prisma.$transaction(async (tx) => {
     const assignment = await tx.trainingAssignment.findUniqueOrThrow({
       where: { moduleId_userId: { moduleId, userId } },
-      include: { module: true },
+      include: {
+        module: {
+          select: {
+            associationId: true,
+            globalCertificateUrl: true,
+            globalCertificateFileId: true,
+          },
+        },
+      },
     });
 
     if (assignment.module.associationId !== associationId) {
@@ -48,6 +64,39 @@ export async function completeAssignment({
       },
     });
 
+    // Handle certificate creation
+    let certUrl = certificateUrl;
+    let certFileId = certificateFileId;
+
+    if (certificateOption === "global" && assignment.module.globalCertificateUrl) {
+      certUrl = assignment.module.globalCertificateUrl;
+      certFileId = assignment.module.globalCertificateFileId || undefined;
+    }
+
+    if (certificateOption !== "none" && certUrl) {
+      await tx.trainingCertificate.upsert({
+        where: { userId_moduleId: { userId, moduleId } },
+        create: {
+          userId,
+          moduleId,
+          certificateUrl: certUrl,
+          ...(certFileId && { fileId: certFileId }),
+          ...(certificateNumber && { certificateNumber }),
+        },
+        update: {
+          certificateUrl: certUrl,
+          ...(certFileId && { fileId: certFileId }),
+          ...(certificateNumber && { certificateNumber }),
+        },
+      });
+
+      // Sync certificateUrl onto the completion record
+      await tx.trainingCompletion.update({
+        where: { id: completion.id },
+        data: { certificateUrl: certUrl },
+      });
+    }
+
     await tx.auditLog.create({
       data: {
         associationId,
@@ -59,6 +108,7 @@ export async function completeAssignment({
           userId,
           moduleId,
           scorePercent,
+          certificateOption,
           assignmentId: updatedAssignment.id,
         } as Prisma.InputJsonValue,
       },

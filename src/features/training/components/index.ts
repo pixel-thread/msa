@@ -5,3 +5,5 @@ export * from "./UserRow";
 export * from "./PaneHeader";
 export * from "./supplements/AddSupplementDialog";
 export * from "./supplements/RemoveSupplementAlertDialog";
+export * from "./certificates/AddCertificateDialog";
+export * from "./certificates/RemoveCertificateAlertDialog";
