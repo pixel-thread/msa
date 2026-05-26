@@ -10,6 +10,7 @@ import {
 } from "@src/shared/components/ui/navigation-menu";
 import { Button } from "@src/shared/components/ui/button";
 import { useAuthStore } from "@src/shared/stores/auth";
+import { useSignOut } from "@src/features/auth/hooks";
 
 const NAV_ITEMS = [
   { label: "Features", href: "/#features" },
@@ -20,7 +21,8 @@ const NAV_ITEMS = [
 ];
 
 export function PublicHeader() {
-  const { user, signOut: logout, isLoading: isAuthLoading } = useAuthStore();
+  const { user, isLoading: isAuthLoading } = useAuthStore();
+  const { mutate: logout, isPending: isLoading } = useSignOut();
   const pathname = usePathname();
   const isSignIn = pathname.startsWith("/sign-in");
   const isSignUp = pathname.startsWith("/sign-up");
@@ -57,8 +59,8 @@ export function PublicHeader() {
                 <Link href="/dashboard">Dashboard</Link>
               </Button>
               <Button
-                disabled={isAuthLoading}
-                onClick={logout}
+                disabled={isAuthLoading || isLoading}
+                onClick={() => logout()}
                 variant="destructive"
                 size="sm"
               >

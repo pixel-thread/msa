@@ -16,4 +16,6 @@ export const authEndpoints = {
   changePassword: "/auth/change-password",
   forgotPassword: "/auth/forgot-password",
   resetPassword: "/auth/reset-password",
+
+  me: "/auth/me",
 };

@@ -4,6 +4,7 @@ import { create } from "zustand";
 import http from "@src/shared/utils/http";
 import type { UserRole } from "@src/shared/lib/prisma/types";
 import { logger } from "@src/shared/logger";
+import { SHARED_ENDPOINTS } from "@src/shared/constants";
 
 export interface AuthUser {
   id: string;
@@ -22,17 +23,6 @@ export interface AuthState {
   setLoading: (isLoading: boolean) => void;
   fetchUser: () => Promise<void>;
   isSignedIn: boolean;
-  signIn: (
-    email: string,
-    password: string,
-  ) => Promise<{ mfaRequired?: boolean; tempToken?: string }>;
-  signUp: (
-    email: string,
-    password: string,
-    name: string,
-    associationId?: string,
-  ) => Promise<void>;
-  signOut: () => Promise<void>;
   verifyMfa: (code: string) => Promise<void>;
   resendMfaCode: () => Promise<void>;
   setupMfa: (password: string) => Promise<void>;
@@ -42,7 +32,7 @@ export interface AuthState {
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
-  isLoading: false,
+  isLoading: true,
   isSignedIn: false,
 
   setUser: (user: AuthUser | null) => set({ user }),
@@ -53,7 +43,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true });
 
     try {
-      const res = await http.get<AuthUser>("/auth/me");
+      const res = await http.get<AuthUser>(SHARED_ENDPOINTS.AUTH.ME);
 
       if (!res.success || !res.data) {
         set({ user: null, isSignedIn: false, isLoading: false });
@@ -68,78 +58,14 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  signIn: async (email, password) => {
-    set({ isLoading: true });
-
-    try {
-      const res = await http.post<{
-        user: AuthUser;
-        mfaRequired?: boolean;
-        tempToken?: string;
-      }>("/auth/sign-in", {
-        email,
-        password,
-      });
-
-      if (!res.success) {
-        throw new Error(res.message);
-      }
-
-      if (res.data?.mfaRequired) {
-        set({ isLoading: false });
-        return { mfaRequired: true, tempToken: res.data.tempToken };
-      }
-
-      set({ user: res.data?.user || null });
-      set({ isLoading: false });
-      return {};
-    } catch (error) {
-      set({ isLoading: false });
-      throw error;
-    }
-  },
-
-  signUp: async (email, password, name, associationId) => {
-    set({ isLoading: true });
-
-    try {
-      const res = await http.post<{ user: AuthUser }>("/auth/sign-up", {
-        email,
-        password,
-        name,
-        associationId,
-      });
-
-      if (!res.success) {
-        throw new Error(res.message);
-      }
-
-      set({ user: res.data?.user || null });
-    } catch (error) {
-      set({ isLoading: false });
-      throw error;
-    } finally {
-      set({ isLoading: false });
-    }
-  },
-
-  signOut: async () => {
-    try {
-      await http.post("/auth/logout", {});
-    } catch (error) {
-      logger.debug("Failed to sign out", { error });
-    } finally {
-      set({ user: null });
-    }
-  },
-
   verifyMfa: async (code) => {
     set({ isLoading: true });
 
     try {
-      const res = await http.post<{ user: AuthUser }>("/auth/sign-in/verify", {
-        code,
-      });
+      const res = await http.post<{ user: AuthUser }>(
+        SHARED_ENDPOINTS.AUTH.MFA_VERIFY,
+        { code },
+      );
 
       if (!res.success) {
         throw new Error(res.message);
@@ -157,7 +83,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   resendMfaCode: async () => {
     try {
       const res = await http.post<{ codeSent: boolean }>(
-        "/auth/mfa/resend-login",
+        SHARED_ENDPOINTS.AUTH.MFA_RESEND,
       );
       if (!res.success) {
         throw new Error(res.message);
@@ -171,7 +97,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true });
     try {
       const res = await http.post<{ pending: boolean; codeSent: boolean }>(
-        "/auth/mfa/setup",
+        SHARED_ENDPOINTS.AUTH.MFA_SETUP,
         { password },
       );
       if (!res.success) {
@@ -187,9 +113,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   enableMfa: async (code: string) => {
     set({ isLoading: true });
     try {
-      const res = await http.post<{ user: AuthUser }>("/auth/mfa/verify", {
-        code,
-      });
+      const res = await http.post<{ user: AuthUser }>(
+        SHARED_ENDPOINTS.AUTH.MFA_VERIFY,
+        { code },
+      );
       if (!res.success) {
         throw new Error(res.message);
       }
@@ -205,9 +132,12 @@ export const useAuthStore = create<AuthState>((set) => ({
   disableMfa: async (password: string) => {
     set({ isLoading: true });
     try {
-      const res = await http.post<{ user: AuthUser }>("/auth/mfa/disable", {
-        password,
-      });
+      const res = await http.post<{ user: AuthUser }>(
+        SHARED_ENDPOINTS.AUTH.MFA_DISABLE,
+        {
+          password,
+        },
+      );
       if (!res.success) {
         throw new Error(res.message);
       }
