@@ -1,7 +1,6 @@
 "use client";
 
-import { Award, Download } from "lucide-react";
-import { Button } from "@src/shared/components/ui/button";
+import { Award } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDate } from "@src/shared/utils";
 import type { TrainingCompletionItem } from "../../types";
@@ -76,22 +75,9 @@ export function useTrainingCompletionsColumns(options?: {
     {
       id: "actions",
       header: "Actions",
-      cell: ({ row }) => {
-        const certUrl = row.original.certificateUrl;
-        return certUrl ? (
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 text-xs font-semibold"
-            onClick={() => window.open(certUrl, "_blank")}
-          >
-            <Download className="mr-1 h-3.5 w-3.5" />
-            Certificate
-          </Button>
-        ) : (
-          <span className="text-xs text-muted-foreground">—</span>
-        );
-      },
+      cell: () => (
+        <span className="text-xs text-muted-foreground">—</span>
+      ),
     },
   );
 

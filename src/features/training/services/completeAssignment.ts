@@ -94,12 +94,6 @@ export async function completeAssignment({
           ...(certificateNumber && { certificateNumber }),
         },
       });
-
-      // Sync certificateUrl onto the completion record
-      await tx.trainingCompletion.update({
-        where: { id: completion.id },
-        data: { certificateUrl: certUrl },
-      });
     }
 
     await tx.auditLog.create({

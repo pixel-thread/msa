@@ -988,7 +988,6 @@ model TrainingCompletion {
   userId         String
   moduleId       String
   scorePercent   Decimal?       @db.Decimal(5, 2)
-  certificateUrl String?
   completedAt    DateTime       @default(now())
   user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   module         TrainingModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)

@@ -531,7 +531,6 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
       moduleId: trainingModule.id,
       userId: secretaryUser.id,
       scorePercent: new Prisma.Decimal(95),
-      certificateUrl: "https://example.com/certificate.pdf",
     },
   });
 
@@ -547,7 +546,6 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
       moduleId: trainingModule.id,
       userId: user.id,
       scorePercent: new Prisma.Decimal(75 + (i % 25)),
-      certificateUrl: `https://secure-cdn.association-hub.org/certs/pdf-generation-asset-${i}.pdf`,
     });
   }
   await prisma.trainingCompletion.createMany({ data: trainingCompletionData });

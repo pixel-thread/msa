@@ -51,7 +51,7 @@ interface AdminRecordCompletionProps {
 
 export async function adminRecordCompletion({ associationId, actorId, data }: AdminRecordCompletionProps) {
   return await prisma.$transaction(async (tx) => {
-    const { userId, moduleId, scorePercent, certificateUrl } = data;
+    const { userId, moduleId, scorePercent } = data;
 
     await tx.trainingModule.findUniqueOrThrow({
       where: { id: moduleId, associationId },
@@ -67,11 +67,9 @@ export async function adminRecordCompletion({ associationId, actorId, data }: Ad
         userId,
         moduleId,
         scorePercent,
-        certificateUrl,
       },
       update: {
         scorePercent,
-        certificateUrl,
         completedAt: new Date(),
       },
     });
@@ -83,7 +81,7 @@ export async function adminRecordCompletion({ associationId, actorId, data }: Ad
         action: AuditAction.TRAINING_COMPLETE,
         resourceType: "TrainingCompletion",
         resourceId: completion.id,
-        newValues: { userId, moduleId, scorePercent, certificateUrl } as Prisma.InputJsonValue,
+        newValues: { userId, moduleId, scorePercent } as Prisma.InputJsonValue,
       },
     });
 

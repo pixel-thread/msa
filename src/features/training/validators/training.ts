@@ -35,9 +35,7 @@ export const UpdateTrainingModuleSchema = z.object({
   version: z.number().int().positive().optional(),
 });
 
-export const RecordCompletionSchema = z.object({
-  certificateUrl: z.url("Invalid certificate URL").optional(),
-});
+export const RecordCompletionSchema = z.object({});
 
 export type CreateTrainingModuleInput = z.infer<
   typeof CreateTrainingModuleSchema
@@ -59,7 +57,6 @@ export const AdminRecordCompletionSchema = z.object({
   userId: z.uuid("Invalid user ID"),
   moduleId: z.uuid("Invalid module ID"),
   scorePercent: z.number().min(0).max(100).optional(),
-  certificateUrl: z.url("Invalid certificate URL").optional(),
 });
 
 export type RecordCompletionInput = z.infer<typeof RecordCompletionSchema>;

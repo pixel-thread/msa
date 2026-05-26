@@ -406,7 +406,6 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
       moduleId: trainingModule.id,
       userId: users[UserRole.SECRETARY].id,
       scorePercent: new Prisma.Decimal(95),
-      certificateUrl: "https://example.com/certificate.pdf",
     },
   });
 

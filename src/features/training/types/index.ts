@@ -47,7 +47,6 @@ export interface TrainingCompletionItem {
   userId: string;
   moduleId: string;
   scorePercent: number | null;
-  certificateUrl: string | null;
   completedAt: string;
   user: {
     id: string;
