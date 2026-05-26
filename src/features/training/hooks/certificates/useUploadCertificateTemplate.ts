@@ -3,6 +3,10 @@ import http from "@src/shared/utils/http";
 import { toast } from "sonner";
 import { trainingQueryKeys } from "../../utils/constants";
 
+/**
+ * Uploads a certificate template file and links it to the training module.
+ * Sends FormData with the file to POST /training/modules/[id]/certificate-template.
+ */
 export function useUploadCertificateTemplate(moduleId: string | null) {
   const queryClient = useQueryClient();
 
@@ -23,6 +27,10 @@ export function useUploadCertificateTemplate(moduleId: string | null) {
   });
 }
 
+/**
+ * Removes the certificate template from the training module.
+ * Sends DELETE to /training/modules/[id]/certificate-template.
+ */
 export function useRemoveCertificateTemplate(moduleId: string | null) {
   const queryClient = useQueryClient();
 

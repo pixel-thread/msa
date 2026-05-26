@@ -5,6 +5,11 @@ interface FindCertificateTemplateProps {
   moduleId: string;
 }
 
+/**
+ * Finds the certificate template linked to a training module.
+ *
+ * Scoped by associationId for multi-tenant isolation.
+ */
 export async function findCertificateTemplate({
   associationId,
   moduleId,

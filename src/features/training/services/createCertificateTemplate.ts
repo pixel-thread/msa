@@ -11,6 +11,14 @@ interface CreateCertificateTemplateProps {
   fileId?: string;
 }
 
+/**
+ * Creates or replaces a certificate template for a training module.
+ *
+ * If a template already exists for this module, the old one is deleted
+ * (including its File record) before creating the new one.
+ *
+ * Tenant-scoped by associationId. Requires DPO role (enforced by caller).
+ */
 export async function createCertificateTemplate({
   associationId,
   moduleId,
@@ -29,7 +37,6 @@ export async function createCertificateTemplate({
       throw new Error("Training module not found");
     }
 
-    // Clean up existing template if present
     if (module.certificateTemplateId) {
       const old = await tx.trainingCertificateTemplate.findUnique({
         where: { id: module.certificateTemplateId },
@@ -67,7 +74,6 @@ export async function createCertificateTemplate({
       },
     });
 
-    // Update the module to link the template
     await tx.trainingModule.update({
       where: { id: moduleId },
       data: { certificateTemplateId: template.id },

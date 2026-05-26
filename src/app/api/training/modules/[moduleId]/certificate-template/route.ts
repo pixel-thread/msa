@@ -15,6 +15,14 @@ const ParamsSchema = z.object({
   moduleId: z.uuid("Invalid module ID"),
 });
 
+/**
+ * POST /training/modules/[moduleId]/certificate-template
+ *
+ * Uploads a file and creates a TrainingCertificateTemplate linked to the module.
+ * If a template already exists, it is replaced (old file cleaned up).
+ *
+ * Auth: DPO role or higher. Tenant-scoped by association.
+ */
 export const POST = withAssociation(
   { params: ParamsSchema },
   async (association, { params }, request) => {
@@ -67,6 +75,13 @@ export const POST = withAssociation(
   },
 );
 
+/**
+ * DELETE /training/modules/[moduleId]/certificate-template
+ *
+ * Removes the certificate template from the module and cleans up the File record.
+ *
+ * Auth: DPO role or higher. Tenant-scoped by association.
+ */
 export const DELETE = withAssociation(
   { params: ParamsSchema },
   async (association, { params }, request) => {

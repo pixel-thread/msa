@@ -7,6 +7,13 @@ interface DeleteCertificateTemplateProps {
   actorId: string;
 }
 
+/**
+ * Removes the certificate template from a training module and cleans up
+ * the associated File record.
+ *
+ * Tenant-scoped by associationId. Requires DPO role (enforced by caller).
+ * Returns the storageKey so the caller can delete from Supabase storage.
+ */
 export async function deleteCertificateTemplate({
   associationId,
   moduleId,
