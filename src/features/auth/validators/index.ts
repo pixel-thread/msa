@@ -1,12 +1,10 @@
 import { passwordValidation } from "@validator/auth";
 import z from "zod";
 
-const associationsSlug = ["mfsa", "mpsa", "mpsc"];
-
 export const SignUpSchema = z
   .object({
     email: z.email("Invalid email address"),
-    associationSlug: z.enum(associationsSlug, "invalid association").optional(),
+    associationSlug: z.string().optional(),
     firstName: z.string().min(3, "First name must be at least 3 characters"),
     lastName: z.string().min(3, "Last name must be at least 3 characters"),
     dateOfBirth: z.string("Invalid date of birth"),

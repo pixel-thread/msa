@@ -5,12 +5,13 @@ import {
   VerifySignInSchema,
   type VerifySignInInput,
 } from "@src/features/auth/validators";
+import { authEndpoints } from "../utils/constants/endpoints";
 
 export function useVerifyMfa() {
   return useMutation({
     mutationFn: async (data: VerifySignInInput) => {
       const result = VerifySignInSchema.parse(data);
-      return http.post("/auth/sign-in/verify", result);
+      return http.post(authEndpoints.signInVerifyMfa, result);
     },
   });
 }
