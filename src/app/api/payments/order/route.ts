@@ -28,15 +28,10 @@ export const POST = withAssociation(
         "No payment provider set up for this association.",
       );
 
-    if (!typeId)
-      throw new NotFoundError(
-        "Member type not found. Please contact your administrator.",
-      );
-
     const plan = await prisma.subscriptionPlan.findFirst({
       where: {
         associationId: association.id,
-        memberTypeId: typeId,
+        memberTypeId: typeId ?? null,
         isActive: true,
       },
       include: {
@@ -45,6 +40,7 @@ export const POST = withAssociation(
           take: 1,
         },
       },
+      orderBy: { createdAt: "desc" },
     });
 
     if (!plan || plan.versions.length === 0) {

@@ -15,6 +15,8 @@ export const GET = withAssociation({}, async (association, _, request) => {
 
   if (user.memberTypeId) {
     whereClause.memberTypeId = user.memberTypeId;
+  } else {
+    whereClause.memberTypeId = null;
   }
 
   const plans = await prisma.subscriptionPlan.findMany({
