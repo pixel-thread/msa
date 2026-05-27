@@ -6,9 +6,21 @@ export const env = createEnv({
     DATABASE_URL: z.url(),
     UPSTASH_REDIS_REST_URL: z.url(),
     UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
+    // storage
+    STORAGE_PROVIDER: z.enum(["sftp", "supabase"]).default("sftp"),
+    STORAGE_BUCKET: z.string("SUPABASE_BUCKET").default("public"),
+    // Supabase
     SUPABASE_SECRET_KEY: z.string("SUPABASE_KEY"),
     SUPABASE_URL: z.url("SUPABASE_URL"),
-    STORAGE_BUCKET: z.string("SUPABASE_BUCKET").default("public"),
+    //SFTP
+
+    SFTP_HOST: z.string(),
+    SFTP_USERNAME: z.string().default("sftp_user"),
+    SFTP_PASSWORD: z.string(),
+    SFTP_PORT: z.number().default(22),
+    SFTP_TIMEOUT: z.number().default(10000),
+    SFTP_ROOT: z.string().default("/"),
+
     FIELD_ENCRYPTION_KEY: z
       .string()
       .regex(
@@ -54,7 +66,14 @@ export const env = createEnv({
     NEXT_PUBLIC_NODE_ENV: z.enum(["development", "test", "production"]),
   },
   runtimeEnv: {
+    SFTP_HOST: process.env.SFTP_HOST,
+    SFTP_USERNAME: process.env.SFPT_USERNAME,
+    SFTP_PASSWORD: process.env.SFTP_PASSWORD,
+    SFTP_PORT: process.env.SFTP_PORT,
+    SFTP_TIMEOUT: process.env.SFTP_TIMEOUT,
+    SFTP_ROOT: process.env.SFTP_ROOT,
     STORAGE_BUCKET: process.env.STORAGE_BUCKET,
+    STORAGE_PROVIDER: process.env.STORAGE_PROVIDER,
     SUPABASE_URL: process.env.SUPABASE_URL,
     SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
     ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS,

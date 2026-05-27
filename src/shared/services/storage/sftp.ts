@@ -1,4 +1,5 @@
 import { env } from "@src/env";
+import { logger } from "@src/shared/logger";
 import {
   StorageProvider,
   UploadParams,
@@ -12,22 +13,34 @@ export class SftpStorageProvider implements StorageProvider {
   async upload(params: UploadParams): Promise<UploadResult> {
     const sftp = new SftpClient();
 
-    await sftp.connect({
-      host: process.env.SFTP_HOST!,
-      port: 22,
-      username: process.env.SFTP_USER!,
-      password: process.env.SFTP_PASSWORD!,
-    });
+    try {
+      await sftp.connect({
+        host: env.SFTP_HOST,
+        port: env.SFTP_PORT,
+        timeout: env.SFTP_TIMEOUT,
+        username: env.SFTP_USERNAME,
+        password: env.SFTP_PASSWORD,
+        readyTimeout: env.SFTP_TIMEOUT,
+      });
+    } catch (error) {
+      logger.debug("[Storage] SFTP connection failed", { error });
+      throw error;
+    }
 
     const key = `${params.folder}/${Date.now()}-${params.fileName}`;
 
-    await sftp.put(params.fileBuffer, `/${env.STORAGE_BUCKET}/${key}`);
+    try {
+      await sftp.put(params.fileBuffer, `/${env.STORAGE_BUCKET}/${key}`);
+    } catch (error) {
+      logger.debug("[Storage] SFTP upload failed", { error });
+      throw error;
+    }
 
     await sftp.end();
 
     return {
       key,
-      url: `${process.env.CDN_URL}/${key}`,
+      url: `${env.SFTP_HOST}/${env.SFTP_ROOT}/${key}`,
     };
   }
 
@@ -36,9 +49,9 @@ export class SftpStorageProvider implements StorageProvider {
     const sftp = new SftpClient();
 
     await sftp.connect({
-      host: process.env.SFTP_HOST!,
-      username: process.env.SFTP_USER!,
-      password: process.env.SFTP_PASSWORD!,
+      host: env.SFTP_HOST!,
+      username: env.SFTP_USERNAME,
+      password: env.SFTP_PASSWORD!,
     });
 
     await sftp.delete(`/${env.STORAGE_BUCKET}/${fileKey}`);
@@ -48,6 +61,6 @@ export class SftpStorageProvider implements StorageProvider {
 
   // Returns the public CDN URL for a stored file.
   async getPublicUrl(fileKey: string) {
-    return `${process.env.CDN_URL}/${fileKey}`;
+    return `${env.SFTP_HOST}/${env.SFTP_ROOT}/${fileKey}`;
   }
 }
