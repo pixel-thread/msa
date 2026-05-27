@@ -12,6 +12,10 @@ export const safeStringify = (obj: unknown): string => {
     "key",
     "cookie",
     "sig",
+    "host",
+    "ip",
+    "username",
+    "userName",
   ];
 
   const seen = new WeakSet();

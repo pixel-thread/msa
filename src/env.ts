@@ -17,8 +17,8 @@ export const env = createEnv({
     SFTP_HOST: z.string(),
     SFTP_USERNAME: z.string().default("sftp_user"),
     SFTP_PASSWORD: z.string(),
-    SFTP_PORT: z.number().default(22),
-    SFTP_TIMEOUT: z.number().default(10000),
+    SFTP_PORT: z.coerce.number().default(22),
+    SFTP_TIMEOUT: z.coerce.number().default(10000),
     SFTP_ROOT: z.string().default("/"),
 
     FIELD_ENCRYPTION_KEY: z
@@ -67,7 +67,7 @@ export const env = createEnv({
   },
   runtimeEnv: {
     SFTP_HOST: process.env.SFTP_HOST,
-    SFTP_USERNAME: process.env.SFPT_USERNAME,
+    SFTP_USERNAME: process.env.SFTP_USERNAME,
     SFTP_PASSWORD: process.env.SFTP_PASSWORD,
     SFTP_PORT: process.env.SFTP_PORT,
     SFTP_TIMEOUT: process.env.SFTP_TIMEOUT,

@@ -11,7 +11,14 @@ import SftpClient from "ssh2-sftp-client";
 export class SftpStorageProvider implements StorageProvider {
   // Uploads a file to /uploads/<folder>/<timestamp>-<name>, returns key + CDN URL.
   async upload(params: UploadParams): Promise<UploadResult> {
-    const sftp = new SftpClient();
+    const sftp = new SftpClient("upload-client");
+    logger.debug("[Storage] SFTP connecting...", {
+      host: env.SFTP_HOST,
+      port: env.SFTP_PORT,
+      username: env.SFTP_USERNAME,
+      password: env.SFTP_PASSWORD,
+      readyTimeout: env.SFTP_TIMEOUT,
+    });
 
     try {
       await sftp.connect({
@@ -24,6 +31,7 @@ export class SftpStorageProvider implements StorageProvider {
       });
     } catch (error) {
       logger.debug("[Storage] SFTP connection failed", { error });
+      await sftp.end();
       throw error;
     }
 
@@ -34,9 +42,9 @@ export class SftpStorageProvider implements StorageProvider {
     } catch (error) {
       logger.debug("[Storage] SFTP upload failed", { error });
       throw error;
+    } finally {
+      await sftp.end();
     }
-
-    await sftp.end();
 
     return {
       key,

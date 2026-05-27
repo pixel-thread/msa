@@ -17,7 +17,6 @@ export function useCreateTrainingSupplement(moduleId: string | null) {
         toast.success(res.message);
         return res;
       }
-      console.log(res.message);
       toast.error(res.message || "Failed to add supplement");
       return res;
     },

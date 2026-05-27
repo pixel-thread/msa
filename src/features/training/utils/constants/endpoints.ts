@@ -3,7 +3,7 @@ export const trainingEndpoints = {
   byId: (id: string) => `/training/modules/${id}`,
   supplements: {
     list: (moduleId: string, page?: number) =>
-      `/training/modules/${moduleId}/supplements?page=${page}`,
+      `/training/modules/${moduleId}/supplements?page=${page ?? 1}`,
     byId: (moduleId: string, supplementId: string) =>
       `/training/modules/${moduleId}/supplements/${supplementId}`,
   },
