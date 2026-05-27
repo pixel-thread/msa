@@ -55,7 +55,7 @@ export const POST = withAssociation(
         mimeType: uploadResult.mimeType,
         extension: file.name.split(".").pop() || null,
         sizeBytes: uploadResult.sizeBytes,
-        bucket: env.SUPABASE_BUCKET,
+        bucket: env.STORAGE_BUCKET,
         storageKey: uploadResult.storageKey,
         url: uploadResult.url,
         uploadedById: user.id,
