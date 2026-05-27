@@ -406,12 +406,12 @@ Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "name": "Membership 4",
+  "name": "05783cf9-5801-4ce7-845c-a4bad6a377e8",
   "description": "Full access to all association benefits",
   "amount": 3000,
   "currency": "INR",
   "billingCycle": "YEARLY",
-  "memberTypeId":"6bdb2968-1212-4830-ad9a-a4565eeea249",
+  "memberTypeId":"05783cf9-5801-4ce7-845c-a4bad6a377e8",
   "effectiveTo":"2023-12-31",
   "features": {
     "events": true,
