@@ -69,8 +69,10 @@ export const env = createEnv({
     SFTP_HOST: process.env.SFTP_HOST,
     SFTP_USERNAME: process.env.SFTP_USERNAME,
     SFTP_PASSWORD: process.env.SFTP_PASSWORD,
-    SFTP_PORT: process.env.SFTP_PORT,
-    SFTP_TIMEOUT: process.env.SFTP_TIMEOUT,
+    SFTP_PORT: process.env.SFTP_PORT ? parseInt(process.env.SFTP_PORT) : 22,
+    SFTP_TIMEOUT: process.env.SFTP_TIMEOUT
+      ? parseInt(process.env.SFTP_TIMEOUT)
+      : 10000,
     SFTP_ROOT: process.env.SFTP_ROOT,
     STORAGE_BUCKET: process.env.STORAGE_BUCKET,
     STORAGE_PROVIDER: process.env.STORAGE_PROVIDER,

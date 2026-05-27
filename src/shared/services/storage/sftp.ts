@@ -16,7 +16,6 @@ export class SftpStorageProvider implements StorageProvider {
       host: env.SFTP_HOST,
       port: env.SFTP_PORT,
       username: env.SFTP_USERNAME,
-      password: env.SFTP_PASSWORD,
       readyTimeout: env.SFTP_TIMEOUT,
     });
 
@@ -57,9 +56,12 @@ export class SftpStorageProvider implements StorageProvider {
     const sftp = new SftpClient();
 
     await sftp.connect({
-      host: env.SFTP_HOST!,
+      host: env.SFTP_HOST,
+      port: env.SFTP_PORT,
+      timeout: env.SFTP_TIMEOUT,
       username: env.SFTP_USERNAME,
-      password: env.SFTP_PASSWORD!,
+      password: env.SFTP_PASSWORD,
+      readyTimeout: env.SFTP_TIMEOUT,
     });
 
     await sftp.delete(`/${env.STORAGE_BUCKET}/${fileKey}`);
