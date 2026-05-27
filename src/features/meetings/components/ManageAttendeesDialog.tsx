@@ -118,6 +118,10 @@ function AttendeeCard({
 
   const getRoleColor = (role: string) => {
     switch (role) {
+      case "HOST":
+        return "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300";
+      case "CO_HOST":
+        return "bg-teal-100 text-teal-700 dark:bg-teal-900/50 dark:text-teal-300";
       case "REQUIRED":
         return "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300";
       case "OPTIONAL":
@@ -294,6 +298,8 @@ export function ManageAttendeesDialog({
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value="HOST">Host</SelectItem>
+                          <SelectItem value="CO_HOST">Co-Host</SelectItem>
                           <SelectItem value="REQUIRED">Required</SelectItem>
                           <SelectItem value="OPTIONAL">Optional</SelectItem>
                           <SelectItem value="OBSERVER">Observer</SelectItem>

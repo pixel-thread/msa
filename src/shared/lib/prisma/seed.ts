@@ -302,19 +302,29 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
   // ---------------------------------------------------------------------------
 
   await prisma.meetingAttendee.createMany({
-    data: roles.map((role) => ({
-      meetingId: meeting.id,
-      userId: users[role].id,
-      attendeeRole: AttendeeRole.REQUIRED,
-      rsvpStatus:
-        role === UserRole.SUPER_ADMIN
-          ? RsvpStatus.ACCEPTED
-          : RsvpStatus.PENDING,
-      rsvpNote:
-        role === UserRole.SUPER_ADMIN ? "Confirmed attendance" : undefined,
-      rsvpAt: role === UserRole.SUPER_ADMIN ? new Date() : undefined,
-      notifiedAt: new Date(),
-    })),
+    data: [
+      {
+        meetingId: meeting.id,
+        userId: users[UserRole.SUPER_ADMIN].id,
+        attendeeRole: AttendeeRole.HOST,
+        rsvpStatus: RsvpStatus.ACCEPTED,
+        rsvpNote: "Confirmed attendance",
+        rsvpAt: new Date(),
+        notifiedAt: new Date(),
+      },
+      ...roles
+        .filter((role) => role !== UserRole.SUPER_ADMIN)
+        .map((role) => ({
+          meetingId: meeting.id,
+          userId: users[role].id,
+          attendeeRole:
+            role === UserRole.SECRETARY
+              ? AttendeeRole.CO_HOST
+              : AttendeeRole.REQUIRED,
+          rsvpStatus: RsvpStatus.PENDING,
+          notifiedAt: new Date(),
+        })),
+    ],
   });
 
   // ---------------------------------------------------------------------------

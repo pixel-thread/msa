@@ -15,6 +15,7 @@ export async function findUniqueMeeting({
     include: {
       createdBy: { select: { id: true, name: true, email: true } },
       attendees: {
+        orderBy: { attendeeRole: "desc" },
         include: {
           user: {
             select: {
@@ -37,4 +38,3 @@ export async function findUniqueMeeting({
 
   return meeting;
 }
-

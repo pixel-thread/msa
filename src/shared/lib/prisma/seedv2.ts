@@ -354,19 +354,29 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
 
   // 14. Meeting Attendees (role users)
   await prisma.meetingAttendee.createMany({
-    data: roles.map((role) => ({
-      meetingId: meeting.id,
-      userId: roleUsers[role].id,
-      attendeeRole: AttendeeRole.REQUIRED,
-      rsvpStatus:
-        role === UserRole.SUPER_ADMIN
-          ? RsvpStatus.ACCEPTED
-          : RsvpStatus.PENDING,
-      rsvpNote:
-        role === UserRole.SUPER_ADMIN ? "Confirmed attendance" : undefined,
-      rsvpAt: role === UserRole.SUPER_ADMIN ? new Date() : undefined,
-      notifiedAt: new Date(),
-    })),
+    data: [
+      {
+        meetingId: meeting.id,
+        userId: roleUsers[UserRole.SUPER_ADMIN].id,
+        attendeeRole: AttendeeRole.HOST,
+        rsvpStatus: RsvpStatus.ACCEPTED,
+        rsvpNote: "Confirmed attendance",
+        rsvpAt: new Date(),
+        notifiedAt: new Date(),
+      },
+      ...roles
+        .filter((role) => role !== UserRole.SUPER_ADMIN)
+        .map((role) => ({
+          meetingId: meeting.id,
+          userId: roleUsers[role].id,
+          attendeeRole:
+            role === UserRole.SECRETARY
+              ? AttendeeRole.CO_HOST
+              : AttendeeRole.REQUIRED,
+          rsvpStatus: RsvpStatus.PENDING,
+          notifiedAt: new Date(),
+        })),
+    ],
   });
 
   // 15. Bulk Meeting Attendees
@@ -1147,18 +1157,26 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
       data: [
         {
           meetingId: meeting.id,
-          userId: memberUser.id,
-          attendeeRole: AttendeeRole.OPTIONAL,
-          rsvpStatus: RsvpStatus.DECLINED,
-          rsvpNote: "Schedule conflict",
+          userId: superAdminUser.id,
+          attendeeRole: AttendeeRole.HOST,
+          rsvpStatus: RsvpStatus.ACCEPTED,
           rsvpAt: new Date(),
           notifiedAt: new Date(),
         },
         {
           meetingId: meeting.id,
           userId: secretaryUser.id,
-          attendeeRole: AttendeeRole.OBSERVER,
+          attendeeRole: AttendeeRole.CO_HOST,
           rsvpStatus: RsvpStatus.PENDING,
+          notifiedAt: new Date(),
+        },
+        {
+          meetingId: meeting.id,
+          userId: memberUser.id,
+          attendeeRole: AttendeeRole.OPTIONAL,
+          rsvpStatus: RsvpStatus.DECLINED,
+          rsvpNote: "Schedule conflict",
+          rsvpAt: new Date(),
           notifiedAt: new Date(),
         },
       ],
@@ -2052,7 +2070,7 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
         {
           meetingId: meeting.id,
           userId: superAdminUser.id,
-          attendeeRole: AttendeeRole.REQUIRED,
+          attendeeRole: AttendeeRole.HOST,
           rsvpStatus: RsvpStatus.ACCEPTED,
           rsvpNote: "Will attend",
           rsvpAt: new Date(Date.now() - 86400000),
@@ -2344,11 +2362,15 @@ async function seedAssociation(data: (typeof ASSOCIATIONS)[number]) {
       meetingId: meeting.id,
       userId: user.id,
       attendeeRole:
-        i % 3 === 0
-          ? AttendeeRole.OPTIONAL
-          : i % 3 === 1
-            ? AttendeeRole.OBSERVER
-            : AttendeeRole.REQUIRED,
+        i % 5 === 0
+          ? AttendeeRole.HOST
+          : i % 5 === 1
+            ? AttendeeRole.CO_HOST
+            : i % 5 === 2
+              ? AttendeeRole.OPTIONAL
+              : i % 5 === 3
+                ? AttendeeRole.OBSERVER
+                : AttendeeRole.REQUIRED,
       rsvpStatus:
         i % 4 === 0
           ? RsvpStatus.ACCEPTED

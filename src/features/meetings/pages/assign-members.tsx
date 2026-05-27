@@ -238,6 +238,8 @@ export default function AssignMembersPage() {
               id: "role",
               label: "Role",
               options: [
+                { value: "HOST", label: "Host" },
+                { value: "CO_HOST", label: "Co-Host" },
                 { value: "REQUIRED", label: "Required" },
                 { value: "OPTIONAL", label: "Optional" },
                 { value: "OBSERVER", label: "Observer" },

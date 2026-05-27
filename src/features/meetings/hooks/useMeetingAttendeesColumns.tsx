@@ -54,6 +54,8 @@ const getRsvpBadge = (status: string | null) => {
 
 const getRoleBadge = (role: string) => {
   const variants: Record<string, "default" | "secondary" | "outline"> = {
+    HOST: "default",
+    CO_HOST: "secondary",
     REQUIRED: "default",
     OPTIONAL: "secondary",
     OBSERVER: "outline",
@@ -119,6 +121,8 @@ export function useMeetingAttendeesColumns(
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="HOST">Host</SelectItem>
+            <SelectItem value="CO_HOST">Co-Host</SelectItem>
             <SelectItem value="REQUIRED">Required</SelectItem>
             <SelectItem value="OPTIONAL">Optional</SelectItem>
             <SelectItem value="OBSERVER">Observer</SelectItem>
