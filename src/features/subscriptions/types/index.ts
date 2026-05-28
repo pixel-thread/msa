@@ -19,6 +19,7 @@ export type SubscriptionPlan = {
   name: string;
   description: string | null;
   isActive: boolean;
+  isDefault: boolean;
   createdAt: string;
   updatedAt: string;
   memberTypeId: string | null;

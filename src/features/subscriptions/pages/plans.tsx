@@ -22,9 +22,10 @@ export default function PlansPage() {
   const [deletingPlan, setDeletingPlan] = useState<SubscriptionPlan | null>(null);
 
   const { plans, meta, isLoading } = usePlans({ page });
-  const { onStatusChange, onDelete, isPending } = usePlanTableActions();
+  const { onStatusChange, onDelete, onSetDefault, isPending } = usePlanTableActions();
   const { columns } = usePlanTableColumns({
     onStatusChange,
+    onSetDefault,
     onDelete: (planId: string) => {
       const plan = plans.find((p) => p.id === planId);
       if (plan) setDeletingPlan(plan);

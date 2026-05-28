@@ -10,35 +10,34 @@ import { logger } from "@src/shared/logger";
 export const GET = withAssociation({}, async (association, _, request) => {
   const traceId = getTraceId(request);
   const user = await withRole(request, UserRole.MEMBER);
+  if (hasHighRoleAccess(user.role)) {
+    logger.info("Fetching all plans for admin", { traceId });
+    const plans = await prisma.subscriptionPlan.findMany({
+      where: { associationId: association.id },
+      include: {
+        versions: {
+          where: { effectiveTo: null },
+          orderBy: { createdAt: "desc" },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
-  // if (hasHighRoleAccess(user.role)) {
-  //   logger.info("Fetching all plans for admin", { traceId });
-  //   const plans = await prisma.subscriptionPlan.findMany({
-  //     where: { associationId: association.id },
-  //     include: {
-  //       versions: {
-  //         where: { effectiveTo: null },
-  //         orderBy: { createdAt: "desc" },
-  //       },
-  //     },
-  //     orderBy: {
-  //       createdAt: "desc",
-  //     },
-  //   });
-  //
-  //   const plansWithActiveVersion = plans.map((plan) => ({
-  //     ...plan,
-  //     activeVersion: plan.versions[0] || null,
-  //     versions: plan.versions,
-  //   }));
-  //
-  //   logger.info("Admin plans fetched successfully", {
-  //     traceId,
-  //     count: plans.length,
-  //   });
-  //
-  //   return SuccessResponse({ data: plansWithActiveVersion });
-  // }
+    const plansWithActiveVersion = plans.map((plan) => ({
+      ...plan,
+      activeVersion: plan.versions[0] || null,
+      versions: plan.versions,
+    }));
+
+    logger.info("Admin plans fetched successfully", {
+      traceId,
+      count: plans.length,
+    });
+
+    return SuccessResponse({ data: plansWithActiveVersion });
+  }
 
   logger.info("Fetching plans for member", {
     traceId,
@@ -79,6 +78,7 @@ export const GET = withAssociation({}, async (association, _, request) => {
       where: {
         associationId: association.id,
         isDefault: true,
+        isActive: true,
       },
       include: {
         versions: {
