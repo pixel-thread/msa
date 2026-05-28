@@ -13,13 +13,16 @@ import { prisma } from "@src/shared/lib/prisma";
 import { SuccessResponse } from "@src/shared/utils";
 import { PAGE_SIZE } from "@src/shared/constants";
 import { buildPagination } from "@src/shared/utils/build-pagination";
+import { logger } from "@src/shared/logger";
 
 const DPO_ROLE: UserRole = UserRole.DPO;
 
 export const GET = withAssociation(
   { query: ComplianceCheckQuerySchema },
-  async (_association, { query }, req) => {
-    await withRole(req, DPO_ROLE);
+  async (association, { query, traceId }, req) => {
+    logger.info("GET /api/compliance/checks - Request started", { traceId, associationId: association.id });
+    const user = await withRole(req, DPO_ROLE);
+    logger.info("GET /api/compliance/checks - User authorized", { traceId, userId: user.id, roles: user.role });
 
     const where: Record<string, unknown> = {};
 
@@ -48,6 +51,8 @@ export const GET = withAssociation(
 
     const total = await prisma.complianceCheck.count({ where });
 
+    logger.info("GET /api/compliance/checks - Success", { traceId, count: checks.length });
+
     return SuccessResponse({
       data: checks,
       meta: buildPagination(total, query?.page ?? 1),
@@ -57,8 +62,10 @@ export const GET = withAssociation(
 
 export const POST = withAssociation(
   {},
-  async (association, _validated, request) => {
-    await withRole(request, DPO_ROLE);
+  async (association, { traceId }, request) => {
+    logger.info("POST /api/compliance/checks - Request started", { traceId, associationId: association.id });
+    const user = await withRole(request, DPO_ROLE);
+    logger.info("POST /api/compliance/checks - User authorized", { traceId, userId: user.id, roles: user.role });
 
     let checkTypes: string[] = ALL_CHECK_TYPES;
     const body = await request.json().catch(() => ({}));
@@ -90,6 +97,8 @@ export const POST = withAssociation(
     await prisma.complianceCheck.createMany({
       data: checksData as Prisma.ComplianceCheckCreateManyArgs["data"],
     });
+
+    logger.info("POST /api/compliance/checks - Success", { traceId, count: results.length });
 
     return SuccessResponse({ data: results }, 201);
   },
