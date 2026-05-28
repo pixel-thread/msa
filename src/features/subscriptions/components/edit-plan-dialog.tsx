@@ -40,6 +40,7 @@ const EditPlanSchema = z.object({
   billingCycle: z.enum(["MONTHLY", "YEARLY"]),
   features: z.record(z.string(), z.any()),
   memberTypeId: z.string().optional(),
+  effectiveTo: z.string().optional(),
 });
 
 type EditPlanForm = z.infer<typeof EditPlanSchema>;
@@ -68,6 +69,7 @@ export function EditPlanDialog({
       billingCycle: "YEARLY",
       features: {},
       memberTypeId: "",
+      effectiveTo: "",
     },
   });
 
@@ -76,14 +78,14 @@ export function EditPlanDialog({
       form.reset({
         name: plan.name,
         description: plan.description || "",
-        amount: plan.activeVersion?.amount ?? 0,
-        currency: plan.activeVersion?.currency ?? "INR",
-        billingCycle: (plan.activeVersion?.billingCycle ?? "YEARLY") as
+        amount: plan.versions[0]?.amount ?? 0,
+        currency: plan.versions[0]?.currency ?? "INR",
+        billingCycle: (plan.versions[0]?.billingCycle ?? "YEARLY") as
           | "MONTHLY"
           | "YEARLY",
-        features:
-          (plan.activeVersion?.features as Record<string, unknown>) || {},
+        features: (plan.versions[0]?.features as Record<string, unknown>) || {},
         memberTypeId: plan.memberTypeId || "",
+        effectiveTo: plan.versions[0]?.effectiveTo || "",
       });
     }
   }, [plan, open, form]);
@@ -91,9 +93,14 @@ export function EditPlanDialog({
   const onSubmit = (data: EditPlanForm) => {
     if (!plan) return;
 
-    const { memberTypeId, ...rest } = data;
+    const { memberTypeId, effectiveTo, ...rest } = data;
     updatePlan.mutate(
-      { planId: plan.id, ...rest, memberTypeId: memberTypeId || undefined },
+      {
+        planId: plan.id,
+        ...rest,
+        effectiveTo: effectiveTo || undefined,
+        memberTypeId: memberTypeId || undefined,
+      },
       {
         onSuccess: () => onOpenChange(false),
       },
@@ -143,6 +150,23 @@ export function EditPlanDialog({
               )}
             />
 
+            <FormField
+              control={form.control}
+              name="effectiveTo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Effective To</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="datetime-local"
+                      {...field}
+                      onChange={(e) => field.onChange(e.target.value)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}

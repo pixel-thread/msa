@@ -12,6 +12,7 @@ interface UpdatePlanData {
   features?: Record<string, unknown>;
   isActive?: boolean;
   effectiveFrom?: string;
+  effectiveTo?: string;
   memberTypeId?: string | null;
 }
 

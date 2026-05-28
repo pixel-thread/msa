@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -65,13 +66,20 @@ export function CreatePlanDialog() {
         isActive: isActive ?? true,
       },
       {
-        onSuccess: () => {
-          setOpen(false);
-          form.reset();
+        onSuccess: (data) => {
+          if (data.success) {
+            setOpen(false);
+            form.reset();
+          }
         },
       },
     );
   };
+
+  logger.debug("Create Subscription Plan Dialog", {
+    error: form.formState.errors,
+  });
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -121,6 +129,23 @@ export function CreatePlanDialog() {
               )}
             />
 
+            <FormField
+              control={form.control}
+              name="effectiveTo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Effective To</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="datetime-local"
+                      {...field}
+                      onChange={(e) => field.onChange(e.target.value)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}

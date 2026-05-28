@@ -14,7 +14,7 @@ export const GET = withAssociation({}, async (association, _, request) => {
       where: { associationId: association.id },
       include: {
         versions: {
-          where: { effectiveTo: null },
+          where: { effectiveTo: { lte: new Date().toISOString() } },
           take: 1,
           orderBy: { amount: "asc" },
         },

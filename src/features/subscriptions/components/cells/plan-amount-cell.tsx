@@ -7,8 +7,8 @@ interface PlanAmountCellProps {
 }
 
 export function PlanAmountCell({ plan }: PlanAmountCellProps) {
-  const amount = plan.activeVersion?.amount ?? 0;
-  const currency = plan.activeVersion?.currency ?? "INR";
+  const amount = plan.versions[0]?.amount ?? 0;
+  const currency = plan.versions[0]?.currency ?? "INR";
 
   const formattedAmount = new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -17,8 +17,6 @@ export function PlanAmountCell({ plan }: PlanAmountCellProps) {
   }).format(amount);
 
   return (
-    <span className="text-sm font-medium text-ink">
-      {formattedAmount}
-    </span>
+    <span className="text-sm font-medium text-ink">{formattedAmount}</span>
   );
 }

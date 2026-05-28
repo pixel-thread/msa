@@ -22,7 +22,7 @@ export type SubscriptionPlan = {
   createdAt: string;
   updatedAt: string;
   memberTypeId: string | null;
-  activeVersion?: SubscriptionPlanVersion;
+  versions: SubscriptionPlanVersion[];
 };
 
 export type SubscriptionPlanListItem = {
