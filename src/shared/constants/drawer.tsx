@@ -22,7 +22,7 @@ export const DRAWER_NAV_MAIN = [
     title: "Announcement",
     url: "/announcement",
     icon: <AlertTriangleIcon />,
-    isActive: true,
+    isActive: false,
     items: [
       {
         title: "Published",
@@ -58,7 +58,7 @@ export const DRAWER_NAV_MAIN = [
     title: "Meetings",
     url: "/meetings",
     icon: <CalendarDaysIcon />,
-    isActive: true,
+    isActive: false,
     items: [
       {
         title: "All Meetings",
@@ -70,7 +70,7 @@ export const DRAWER_NAV_MAIN = [
     title: "Training",
     url: "/training",
     icon: <BookOpenIcon />,
-    isActive: true,
+    isActive: false,
     items: [
       {
         title: "Modules",
@@ -86,7 +86,7 @@ export const DRAWER_NAV_MAIN = [
     title: "Subscriptions",
     url: "/subscriptions/plans",
     icon: <CreditCardIcon />,
-    isActive: true,
+    isActive: false,
     items: [
       {
         title: "Plans",
@@ -102,7 +102,7 @@ export const DRAWER_NAV_MAIN = [
     title: "Payments",
     url: "/payments",
     icon: <WalletIcon />,
-    isActive: true,
+    isActive: false,
     items: [
       {
         title: "All Payments",
@@ -126,7 +126,7 @@ export const DRAWER_NAV_MAIN = [
     title: "Ledger",
     url: "/ledger",
     icon: <BookOpenIcon />,
-    isActive: true,
+    isActive: false,
     items: [
       {
         title: "Dashboard",
@@ -146,13 +146,13 @@ export const DRAWER_NAV_MAIN = [
     title: "Audit Logs",
     url: "/audit-logs",
     icon: <ScrollTextIcon />,
-    isActive: true,
+    isActive: false,
   },
   {
     title: "Privacy",
     url: "#",
     icon: <ShieldIcon />,
-    isActive: true,
+    isActive: false,
     items: [
       {
         title: "Consent",
@@ -168,7 +168,7 @@ export const DRAWER_NAV_MAIN = [
     title: "Compliance",
     url: "/compliance",
     icon: <ClipboardCheck />,
-    isActive: true,
+    isActive: false,
   },
   {
     title: "Settings",
