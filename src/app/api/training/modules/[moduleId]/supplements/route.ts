@@ -1,8 +1,13 @@
 import { env } from "@src/env";
 import { prisma } from "@lib/prisma";
-import { withAssociation, withRole } from "@src/shared/api";
+import {
+  withAssociation,
+  withRole,
+  withAssociationFormData,
+  zjson,
+} from "@src/shared/api";
 import { SuccessResponse } from "@utils/responses";
-import { ForbiddenError, BadRequestError } from "@src/shared/errors";
+import { ForbiddenError } from "@src/shared/errors";
 import { UserRole } from "@prisma/client";
 import {
   findManySupplements,
@@ -14,6 +19,13 @@ import { z } from "zod";
 
 const TrainingParamsSchema = z.object({
   moduleId: z.uuid("Invalid module ID"),
+});
+
+const SupplementFormSchema = z.object({
+  file: z
+    .instanceof(File, { message: "File is required" })
+    .refine((f) => f.size > 0, "File is empty"),
+  metadata: zjson(CreateSupplementSchema),
 });
 
 export const GET = withAssociation(
@@ -36,43 +48,17 @@ export const GET = withAssociation(
   },
 );
 
-export const POST = withAssociation(
-  { params: TrainingParamsSchema },
-  async (association, { params }, request) => {
-    if (!params) {
-      throw new ForbiddenError("Invalid module ID");
-    }
-
-    const { moduleId } = params;
+export const POST = withAssociationFormData(
+  {
+    params: TrainingParamsSchema,
+    formData: SupplementFormSchema,
+  },
+  async (association, { formData, params }, request) => {
+    const { moduleId } = params!;
 
     const user = await withRole(request, UserRole.DPO);
 
-    const formData = await request.formData();
-
-    const file = formData.get("file") as File | null;
-
-    const metadataRaw = formData.get("metadata") as string | null;
-
-    if (!file || !metadataRaw) {
-      throw new BadRequestError("File and metadata are required");
-    }
-
-    let metadata: z.infer<typeof CreateSupplementSchema>;
-
-    try {
-      const parsed = JSON.parse(metadataRaw);
-
-      metadata = CreateSupplementSchema.parse(parsed);
-    } catch (error) {
-      if (error instanceof SyntaxError) {
-        throw new BadRequestError("Invalid metadata JSON");
-      }
-      throw error;
-    }
-
-    if (!file.size || file.size === 0) {
-      throw new BadRequestError("File is empty");
-    }
+    const { file, metadata } = formData;
 
     const uploadResult = await uploadToBucket(
       file,

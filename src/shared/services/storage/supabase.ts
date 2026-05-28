@@ -12,7 +12,7 @@ export class SupabaseStorageProvider implements StorageProvider {
     const key = `${params.folder}/${Date.now()}-${params.fileName}`;
 
     const { error } = await this.supabase.storage
-      .from("uploads")
+      .from(env.STORAGE_BUCKET)
       .upload(key, params.fileBuffer, {
         contentType: params.mimeType,
       });
