@@ -8,11 +8,22 @@ import {
   ConflictError,
   ValidationError,
 } from "@src/shared/errors";
+import { logger } from "@src/shared/logger";
 
 export const POST = withAssociation(
   { body: SubscribeSchema },
-  async (association, { body }, request) => {
+  async (association, { body, traceId }, request) => {
+    logger.info("POST /api/subscriptions/subscribe - Request started", {
+      traceId,
+      associationId: association.id,
+    });
+
     const user = await withRole(request, UserRole.MEMBER);
+
+    logger.info("POST /api/subscriptions/subscribe - User authorized", {
+      traceId,
+      userId: user.id,
+    });
 
     if (!body) {
       throw new ValidationError("Invalid request body");
@@ -86,6 +97,11 @@ export const POST = withAssociation(
         periodEnd: endDate,
         dueDate: startDate,
       },
+    });
+
+    logger.info("POST /api/subscriptions/subscribe - Success", {
+      traceId,
+      subscriptionId: subscription.id,
     });
 
     return SuccessResponse({ data: subscription }, 201);

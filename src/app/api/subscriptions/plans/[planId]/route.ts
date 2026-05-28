@@ -5,6 +5,7 @@ import { prisma } from "@src/shared/lib/prisma";
 import { z } from "zod";
 import { ValidationError, NotFoundError } from "@src/shared/errors";
 import { Prisma } from "@prisma/client";
+import { logger } from "@src/shared/logger";
 
 const UpdatePlanSchema = z.object({
   name: z.string().min(1).optional(),
@@ -19,8 +20,18 @@ const UpdatePlanSchema = z.object({
 
 export const PATCH = withAssociation(
   { body: UpdatePlanSchema },
-  async (association, { body }, request, { params }) => {
-    await withRole(request, UserRole.SUPER_ADMIN);
+  async (association, { body, traceId }, request, { params }) => {
+    logger.info("PATCH /api/subscriptions/plans/[planId] - Request started", {
+      traceId,
+      associationId: association.id,
+    });
+
+    const user = await withRole(request, UserRole.SUPER_ADMIN);
+
+    logger.info("PATCH /api/subscriptions/plans/[planId] - User authorized", {
+      traceId,
+      userId: user.id,
+    });
 
     if (!body) {
       throw new ValidationError("Invalid request body");
@@ -74,6 +85,11 @@ export const PATCH = withAssociation(
         return { ...plan, activeVersion: newVersion };
       });
 
+      logger.info("PATCH /api/subscriptions/plans/[planId] - Success", {
+        traceId,
+        planId,
+      });
+
       return SuccessResponse({ data: updatedPlan });
     }
 
@@ -83,14 +99,29 @@ export const PATCH = withAssociation(
       data: metadata,
     });
 
+    logger.info("PATCH /api/subscriptions/plans/[planId] - Success", {
+      traceId,
+      planId,
+    });
+
     return SuccessResponse({ data: plan });
   },
 );
 
 export const DELETE = withAssociation(
   {},
-  async (association, _, request, { params }) => {
-    await withRole(request, UserRole.PRESIDENT);
+  async (association, { traceId }, request, { params }) => {
+    logger.info("DELETE /api/subscriptions/plans/[planId] - Request started", {
+      traceId,
+      associationId: association.id,
+    });
+
+    const user = await withRole(request, UserRole.PRESIDENT);
+
+    logger.info("DELETE /api/subscriptions/plans/[planId] - User authorized", {
+      traceId,
+      userId: user.id,
+    });
 
     const { planId } = (await params) as { planId: string };
 
@@ -102,6 +133,11 @@ export const DELETE = withAssociation(
       data: {
         isActive: false,
       },
+    });
+
+    logger.info("DELETE /api/subscriptions/plans/[planId] - Success", {
+      traceId,
+      planId,
     });
 
     return SuccessResponse({

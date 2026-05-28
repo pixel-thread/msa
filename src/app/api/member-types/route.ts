@@ -7,12 +7,28 @@ import {
   findManyMemberTypes,
 } from "@feature/member-type/services";
 import { CreateMemberTypeSchema } from "@feature/member-type/validators";
+import { logger } from "@src/shared/logger";
 
-export const GET = withAssociation({}, async (association, _, request) => {
-  await withRole(request, UserRole.MEMBER);
+export const GET = withAssociation({}, async (association, { traceId }, request) => {
+  logger.info("GET /api/member-types - Request started", {
+    traceId,
+    associationId: association.id,
+  });
+
+  const user = await withRole(request, UserRole.MEMBER);
+
+  logger.info("GET /api/member-types - User authorized", {
+    traceId,
+    userId: user.id,
+  });
 
   const memberTypes = await findManyMemberTypes({
     associationId: association.id,
+  });
+
+  logger.info("GET /api/member-types - Success", {
+    traceId,
+    count: memberTypes.length,
   });
 
   return SuccessResponse({ data: memberTypes });
@@ -20,17 +36,32 @@ export const GET = withAssociation({}, async (association, _, request) => {
 
 export const POST = withAssociation(
   { body: CreateMemberTypeSchema },
-  async (association, { body }, request) => {
+  async (association, { body, traceId }, request) => {
+    logger.info("POST /api/member-types - Request started", {
+      traceId,
+      associationId: association.id,
+    });
+
     if (!body) {
       throw new BadRequestError("Invalid request body");
     }
 
     const user = await withRole(request, UserRole.PRESIDENT);
 
+    logger.info("POST /api/member-types - User authorized", {
+      traceId,
+      userId: user.id,
+    });
+
     const memberType = await createMemberType({
       associationId: association.id,
       actorId: user.id,
       data: body,
+    });
+
+    logger.info("POST /api/member-types - Success", {
+      traceId,
+      memberTypeId: memberType.id,
     });
 
     return SuccessResponse({ data: memberType }, 201);

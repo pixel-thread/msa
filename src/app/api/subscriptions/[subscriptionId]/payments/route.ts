@@ -8,6 +8,7 @@ import { pageNumberValidation } from "@src/shared/validators/common";
 import z from "zod";
 import { PAGE_SIZE } from "@src/shared/constants";
 import { buildPagination } from "@src/shared/utils/build-pagination";
+import { logger } from "@src/shared/logger";
 
 const SubscriptionParamsSchema = z.object({
   subscriptionId: z.uuid("Invalid subscription ID"),
@@ -17,8 +18,19 @@ const SubscriptionQuerySchema = z.object({
 });
 export const GET = withAssociation(
   { params: SubscriptionParamsSchema, query: SubscriptionQuerySchema },
-  async (association, { query, params }, request) => {
+  async (association, { query, params, traceId }, request) => {
+    logger.info("GET /api/subscriptions/[subscriptionId]/payments - Request started", {
+      traceId,
+      associationId: association.id,
+    });
+
     const user = await withRole(request, UserRole.MEMBER);
+
+    logger.info("GET /api/subscriptions/[subscriptionId]/payments - User authorized", {
+      traceId,
+      userId: user.id,
+    });
+
     const page = query?.page || 1;
     const subscriptionId = params?.subscriptionId;
     const userId = request.headers.get("x-user-id")!;
@@ -55,6 +67,13 @@ export const GET = withAssociation(
         },
       }),
     ]);
+
+    logger.info("GET /api/subscriptions/[subscriptionId]/payments - Success", {
+      traceId,
+      subscriptionId,
+      count: data.length,
+    });
+
     return SuccessResponse({
       data: data,
       meta: buildPagination(total, page),

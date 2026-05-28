@@ -5,10 +5,13 @@ import { SuccessResponse } from "@src/shared/utils";
 import { PAGE_SIZE } from "@src/shared/constants";
 import { LogIngestSchema, LogQuerySchema } from "@src/shared/validators/logs";
 import type { Log } from "@prisma/client";
+import { logger } from "@src/shared/logger";
 
 export const GET = withValidation(
   { query: LogQuerySchema },
-  async (_req, _ctx, { query }) => {
+  async (_req, _ctx, { query, traceId }) => {
+    logger.info("GET /api/logs - Request started", { traceId });
+
     const { page, level, search, startDate, endDate, isBackend } =
       query!;
 
@@ -41,6 +44,8 @@ export const GET = withValidation(
       page: page || 1,
     });
 
+    logger.info("GET /api/logs - Success", { traceId, count: logs.length });
+
     return SuccessResponse<Log[]>({
       data: logs,
       meta: pagination,
@@ -51,9 +56,9 @@ export const GET = withValidation(
 
 export const POST = withValidation(
   { body: LogIngestSchema.strict() },
-  async (_req, _ctx, { body }) => {
-    // 2. Sanitize data through your internal PII stripper (safeStringify)
-    // Then safely re-parse it so Prisma treats it as a structural JSON object
+  async (_req, _ctx, { body, traceId }) => {
+    logger.info("POST /api/logs - Request started", { traceId });
+
     const context = body?.context;
 
     const level = body?.level;
@@ -70,12 +75,14 @@ export const POST = withValidation(
 
     const savedLog = await createLogs({
       data: {
-        type: level, // Maps to string 'type' column
-        message: message, // Maps to string 'message' column
-        content: sanitizedContextJson, // Maps to the JSON column block in Postgres
+        type: level,
+        message: message,
+        content: sanitizedContextJson,
         isBackend: true,
       },
     });
+
+    logger.info("POST /api/logs - Success", { traceId, logId: savedLog.id });
 
     return SuccessResponse(
       { data: { id: savedLog.id }, message: "Successfully log to server" },

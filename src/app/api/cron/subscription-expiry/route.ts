@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
 import { env } from "@src/env";
 import { runSubscriptionExpiryCron } from "@src/features/cron/services";
+import { logger } from "@src/shared/logger";
 
 export async function GET(request: Request) {
+  logger.info("GET /api/cron/subscription-expiry - Request started");
   const authHeader = request.headers.get("authorization");
 
   if (authHeader !== `Bearer ${env.CRON_SECRET}`) {
+    logger.warn(
+      "GET /api/cron/subscription-expiry - Unauthorized access attempt",
+    );
     return NextResponse.json(
       { error: "Unauthorized", code: "UNAUTHORIZED" },
       { status: 401 },
@@ -21,6 +26,16 @@ export async function GET(request: Request) {
       (r) => r.expired > 0 || !r.error,
     ).length;
 
+    logger.info(
+      "GET /api/cron/subscription-expiry - Subscription expiry check completed",
+      {
+        totalAssociations: results.length,
+        processedAssociations,
+        totalExpired,
+        totalFailed,
+      },
+    );
+
     return NextResponse.json({
       success: true,
       message: "Subscription expiry check completed",
@@ -33,6 +48,9 @@ export async function GET(request: Request) {
       results,
     });
   } catch (error) {
+    logger.error("GET /api/cron/subscription-expiry - Unhandled error", {
+      error,
+    });
     return NextResponse.json(
       {
         error: "Internal server error",

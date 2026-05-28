@@ -6,6 +6,7 @@ import { prisma } from "@src/shared/lib/prisma";
 import { pageNumberValidation } from "@src/shared/validators";
 import { PAGE_SIZE } from "@src/shared/constants";
 import { z } from "zod";
+import { logger } from "@src/shared/logger";
 
 const QuerySchema = z.object({
   page: pageNumberValidation,
@@ -13,8 +14,18 @@ const QuerySchema = z.object({
 
 export const GET = withAssociation(
   { query: QuerySchema },
-  async (association, { query }, request, { params }) => {
-    await withRole(request, UserRole.FINANCE);
+  async (association, { query, traceId }, request, { params }) => {
+    logger.info("GET /api/ledger/member/[memberId] - Request started", {
+      traceId,
+      associationId: association.id,
+    });
+
+    const user = await withRole(request, UserRole.FINANCE);
+
+    logger.info("GET /api/ledger/member/[memberId] - User authorized", {
+      traceId,
+      userId: user.id,
+    });
 
     const { memberId } = (await params) as { memberId: string };
     const page = query?.page || 1;
@@ -34,6 +45,12 @@ export const GET = withAssociation(
       }),
       prisma.ledgerEntry.count({ where }),
     ]);
+
+    logger.info("GET /api/ledger/member/[memberId] - Success", {
+      traceId,
+      memberId,
+      count: memberLedger.length,
+    });
 
     return SuccessResponse({
       data: memberLedger,

@@ -2,6 +2,7 @@ import { withAssociation } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils";
 import { findDsarTickets } from "@src/features/dsar/services";
 import { DsarQuerySchema } from "@src/features/dsar/validators";
+import { logger } from "@src/shared/logger";
 
 /**
  * @api {get} /api/dsar/my List My DSAR Tickets
@@ -20,7 +21,12 @@ import { DsarQuerySchema } from "@src/features/dsar/validators";
  */
 export const GET = withAssociation(
   { query: DsarQuerySchema },
-  async (association, { query }, request) => {
+  async (association, { query, traceId }, request) => {
+    logger.info("GET /api/dsar/my - Request started", {
+      traceId,
+      associationId: association.id,
+    });
+
     const userId = request.headers.get("x-user-id")!;
 
     const result = await findDsarTickets({
@@ -33,6 +39,12 @@ export const GET = withAssociation(
       pagination: {
         page: query?.page ?? 1,
       },
+    });
+
+    logger.info("GET /api/dsar/my - Success", {
+      traceId,
+      userId,
+      count: result.tickets.length,
     });
 
     return SuccessResponse({ data: result.tickets, meta: result.pagination });

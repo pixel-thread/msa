@@ -3,6 +3,7 @@ import { withValidation } from "@src/shared/api";
 import z from "zod";
 import { ValidationError } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
+import { logger } from "@src/shared/logger";
 
 const RegisterPushTokenSchema = z.object({
   token: z.string(),
@@ -10,7 +11,9 @@ const RegisterPushTokenSchema = z.object({
 
 export const POST = withValidation(
   { body: RegisterPushTokenSchema },
-  async (_req, _ctx, { body }) => {
+  async (_req, _ctx, { body, traceId }) => {
+    logger.info("POST /api/notifications/register - Request started", { traceId });
+
     const token = body?.token;
 
     if (!token) {
@@ -22,6 +25,8 @@ export const POST = withValidation(
       update: { updatedAt: new Date() },
       create: { token },
     });
+
+    logger.info("POST /api/notifications/register - Success", { traceId, tokenId: pushToken.id });
 
     return SuccessResponse({ data: pushToken });
   },

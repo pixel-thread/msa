@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { env } from "@src/env";
 import { runDsarSlaCron } from "@src/features/cron/services";
+import { logger } from "@src/shared/logger";
 
 export async function GET(request: Request) {
+  logger.info("GET /api/cron/dsar-sla - Request started");
   const authHeader = request.headers.get("authorization");
 
   if (authHeader !== `Bearer ${env.CRON_SECRET}`) {
+    logger.warn("GET /api/cron/dsar-sla - Unauthorized access attempt");
     return NextResponse.json(
       { error: "Unauthorized", code: "UNAUTHORIZED" },
       { status: 401 },
@@ -19,6 +22,13 @@ export async function GET(request: Request) {
     const totalAtRisk = results.reduce((sum, r) => sum + r.atRisk, 0);
     const processedAssociations = results.filter((r) => r.processed).length;
 
+    logger.info("GET /api/cron/dsar-sla - DSAR SLA check completed", {
+      totalAssociations: results.length,
+      processedAssociations,
+      totalBreached,
+      totalAtRisk,
+    });
+
     return NextResponse.json({
       success: true,
       message: "DSAR SLA check completed",
@@ -31,6 +41,7 @@ export async function GET(request: Request) {
       results,
     });
   } catch (error) {
+    logger.error("GET /api/cron/dsar-sla - Unhandled error", { error });
     return NextResponse.json(
       {
         error: "Internal server error",

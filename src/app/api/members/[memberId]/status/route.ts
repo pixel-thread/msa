@@ -4,6 +4,7 @@ import { NotFoundError, UnauthorizedError } from "@src/shared/errors";
 import { prisma } from "@src/shared/lib/prisma";
 import { SuccessResponse } from "@src/shared/utils";
 import z from "zod";
+import { logger } from "@src/shared/logger";
 
 const UpdateUserStatusSchema = z.object({
   status: z.enum(UserStatus),
@@ -15,24 +16,40 @@ const UpdateUserStatusParamsSchema = z.object({
 
 export const PATCH = withAssociation(
   { body: UpdateUserStatusSchema, params: UpdateUserStatusParamsSchema },
-  async (association, { body, params }, req) => {
-    await withRole(req, UserRole.PRESIDENT);
-
-    const userId = params?.memberId;
-
-    if (!userId) throw new UnauthorizedError("Unauthorized");
-
-    const user = await prisma.user.findUnique({
-      where: { id: userId, associationId: association.id },
+  async (association, { body, params, traceId }, req) => {
+    logger.info("PATCH /api/members/[memberId]/status - Request started", {
+      traceId,
+      associationId: association.id,
     });
 
-    if (!user)
+    const user = await withRole(req, UserRole.PRESIDENT);
+
+    logger.info("PATCH /api/members/[memberId]/status - User authorized", {
+      traceId,
+      userId: user.id,
+    });
+
+    const memberId = params?.memberId;
+
+    if (!memberId) throw new UnauthorizedError("Unauthorized");
+
+    const target = await prisma.user.findUnique({
+      where: { id: memberId, associationId: association.id },
+    });
+
+    if (!target)
       throw new NotFoundError("User does not exist in the association");
 
     const updatedUser = await prisma.user.update({
-      where: { id: userId },
+      where: { id: memberId },
       data: { status: body?.status },
       select: { id: true, status: true, email: true },
+    });
+
+    logger.info("PATCH /api/members/[memberId]/status - Success", {
+      traceId,
+      memberId,
+      status: body?.status,
     });
 
     return SuccessResponse({

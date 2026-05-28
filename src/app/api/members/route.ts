@@ -5,6 +5,7 @@ import { getMembers } from "@src/features/members/services/getMembers";
 import z from "zod";
 import { hasHighRoleAccess } from "@src/shared/utils/has-high-role";
 import { pageNumberValidation } from "@src/shared/validators/common";
+import { logger } from "@src/shared/logger";
 
 const QuerySchema = z.object({
   page: pageNumberValidation,
@@ -13,8 +14,19 @@ const QuerySchema = z.object({
 });
 export const GET = withAssociation(
   { query: QuerySchema },
-  async (association, { query }, request) => {
+  async (association, { query, traceId }, request) => {
+    logger.info("GET /api/members - Request started", {
+      traceId,
+      associationId: association.id,
+    });
+
     const user = await withRole(request, UserRole.SECRETARY);
+
+    logger.info("GET /api/members - User authorized", {
+      traceId,
+      userId: user.id,
+    });
+
     const page = query?.page;
     const status = query?.status;
     const search = query?.search;
@@ -40,6 +52,11 @@ export const GET = withAssociation(
         page,
       });
     }
+
+    logger.info("GET /api/members - Success", {
+      traceId,
+      count: members.data.length,
+    });
 
     return SuccessResponse({
       data: members.data,

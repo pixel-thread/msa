@@ -2,6 +2,7 @@ import { withAssociation } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils";
 import { submitDsarTicket } from "@src/features/dsar/services";
 import { SubmitDsarSchema } from "@src/features/dsar/validators";
+import { logger } from "@src/shared/logger";
 
 /**
  * @api {post} /api/dsar/submit Submit DSAR Request
@@ -19,13 +20,24 @@ import { SubmitDsarSchema } from "@src/features/dsar/validators";
  */
 export const POST = withAssociation(
   { body: SubmitDsarSchema },
-  async (association, { body }, request) => {
+  async (association, { body, traceId }, request) => {
+    logger.info("POST /api/dsar/submit - Request started", {
+      traceId,
+      associationId: association.id,
+    });
+
     const userId = request.headers.get("x-user-id")!;
 
     const ticket = await submitDsarTicket({
       associationId: association.id,
       userId,
       data: body!,
+    });
+
+    logger.info("POST /api/dsar/submit - Success", {
+      traceId,
+      userId,
+      ticketId: ticket.id,
     });
 
     return SuccessResponse({ data: ticket }, 201);

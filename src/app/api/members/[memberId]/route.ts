@@ -4,13 +4,24 @@ import { NotFoundError, ValidationError } from "@src/shared/errors";
 import { prisma } from "@src/shared/lib/prisma";
 import { UserRole } from "@prisma/client";
 import z from "zod";
+import { logger } from "@src/shared/logger";
 
 const ParamSchema = z.object({ memberId: z.uuid() });
 
 export const GET = withAssociation(
   { params: ParamSchema },
-  async (association, { params }, request) => {
-    await withRole(request, UserRole.DPO);
+  async (association, { params, traceId }, request) => {
+    logger.info("GET /api/members/[memberId] - Request started", {
+      traceId,
+      associationId: association.id,
+    });
+
+    const user = await withRole(request, UserRole.DPO);
+
+    logger.info("GET /api/members/[memberId] - User authorized", {
+      traceId,
+      userId: user.id,
+    });
 
     const member = await prisma.user.findFirst({
       where: {
@@ -42,6 +53,11 @@ export const GET = withAssociation(
       throw new NotFoundError("Member not found");
     }
 
+    logger.info("GET /api/members/[memberId] - Success", {
+      traceId,
+      memberId: params?.memberId,
+    });
+
     return SuccessResponse({ data: member });
   },
 );
@@ -62,8 +78,18 @@ const AdminOnboardingSchema = z.object({
 
 export const PATCH = withAssociation(
   { body: AdminOnboardingSchema, params: ParamSchema },
-  async (association, { body, params }, request) => {
-    await withRole(request, UserRole.SECRETARY);
+  async (association, { body, params, traceId }, request) => {
+    logger.info("PATCH /api/members/[memberId] - Request started", {
+      traceId,
+      associationId: association.id,
+    });
+
+    const user = await withRole(request, UserRole.SECRETARY);
+
+    logger.info("PATCH /api/members/[memberId] - User authorized", {
+      traceId,
+      userId: user.id,
+    });
 
     if (!body) {
       throw new ValidationError("Invalid request body");
@@ -71,7 +97,7 @@ export const PATCH = withAssociation(
 
     const memberId = params?.memberId;
 
-    const user = await prisma.user.update({
+    const updatedUser = await prisma.user.update({
       where: {
         id: memberId,
         associationId: association.id,
@@ -92,15 +118,20 @@ export const PATCH = withAssociation(
       },
     });
 
+    logger.info("PATCH /api/members/[memberId] - Success", {
+      traceId,
+      memberId,
+    });
+
     return SuccessResponse({
       data: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        designation: user.designation,
-        membershipNumber: user.membershipNumber,
-        dateOfJoiningGovt: user.dateOfJoiningGovt,
-        dateOfJoiningAssociation: user.dateOfJoiningAssociation,
+        id: updatedUser.id,
+        email: updatedUser.email,
+        name: updatedUser.name,
+        designation: updatedUser.designation,
+        membershipNumber: updatedUser.membershipNumber,
+        dateOfJoiningGovt: updatedUser.dateOfJoiningGovt,
+        dateOfJoiningAssociation: updatedUser.dateOfJoiningAssociation,
       },
     });
   },

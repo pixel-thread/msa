@@ -9,11 +9,22 @@ import {
 import { ValidationError } from "@src/shared/errors";
 import { buildPagination } from "@src/shared/utils";
 import { PAGE_SIZE } from "@src/shared/constants";
+import { logger } from "@src/shared/logger";
 
 export const GET = withAssociation(
   { query: LedgerQueryParams },
-  async (_association, { query }, request) => {
-    await withRole(request, UserRole.FINANCE);
+  async (association, { query, traceId }, request) => {
+    logger.info("GET /api/ledger/entries - Request started", {
+      traceId,
+      associationId: association.id,
+    });
+
+    const user = await withRole(request, UserRole.FINANCE);
+
+    logger.info("GET /api/ledger/entries - User authorized", {
+      traceId,
+      userId: user.id,
+    });
 
     const { page = 1 } = query || {};
     const skip = (page - 1) * PAGE_SIZE;
@@ -31,6 +42,11 @@ export const GET = withAssociation(
       prisma.ledgerEntry.count(),
     ]);
 
+    logger.info("GET /api/ledger/entries - Success", {
+      traceId,
+      count: entries.length,
+    });
+
     return SuccessResponse({
       data: entries,
       meta: buildPagination(total, page),
@@ -40,8 +56,19 @@ export const GET = withAssociation(
 
 export const POST = withAssociation(
   { body: CreateLedgerEntrySchema },
-  async (_association, { body }, request) => {
-    await withRole(request, UserRole.FINANCE);
+  async (association, { body, traceId }, request) => {
+    logger.info("POST /api/ledger/entries - Request started", {
+      traceId,
+      associationId: association.id,
+    });
+
+    const user = await withRole(request, UserRole.FINANCE);
+
+    logger.info("POST /api/ledger/entries - User authorized", {
+      traceId,
+      userId: user.id,
+    });
+
     const userId = request.headers.get("x-user-id")!;
 
     if (!body) {
@@ -64,6 +91,11 @@ export const POST = withAssociation(
       include: {
         lines: true,
       },
+    });
+
+    logger.info("POST /api/ledger/entries - Success", {
+      traceId,
+      entryId: entry.id,
     });
 
     return SuccessResponse({ data: entry }, 201);

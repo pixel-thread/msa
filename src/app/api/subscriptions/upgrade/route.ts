@@ -4,6 +4,7 @@ import { UserRole } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
 import { z } from "zod";
 import { NotFoundError, ConflictError, ValidationError } from "@src/shared/errors";
+import { logger } from "@src/shared/logger";
 
 const UpgradeSchema = z.object({
   planId: z.uuid(),
@@ -11,8 +12,18 @@ const UpgradeSchema = z.object({
 
 export const POST = withAssociation(
   { body: UpgradeSchema },
-  async (association, { body }, request) => {
+  async (association, { body, traceId }, request) => {
+    logger.info("POST /api/subscriptions/upgrade - Request started", {
+      traceId,
+      associationId: association.id,
+    });
+
     const user = await withRole(request, UserRole.MEMBER);
+
+    logger.info("POST /api/subscriptions/upgrade - User authorized", {
+      traceId,
+      userId: user.id,
+    });
 
     if (!body) {
       throw new ValidationError("Invalid request body");
@@ -78,6 +89,11 @@ export const POST = withAssociation(
         periodEnd: endDate,
         dueDate: startDate,
       },
+    });
+
+    logger.info("POST /api/subscriptions/upgrade - Success", {
+      traceId,
+      subscriptionId: subscription.id,
     });
 
     return SuccessResponse({ data: updated });

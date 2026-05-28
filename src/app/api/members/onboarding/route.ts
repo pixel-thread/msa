@@ -3,6 +3,7 @@ import { SuccessResponse } from "@src/shared/utils/responses";
 import { UnauthorizedError, ValidationError } from "@src/shared/errors";
 import { prisma } from "@src/shared/lib/prisma";
 import { z } from "zod";
+import { logger } from "@src/shared/logger";
 
 const OnboardingSchema = z.object({
   dateOfJoiningGovt: z.string().datetime().refine((d) => new Date(d) < new Date(), "Cannot be in the future"),
@@ -13,7 +14,12 @@ const OnboardingSchema = z.object({
 
 export const POST = withAssociation(
   { body: OnboardingSchema },
-  async (association, { body }, request) => {
+  async (association, { body, traceId }, request) => {
+    logger.info("POST /api/members/onboarding - Request started", {
+      traceId,
+      associationId: association.id,
+    });
+
     const userId = request.headers.get("x-user-id");
 
     if (!userId) {
@@ -35,6 +41,11 @@ export const POST = withAssociation(
         mobile: body.mobile,
         designation: body.designation,
       },
+    });
+
+    logger.info("POST /api/members/onboarding - Success", {
+      traceId,
+      userId: user.id,
     });
 
     return SuccessResponse({

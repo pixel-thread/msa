@@ -10,12 +10,20 @@ import {
   NotificationRouteParams,
   UpdateNotificationSchema,
 } from "@src/shared/validators/notification";
+import { logger } from "@src/shared/logger";
 
 export const PATCH = withValidation(
   { body: UpdateNotificationSchema, params: NotificationRouteParams },
 
-  async (req, _ctx, { params, body }) => {
-    await withRole(req, UserRole.MEMBER);
+  async (req, _ctx, { params, body, traceId }) => {
+    logger.info("PATCH /api/notifications/[notificationId]/status - Request started", { traceId });
+
+    const user = await withRole(req, UserRole.MEMBER);
+
+    logger.info("PATCH /api/notifications/[notificationId]/status - User authorized", {
+      traceId,
+      userId: user.id,
+    });
 
     const userId = req.headers.get("x-user-id");
     if (!userId) throw new UnauthorizedError("Unauthorized");
@@ -38,6 +46,11 @@ export const PATCH = withValidation(
     const notification = await updateNotificationStatus({
       where: { id: params?.notificationId },
       data: payload,
+    });
+
+    logger.info("PATCH /api/notifications/[notificationId]/status - Success", {
+      traceId,
+      notificationId: params?.notificationId,
     });
 
     return SuccessResponse({
