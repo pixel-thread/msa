@@ -5,13 +5,17 @@ import { prisma } from "@src/shared/lib/prisma";
 import { SuccessResponse } from "@src/shared/utils";
 import { env } from "@src/env";
 import { AddAssociationMemberSchema } from "@src/features/associations/validators/associations";
+import { logger } from "@src/shared/logger";
 
 export const POST = withAssociation(
   { body: AddAssociationMemberSchema },
-  async (_, { body }, req) => {
-    withRole(req, UserRole.SUPER_ADMIN);
+  async (_, { body, traceId }, req) => {
+    logger.info("POST /api/admin/associations/[id]/member - Request started", { traceId, targetUserId: body?.user_id, targetAssociationId: body?.association_id });
+    
+    const user = await withRole(req, UserRole.SUPER_ADMIN);
+    logger.info("POST /api/admin/associations/[id]/member - User authorized", { traceId, userId: user.id, roles: user.role });
 
-    const [user, association] = await Promise.all([
+    const [targetUser, association] = await Promise.all([
       prisma.user.findUnique({
         where: {
           id: body?.user_id as string,
@@ -25,12 +29,20 @@ export const POST = withAssociation(
       }),
     ]);
 
-    if (!user) throw new NotFoundError("User not found");
+    if (!targetUser) {
+      logger.error("POST /api/admin/associations/[id]/member - User not found", { traceId, targetUserId: body?.user_id });
+      throw new NotFoundError("User not found");
+    }
 
-    if (!association) throw new NotFoundError("Association not found");
+    if (!association) {
+      logger.error("POST /api/admin/associations/[id]/member - Association not found", { traceId, targetAssociationId: body?.association_id });
+      throw new NotFoundError("Association not found");
+    }
 
-    if (body?.association_id === user.associationId)
+    if (body?.association_id === targetUser.associationId) {
+      logger.error("POST /api/admin/associations/[id]/member - User already under the target association", { traceId, targetUserId: body?.user_id, associationId: body?.association_id });
       throw new ConflictError("User already under the target association");
+    }
 
     const updatedUser = await prisma.user.update({
       where: { id: body?.user_id as string },
@@ -50,6 +62,8 @@ export const POST = withAssociation(
       // TODO: Sent email for association change
       // Notify president of high role user that new user join the association
     }
+
+    logger.info("POST /api/admin/associations/[id]/member - Success", { traceId, targetUserId: body?.user_id, associationId: body?.association_id });
 
     return SuccessResponse({
       data: updatedUser,
