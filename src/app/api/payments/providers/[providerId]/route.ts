@@ -56,9 +56,15 @@ export const PATCH = withAssociation(
 
 export const DELETE = withAssociation(
   { params: ProviderIdParamSchema },
-  async (association, { params }, req) => {
+  async (association, { params, traceId }, req) => {
+    logger.info("DELETE /api/payments/providers/[providerId] - Request started", { traceId, providerId: params!.providerId });
+
     await withRole(req, UserRole.PRESIDENT);
+    logger.info("DELETE /api/payments/providers/[providerId] - User authorized", { traceId, providerId: params!.providerId });
+
     await deleteProvider(params!.providerId, association.id);
+    logger.info("DELETE /api/payments/providers/[providerId] - Success", { traceId, providerId: params!.providerId });
+
     return SuccessResponse({
       data: null,
       message: "Provider deleted successfully",
