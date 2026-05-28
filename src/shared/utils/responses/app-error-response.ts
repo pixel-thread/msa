@@ -7,6 +7,6 @@ export function AppErrorResponse(error: AppError, traceId: string) {
     code: error.code,
     message: error.message,
     details: error.details,
-    traceId,
+    traceId: traceId,
   });
 }

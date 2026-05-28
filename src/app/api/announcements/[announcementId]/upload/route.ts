@@ -15,8 +15,13 @@ export const POST = withAssociationFormData(
     formData: AnnouncementUploadFormData,
     params: AnnouncementRouteParams,
   },
-  async (association, { formData, params }, request) => {
+  async (association, { formData, params, traceId }, request) => {
+    logger.info("POST /api/announcements/[id]/upload - Request started", { traceId, announcementId: params?.announcementId });
+
     const user = await withRole(request, UserRole.SECRETARY);
+    logger.info("POST /api/announcements/[id]/upload - User authorized", { traceId, userId: user.id, announcementId: params?.announcementId });
+
+    logger.info("POST /api/announcements/[id]/upload - Uploading image", { traceId, announcementId: params?.announcementId });
 
     const { announcement, oldStorageKey } = await uploadAnnouncementImage({
       announcementId: params!.announcementId,
@@ -29,9 +34,11 @@ export const POST = withAssociationFormData(
       try {
         await deleteFromBucket(oldStorageKey);
       } catch (error) {
-        logger.error("Failed to delete old image", { error });
+        logger.error("POST /api/announcements/[id]/upload - Failed to delete old image", { error, traceId });
       }
     }
+
+    logger.info("POST /api/announcements/[id]/upload - Success", { traceId, announcementId: params?.announcementId });
 
     return SuccessResponse({ data: announcement }, 200);
   },

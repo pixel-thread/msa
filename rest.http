@@ -10,6 +10,7 @@
 @paymentId=REPLACE_WITH_PAYMENT_ID
 @providerId=REPLACE_WITH_PROVIDER_ID
 @announcementId=6fd37ef7-007b-4a2f-8a04-0932e94b4f2a
+@traceId=6fd37ef7-007b-4a2f-8a04-0932e94b4f2a
 @invoiceId=REPLACE_WITH_INVOICE_ID
 @minuitesId=REPLACE_WITH_MINUTES_ID
 @complaintId=REPLACE_WITH_COMPLAINT_ID
@@ -404,6 +405,7 @@ Authorization: Bearer {{TOKEN}}
 POST {{NEXT_PUBLIC_API_BASE_URL}}/subscriptions/plans
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
+X-TRACE-ID: {{traceId}}
 
 {
   "name": "05783cf9-5801-4ce7-845c-a4bad6a377e8",
