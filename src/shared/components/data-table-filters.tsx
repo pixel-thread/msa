@@ -25,19 +25,22 @@ export type FilterField =
 interface DataTableFiltersProps {
   fields: FilterField[];
   onFilterChange: (filters: Record<string, string | undefined>) => void;
+  defaultValues?: Record<string, string>;
 }
 
 export function DataTableFilters({
   fields,
   onFilterChange,
+  defaultValues,
 }: DataTableFiltersProps) {
   const initialValues = useMemo(() => {
     const vals: Record<string, string> = {};
     fields.forEach((f) => {
-      vals[f.id] = f.type === "search" ? "" : "all";
+      vals[f.id] =
+        defaultValues?.[f.id] ?? (f.type === "search" ? "" : "all");
     });
     return vals;
-  }, [fields]);
+  }, [fields, defaultValues]);
 
   const [values, setValues] = useState<Record<string, string>>(initialValues);
 
@@ -45,18 +48,24 @@ export function DataTableFilters({
     const filters: Record<string, string | undefined> = {};
     fields.forEach((f) => {
       const v = values[f.id];
-      if (f.type === "select" && v && v !== "all") {
-        filters[f.id] = v;
-      } else if (f.type === "search" && v) {
-        filters[f.id] = v;
+      if (f.type === "select") {
+        filters[f.id] = v && v !== "all" ? v : undefined;
+      } else {
+        filters[f.id] = v || undefined;
       }
     });
     onFilterChange(filters);
   };
 
   const resetFilters = () => {
-    setValues(initialValues);
-    onFilterChange({});
+    const resetVals: Record<string, string> = {};
+    const cleared: Record<string, string | undefined> = {};
+    fields.forEach((f) => {
+      resetVals[f.id] = f.type === "search" ? "" : "all";
+      cleared[f.id] = undefined;
+    });
+    setValues(resetVals);
+    onFilterChange(cleared);
   };
 
   return (
