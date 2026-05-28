@@ -1,5 +1,6 @@
 import { withAssociation, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@utils/responses";
+import { logger } from "@src/shared/logger";
 import { UserRole } from "@prisma/client";
 import { RecordManualPaymentSchema } from "@feature/payments/validators";
 import { recordManualPayment } from "@feature/payments/services/payment.service";
@@ -17,8 +18,13 @@ import { recordManualPayment } from "@feature/payments/services/payment.service"
  */
 export const POST = withAssociation(
   { body: RecordManualPaymentSchema },
-  async (association, { body }, request) => {
+  async (association, { body, traceId }, request) => {
+    logger.info("POST /api/payments/record - Request started", { traceId, userId: body!.userId });
+
     const user = await withRole(request, UserRole.FINANCE);
+    logger.info("POST /api/payments/record - User authorized", { traceId, userId: user.id });
+
+    logger.info("POST /api/payments/record - Recording manual payment", { traceId, targetUserId: body!.userId, amount: body!.amount });
 
     const transaction = await recordManualPayment({
       associationId: association.id,
@@ -30,6 +36,8 @@ export const POST = withAssociation(
       referenceNumber: body!.referenceNumber,
       createdById: user.id,
     });
+
+    logger.info("POST /api/payments/record - Success", { traceId, transactionId: transaction.id });
 
     return SuccessResponse(
       {

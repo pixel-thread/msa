@@ -1,6 +1,7 @@
 import { withAssociation, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils/responses";
 import { buildPagination } from "@src/shared/utils";
+import { logger } from "@src/shared/logger";
 import { UserRole } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
 import { z } from "zod";
@@ -22,8 +23,11 @@ const UserContributionsQuerySchema = z.object({
 
 export const GET = withAssociation(
   { params: UserContributionsParamsSchema, query: UserContributionsQuerySchema },
-  async (association, { params, query }, request) => {
+  async (association, { params, query, traceId }, request) => {
+    logger.info("GET /api/payments/users/[userId]/contributions - Request started", { traceId, userId: params?.userId });
+
     await withRole(request, UserRole.FINANCE);
+    logger.info("GET /api/payments/users/[userId]/contributions - User authorized", { traceId });
 
     if (!params) {
       throw new ValidationError("Missing user ID parameter");
@@ -80,6 +84,8 @@ export const GET = withAssociation(
 
     const skip = (page - 1) * PAGE_SIZE;
 
+    logger.info("GET /api/payments/users/[userId]/contributions - Fetching contributions", { traceId, userId });
+
     const [contributions, total, summary] = await Promise.all([
       prisma.contributionPeriod.findMany({
         where: whereClause,
@@ -107,6 +113,8 @@ export const GET = withAssociation(
       prisma.contributionPeriod.count({ where: whereClause }),
       getUserContributionSummary(userId),
     ]);
+
+    logger.info("GET /api/payments/users/[userId]/contributions - Success", { traceId, userId, count: contributions.length, total });
 
     return SuccessResponse({
       data: {

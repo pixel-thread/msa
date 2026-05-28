@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AuditAction } from "@prisma/client";
+import { logger } from "@src/shared/logger";
 import { processWebhookEvent } from "@feature/payments/services/webhook.service";
 import { WebhookSignatureError } from "@src/shared/errors";
 import { logAction } from "@src/shared/services/audit-logs";
@@ -28,6 +29,8 @@ import { logAction } from "@src/shared/services/audit-logs";
  */
 export async function POST(request: NextRequest) {
   let rawBody: string;
+
+  logger.info("POST /api/payments/webhook - Request started");
 
   try {
     rawBody = await request.text();
@@ -73,6 +76,8 @@ export async function POST(request: NextRequest) {
     } catch {
       // Non-critical — don't fail the webhook for audit logging errors
     }
+
+    logger.info("POST /api/payments/webhook - Success", { event: result.status });
 
     return NextResponse.json({ status: result.status }, { status: 200 });
   } catch (error) {

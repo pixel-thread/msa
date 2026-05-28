@@ -94,7 +94,7 @@ export const POST = withAssociation(
       notes: body!.notes,
     });
 
-    logger.info("POST /api/payments/order - Success", { traceId, orderId: orderDetails.id });
+    logger.info("POST /api/payments/order - Success", { traceId, orderId: (orderDetails as any).id });
 
     return SuccessResponse({ data: orderDetails }, 201);
   },
