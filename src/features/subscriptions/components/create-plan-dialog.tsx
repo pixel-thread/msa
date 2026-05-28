@@ -54,6 +54,7 @@ export function CreatePlanDialog() {
       features: {},
       memberTypeId: "",
       isActive: true,
+      effectiveFrom: "",
     },
   });
 
@@ -138,8 +139,34 @@ export function CreatePlanDialog() {
                   <FormControl>
                     <Input
                       type="datetime-local"
-                      {...field}
+                      value={field.value instanceof Date ? field.value.toISOString().slice(0, 16) : typeof field.value === "string" ? field.value.slice(0, 16) : ""}
                       onChange={(e) => field.onChange(e.target.value)}
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                      name={field.name}
+                      disabled={field.disabled}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="effectiveFrom"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Effective From</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="datetime-local"
+                      value={field.value instanceof Date ? field.value.toISOString().slice(0, 16) : typeof field.value === "string" ? field.value.slice(0, 16) : ""}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                      name={field.name}
+                      disabled={field.disabled}
                     />
                   </FormControl>
                   <FormMessage />

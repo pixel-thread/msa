@@ -27,6 +27,7 @@ import {
 } from "@src/shared/components/ui/select";
 import { Button } from "@src/shared/components/ui/button";
 import { Input } from "@src/shared/components/ui/input";
+import { Switch } from "@src/shared/components/ui/switch";
 import { useUpdatePlan } from "@src/features/subscriptions/hooks/useUpdatePlan";
 import { useMemberTypes } from "@src/features/members/hooks/useMemberTypes";
 import { BILLING_CYCLES } from "../utils/constants";
@@ -41,6 +42,8 @@ const EditPlanSchema = z.object({
   features: z.record(z.string(), z.any()),
   memberTypeId: z.string().optional(),
   effectiveTo: z.string().optional(),
+  effectiveFrom: z.string().optional(),
+  isActive: z.boolean().optional(),
 });
 
 type EditPlanForm = z.infer<typeof EditPlanSchema>;
@@ -70,6 +73,8 @@ export function EditPlanDialog({
       features: {},
       memberTypeId: "",
       effectiveTo: "",
+      effectiveFrom: "",
+      isActive: true,
     },
   });
 
@@ -78,14 +83,17 @@ export function EditPlanDialog({
       form.reset({
         name: plan.name,
         description: plan.description || "",
-        amount: plan.versions[0]?.amount ?? 0,
-        currency: plan.versions[0]?.currency ?? "INR",
-        billingCycle: (plan.versions[0]?.billingCycle ?? "YEARLY") as
+        amount: plan.activeVersion?.amount ?? 0,
+        currency: plan.activeVersion?.currency ?? "INR",
+        billingCycle: (plan.activeVersion.billingCycle ?? "YEARLY") as
           | "MONTHLY"
           | "YEARLY",
-        features: (plan.versions[0]?.features as Record<string, unknown>) || {},
+        features:
+          (plan.activeVersion?.features as Record<string, unknown>) || {},
         memberTypeId: plan.memberTypeId || "",
-        effectiveTo: plan.versions[0]?.effectiveTo || "",
+        effectiveTo: plan.activeVersion?.effectiveTo || "",
+        effectiveFrom: plan.activeVersion?.effectiveFrom || "",
+        isActive: plan.isActive,
       });
     }
   }, [plan, open, form]);
@@ -93,13 +101,16 @@ export function EditPlanDialog({
   const onSubmit = (data: EditPlanForm) => {
     if (!plan) return;
 
-    const { memberTypeId, effectiveTo, ...rest } = data;
+    const { memberTypeId, effectiveTo, effectiveFrom, isActive, ...rest } =
+      data;
     updatePlan.mutate(
       {
         planId: plan.id,
         ...rest,
         effectiveTo: effectiveTo || undefined,
+        effectiveFrom: effectiveFrom || undefined,
         memberTypeId: memberTypeId || undefined,
+        isActive,
       },
       {
         onSuccess: () => onOpenChange(false),
@@ -156,6 +167,24 @@ export function EditPlanDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Effective To</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="datetime-local"
+                      {...field}
+                      onChange={(e) => field.onChange(e.target.value)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="effectiveFrom"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Effective From</FormLabel>
                   <FormControl>
                     <Input
                       type="datetime-local"
@@ -233,6 +262,23 @@ export function EditPlanDialog({
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="isActive"
+              render={({ field }) => (
+                <FormItem className="flex items-center gap-3">
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel className="mb-0">Active</FormLabel>
                   <FormMessage />
                 </FormItem>
               )}

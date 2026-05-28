@@ -15,8 +15,7 @@ export const GET = withAssociation({}, async (association, _, request) => {
       include: {
         versions: {
           where: { effectiveTo: { lte: new Date().toISOString() } },
-          take: 1,
-          orderBy: { amount: "asc" },
+          orderBy: { createdAt: "desc" },
         },
       },
       orderBy: {
@@ -24,7 +23,13 @@ export const GET = withAssociation({}, async (association, _, request) => {
       },
     });
 
-    return SuccessResponse({ data: plans });
+    const plansWithActiveVersion = plans.map((plan) => ({
+      ...plan,
+      activeVersion: plan.versions[0] || null,
+      versions: plan.versions,
+    }));
+
+    return SuccessResponse({ data: plansWithActiveVersion });
   }
 
   const whereClause: Record<string, unknown> = {
@@ -103,6 +108,8 @@ export const POST = withAssociation(
             currency: body.currency,
             billingCycle: body.billingCycle,
             features: body.features,
+            effectiveFrom: body.effectiveFrom,
+            effectiveTo: body.effectiveTo,
             description: body.description,
           },
         },

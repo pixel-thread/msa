@@ -9,8 +9,10 @@ export const CreateSubscriptionPlanSchema = z.object({
   features: z.record(z.string(), z.any()).default({}),
   memberTypeId: z.string().optional(),
   isActive: z.boolean().default(true),
-  effectiveTo: z.string().optional(),
+  effectiveTo: z.coerce.date().optional(),
+  effectiveFrom: z.coerce.date().optional(),
 });
+
 export type CreateSubscriptionPlanInput = z.infer<
   typeof CreateSubscriptionPlanSchema
 >;

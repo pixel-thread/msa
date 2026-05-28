@@ -12,7 +12,9 @@ import {
 } from "@src/shared/components/ui/card";
 import { Badge } from "@src/shared/components/ui/badge";
 import { Separator } from "@src/shared/components/ui/separator";
+import { DataTable } from "@src/shared/components/data-table";
 import { formatDate } from "@src/shared/utils";
+import { usePlanVersionColumns } from "../hooks/usePlanVersionColumns";
 
 export function PlanDetailPage() {
   const params = useParams();
@@ -48,7 +50,9 @@ export function PlanDetailPage() {
   const amount = plan.activeVersion?.amount ?? 0;
   const currency = plan.activeVersion?.currency ?? "INR";
   const billingCycle = plan.activeVersion?.billingCycle ?? "MONTHLY";
-  const features = plan.activeVersion?.features as Record<string, unknown> | undefined;
+  const features = plan.activeVersion?.features as
+    | Record<string, unknown>
+    | undefined;
   const effectiveFrom = plan.activeVersion?.effectiveFrom ?? plan.createdAt;
 
   const formattedAmount = new Intl.NumberFormat("en-IN", {
@@ -64,11 +68,12 @@ export function PlanDetailPage() {
           <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
             {plan.name}
           </h1>
-          <p className="mt-1 text-base text-body">
-            Subscription plan details
-          </p>
+          <p className="mt-1 text-base text-body">Subscription plan details</p>
         </div>
-        <Badge variant={plan.isActive ? "default" : "secondary"} className="ml-2">
+        <Badge
+          variant={plan.isActive ? "default" : "secondary"}
+          className="ml-2"
+        >
           {plan.isActive ? "Active" : "Inactive"}
         </Badge>
       </div>
@@ -85,7 +90,9 @@ export function PlanDetailPage() {
               {plan.description && (
                 <>
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground">Description</p>
+                    <p className="text-xs font-medium text-muted-foreground">
+                      Description
+                    </p>
                     <p className="text-sm text-ink mt-1">{plan.description}</p>
                   </div>
                   <Separator className="bg-hairline" />
@@ -94,26 +101,34 @@ export function PlanDetailPage() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Amount</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Amount
+                  </p>
                   <p className="text-lg font-medium text-ink mt-1">
                     {formattedAmount}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Billing Cycle</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Billing Cycle
+                  </p>
                   <p className="text-sm text-ink mt-1 capitalize">
                     {billingCycle.toLowerCase()}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Currency</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Currency
+                  </p>
                   <p className="text-sm text-ink mt-1">{currency}</p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Effective From</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Effective From
+                  </p>
                   <p className="text-sm text-ink mt-1">
                     {formatDate(effectiveFrom)}
                   </p>
@@ -141,7 +156,9 @@ export function PlanDetailPage() {
                   ))}
                 </ul>
               ) : (
-                <p className="text-sm text-muted-foreground">No features defined</p>
+                <p className="text-sm text-muted-foreground">
+                  No features defined
+                </p>
               )}
             </CardContent>
           </Card>
@@ -155,13 +172,17 @@ export function PlanDetailPage() {
             <CardContent>
               <div className="space-y-3">
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Created</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Created
+                  </p>
                   <p className="text-sm text-ink mt-1">
                     {formatDate(plan.createdAt)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">Last Updated</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Last Updated
+                  </p>
                   <p className="text-sm text-ink mt-1">
                     {formatDate(plan.updatedAt)}
                   </p>
@@ -170,6 +191,14 @@ export function PlanDetailPage() {
             </CardContent>
           </Card>
         </div>
+      </div>
+
+      <div className="mt-8">
+        <h2 className="text-lg font-semibold text-ink mb-4">Version History</h2>
+        <DataTable
+          data={plan.versions ?? []}
+          columns={usePlanVersionColumns().columns}
+        />
       </div>
     </>
   );
