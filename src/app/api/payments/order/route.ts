@@ -28,26 +28,58 @@ export const POST = withAssociation(
         "No payment provider set up for this association.",
       );
 
-    const plan = await prisma.subscriptionPlan.findFirst({
-      where: {
-        associationId: association.id,
-        memberTypeId: typeId ?? null,
-        isActive: true,
-      },
+    const whereClause: Record<string, unknown> = {
+      associationId: association.id,
+      isActive: true,
+    };
+
+    if (typeId) {
+      whereClause.memberTypeId = typeId;
+    } else {
+      whereClause.memberTypeId = null;
+    }
+
+    let plans = await prisma.subscriptionPlan.findMany({
+      where: whereClause,
       include: {
         versions: {
-          where: { effectiveTo: null },
           take: 1,
+          orderBy: { createdAt: "desc" },
         },
       },
       orderBy: { createdAt: "desc" },
     });
 
-    if (!plan || plan.versions.length === 0) {
+    if (plans.length === 0) {
+      plans = await prisma.subscriptionPlan.findMany({
+        where: {
+          associationId: association.id,
+          isDefault: true,
+          isActive: true,
+        },
+        include: {
+          versions: {
+            take: 1,
+            orderBy: { createdAt: "desc" },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      });
+    }
+
+    if (plans.length === 0 || !plans[0].versions[0]) {
       throw new NotFoundError("Plan not found under this member Group");
     }
 
-    const activeVersion = plan.versions[0];
+    const selectedPlan = typeId
+      ? plans.sort(
+          (a, b) =>
+            Number(a.versions[0]?.amount ?? 0) -
+            Number(b.versions[0]?.amount ?? 0),
+        )[0]
+      : plans[0];
+
+    const activeVersion = selectedPlan.versions[0];
 
     const orderDetails = await createPaymentOrder({
       associationId: association.id,
