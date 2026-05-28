@@ -14,10 +14,7 @@ import {
   deleteSupplement,
 } from "@feature/training/services";
 import { UpdateSupplementSchema } from "@feature/training/validators/training";
-import {
-  uploadToBucket,
-  deleteFromBucket,
-} from "@src/shared/lib/supabase/storage";
+import { uploadToBucket, deleteFromBucket } from "@lib/supabase/storage";
 import { z } from "zod";
 
 const TrainingParamsSchema = z.object({
