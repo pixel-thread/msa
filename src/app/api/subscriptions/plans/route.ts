@@ -4,9 +4,28 @@ import { UserRole } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
 import { CreateSubscriptionPlanSchema } from "@feature/subscriptions/validators";
 import { BadRequestError, ValidationError } from "@src/shared/errors";
+import { hasHighRoleAccess } from "@src/shared/utils";
 
 export const GET = withAssociation({}, async (association, _, request) => {
   const user = await withRole(request, UserRole.MEMBER);
+
+  if (hasHighRoleAccess(user.role)) {
+    const plans = await prisma.subscriptionPlan.findMany({
+      where: { associationId: association.id },
+      include: {
+        versions: {
+          where: { effectiveTo: null },
+          take: 1,
+          orderBy: { amount: "asc" },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return SuccessResponse({ data: plans });
+  }
 
   const whereClause: Record<string, unknown> = {
     associationId: association.id,
