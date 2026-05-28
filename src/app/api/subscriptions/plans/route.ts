@@ -14,7 +14,7 @@ export const GET = withAssociation({}, async (association, _, request) => {
       where: { associationId: association.id },
       include: {
         versions: {
-          where: { effectiveTo: { lte: new Date().toISOString() } },
+          where: { effectiveTo: null },
           orderBy: { createdAt: "desc" },
         },
       },
@@ -55,12 +55,11 @@ export const GET = withAssociation({}, async (association, _, request) => {
       createdAt: "desc",
     },
   });
-  if (!plans || plans.length === 0) {
+
+  if (plans.length === 0) {
     const defaultPlan = await prisma.subscriptionPlan.findMany({
       where: {
         associationId: association.id,
-        isActive: true,
-        memberTypeId: null,
         isDefault: true,
       },
       include: {
@@ -74,7 +73,13 @@ export const GET = withAssociation({}, async (association, _, request) => {
       },
     });
 
-    return SuccessResponse({ data: [] });
+    const plansWithActiveVersion = defaultPlan.map((plan) => ({
+      ...plan,
+      activeVersion: plan.versions[0] || null,
+      versions: undefined,
+    }));
+
+    return SuccessResponse({ data: plansWithActiveVersion || null });
   }
 
   const plansWithActiveVersion = plans.map((plan) => ({
