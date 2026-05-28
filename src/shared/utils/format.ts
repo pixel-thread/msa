@@ -26,6 +26,7 @@ export const formatOrderId = (orderId: string) =>
 
 export const formatOrderNumber = (orderId: string) =>
   `#${orderId.trim().slice(-6).toUpperCase()}`;
+
 export const slugify = (value: string) =>
   value
     .toLowerCase()
@@ -42,8 +43,12 @@ const formatter = new Intl.DateTimeFormat("en-US", {
   second: "numeric",
 });
 
-export const formatDate = (date: string | Date) =>
-  formatter.format(new Date(date));
+export const formatDate = (date: string | Date | null | undefined) => {
+  if (!date) return "-";
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return "-";
+  return formatter.format(d);
+};
 
 export const formattedAmount = (amount: number, currency: string = "INR") => {
   return new Intl.NumberFormat("en-IN", {

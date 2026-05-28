@@ -10,7 +10,7 @@ import {
   CardContent,
 } from "@src/shared/components/ui/card";
 import { Separator } from "@src/shared/components/ui/separator";
-import { ArrowLeft, User, CreditCard } from "lucide-react";
+import { User, CreditCard } from "lucide-react";
 import Link from "next/link";
 import { getStatusBadge } from "@src/shared/utils/helper/get-status-badge";
 import { formatDate, formattedAmount } from "@src/shared/utils";
@@ -103,7 +103,9 @@ export function PaymentDetailPage() {
                     Payment Date
                   </p>
                   <p className="text-sm text-ink mt-1">
-                    {formatDate(payment.paymentDate)}
+                    {payment.paymentDate
+                      ? formatDate(payment.paymentDate)
+                      : "N/A"}
                   </p>
                 </div>
               </div>
@@ -242,7 +244,9 @@ export function PaymentDetailPage() {
                     Created
                   </p>
                   <p className="text-sm text-ink mt-1">
-                    {formatDate(payment.createdAt)}
+                    {payment.createdAt
+                      ? formatDate(payment.createdAt || "")
+                      : "-"}
                   </p>
                 </div>
                 <div>
@@ -250,7 +254,7 @@ export function PaymentDetailPage() {
                     Paid At
                   </p>
                   <p className="text-sm text-ink mt-1">
-                    {formatDate(payment.paidAt || "")}
+                    {payment.createdAt ? formatDate(payment.paidAt || "") : "-"}
                   </p>
                 </div>
                 <div>
@@ -258,7 +262,9 @@ export function PaymentDetailPage() {
                     Last Updated
                   </p>
                   <p className="text-sm text-ink mt-1">
-                    {formatDate(payment.updatedAt)}
+                    {payment.createdAt
+                      ? formatDate(payment.updatedAt || "")
+                      : "-"}
                   </p>
                 </div>
               </div>
