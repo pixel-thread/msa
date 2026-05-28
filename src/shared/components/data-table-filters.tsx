@@ -20,6 +20,11 @@ export type FilterField =
       id: string;
       label: string;
       options: { value: string; label: string }[];
+    }
+  | {
+      type: "daterange";
+      id: string;
+      label: string;
     };
 
 interface DataTableFiltersProps {
@@ -36,8 +41,13 @@ export function DataTableFilters({
   const initialValues = useMemo(() => {
     const vals: Record<string, string> = {};
     fields.forEach((f) => {
-      vals[f.id] =
-        defaultValues?.[f.id] ?? (f.type === "search" ? "" : "all");
+      if (f.type === "daterange") {
+        vals[`${f.id}From`] = defaultValues?.[`${f.id}From`] ?? "";
+        vals[`${f.id}To`] = defaultValues?.[`${f.id}To`] ?? "";
+      } else {
+        vals[f.id] =
+          defaultValues?.[f.id] ?? (f.type === "search" ? "" : "all");
+      }
     });
     return vals;
   }, [fields, defaultValues]);
@@ -47,11 +57,18 @@ export function DataTableFilters({
   const applyFilters = () => {
     const filters: Record<string, string | undefined> = {};
     fields.forEach((f) => {
-      const v = values[f.id];
-      if (f.type === "select") {
-        filters[f.id] = v && v !== "all" ? v : undefined;
+      if (f.type === "daterange") {
+        const from = values[`${f.id}From`];
+        const to = values[`${f.id}To`];
+        if (from) filters[`${f.id}From`] = from;
+        if (to) filters[`${f.id}To`] = to;
       } else {
-        filters[f.id] = v || undefined;
+        const v = values[f.id];
+        if (f.type === "select") {
+          filters[f.id] = v && v !== "all" ? v : undefined;
+        } else {
+          filters[f.id] = v || undefined;
+        }
       }
     });
     onFilterChange(filters);
@@ -61,8 +78,15 @@ export function DataTableFilters({
     const resetVals: Record<string, string> = {};
     const cleared: Record<string, string | undefined> = {};
     fields.forEach((f) => {
-      resetVals[f.id] = f.type === "search" ? "" : "all";
-      cleared[f.id] = undefined;
+      if (f.type === "daterange") {
+        resetVals[`${f.id}From`] = "";
+        resetVals[`${f.id}To`] = "";
+        cleared[`${f.id}From`] = undefined;
+        cleared[`${f.id}To`] = undefined;
+      } else {
+        resetVals[f.id] = f.type === "search" ? "" : "all";
+        cleared[f.id] = undefined;
+      }
     });
     setValues(resetVals);
     onFilterChange(cleared);
@@ -82,6 +106,38 @@ export function DataTableFilters({
                   setValues((prev) => ({ ...prev, [f.id]: e.target.value }))
                 }
                 className="pl-9 h-10"
+              />
+            </div>
+          );
+        }
+        if (f.type === "daterange") {
+          return (
+            <div key={f.id} className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground whitespace-nowrap">
+                {f.label}:
+              </span>
+              <Input
+                type="datetime-local"
+                value={values[`${f.id}From`]}
+                onChange={(e) =>
+                  setValues((prev) => ({
+                    ...prev,
+                    [`${f.id}From`]: e.target.value,
+                  }))
+                }
+                className="h-10 w-[220px]"
+              />
+              <span className="text-sm text-muted-foreground">to</span>
+              <Input
+                type="datetime-local"
+                value={values[`${f.id}To`]}
+                onChange={(e) =>
+                  setValues((prev) => ({
+                    ...prev,
+                    [`${f.id}To`]: e.target.value,
+                  }))
+                }
+                className="h-10 w-[220px]"
               />
             </div>
           );
