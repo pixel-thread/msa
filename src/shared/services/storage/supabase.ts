@@ -15,6 +15,8 @@ export class SupabaseStorageProvider implements StorageProvider {
       .from(env.STORAGE_BUCKET)
       .upload(key, params.fileBuffer, {
         contentType: params.mimeType,
+        upsert: true,
+        cacheControl: "3600",
       });
 
     if (error) throw error;
