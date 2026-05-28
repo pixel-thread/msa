@@ -2,7 +2,6 @@ import { withValidation } from "@src/shared/api";
 import { ValidationError } from "@src/shared/errors";
 import { createLogs, getLogs } from "@src/shared/services/logs";
 import { SuccessResponse } from "@src/shared/utils";
-import { PAGE_SIZE } from "@src/shared/constants";
 import { LogIngestSchema, LogQuerySchema } from "@src/shared/validators/logs";
 import type { Log } from "@prisma/client";
 import { logger } from "@src/shared/logger";
@@ -12,17 +11,36 @@ export const GET = withValidation(
   async (_req, _ctx, { query, traceId }) => {
     logger.info("GET /api/logs - Request started", { traceId });
 
-    const { page, level, search, startDate, endDate, isBackend } =
-      query!;
+    const {
+      page,
+      level,
+      search,
+      messageExact,
+      contentSearch,
+      startDate,
+      endDate,
+      isBackend,
+      ids,
+      sortBy,
+      sortOrder,
+      limit,
+    } = query!;
 
     const where: Parameters<typeof getLogs>[0]["where"] = {};
 
     if (level) {
-      where.type = level;
+      const levels = Array.isArray(level) ? level : [level];
+      where.type = levels.length === 1 ? levels[0] : { in: levels };
     }
 
-    if (search) {
+    if (messageExact) {
+      where.message = messageExact;
+    } else if (search) {
       where.message = { contains: search, mode: "insensitive" };
+    }
+
+    if (contentSearch) {
+      where.content = { string_contains: contentSearch };
     }
 
     if (startDate || endDate) {
@@ -39,9 +57,16 @@ export const GET = withValidation(
       where.isBackend = isBackend;
     }
 
+    if (ids) {
+      where.id = { in: ids.split(",").map((id) => id.trim()) };
+    }
+
     const { logs, pagination } = await getLogs({
       where,
       page: page || 1,
+      sortBy,
+      sortOrder,
+      limit,
     });
 
     logger.info("GET /api/logs - Success", { traceId, count: logs.length });

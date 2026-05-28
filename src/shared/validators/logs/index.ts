@@ -23,11 +23,22 @@ export type LogBatchInput = z.infer<typeof LogBatchSchema>;
 
 export const LogQuerySchema = z.object({
   page: pageNumberValidation,
-  level: z.enum(["info", "warn", "error", "debug"]).default("error").optional(),
+  level: z
+    .union([
+      z.enum(["info", "warn", "error", "debug"]),
+      z.string().transform((v) => v.split(",").map((s) => s.trim())),
+    ])
+    .optional(),
   search: z.string().optional(),
-  startDate: z.coerce.date().default(new Date()).optional(),
-  endDate: z.coerce.date().default(new Date()).optional(),
-  isBackend: z.coerce.boolean().default(false).optional(),
+  messageExact: z.string().optional(),
+  contentSearch: z.string().optional(),
+  startDate: z.coerce.date().optional(),
+  endDate: z.coerce.date().optional(),
+  isBackend: z.coerce.boolean().optional(),
+  ids: z.string().optional(),
+  sortBy: z.enum(["createdAt", "type", "message"]).optional(),
+  sortOrder: z.enum(["asc", "desc"]).optional(),
+  limit: pageNumberValidation.optional(),
 });
 
 export type LogQueryInput = z.infer<typeof LogQuerySchema>;

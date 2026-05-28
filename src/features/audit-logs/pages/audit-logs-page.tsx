@@ -69,7 +69,7 @@ const RESOURCE_TYPES = [
 ] as const;
 
 export default function AuditLogsPage() {
-  const { filters, page, setPage } = useUrlFilters({ basePath: "/audit-logs" });
+  const { filters, page, setPage, setFilters } = useUrlFilters({ basePath: "/audit-logs" });
 
   const [selectedEntry, setSelectedEntry] = useState<AuditLogEntry | null>(
     null,
@@ -168,7 +168,8 @@ export default function AuditLogsPage() {
             })),
           },
         ]}
-        onFilterChange={() => {}}
+        defaultValues={filters}
+        onFilterChange={(f) => setFilters(f)}
       />
 
       <DataTable loading={isLoading} data={auditLogs} columns={columns} />

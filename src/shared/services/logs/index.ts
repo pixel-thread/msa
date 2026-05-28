@@ -6,22 +6,27 @@ import { buildPagination } from "@src/shared/utils/build-pagination";
 type GetLogsProps = {
   where: Prisma.LogWhereInput;
   page: number;
+  sortBy?: "createdAt" | "type" | "message";
+  sortOrder?: "asc" | "desc";
+  limit?: number;
 };
 
 export async function getLogs(props: GetLogsProps) {
-  const { where, page } = props;
+  const { where, page, sortBy = "createdAt", sortOrder = "desc", limit } = props;
+
+  const pageSize = limit ?? PAGE_SIZE;
 
   const [logs, total] = await prisma.$transaction([
     prisma.log.findMany({
       where,
-      orderBy: { createdAt: "desc" },
-      skip: (page - 1) * PAGE_SIZE,
-      take: PAGE_SIZE,
+      orderBy: { [sortBy]: sortOrder },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
     }),
     prisma.log.count({ where }),
   ]);
 
-  const pagination = buildPagination(total, page);
+  const pagination = buildPagination(total, page, pageSize);
 
   return { logs, pagination };
 }
