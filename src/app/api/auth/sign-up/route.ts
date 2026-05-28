@@ -8,10 +8,12 @@ import {
   MembershipApplicationSchema,
 } from "@src/features/membership-applications/validators";
 import { createMembershipApplication } from "@src/features/membership-applications/services";
+import { logger } from "@src/shared/logger";
 
 export const POST = withValidation(
   { body: MembershipApplicationSchema },
-  async (_req, _ctx, { body }) => {
+  async (_req, _ctx, { body, traceId }) => {
+    logger.info("POST /api/auth/sign-up - Request started", { traceId, email: body?.email });
     const {
       email,
       phone,
@@ -40,10 +42,15 @@ export const POST = withValidation(
       }),
     ]);
 
-    if (!association) throw new ConflictError("Association not found");
+    if (!association) {
+      logger.error("POST /api/auth/sign-up - Association not found", { traceId, associationSlug });
+      throw new ConflictError("Association not found");
+    }
 
-    if (user && user.status === "ACTIVE")
+    if (user && user.status === "ACTIVE") {
+      logger.error("POST /api/auth/sign-up - Active User already exists with this email", { traceId, email });
       throw new ConflictError("An Active User already exist with this email");
+    }
 
     const application = await createMembershipApplication({
       email,
@@ -60,6 +67,8 @@ export const POST = withValidation(
       country,
       postalCode,
     });
+
+    logger.info("POST /api/auth/sign-up - Success", { traceId, applicationId: application.id });
 
     return SuccessResponse(
       {

@@ -5,6 +5,7 @@ import { withValidation } from "@src/shared/api";
 import { verifyPassword } from "@src/shared/lib/password";
 import { BadRequestError, UnauthorizedError } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
+import { logger } from "@src/shared/logger";
 
 const DisableMfaSchema = z.object({
   password: z.string().min(1, "Password is required"),
@@ -14,10 +15,14 @@ type DisableMfaBody = z.infer<typeof DisableMfaSchema>;
 
 export const POST = withValidation(
   { body: DisableMfaSchema },
-  async (request, _ctx, { body }) => {
+  async (request, _ctx, { body, traceId }) => {
     const userId = request.headers.get("x-user-id");
+    logger.info("POST /api/auth/mfa/disable - Request started", { traceId, userId });
 
-    if (!userId) throw new UnauthorizedError("Unauthorized");
+    if (!userId) {
+      logger.error("POST /api/auth/mfa/disable - Unauthorized (missing x-user-id)", { traceId });
+      throw new UnauthorizedError("Unauthorized");
+    }
 
     const { password } = body as DisableMfaBody;
 
@@ -27,16 +32,19 @@ export const POST = withValidation(
     });
 
     if (!user || !user.mfaEnabled) {
+      logger.error("POST /api/auth/mfa/disable - MFA is not enabled", { traceId, userId });
       throw new BadRequestError("MFA is not enabled");
     }
 
     if (!user.password) {
+      logger.error("POST /api/auth/mfa/disable - User password not set", { traceId, userId });
       throw new BadRequestError("Please set a password first");
     }
 
     const isValid = await verifyPassword(password, user.password);
 
     if (!isValid) {
+      logger.error("POST /api/auth/mfa/disable - Invalid password", { traceId, userId });
       throw new UnauthorizedError("Invalid password");
     }
 
@@ -44,6 +52,8 @@ export const POST = withValidation(
       where: { id: userId },
       data: { mfaEnabled: false },
     });
+
+    logger.info("POST /api/auth/mfa/disable - Success", { traceId, userId });
 
     return SuccessResponse({
       message: "MFA disabled successfully",
