@@ -389,6 +389,7 @@ model SubscriptionPlan {
   isActive      Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  isDefault     Boolean   @default(true)
 
   association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
 

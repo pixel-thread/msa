@@ -47,7 +47,6 @@ export const GET = withAssociation({}, async (association, _, request) => {
     where: whereClause,
     include: {
       versions: {
-        where: { effectiveTo: null },
         take: 1,
         orderBy: { amount: "asc" },
       },
@@ -56,6 +55,27 @@ export const GET = withAssociation({}, async (association, _, request) => {
       createdAt: "desc",
     },
   });
+  if (!plans || plans.length === 0) {
+    const defaultPlan = await prisma.subscriptionPlan.findMany({
+      where: {
+        associationId: association.id,
+        isActive: true,
+        memberTypeId: null,
+        isDefault: true,
+      },
+      include: {
+        versions: {
+          take: 1,
+          orderBy: { amount: "asc" },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return SuccessResponse({ data: [] });
+  }
 
   const plansWithActiveVersion = plans.map((plan) => ({
     ...plan,
@@ -95,31 +115,39 @@ export const POST = withAssociation(
     if (isPlanExistWithSameName)
       throw new BadRequestError("Plan with same name already exist");
 
-    const plan = await prisma.subscriptionPlan.create({
-      data: {
-        name: body.name,
-        description: body.description,
-        isActive: body.isActive,
-        memberTypeId: body.memberTypeId,
-        associationId: association.id,
-        versions: {
-          create: {
-            amount: body.amount,
-            currency: body.currency,
-            billingCycle: body.billingCycle,
-            features: body.features,
-            effectiveFrom: body.effectiveFrom,
-            effectiveTo: body.effectiveTo,
-            description: body.description,
+    const plan = await prisma.$transaction(async (tx) => {
+      await tx.subscriptionPlan.updateMany({
+        where: { associationId: association.id },
+        data: { isDefault: false },
+      });
+
+      return tx.subscriptionPlan.create({
+        data: {
+          name: body.name,
+          description: body.description,
+          isActive: body.isActive,
+          isDefault: true,
+          memberTypeId: body.memberTypeId,
+          associationId: association.id,
+          versions: {
+            create: {
+              amount: body.amount,
+              currency: body.currency,
+              billingCycle: body.billingCycle,
+              features: body.features,
+              effectiveFrom: body.effectiveFrom,
+              effectiveTo: body.effectiveTo,
+              description: body.description,
+            },
           },
         },
-      },
-      include: {
-        versions: {
-          where: { effectiveTo: null },
-          take: 1,
+        include: {
+          versions: {
+            where: { effectiveTo: null },
+            take: 1,
+          },
         },
-      },
+      });
     });
 
     return SuccessResponse({ data: plan }, 201);
