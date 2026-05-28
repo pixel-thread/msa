@@ -7,83 +7,61 @@ import { BadRequestError, ValidationError } from "@src/shared/errors";
 import { hasHighRoleAccess, getTraceId } from "@src/shared/utils";
 import { logger } from "@src/shared/logger";
 
-export const GET = withAssociation({}, async (association, _, request) => {
-  const traceId = getTraceId(request);
-  const user = await withRole(request, UserRole.MEMBER);
-  if (hasHighRoleAccess(user.role)) {
-    logger.info("Fetching all plans for admin", { traceId });
-    const plans = await prisma.subscriptionPlan.findMany({
-      where: { associationId: association.id },
-      include: {
-        versions: {
-          where: { effectiveTo: null },
-          orderBy: { createdAt: "desc" },
+export const GET = withAssociation(
+  {},
+  async (association, { traceId }, request) => {
+    const user = await withRole(request, UserRole.MEMBER);
+    if (hasHighRoleAccess(user.role)) {
+      logger.info("Fetching all plans for admin", { traceId });
+      const plans = await prisma.subscriptionPlan.findMany({
+        where: { associationId: association.id },
+        include: {
+          versions: {
+            where: { effectiveTo: null },
+            orderBy: { createdAt: "desc" },
+          },
         },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
 
-    const plansWithActiveVersion = plans.map((plan) => ({
-      ...plan,
-      activeVersion: plan.versions[0] || null,
-      versions: plan.versions,
-    }));
+      const plansWithActiveVersion = plans.map((plan) => ({
+        ...plan,
+        activeVersion: plan.versions[0] || null,
+        versions: plan.versions,
+      }));
 
-    logger.info("Admin plans fetched successfully", {
+      logger.info("Admin plans fetched successfully", {
+        traceId,
+        count: plans.length,
+      });
+
+      return SuccessResponse({ data: plansWithActiveVersion });
+    }
+
+    logger.info("Fetching plans for member", {
       traceId,
-      count: plans.length,
+      memberTypeId: user.memberTypeId,
     });
 
-    return SuccessResponse({ data: plansWithActiveVersion });
-  }
+    const whereClause: Record<string, unknown> = {
+      associationId: association.id,
+      isActive: true,
+    };
 
-  logger.info("Fetching plans for member", {
-    traceId,
-    memberTypeId: user.memberTypeId,
-  });
+    if (user.memberTypeId) {
+      whereClause.memberTypeId = user.memberTypeId;
+    } else {
+      whereClause.memberTypeId = null;
+    }
 
-  const whereClause: Record<string, unknown> = {
-    associationId: association.id,
-    isActive: true,
-  };
-
-  if (user.memberTypeId) {
-    whereClause.memberTypeId = user.memberTypeId;
-  } else {
-    whereClause.memberTypeId = null;
-  }
-
-  const plans = await prisma.subscriptionPlan.findMany({
-    where: whereClause,
-    include: {
-      versions: {
-        take: 1,
-        orderBy: { amount: "asc" },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-
-  if (plans.length === 0) {
-    logger.info(
-      "No member-specific plans found, falling back to default plan",
-      { traceId },
-    );
-
-    const defaultPlan = await prisma.subscriptionPlan.findMany({
-      where: {
-        associationId: association.id,
-        isDefault: true,
-        isActive: true,
-      },
+    const plans = await prisma.subscriptionPlan.findMany({
+      where: whereClause,
       include: {
         versions: {
           take: 1,
-          orderBy: { createdAt: "desc" },
+          orderBy: { amount: "asc" },
         },
       },
       orderBy: {
@@ -91,40 +69,64 @@ export const GET = withAssociation({}, async (association, _, request) => {
       },
     });
 
-    const plansWithActiveVersion = defaultPlan.map((plan) => ({
+    if (plans.length === 0) {
+      logger.info(
+        "No member-specific plans found, falling back to default plan",
+        { traceId },
+      );
+
+      const defaultPlan = await prisma.subscriptionPlan.findMany({
+        where: {
+          associationId: association.id,
+          isDefault: true,
+          isActive: true,
+        },
+        include: {
+          versions: {
+            take: 1,
+            orderBy: { createdAt: "desc" },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      const plansWithActiveVersion = defaultPlan.map((plan) => ({
+        ...plan,
+        activeVersion: plan.versions[0] || null,
+        versions: undefined,
+      }));
+
+      logger.info("Returning default plan", {
+        traceId,
+        planId: defaultPlan[0]?.id,
+      });
+
+      return SuccessResponse({ data: plansWithActiveVersion[0] || null });
+    }
+
+    const plansWithActiveVersion = plans.map((plan) => ({
       ...plan,
       activeVersion: plan.versions[0] || null,
       versions: undefined,
     }));
 
-    logger.info("Returning default plan", {
-      traceId,
-      planId: defaultPlan[0]?.id,
-    });
+    const sortedPlans = user.memberTypeId
+      ? plansWithActiveVersion.sort(
+          (a, b) =>
+            Number(a.activeVersion?.amount ?? 0) -
+            Number(b.activeVersion?.amount ?? 0),
+        )
+      : plansWithActiveVersion;
 
-    return SuccessResponse({ data: plansWithActiveVersion[0] || null });
-  }
+    const result = user.memberTypeId ? sortedPlans[0] : sortedPlans[0] || null;
 
-  const plansWithActiveVersion = plans.map((plan) => ({
-    ...plan,
-    activeVersion: plan.versions[0] || null,
-    versions: undefined,
-  }));
+    logger.info("Member plans fetched successfully", { traceId });
 
-  const sortedPlans = user.memberTypeId
-    ? plansWithActiveVersion.sort(
-        (a, b) =>
-          Number(a.activeVersion?.amount ?? 0) -
-          Number(b.activeVersion?.amount ?? 0),
-      )
-    : plansWithActiveVersion;
-
-  const result = user.memberTypeId ? sortedPlans[0] : sortedPlans[0] || null;
-
-  logger.info("Member plans fetched successfully", { traceId });
-
-  return SuccessResponse({ data: result });
-});
+    return SuccessResponse({ data: result });
+  },
+);
 
 export const POST = withAssociation(
   { body: CreateSubscriptionPlanSchema },

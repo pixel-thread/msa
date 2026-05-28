@@ -15,6 +15,7 @@ import {
   ValidationError,
 } from "@src/shared/errors";
 import { formatZodIssues } from "@validator/format-zod-issues";
+import { createTracingContext } from "./tracing-context";
 
 /**
  * Zod preprocessor that parses a JSON string into the given schema.
@@ -144,12 +145,22 @@ export function withFormDataValidation<
   handler: (
     request: NextRequest,
     context: TContext,
-    validated: { formData: TFormData; query?: TQuery; params?: TParams },
+    validated: {
+      formData: TFormData;
+      query?: TQuery;
+      params?: TParams;
+      traceId: string;
+    },
   ) => Promise<Response>,
 ) {
   return handleApiErrors<TContext>(async (request, context) => {
-    const validated: { formData?: TFormData; query?: TQuery; params?: TParams } =
-      {};
+    const { traceId } = createTracingContext(request);
+    const validated: {
+      formData?: TFormData;
+      query?: TQuery;
+      params?: TParams;
+      traceId: string;
+    } = { traceId };
 
     validated.formData = await parseFormData(request, schemas.formData);
 
@@ -164,7 +175,12 @@ export function withFormDataValidation<
     return handler(
       request,
       context,
-      validated as { formData: TFormData; query?: TQuery; params?: TParams },
+      validated as {
+        formData: TFormData;
+        query?: TQuery;
+        params?: TParams;
+        traceId: string;
+      },
     );
   });
 }
@@ -185,7 +201,12 @@ export function withAssociationFormData<
   },
   handler: (
     association: AssociationDetails,
-    validated: { formData: TFormData; query?: TQuery; params?: TParams },
+    validated: {
+      formData: TFormData;
+      query?: TQuery;
+      params?: TParams;
+      traceId: string;
+    },
     request: NextRequest,
     context: RouteContext<TParams>,
   ) => Promise<Response>,

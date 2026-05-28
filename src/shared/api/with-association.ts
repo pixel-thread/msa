@@ -25,7 +25,12 @@ export function withAssociation<
   schemas: Parameters<typeof withValidation<TBody, TQuery, TParams>>[0],
   handler: (
     association: AssociationDetails,
-    validated: { body?: TBody; query?: TQuery; params?: TParams },
+    validated: {
+      body?: TBody;
+      query?: TQuery;
+      params?: TParams;
+      traceId: string;
+    },
     request: NextRequest,
     context: RouteContext<TParams>,
   ) => Promise<Response>,

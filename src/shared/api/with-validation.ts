@@ -4,6 +4,7 @@ import type { ZodType } from "zod";
 import { InvalidJsonError, ValidationError } from "@src/shared/errors";
 import { formatZodIssues } from "@validator/format-zod-issues";
 import { handleApiErrors } from "./handle-api-errors";
+import { createTracingContext } from "./tracing-context";
 
 type MaybePromise<T> = Promise<T> | T;
 
@@ -23,6 +24,7 @@ interface ValidatedValues<TBody, TQuery, TParams> {
   body?: TBody;
   params?: TParams;
   query?: TQuery;
+  traceId: string;
 }
 
 type ValidatedHandler<
@@ -108,7 +110,8 @@ export function withValidation<
   handler: ValidatedHandler<TBody, TQuery, TParams, TContext>,
 ) {
   return handleApiErrors<TContext>(async (request, context) => {
-    const validated: ValidatedValues<TBody, TQuery, TParams> = {};
+    const { traceId } = createTracingContext(request);
+    const validated: ValidatedValues<TBody, TQuery, TParams> = { traceId };
 
     if (schemas.body) {
       validated.body = await parseNextRequestBody(request, schemas.body);
