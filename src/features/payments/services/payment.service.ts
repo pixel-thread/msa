@@ -10,7 +10,7 @@ import {
 import { buildPagination } from "@src/shared/utils/build-pagination";
 
 import { verifyPaymentSignature } from "./razorpay.service";
-import { getActiveProvider } from "./payment-provider.service";
+import { getActiveProvider, getProviderById } from "./payment-provider.service";
 import { decrypt } from "@src/shared/lib/crypto";
 import { env } from "@src/env";
 import Razorpay from "razorpay";
@@ -234,6 +234,108 @@ export async function createPaymentOrder(input: CreateOrderInput) {
 }
 
 // ---------------------------------------------------------------------------
+// 1b. Create Test Razorpay Order (Admin)
+// ---------------------------------------------------------------------------
+
+export interface CreateTestOrderInput {
+  associationId: string;
+  userId: string;
+  providerId: string;
+}
+
+/**
+ * Create a test payment order for ₹1 using a specific provider.
+ * Skips subscription plan lookup — uses a fixed amount.
+ * Returns RazorpayOptions for the frontend checkout.
+ */
+export async function createTestPaymentOrder(input: CreateTestOrderInput) {
+  const provider = await getProviderById(input.providerId, input.associationId);
+
+  if (!provider || provider.provider !== "RAZORPAY") {
+    throw new BadRequestError("Provider must be a Razorpay provider");
+  }
+
+  const fullProvider = await prisma.paymentProvider.findUnique({
+    where: { id: input.providerId },
+  });
+
+  if (!fullProvider) {
+    throw new NotFoundError("Provider not found");
+  }
+
+  const keySecret = decrypt(fullProvider.encryptedKeySecret);
+
+  let razorpayClient;
+  try {
+    razorpayClient = new Razorpay({
+      key_id: provider.keyId,
+      key_secret: keySecret,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw new PaymentError(
+      error?.error?.description || "Payment failed",
+      error?.error?.code,
+      error?.statusCode,
+    );
+  }
+
+  const testAmount = 1;
+  const amountInPaise = 100;
+
+  const transaction = await prisma.paymentTransaction.create({
+    data: {
+      associationId: input.associationId,
+      userId: input.userId,
+      amount: testAmount,
+      currency: "INR",
+      gateway: PaymentGateway.RAZORPAY,
+      status: PaymentStatus.PENDING,
+      notes: "Test payment",
+    },
+  });
+
+  let razorpayOrder;
+  try {
+    razorpayOrder = await razorpayClient.orders.create({
+      amount: amountInPaise,
+      currency: "INR",
+      receipt: transaction.id,
+      notes: {
+        transactionId: transaction.id,
+        userId: input.userId,
+        associationId: input.associationId,
+        isTest: "true",
+      },
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw new PaymentError(
+      error?.error?.description || "Payment failed",
+      error?.error?.code,
+      error?.statusCode,
+    );
+  }
+
+  await prisma.paymentTransaction.update({
+    where: { id: transaction.id },
+    data: { razorpayOrderId: razorpayOrder.id },
+  });
+
+  const options: RazorpayOptions = {
+    name: env.NEXT_PUBLIC_ASSOCIATION_SLUG.toUpperCase(),
+    transaction_id: transaction.id,
+    description: "Test payment (₹1)",
+    order_id: razorpayOrder.id,
+    amount: amountInPaise,
+    currency: "INR",
+    key: provider.keyId,
+  };
+
+  return options;
+}
+
+// ---------------------------------------------------------------------------
 // 2. Verify & Complete Online Payment (Client-side callback)
 // ---------------------------------------------------------------------------
 
@@ -329,6 +431,86 @@ export async function verifyAndCompletePayment(input: VerifyAndCompleteInput) {
 
     return updatedTransaction;
   });
+}
+
+// ---------------------------------------------------------------------------
+// 2b. Verify Test Payment (Admin — skips allocation & ledger)
+// ---------------------------------------------------------------------------
+
+/**
+ * Verify a test Razorpay payment and mark the transaction COMPLETED.
+ * Unlike verifyAndCompletePayment, this does NOT allocate to contributions
+ * or create ledger entries — it's purely for testing provider connectivity.
+ */
+export async function verifyTestPayment(input: VerifyAndCompleteInput) {
+  const transaction = await prisma.paymentTransaction.findUnique({
+    where: { razorpayOrderId: input.razorpayOrderId },
+  });
+
+  if (!transaction) {
+    throw new NotFoundError(
+      `No transaction found for Razorpay order: ${input.razorpayOrderId}`,
+    );
+  }
+
+  if (transaction.status === PaymentStatus.COMPLETED) {
+    return transaction;
+  }
+
+  const provider = await getActiveProvider(
+    transaction.associationId,
+    "RAZORPAY",
+  );
+
+  let keySecret: string | undefined;
+  if (provider) {
+    keySecret = decrypt(provider.encryptedKeySecret);
+  }
+
+  const isValid = verifyPaymentSignature(
+    {
+      razorpayOrderId: input.razorpayOrderId,
+      razorpayPaymentId: input.razorpayPaymentId,
+      razorpaySignature: input.razorpaySignature,
+    },
+    keySecret,
+  );
+
+  if (!isValid) {
+    throw new BadRequestError("Invalid Razorpay payment signature");
+  }
+
+  const now = new Date();
+
+  const updatedTransaction = await prisma.paymentTransaction.update({
+    where: { id: transaction.id },
+    data: {
+      status: PaymentStatus.COMPLETED,
+      razorpayPaymentId: input.razorpayPaymentId,
+      razorpaySignature: input.razorpaySignature,
+      paidAt: now,
+      method: "ONLINE" as PaymentMethod,
+      notes: transaction.notes
+        ? `${transaction.notes} (completed)`
+        : "Test payment (completed)",
+    },
+  });
+
+  // Minimal audit log
+  await logAction({
+    associationId: transaction.associationId,
+    actorId: transaction.userId,
+    action: AuditAction.PAYMENT_COMPLETED,
+    resourceType: "PaymentTransaction",
+    resourceId: transaction.id,
+    newValues: {
+      razorpayPaymentId: input.razorpayPaymentId,
+      amount: Number(transaction.amount),
+      isTest: true,
+    },
+  });
+
+  return updatedTransaction;
 }
 
 // ---------------------------------------------------------------------------
