@@ -54,7 +54,9 @@ export const PATCH = withAssociation(
             amount: body.amount ?? currentVersion.amount,
             currency: body.currency ?? currentVersion.currency,
             billingCycle: body.billingCycle ?? currentVersion.billingCycle,
-            features: (body.features as Prisma.InputJsonValue) ?? currentVersion.features,
+            features:
+              (body.features as Prisma.InputJsonValue) ??
+              currentVersion.features,
             description: body.description ?? currentVersion.description,
           },
         });
@@ -85,20 +87,26 @@ export const PATCH = withAssociation(
   },
 );
 
-export const DELETE = withAssociation({}, async (association, _, request, { params }) => {
-  await withRole(request, UserRole.SUPER_ADMIN);
+export const DELETE = withAssociation(
+  {},
+  async (association, _, request, { params }) => {
+    await withRole(request, UserRole.PRESIDENT);
 
-  const { planId } = (await params) as { planId: string };
+    const { planId } = (await params) as { planId: string };
 
-  const plan = await prisma.subscriptionPlan.update({
-    where: {
-      id: planId,
-      associationId: association.id,
-    },
-    data: {
-      isActive: false,
-    },
-  });
+    const plan = await prisma.subscriptionPlan.update({
+      where: {
+        id: planId,
+        associationId: association.id,
+      },
+      data: {
+        isActive: false,
+      },
+    });
 
-  return SuccessResponse({ data: plan });
-});
+    return SuccessResponse({
+      data: plan,
+      message: "Plan deleted successfully",
+    });
+  },
+);
