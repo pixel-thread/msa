@@ -1,7 +1,6 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 
 import { axiosClient } from "../api/axios";
-import { logger } from "../logger";
 import { PaginationMeta } from "../types";
 
 export interface ApiResponse<T> {
@@ -60,7 +59,6 @@ const http = {
     config?: AxiosRequestConfig,
   ): Promise<ApiResponse<T>> => {
     try {
-      logger.debug(`GET => ${url}`);
       const response = await axiosClient.get(url, config);
       return handleResponse<T>(response);
     } catch (error) {
@@ -77,7 +75,6 @@ const http = {
     config?: AxiosRequestConfig,
   ): Promise<ApiResponse<T>> => {
     try {
-      logger.debug(`POST => ${url}`);
       const requestConfig: AxiosRequestConfig =
         data instanceof FormData
           ? { ...config, headers: { ...config?.headers, "Content-Type": null } }
@@ -98,7 +95,6 @@ const http = {
     config?: AxiosRequestConfig,
   ): Promise<ApiResponse<T>> => {
     try {
-      logger.debug(`PUT => ${url}`);
       const response = await axiosClient.put(url, data, config);
       return handleResponse<T>(response);
     } catch (error) {
@@ -115,7 +111,6 @@ const http = {
     config?: AxiosRequestConfig,
   ): Promise<ApiResponse<T>> => {
     try {
-      logger.debug(`PATCH => ${url}`);
       const requestConfig: AxiosRequestConfig =
         data instanceof FormData
           ? { ...config, headers: { ...config?.headers, "Content-Type": null } }
@@ -135,7 +130,6 @@ const http = {
     config?: AxiosRequestConfig,
   ): Promise<ApiResponse<T>> => {
     try {
-      logger.debug(`DELETE => ${url}`);
       const response = await axiosClient.delete(url, config);
       return handleResponse<T>(response);
     } catch (error) {

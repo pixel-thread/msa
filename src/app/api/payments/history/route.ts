@@ -1,5 +1,6 @@
 import { withAssociation } from "@src/shared/api";
 import { SuccessResponse } from "@utils/responses";
+import { logger } from "@src/shared/logger";
 import { getUserPaymentHistory } from "@feature/payments/services/payment.service";
 import { getUserContributionSummary } from "@feature/payments/services/contribution.service";
 import { PaymentHistoryQuerySchema } from "@feature/payments/validators";
@@ -12,7 +13,8 @@ import { PaymentHistoryQuerySchema } from "@feature/payments/validators";
  */
 export const GET = withAssociation(
   { query: PaymentHistoryQuerySchema },
-  async (_association, { query }, request) => {
+  async (_association, { query, traceId }, request) => {
+    logger.info("GET /api/payments/history - Request started", { traceId, query });
     const userId = request.headers.get("x-user-id")!;
     const page = query?.page ?? 1;
 
@@ -20,6 +22,8 @@ export const GET = withAssociation(
       getUserPaymentHistory(userId, page),
       getUserContributionSummary(userId),
     ]);
+
+    logger.info("GET /api/payments/history - Success", { traceId, count: history.transactions.length });
 
     return SuccessResponse({
       data: {

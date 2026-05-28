@@ -11,6 +11,7 @@ import {
   markOverdueContributions,
   waiveContribution,
 } from "@feature/payments/services/contribution.service";
+import { logger } from "@src/shared/logger";
 import { z } from "zod";
 import { ValidationError } from "@src/shared/errors";
 import { pageNumberValidation } from "@src/shared/validators/common";
@@ -34,8 +35,11 @@ const ContributionsQuerySchema = z.object({
  */
 export const GET = withAssociation(
   { query: ContributionsQuerySchema },
-  async (association, { query }, request) => {
+  async (association, { query, traceId }, request) => {
+    logger.info("GET /api/payments/contributions - Request started", { traceId, query });
+
     await withRole(request, UserRole.FINANCE);
+    logger.info("GET /api/payments/contributions - User authorized", { traceId });
 
     if (!query) {
       throw new ValidationError("Invalid query parameters");
@@ -93,6 +97,8 @@ export const GET = withAssociation(
       prisma.contributionPeriod.count({ where }),
     ]);
 
+    logger.info("GET /api/payments/contributions - Success", { traceId, count: contributions.length });
+
     return SuccessResponse({
       data: contributions,
       meta: buildPagination(total, page),
@@ -112,9 +118,13 @@ export const GET = withAssociation(
  */
 export const POST = withAssociation(
   { body: GenerateContributionsSchema },
-  async (association, { body }, request) => {
-    await withRole(request, UserRole.FINANCE);
+  async (association, { body, traceId }, request) => {
+    logger.info("POST /api/payments/contributions - Request started", { traceId, year: body!.year, month: body!.month });
 
+    await withRole(request, UserRole.FINANCE);
+    logger.info("POST /api/payments/contributions - User authorized", { traceId });
+
+    logger.info("POST /api/payments/contributions - Generating contributions", { traceId, year: body!.year, month: body!.month });
     const count = await generateMonthlyContributions(
       association.id,
       body!.year,
@@ -123,6 +133,8 @@ export const POST = withAssociation(
 
     // Also mark overdue contributions while we're at it
     const overdueCount = await markOverdueContributions(association.id);
+
+    logger.info("POST /api/payments/contributions - Success", { traceId, generated: count, markedOverdue: overdueCount });
 
     return SuccessResponse(
       {
@@ -146,13 +158,18 @@ export const POST = withAssociation(
  */
 export const PATCH = withAssociation(
   { body: WaiveContributionSchema },
-  async (_association, { body }, request) => {
+  async (_association, { body, traceId }, request) => {
+    logger.info("PATCH /api/payments/contributions - Request started", { traceId, contributionPeriodId: body!.contributionPeriodId });
+
     await withRole(request, UserRole.FINANCE);
+    logger.info("PATCH /api/payments/contributions - User authorized", { traceId });
 
     const waived = await waiveContribution(
       body!.contributionPeriodId,
       body!.reason,
     );
+
+    logger.info("PATCH /api/payments/contributions - Success", { traceId, contributionPeriodId: body!.contributionPeriodId });
 
     return SuccessResponse(
       {

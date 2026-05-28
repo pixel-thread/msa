@@ -45,6 +45,23 @@ axiosClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     logger.debug(`[Axios] -> ${config.method?.toUpperCase()} ${config.url}`);
     const token = cookie.load("csrf-token");
+    const traceId = crypto.randomUUID();
+    config.headers["x-trace-id"] = traceId;
+    config.headers["x-platform"] = "web";
+    config.headers["x-os-version"] = "unknown";
+    config.headers["x-client-version"] = "unknown";
+    config.headers["x-device-type"] = "web";
+    const method = config.method?.toUpperCase();
+    const path = config.url;
+    if (method && path) {
+      logger.info(`[${method}] ${path}`, {
+        "x-trace-id": config.headers["x-trace-id"],
+        "x-platform": config.headers["x-platform"],
+        "x-os-version": config.headers["x-os-version"],
+        "x-client-version": config.headers["x-client-version"],
+        "x-device-type": config.headers["x-device-type"],
+      });
+    }
     if (token) {
       config.headers["X-CSRF-Token"] = token;
     }
