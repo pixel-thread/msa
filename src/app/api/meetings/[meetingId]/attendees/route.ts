@@ -15,6 +15,7 @@ import {
 } from "@feature/meetings/validators";
 import { z } from "zod";
 import { hasHighRoleAccess } from "@src/shared/utils/has-high-role";
+import { logger } from "@src/shared/logger";
 
 const MeetingParamsSchema = z.object({
   meetingId: z.string("Invalid meeting ID"),
@@ -22,12 +23,15 @@ const MeetingParamsSchema = z.object({
 
 export const GET = withAssociation(
   { params: MeetingParamsSchema, query: MeetingQuerySchema },
-  async (association, { params }, request) => {
+  async (association, { params, traceId }, request) => {
+    logger.info("GET /api/meetings/[meetingId]/attendees - Request started", { traceId, meetingId: params?.meetingId, associationId: association.id });
+
     if (!params) {
       throw new ForbiddenError("Invalid meeting ID");
     }
 
     const user = await withRole(request, UserRole.MEMBER);
+    logger.info("GET /api/meetings/[meetingId]/attendees - User authorized", { traceId, userId: user.id, role: user.role, meetingId: params.meetingId });
 
     const meeting = await findUniqueMeeting({
       meetingId: params.meetingId,
@@ -44,6 +48,8 @@ export const GET = withAssociation(
       }
     }
 
+    logger.info("GET /api/meetings/[meetingId]/attendees - Success", { traceId, meetingId: meeting.id, attendeeCount: meeting.attendees.length });
+
     return SuccessResponse({
       data: meeting.attendees,
     });
@@ -52,7 +58,9 @@ export const GET = withAssociation(
 
 export const POST = withAssociation(
   { params: MeetingParamsSchema, body: AssignAttendeeSchema },
-  async (association, { params, body }, request) => {
+  async (association, { params, body, traceId }, request) => {
+    logger.info("POST /api/meetings/[meetingId]/attendees - Request started", { traceId, meetingId: params?.meetingId, associationId: association.id });
+
     if (!params) {
       throw new ForbiddenError("Invalid meeting ID");
     }
@@ -68,6 +76,10 @@ export const POST = withAssociation(
       );
     }
 
+    logger.info("POST /api/meetings/[meetingId]/attendees - User authorized", { traceId, userId: user.id, role: user.role, meetingId: params.meetingId });
+
+    logger.info("POST /api/meetings/[meetingId]/attendees - Assigning attendee", { traceId, meetingId: params.meetingId, attendeeUserId: body.userId });
+
     const attendee = await assignAttendee({
       meetingId: params.meetingId,
       associationId: association.id,
@@ -75,13 +87,17 @@ export const POST = withAssociation(
       attendeeRole: body.attendeeRole,
     });
 
+    logger.info("POST /api/meetings/[meetingId]/attendees - Success", { traceId, meetingId: params.meetingId });
+
     return SuccessResponse({ data: attendee }, 201);
   },
 );
 
 export const PUT = withAssociation(
   { params: MeetingParamsSchema, body: BulkAssignAttendeesSchema },
-  async (association, { params, body }, request) => {
+  async (association, { params, body, traceId }, request) => {
+    logger.info("PUT /api/meetings/[meetingId]/attendees - Request started", { traceId, meetingId: params?.meetingId, associationId: association.id });
+
     if (!params) {
       throw new ForbiddenError("Invalid meeting ID");
     }
@@ -98,12 +114,18 @@ export const PUT = withAssociation(
       );
     }
 
+    logger.info("PUT /api/meetings/[meetingId]/attendees - User authorized", { traceId, userId: user.id, role: user.role, meetingId: params.meetingId });
+
+    logger.info("PUT /api/meetings/[meetingId]/attendees - Bulk assigning attendees", { traceId, meetingId: params.meetingId });
+
     const result = await bulkAssignAttendees({
       meetingId: params.meetingId,
       associationId: association.id,
       userIds: body.userIds,
       attendeeRole: body.attendeeRole,
     });
+
+    logger.info("PUT /api/meetings/[meetingId]/attendees - Success", { traceId, meetingId: params.meetingId, assigned: result.assigned.length, skipped: result.skipped.length });
 
     return SuccessResponse({
       data: result,

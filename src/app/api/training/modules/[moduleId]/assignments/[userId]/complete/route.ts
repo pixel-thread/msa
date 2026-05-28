@@ -7,6 +7,7 @@ import { UserRole } from "@prisma/client";
 import { completeAssignment } from "@feature/training/services";
 import { uploadToBucket } from "@src/shared/lib/supabase/storage";
 import { z } from "zod";
+import { logger } from "@src/shared/logger";
 
 const ParamsSchema = z.object({
   moduleId: z.uuid("Invalid module ID"),
@@ -21,13 +22,16 @@ const MetadataSchema = z.object({
 
 export const POST = withAssociation(
   { params: ParamsSchema },
-  async (association, { params }, request) => {
+  async (association, { params, traceId }, request) => {
     if (!params) {
       throw new ForbiddenError("Invalid parameters");
     }
 
+    logger.info("POST /training/modules/{moduleId}/assignments/{userId}/complete - Request started", { traceId, associationId: association.id });
+
     const { moduleId, userId } = params;
     const actor = await withRole(request, UserRole.SECRETARY);
+    logger.info("POST /training/modules/{moduleId}/assignments/{userId}/complete - User authorized", { traceId, userId: actor.id });
 
     const contentType = request.headers.get("content-type") || "";
 
@@ -101,6 +105,8 @@ export const POST = withAssociation(
         certificateFileId = fileRecord.id;
       }
 
+      logger.info("POST /training/modules/{moduleId}/assignments/{userId}/complete - Completing assignment", { traceId, moduleId, targetUserId: userId });
+
       const result = await completeAssignment({
         associationId: association.id,
         moduleId,
@@ -113,6 +119,7 @@ export const POST = withAssociation(
         certificateNumber,
       });
 
+      logger.info("POST /training/modules/{moduleId}/assignments/{userId}/complete - Success", { traceId });
       return SuccessResponse({ data: result }, 201);
     } catch (error) {
       if (error instanceof Error) {

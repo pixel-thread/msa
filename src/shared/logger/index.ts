@@ -93,20 +93,7 @@ const log = (level: LogLevel, message: string, context?: LogContext) => {
   const formatted = formatMessage(level, message, context);
 
   if (!isProduction) {
-    switch (level) {
-      case "info":
-        console.log(formatted);
-        break;
-      case "warn":
-        console.log(formatted);
-        break;
-      case "error":
-        console.log(formatted);
-        break;
-      case "debug":
-        console.log(formatted);
-        break;
-    }
+    console.log(formatted);
   }
 
   enqueue(level, message, context);

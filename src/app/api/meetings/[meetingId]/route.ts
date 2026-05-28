@@ -10,6 +10,7 @@ import {
 import { UpdateMeetingSchema } from "@feature/meetings/validators/meetings";
 import { z } from "zod";
 import { hasHighRoleAccess } from "@src/shared/utils/has-high-role";
+import { logger } from "@src/shared/logger";
 
 const MeetingParamsSchema = z.object({
   meetingId: z.string("Invalid meeting ID"),
@@ -17,12 +18,16 @@ const MeetingParamsSchema = z.object({
 
 export const GET = withAssociation(
   { params: MeetingParamsSchema },
-  async (association, { params }, request) => {
+  async (association, { params, traceId }, request) => {
+    logger.info("GET /api/meetings/[meetingId] - Request started", { traceId, meetingId: params?.meetingId, associationId: association.id });
+
     if (!params) {
       throw new ForbiddenError("Invalid meeting ID");
     }
 
     const user = await withRole(request, UserRole.MEMBER);
+    logger.info("GET /api/meetings/[meetingId] - User authorized", { traceId, userId: user.id, role: user.role });
+
     const userId = request.headers.get("x-user-id")!;
 
     const meeting = await findUniqueMeeting({
@@ -39,6 +44,8 @@ export const GET = withAssociation(
       }
     }
 
+    logger.info("GET /api/meetings/[meetingId] - Success", { traceId, meetingId: meeting.id });
+
     return SuccessResponse({
       data: meeting,
     });
@@ -47,7 +54,9 @@ export const GET = withAssociation(
 
 export const PATCH = withAssociation(
   { params: MeetingParamsSchema, body: UpdateMeetingSchema },
-  async (association, { params, body }, request) => {
+  async (association, { params, body, traceId }, request) => {
+    logger.info("PATCH /api/meetings/[meetingId] - Request started", { traceId, meetingId: params?.meetingId, associationId: association.id });
+
     if (!params) {
       throw new ForbiddenError("Invalid meeting ID");
     }
@@ -60,6 +69,10 @@ export const PATCH = withAssociation(
       );
     }
 
+    logger.info("PATCH /api/meetings/[meetingId] - User authorized", { traceId, userId: user.id, role: user.role, meetingId: params.meetingId });
+
+    logger.info("PATCH /api/meetings/[meetingId] - Updating meeting", { traceId, meetingId: params.meetingId });
+
     const updateData: Record<string, unknown> = { ...body };
     if (body?.scheduledAt) {
       updateData.scheduledAt = new Date(body.scheduledAt);
@@ -71,13 +84,17 @@ export const PATCH = withAssociation(
       data: updateData as Parameters<typeof updateMeeting>[0]["data"],
     });
 
+    logger.info("PATCH /api/meetings/[meetingId] - Success", { traceId, meetingId: meeting.id });
+
     return SuccessResponse({ data: meeting });
   },
 );
 
 export const DELETE = withAssociation(
   { params: MeetingParamsSchema },
-  async (association, { params }, request) => {
+  async (association, { params, traceId }, request) => {
+    logger.info("DELETE /api/meetings/[meetingId] - Request started", { traceId, meetingId: params?.meetingId, associationId: association.id });
+
     if (!params) {
       throw new ForbiddenError("Invalid meeting ID");
     }
@@ -90,10 +107,16 @@ export const DELETE = withAssociation(
       );
     }
 
+    logger.info("DELETE /api/meetings/[meetingId] - User authorized", { traceId, userId: user.id, role: user.role, meetingId: params.meetingId });
+
+    logger.info("DELETE /api/meetings/[meetingId] - Deleting meeting", { traceId, meetingId: params.meetingId });
+
     const deletedMeeting = await deleteMeeting({
       meetingId: params.meetingId,
       associationId: association.id,
     });
+
+    logger.info("DELETE /api/meetings/[meetingId] - Success", { traceId, meetingId: deletedMeeting.id });
 
     return SuccessResponse({
       data: deletedMeeting,

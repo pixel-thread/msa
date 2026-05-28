@@ -16,6 +16,7 @@ import {
 import { UpdateSupplementSchema } from "@feature/training/validators/training";
 import { uploadToBucket, deleteFromBucket } from "@lib/supabase/storage";
 import { z } from "zod";
+import { logger } from "@src/shared/logger";
 
 const TrainingParamsSchema = z.object({
   moduleId: z.uuid("Invalid module ID"),
@@ -24,11 +25,16 @@ const TrainingParamsSchema = z.object({
 
 export const GET = withAssociation(
   { params: TrainingParamsSchema },
-  async (association, { params }, request) => {
+  async (association, { params, traceId }, request) => {
     if (!params) {
       throw new ForbiddenError("Invalid params");
     }
+
+    logger.info("GET /training/modules/{moduleId}/supplements/{supplementId} - Request started", { traceId, associationId: association.id });
+
     await withRole(request, UserRole.MEMBER);
+    logger.info("GET /training/modules/{moduleId}/supplements/{supplementId} - User authorized", { traceId });
+
     const { moduleId, supplementId } = params;
 
     const supplements = await findManySupplements({
@@ -42,19 +48,23 @@ export const GET = withAssociation(
       throw new NotFoundError("Training supplement not found");
     }
 
+    logger.info("GET /training/modules/{moduleId}/supplements/{supplementId} - Success", { traceId, supplementId });
     return SuccessResponse({ data: supplement });
   },
 );
 
 export const PATCH = withAssociation(
   { params: TrainingParamsSchema },
-  async (association, { params }, request) => {
+  async (association, { params, traceId }, request) => {
     if (!params) {
       throw new ForbiddenError("Invalid params");
     }
 
+    logger.info("PATCH /training/modules/{moduleId}/supplements/{supplementId} - Request started", { traceId, associationId: association.id });
+
     const { moduleId, supplementId } = params;
     const user = await withRole(request, UserRole.DPO);
+    logger.info("PATCH /training/modules/{moduleId}/supplements/{supplementId} - User authorized", { traceId, userId: user.id });
 
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
@@ -82,6 +92,8 @@ export const PATCH = withAssociation(
       if (!file.size || file.size === 0) {
         throw new BadRequestError("File is empty");
       }
+
+      logger.info("PATCH /training/modules/{moduleId}/supplements/{supplementId} - Uploading file", { traceId });
 
       const uploadResult = await uploadToBucket(
         file,
@@ -125,18 +137,23 @@ export const PATCH = withAssociation(
       }
     }
 
+    logger.info("PATCH /training/modules/{moduleId}/supplements/{supplementId} - Success", { traceId, supplementId });
     return SuccessResponse({ data: supplement });
   },
 );
 
 export const DELETE = withAssociation(
   { params: TrainingParamsSchema },
-  async (association, { params }, request) => {
+  async (association, { params, traceId }, request) => {
     if (!params) {
       throw new ForbiddenError("Invalid params");
     }
+
+    logger.info("DELETE /training/modules/{moduleId}/supplements/{supplementId} - Request started", { traceId, associationId: association.id });
+
     const { moduleId, supplementId } = params;
     const user = await withRole(request, UserRole.DPO);
+    logger.info("DELETE /training/modules/{moduleId}/supplements/{supplementId} - User authorized", { traceId, userId: user.id });
 
     const result = await deleteSupplement({
       associationId: association.id,
@@ -153,6 +170,7 @@ export const DELETE = withAssociation(
       }
     }
 
+    logger.info("DELETE /training/modules/{moduleId}/supplements/{supplementId} - Success", { traceId, supplementId });
     return SuccessResponse({
       data: { success: true, message: "Training supplement deleted" },
     });
