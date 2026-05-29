@@ -153,9 +153,9 @@ export default function Home() {
 
       {/* ─── HERO ─── */}
       <section className="relative mt-16 flex min-h-[calc(100vh-4rem)] items-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] via-background to-background" />
-        <div className="absolute -left-32 top-1/4 size-[500px] rounded-full bg-primary/[0.04] blur-3xl" />
-        <div className="absolute -bottom-32 right-1/4 size-[400px] rounded-full bg-primary/[0.02] blur-3xl" />
+        <div className="absolute inset-0 bg-linear-to-br from-primary/2 via-background to-background" />
+        <div className="absolute -left-32 top-1/4 size-125 rounded-full bg-primary/4 blur-3xl" />
+        <div className="absolute -bottom-32 right-1/4 size-400 rounded-full bg-primary/2 blur-3xl" />
         <div className="absolute inset-0 bg-[image:radial-gradient(var(--border)_0.5px,transparent_0.5px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,black_20%,transparent_70%)]" />
         <div className="relative mx-auto flex w-full max-w-7xl flex-col items-center gap-16 px-6 py-24 lg:flex-row lg:py-32">
           <div className="max-w-xl text-center lg:w-3/5 lg:text-left">
