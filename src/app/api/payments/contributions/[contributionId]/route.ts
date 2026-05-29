@@ -1,9 +1,9 @@
 import { withAssociation } from '@src/shared/api';
 import { SuccessResponse } from '@src/shared/utils/responses';
-import { prisma } from '@src/shared/lib/prisma';
 import { logger } from '@src/shared/logger/server';
 import { z } from 'zod';
 import { NotFoundError } from '@src/shared/errors';
+import { findUniqueContributionPeriod } from '@src/features/payments/services/findUniqueContributionPeriod';
 
 const ParamsSchema = z.object({
   contributionId: z.string().uuid('Invalid contribution ID'),
@@ -16,7 +16,7 @@ export const GET = withAssociation(
       { traceId, contributionId: params!.contributionId },
       'GET /api/payments/contributions/[contributionId] - Request started',
     );
-    const contribution = await prisma.contributionPeriod.findFirst({
+    const contribution = await findUniqueContributionPeriod({
       where: {
         id: params!.contributionId,
         associationId: association.id,

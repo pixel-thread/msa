@@ -1,7 +1,7 @@
 import { withAssociation, withRole } from '@src/shared/api';
 import { SuccessResponse } from '@src/shared/utils/responses';
 import { UserRole } from '@prisma/client';
-import { prisma } from '@src/shared/lib/prisma';
+import { findUniqueDsarTicket } from '@src/features/dsar/services/findUniqueDsarTicket';
 import { ForbiddenError, NotFoundError } from '@src/shared/errors';
 import { logger } from '@src/shared/logger/server';
 
@@ -27,16 +27,7 @@ export const GET = withAssociation({}, async (association, { traceId }, request,
 
   const { ticketId } = (await params) as { ticketId: string };
 
-  const ticket = await prisma.dsarTicket.findUnique({
-    where: {
-      id: ticketId,
-      associationId: association.id,
-    },
-    include: {
-      responses: true,
-      assignedTo: true,
-    },
-  });
+  const ticket = await findUniqueDsarTicket(ticketId, association.id);
 
   if (!ticket) {
     throw new NotFoundError('Ticket not found');

@@ -11,6 +11,7 @@ interface UpdateMeetingProps {
     scheduledAt?: Date;
     venue?: string;
     status?: MeetingStatus;
+    noticeIssuedAt?: Date;
   };
 }
 

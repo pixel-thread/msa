@@ -2,12 +2,12 @@ import { withAssociation, withRole } from '@src/shared/api';
 import { SuccessResponse } from '@src/shared/utils/responses';
 import { logger } from '@src/shared/logger/server';
 import { UserRole } from '@prisma/client';
-import { prisma } from '@src/shared/lib/prisma';
 import { z } from 'zod';
 import { NotFoundError, ValidationError } from '@src/shared/errors';
+import { findFirstMember } from '@src/features/members/services/findFirstMember';
 import { getUserContributionSummary } from '@src/features/payments/services/contribution.service';
+import { findPaymentTransactions } from '@src/features/payments/services/findPaymentTransactions';
 import { pageNumberValidation } from '@src/shared/validators/common';
-import { PAGE_SIZE } from '@src/shared/constants';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 
 const UserPaymentsParamsSchema = z.object({
@@ -35,9 +35,8 @@ export const GET = withAssociation(
     const { userId } = params as { userId: string };
     const page = query?.page || 1;
 
-    const user = await prisma.user.findUnique({
+    const user = await findFirstMember({
       where: { id: userId, associationId: association.id },
-      select: { id: true, name: true, email: true, membershipNumber: true },
     });
 
     if (!user) {
@@ -46,32 +45,27 @@ export const GET = withAssociation(
 
     logger.info({ traceId, userId }, 'GET /api/payments/users/[userId] - Fetching transactions');
 
-    const [transactions, total, summary] = await Promise.all([
-      prisma.paymentTransaction.findMany({
-        where: { userId, associationId: association.id },
-        include: {
-          allocations: {
-            include: {
-              contributionPeriod: {
-                select: {
-                  year: true,
-                  month: true,
-                  expectedAmount: true,
-                  status: true,
-                },
+    const { transactions, total } = await findPaymentTransactions({
+      where: { userId, associationId: association.id },
+      page,
+      pageSize: 10,
+      include: {
+        allocations: {
+          include: {
+            contributionPeriod: {
+              select: {
+                year: true,
+                month: true,
+                expectedAmount: true,
+                status: true,
               },
             },
           },
         },
-        orderBy: { paymentDate: 'desc' },
-        take: PAGE_SIZE,
-        skip: (page - 1) * PAGE_SIZE,
-      }),
-      prisma.paymentTransaction.count({
-        where: { userId, associationId: association.id },
-      }),
-      getUserContributionSummary(userId),
-    ]);
+      },
+    });
+
+    const summary = await getUserContributionSummary(userId);
 
     logger.info(
       { traceId, userId, count: transactions.length, total },

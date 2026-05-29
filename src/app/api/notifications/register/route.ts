@@ -1,5 +1,5 @@
-import { prisma } from '@src/shared/lib/prisma';
 import { withValidation } from '@src/shared/api';
+import { upsertPushToken } from '@src/features/notifications/services/upsertPushToken';
 import z from 'zod';
 import { ValidationError } from '@src/shared/errors';
 import { SuccessResponse } from '@src/shared/utils';
@@ -20,11 +20,7 @@ export const POST = withValidation(
       throw new ValidationError('Missing token');
     }
 
-    const pushToken = await prisma.pushToken.upsert({
-      where: { token },
-      update: { updatedAt: new Date() },
-      create: { token },
-    });
+    const pushToken = await upsertPushToken(token);
 
     logger.info({ traceId, tokenId: pushToken.id }, 'POST /api/notifications/register - Success');
 

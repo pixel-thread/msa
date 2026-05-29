@@ -1,15 +1,16 @@
 import { withAssociation, withRole } from '@src/shared/api';
 import { SuccessResponse } from '@src/shared/utils/responses';
 import { UserRole } from '@prisma/client';
-import { processAgendaOperations } from '@feature/meetings/services/processAgendaOperations';
+import { processAgendaOperations } from '@src/features/meetings/services/processAgendaOperations';
 import {
   AgendaOperationSchema,
   CreateAgendaItemSchema,
 } from '@feature/meetings/validators/agenda-items';
 import { z } from 'zod';
 import { ForbiddenError } from '@src/shared/errors';
-import { findUniqueMeeting } from '@src/features/meetings';
-import { prisma } from '@src/shared/lib/prisma';
+import { findUniqueMeeting } from '@src/features/meetings/services/findUniqueMeeting';
+import { createAgendaItem } from '@src/features/meetings/services/createAgendaItem';
+import { countAgendaItems } from '@src/features/meetings/services/countAgendaItems';
 import { logger } from '@src/shared/logger/server';
 
 const ParamsSchema = z.object({ meetingId: z.string('Invalid meeting ID') });
@@ -84,19 +85,15 @@ export const POST = withAssociation(
     let order = body.order;
 
     if (order === undefined) {
-      const count = await prisma.agendaItem.count({
-        where: { meetingId: params!.meetingId },
-      });
+      const count = await countAgendaItems({ meetingId: params!.meetingId });
       order = count + 1;
     }
 
-    const item = await prisma.agendaItem.create({
-      data: {
-        meetingId: params!.meetingId,
-        title: body.title,
-        description: body.description,
-        order,
-      },
+    const item = await createAgendaItem({
+      meetingId: params!.meetingId,
+      title: body.title,
+      description: body.description,
+      order,
     });
 
     logger.info(

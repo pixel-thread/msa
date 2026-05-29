@@ -1,8 +1,9 @@
-import { prisma } from '@src/shared/lib/prisma';
 import { withValidation } from '@src/shared/api';
 import { ConflictError } from '@src/shared/errors';
 import { SuccessResponse } from '@src/shared/utils';
 import { env } from '@src/env';
+import { findFirstAssociation } from '@src/features/associations/services/findFirstAssociation';
+import { findUniqueMember } from '@src/features/members/services/findUniqueMember';
 import {
   MembershipApplicationInput,
   MembershipApplicationSchema,
@@ -37,15 +38,12 @@ export const POST = withValidation(
     } = body as MembershipApplicationInput;
 
     const [association, user] = await Promise.all([
-      prisma.association.findFirst({
+      findFirstAssociation({
         where: { slug: associationSlug || env.NEXT_PUBLIC_ASSOCIATION_SLUG },
         select: { id: true, name: true },
       }),
 
-      prisma.user.findFirst({
-        where: { email },
-        select: { id: true, status: true },
-      }),
+      findUniqueMember({ where: { email } }),
     ]);
 
     if (!association) {

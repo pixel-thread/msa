@@ -2,9 +2,8 @@ import { withAssociation } from '@src/shared/api';
 import { SuccessResponse } from '@src/shared/utils';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 import { UnauthorizedError } from '@src/shared/errors';
-import { prisma } from '@src/shared/lib/prisma';
-import { PAGE_SIZE } from '@src/shared/constants';
 import { ComplaintQuerySchema } from '@src/features/compliance/validators';
+import { findManyComplaints } from '@src/features/compliance/services';
 import { logger } from '@src/shared/logger/server';
 
 export const GET = withAssociation(
@@ -45,19 +44,10 @@ export const GET = withAssociation(
       };
     }
 
-    const complaints = await prisma.complaint.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      skip: ((query?.page ?? 1) - 1) * PAGE_SIZE,
-      take: PAGE_SIZE,
-      include: {
-        user: {
-          select: { id: true, name: true, email: true },
-        },
-      },
+    const { complaints, total } = await findManyComplaints({
+      where: where as Parameters<typeof findManyComplaints>[0]['where'],
+      page: query?.page ?? 1,
     });
-
-    const total = await prisma.complaint.count({ where });
 
     logger.info({ traceId, count: complaints.length }, 'GET /api/compliance/my - Success');
 

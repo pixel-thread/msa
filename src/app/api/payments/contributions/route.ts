@@ -1,13 +1,13 @@
 import { withAssociation, withRole } from '@src/shared/api';
 import { SuccessResponse } from '@utils/responses';
 import { UserRole, ContributionStatus } from '@prisma/client';
-import { prisma } from '@src/shared/lib/prisma';
 import { GenerateContributionsSchema, WaiveContributionSchema } from '@feature/payments/validators';
 import {
   generateMonthlyContributions,
   markOverdueContributions,
   waiveContribution,
 } from '@feature/payments/services/contribution.service';
+import { findContributionPeriods } from '@src/features/payments/services/findContributionPeriods';
 import { logger } from '@src/shared/logger/server';
 import { z } from 'zod';
 import { ValidationError } from '@src/shared/errors';
@@ -60,39 +60,35 @@ export const GET = withAssociation(
     if (year) where.year = year;
     if (month) where.month = month;
 
-    const [contributions, total] = await prisma.$transaction([
-      prisma.contributionPeriod.findMany({
-        where,
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              membershipNumber: true,
-            },
+    const { contributions, total } = await findContributionPeriods({
+      where: where as Parameters<typeof findContributionPeriods>[0]['where'],
+      page,
+      pageSize: PAGE_SIZE,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            membershipNumber: true,
           },
-          allocations: {
-            include: {
-              paymentTransaction: {
-                select: {
-                  id: true,
-                  amount: true,
-                  method: true,
-                  status: true,
-                  paidAt: true,
-                  receiptNumber: true,
-                },
+        },
+        allocations: {
+          include: {
+            paymentTransaction: {
+              select: {
+                id: true,
+                amount: true,
+                method: true,
+                status: true,
+                paidAt: true,
+                receiptNumber: true,
               },
             },
           },
         },
-        orderBy: [{ year: 'desc' }, { month: 'desc' }],
-        take: PAGE_SIZE,
-        skip: (page - 1) * PAGE_SIZE,
-      }),
-      prisma.contributionPeriod.count({ where }),
-    ]);
+      },
+    });
 
     logger.info(
       { traceId, count: contributions.length },

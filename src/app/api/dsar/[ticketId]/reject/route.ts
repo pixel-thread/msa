@@ -1,7 +1,7 @@
 import { withAssociation, withRole } from '@src/shared/api';
 import { SuccessResponse } from '@src/shared/utils';
-import { UserRole, DsarStatus, AuditAction } from '@prisma/client';
-import { prisma } from '@src/shared/lib/prisma';
+import { UserRole, DsarStatus } from '@prisma/client';
+import { respondToDsarTicket } from '@src/features/dsar/services/respondToDsarTicket';
 import { z } from 'zod';
 import { logger } from '@src/shared/logger/server';
 
@@ -49,31 +49,14 @@ export const POST = withAssociation(
       'POST /api/dsar/[ticketId]/reject - User authorized',
     );
 
-    const ticket = await prisma.$transaction(async (tx) => {
-      const updated = await tx.dsarTicket.update({
-        where: { id: params!.ticketId, associationId: association.id },
-        data: {
-          status: DsarStatus.REJECTED,
-          rejectedReason: body!.reason,
-          completedAt: new Date(),
-        },
-      });
-
-      await tx.auditLog.create({
-        data: {
-          associationId: association.id,
-          actorId,
-          action: AuditAction.DSAR_RESPOND,
-          resourceType: 'DsarTicket',
-          resourceId: params!.ticketId,
-          newValues: {
-            status: DsarStatus.REJECTED,
-            rejectedReason: body!.reason,
-          },
-        },
-      });
-
-      return updated;
+    const ticket = await respondToDsarTicket({
+      associationId: association.id,
+      ticketId: params!.ticketId,
+      actorId,
+      data: {
+        status: DsarStatus.REJECTED,
+        rejectedReason: body!.reason,
+      },
     });
 
     logger.info({ traceId }, 'POST /api/dsar/[ticketId]/reject - Success');

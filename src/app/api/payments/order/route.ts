@@ -4,7 +4,7 @@ import { logger } from '@src/shared/logger/server';
 import { UserRole } from '@prisma/client';
 import { CreateOrderSchema } from '@feature/payments/validators';
 import { createPaymentOrder } from '@feature/payments/services/payment.service';
-import { prisma } from '@src/shared/lib/prisma';
+import { findSubscriptionPlans } from '@src/features/payments/services/findSubscriptionPlans';
 import { NotFoundError } from '@src/shared/errors';
 import { getActiveProvider } from '@src/features/payments/services/payment-provider.service';
 
@@ -41,19 +41,18 @@ export const POST = withAssociation(
       whereClause.memberTypeId = null;
     }
 
-    let plans = await prisma.subscriptionPlan.findMany({
-      where: whereClause,
+    let plans = await findSubscriptionPlans({
+      where: whereClause as Parameters<typeof findSubscriptionPlans>[0]['where'],
       include: {
         versions: {
           take: 1,
           orderBy: { createdAt: 'desc' },
         },
       },
-      orderBy: { createdAt: 'desc' },
     });
 
     if (plans.length === 0) {
-      plans = await prisma.subscriptionPlan.findMany({
+      plans = await findSubscriptionPlans({
         where: {
           associationId: association.id,
           isDefault: true,
@@ -65,7 +64,6 @@ export const POST = withAssociation(
             orderBy: { createdAt: 'desc' },
           },
         },
-        orderBy: { createdAt: 'desc' },
       });
     }
 

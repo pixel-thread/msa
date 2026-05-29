@@ -1,5 +1,5 @@
-import { prisma } from '@src/shared/lib/prisma';
 import { withValidation } from '@src/shared/api';
+import { upsertPushToken } from '@src/features/notifications/services/upsertPushToken';
 import z from 'zod';
 import { UnauthorizedError, ValidationError } from '@src/shared/errors';
 import { SuccessResponse } from '@src/shared/utils';
@@ -24,17 +24,7 @@ export const POST = withValidation(
       throw new ValidationError('Token is required');
     }
 
-    const pushToken = await prisma.pushToken.upsert({
-      where: { token: body.token },
-      update: {
-        userId: userId,
-        updatedAt: new Date(),
-      },
-      create: {
-        token: body.token,
-        userId: userId,
-      },
-    });
+    const pushToken = await upsertPushToken(body.token, userId);
 
     logger.info({ traceId, tokenId: pushToken.id }, 'POST /api/notifications/link - Success');
 

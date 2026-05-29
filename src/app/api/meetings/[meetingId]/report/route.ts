@@ -1,8 +1,7 @@
 import { withAssociation, withRole } from '@src/shared/api';
 import { SuccessResponse } from '@src/shared/utils/responses';
 import { UserRole } from '@prisma/client';
-import { prisma } from '@src/shared/lib/prisma';
-import { NotFoundError } from '@src/shared/errors';
+import { findUniqueMeeting } from '@src/features/meetings/services/findUniqueMeeting';
 import { logger } from '@src/shared/logger/server';
 
 export const GET = withAssociation({}, async (association, { traceId }, request, { params }) => {
@@ -25,23 +24,10 @@ export const GET = withAssociation({}, async (association, { traceId }, request,
     'GET /api/meetings/[meetingId]/report - Fetching meeting report',
   );
 
-  const meeting = await prisma.meeting.findUnique({
-    where: {
-      id: meetingId,
-      associationId: association.id,
-    },
-    include: {
-      attendees: {
-        include: { user: true },
-      },
-      agendaItems: true,
-      minutes: true,
-    },
+  const meeting = await findUniqueMeeting({
+    meetingId,
+    associationId: association.id,
   });
-
-  if (!meeting) {
-    throw new NotFoundError('Meeting not found');
-  }
 
   logger.info({ traceId, meetingId: meeting.id }, 'GET /api/meetings/[meetingId]/report - Success');
 

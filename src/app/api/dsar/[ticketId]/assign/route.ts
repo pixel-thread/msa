@@ -1,9 +1,9 @@
 import { withAssociation, withRole } from '@src/shared/api';
 import { hasHighRoleAccess, SuccessResponse } from '@src/shared/utils';
-import { UserRole, AuditAction } from '@prisma/client';
-import { prisma } from '@src/shared/lib/prisma';
+import { UserRole } from '@prisma/client';
 import { z } from 'zod';
-import { getUniqueUser, logAction } from '@src/shared/services';
+import { assignDsarTicket } from '@src/features/dsar/services/assignDsarTicket';
+import { getUniqueUser } from '@src/shared/services';
 import { BadRequestError, NotFoundError } from '@src/shared/errors';
 import { logger } from '@src/shared/logger/server';
 
@@ -59,24 +59,11 @@ export const PATCH = withAssociation(
       throw new BadRequestError('User does have the required role');
     }
 
-    const ticket = await prisma.$transaction(async (tx) => {
-      const updated = await tx.dsarTicket.update({
-        where: { id: params!.ticketId, associationId: association.id },
-        data: {
-          assignedToId: body!.assignedToId,
-        },
-      });
-
-      await logAction({
-        associationId: association.id,
-        actorId,
-        action: AuditAction.UPDATE,
-        resourceType: 'DsarTicket',
-        resourceId: params!.ticketId,
-        newValues: { assignedToId: body!.assignedToId },
-      });
-
-      return updated;
+    const ticket = await assignDsarTicket({
+      associationId: association.id,
+      ticketId: params!.ticketId,
+      actorId,
+      assignedToId: body!.assignedToId,
     });
 
     logger.info({ traceId }, 'PATCH /api/dsar/[ticketId]/assign - Success');

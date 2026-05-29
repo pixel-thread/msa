@@ -1,7 +1,7 @@
 import { withAssociation } from '@src/shared/api';
 import { SuccessResponse } from '@src/shared/utils/responses';
 import { UnauthorizedError, ValidationError } from '@src/shared/errors';
-import { prisma } from '@src/shared/lib/prisma';
+import { updateMember } from '@src/features/members/services/updateMember';
 import { z } from 'zod';
 import { logger } from '@src/shared/logger/server';
 
@@ -39,11 +39,8 @@ export const POST = withAssociation(
       throw new ValidationError('Invalid request body');
     }
 
-    const user = await prisma.user.update({
-      where: {
-        id: userId,
-        associationId: association.id,
-      },
+    const user = await updateMember({
+      where: { id: userId },
       data: {
         dateOfJoiningGovt: new Date(body.dateOfJoiningGovt),
         dateOfJoiningAssociation: new Date(body.dateOfJoiningAssociation),

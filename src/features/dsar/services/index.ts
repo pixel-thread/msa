@@ -5,3 +5,4 @@ export * from './findUniqueDsarTicket';
 export * from './getDsarSlaStatus';
 export * from './deleteDsarTicket';
 export * from './findAssociationAdmins';
+export * from './assignDsarTicket';

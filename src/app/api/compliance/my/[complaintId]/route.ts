@@ -1,8 +1,8 @@
 import { withAssociation } from '@src/shared/api';
 import { SuccessResponse } from '@src/shared/utils';
 import { BadRequestError, NotFoundError, UnauthorizedError } from '@src/shared/errors';
-import { prisma } from '@src/shared/lib/prisma';
 import { ComplaintParamsSchema } from '@src/features/compliance/validators';
+import { findUniqueComplaint } from '@src/features/compliance/services';
 import { logger } from '@src/shared/logger/server';
 
 export const GET = withAssociation(
@@ -33,16 +33,11 @@ export const GET = withAssociation(
       throw new UnauthorizedError('Unauthorized');
     }
 
-    const complaint = await prisma.complaint.findFirst({
+    const complaint = await findUniqueComplaint({
       where: {
         id: params.complaintId,
         associationId: association.id,
         userId,
-      },
-      include: {
-        user: {
-          select: { id: true, name: true, email: true },
-        },
       },
     });
 

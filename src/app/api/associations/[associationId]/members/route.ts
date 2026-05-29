@@ -1,7 +1,8 @@
 import { withAssociation, withRole } from '@src/shared/api';
 import { SuccessResponse } from '@src/shared/utils/responses';
 import { ConflictError, NotFoundError, ValidationError } from '@src/shared/errors';
-import { prisma } from '@src/shared/lib/prisma';
+import { findUniqueMember } from '@src/features/members/services/findUniqueMember';
+import { updateMember } from '@src/features/members/services/updateMember';
 import { UserRole } from '@prisma/client';
 import { NextRequest } from 'next/server';
 import z from 'zod';
@@ -39,7 +40,7 @@ export const POST = withAssociation(
       throw new ValidationError('memberId is required');
     }
 
-    const existingMember = await prisma.user.findUnique({
+    const existingMember = await findUniqueMember({
       where: { id: body.memberId },
     });
 
@@ -63,18 +64,9 @@ export const POST = withAssociation(
       throw new ConflictError('Member already in this association');
     }
 
-    const updatedMember = await prisma.user.update({
+    const updatedMember = await updateMember({
       where: { id: body.memberId },
       data: { associationId: association.id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        status: true,
-        membershipNumber: true,
-        associationId: true,
-      },
     });
 
     logger.info(

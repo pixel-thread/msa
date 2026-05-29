@@ -1,7 +1,8 @@
 import { UserRole } from '@prisma/client';
 import { withAssociation, withRole } from '@src/shared/api';
 import { ConflictError, NotFoundError } from '@src/shared/errors';
-import { prisma } from '@src/shared/lib/prisma';
+import { findFirstMember } from '@src/features/members/services/findFirstMember';
+import { updateMember } from '@src/features/members/services/updateMember';
 import { SuccessResponse } from '@src/shared/utils';
 import z from 'zod';
 import { logger } from '@src/shared/logger/server';
@@ -35,7 +36,7 @@ export const POST = withAssociation(
       'POST /api/members/[memberId]/role - User authorized',
     );
 
-    const target = await prisma.user.findUnique({
+    const target = await findFirstMember({
       where: { id: params?.memberId, associationId: association.id },
     });
 
@@ -48,10 +49,9 @@ export const POST = withAssociation(
     if (userRole.includes(newRole)) {
       throw new ConflictError('User already has the role');
     }
-    const updatedUser = await prisma.user.update({
+    const updatedUser = await updateMember({
       where: { id: params?.memberId },
       data: { role: [...userRole, newRole] },
-      select: { id: true, role: true, email: true },
     });
 
     logger.info(
@@ -91,7 +91,7 @@ export const PUT = withAssociation(
       'PUT /api/members/[memberId]/role - User authorized',
     );
 
-    const target = await prisma.user.findUnique({
+    const target = await findFirstMember({
       where: { id: params?.memberId, associationId: association.id },
     });
 
@@ -105,10 +105,9 @@ export const PUT = withAssociation(
       throw new ConflictError('User does not have the role');
     }
 
-    const updatedUser = await prisma.user.update({
+    const updatedUser = await updateMember({
       where: { id: params?.memberId },
       data: { role: userRole.filter((role) => role !== removeRole) },
-      select: { id: true, role: true, email: true },
     });
 
     logger.info(

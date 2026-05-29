@@ -10,3 +10,7 @@ export * from './updateAttendee';
 export * from './updateMeeting';
 export * from './processAgendaOperations';
 export * from './minutes';
+export * from './countAgendaItems';
+export * from './createAgendaItem';
+export * from './updateAgendaItem';
+export * from './deleteAgendaItem';

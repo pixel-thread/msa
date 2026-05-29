@@ -2,7 +2,7 @@ import { withAssociation, withRole } from '@src/shared/api';
 import { SuccessResponse } from '@src/shared/utils/responses';
 import { ForbiddenError, ValidationError } from '@src/shared/errors';
 import { UserRole } from '@prisma/client';
-import { prisma } from '@src/shared/lib/prisma';
+import { updateAttendee } from '@src/features/meetings/services/updateAttendee';
 import { z } from 'zod';
 import { logger } from '@src/shared/logger/server';
 
@@ -57,17 +57,13 @@ export const POST = withAssociation(
       'POST /api/meetings/[meetingId]/rsvp - Submitting RSVP',
     );
 
-    const updated = await prisma.meetingAttendee.update({
-      where: {
-        meetingId_userId: {
-          meetingId: params.meetingId,
-          userId: userId,
-        },
-      },
+    const updated = await updateAttendee({
+      meetingId: params.meetingId,
+      associationId: _association.id,
+      userId,
       data: {
         rsvpStatus: body.status,
         rsvpNote: body.note,
-        rsvpAt: new Date(),
       },
     });
 

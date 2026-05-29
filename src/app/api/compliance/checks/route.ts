@@ -4,11 +4,9 @@ import {
   ComplianceCheckStatus as PrismaComplianceCheckStatus,
   Prisma,
 } from '@prisma/client';
-import { runComplianceCheck } from '@src/features/compliance/services';
+import { runComplianceCheck, findManyComplianceChecks, createBulkComplianceChecks } from '@src/features/compliance/services';
 import { ComplianceCheckQuerySchema, ALL_CHECK_TYPES } from '@src/features/compliance/validators';
-import { prisma } from '@src/shared/lib/prisma';
 import { SuccessResponse } from '@src/shared/utils';
-import { PAGE_SIZE } from '@src/shared/constants';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 import { logger } from '@src/shared/logger/server';
 
@@ -45,14 +43,10 @@ export const GET = withAssociation(
       };
     }
 
-    const checks = await prisma.complianceCheck.findMany({
-      where,
-      orderBy: { checkedAt: 'desc' },
-      skip: ((query?.page ?? 1) - 1) * PAGE_SIZE,
-      take: PAGE_SIZE,
+    const { checks, total } = await findManyComplianceChecks({
+      where: where as Parameters<typeof findManyComplianceChecks>[0]['where'],
+      page: query?.page ?? 1,
     });
-
-    const total = await prisma.complianceCheck.count({ where });
 
     logger.info({ traceId, count: checks.length }, 'GET /api/compliance/checks - Success');
 
@@ -98,8 +92,8 @@ export const POST = withAssociation({}, async (association, { traceId }, request
     recommendations: result.recommendations as Prisma.InputJsonValue,
   }));
 
-  await prisma.complianceCheck.createMany({
-    data: checksData as Prisma.ComplianceCheckCreateManyArgs['data'],
+  await createBulkComplianceChecks({
+    data: checksData as Parameters<typeof createBulkComplianceChecks>[0]['data'],
   });
 
   logger.info({ traceId, count: results.length }, 'POST /api/compliance/checks - Success');

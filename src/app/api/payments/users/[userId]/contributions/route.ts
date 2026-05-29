@@ -3,10 +3,11 @@ import { SuccessResponse } from '@src/shared/utils/responses';
 import { buildPagination } from '@src/shared/utils';
 import { logger } from '@src/shared/logger/server';
 import { UserRole } from '@prisma/client';
-import { prisma } from '@src/shared/lib/prisma';
 import { z } from 'zod';
 import { NotFoundError, ValidationError } from '@src/shared/errors';
+import { findFirstMember } from '@src/features/members/services/findFirstMember';
 import { getUserContributionSummary } from '@src/features/payments/services/contribution.service';
+import { findContributionPeriods } from '@src/features/payments/services/findContributionPeriods';
 import { pageNumberValidation } from '@src/shared/validators';
 import { PAGE_SIZE } from '@src/shared/constants';
 
@@ -54,9 +55,8 @@ export const GET = withAssociation(
       toMonth?: number;
     }) || {};
 
-    const user = await prisma.user.findUnique({
+    const user = await findFirstMember({
       where: { id: userId, associationId: association.id },
-      select: { id: true, name: true, email: true, membershipNumber: true },
     });
 
     if (!user) {
@@ -92,40 +92,35 @@ export const GET = withAssociation(
         : [toClause];
     }
 
-    const skip = (page - 1) * PAGE_SIZE;
-
     logger.info(
       { traceId, userId },
       'GET /api/payments/users/[userId]/contributions - Fetching contributions',
     );
 
-    const [contributions, total, summary] = await Promise.all([
-      prisma.contributionPeriod.findMany({
-        where: whereClause,
-        skip,
-        take: PAGE_SIZE,
-        include: {
-          allocations: {
-            include: {
-              paymentTransaction: {
-                select: {
-                  id: true,
-                  amount: true,
-                  method: true,
-                  gateway: true,
-                  status: true,
-                  paidAt: true,
-                  receiptNumber: true,
-                },
+    const { contributions, total } = await findContributionPeriods({
+      where: whereClause as Parameters<typeof findContributionPeriods>[0]['where'],
+      page,
+      pageSize: PAGE_SIZE,
+      include: {
+        allocations: {
+          include: {
+            paymentTransaction: {
+              select: {
+                id: true,
+                amount: true,
+                method: true,
+                gateway: true,
+                status: true,
+                paidAt: true,
+                receiptNumber: true,
               },
             },
           },
         },
-        orderBy: [{ year: 'asc' }, { month: 'asc' }],
-      }),
-      prisma.contributionPeriod.count({ where: whereClause }),
-      getUserContributionSummary(userId),
-    ]);
+      },
+    });
+
+    const summary = await getUserContributionSummary(userId);
 
     logger.info(
       { traceId, userId, count: contributions.length, total },

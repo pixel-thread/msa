@@ -1,11 +1,12 @@
 import { z } from 'zod';
 
-import { prisma } from '@src/shared/lib/prisma';
 import { withValidation } from '@src/shared/api';
 import { verifyPassword } from '@src/shared/lib/password';
 import { generateOTP, hashToken } from '@src/shared/lib/password';
 import { sendVerificationEmail } from '@src/shared/lib/email';
 import { env } from '@src/env';
+import { findFirstMember } from '@src/features/members/services/findFirstMember';
+import { createVerificationCode } from '@src/features/auth/services/create-verification-code';
 import {
   BadRequestError,
   ConflictError,
@@ -27,7 +28,7 @@ export const POST = withValidation({ body: SetupMfaSchema }, async (request, _ct
 
   const { password } = body as SetupMfaBody;
 
-  const user = await prisma.user.findUnique({
+  const user = await findFirstMember({
     where: { id: userId },
     select: { password: true, mfaEnabled: true },
   });
@@ -53,7 +54,7 @@ export const POST = withValidation({ body: SetupMfaSchema }, async (request, _ct
   const otpExpiry = new Date();
   otpExpiry.setMinutes(otpExpiry.getMinutes() + 5);
 
-  await prisma.verificationCode.create({
+  await createVerificationCode({
     data: {
       userId,
       code: hashedOTP,
@@ -62,7 +63,7 @@ export const POST = withValidation({ body: SetupMfaSchema }, async (request, _ct
     },
   });
 
-  const authUser = await prisma.user.findUnique({
+  const authUser = await findFirstMember({
     where: { id: userId },
     select: { email: true },
   });

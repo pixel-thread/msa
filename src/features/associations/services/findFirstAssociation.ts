@@ -4,6 +4,7 @@ import { Prisma } from '@prisma/client';
 type Props = {
   where: Prisma.AssociationWhereInput;
   take?: number;
+  select?: Prisma.AssociationSelect;
 };
 
 export async function findFirstAssociation(props: Props) {

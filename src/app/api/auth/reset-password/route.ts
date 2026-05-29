@@ -1,8 +1,8 @@
-import { prisma } from '@src/shared/lib/prisma';
 import { withValidation } from '@src/shared/api';
 import { hashPassword, validatePasswordStrength, hashToken } from '@src/shared/lib/password';
 import { UnauthorizedError, ValidationError } from '@src/shared/errors';
 import { SuccessResponse } from '@src/shared/utils';
+import { findFirstMember } from '@src/features/members/services/findFirstMember';
 import { updateUser } from '@src/features/user/services';
 import { deleteRefreshTokens } from '@src/features/auth/services/delete-refresh-tokens';
 import { ResetPasswordInput, ResetPasswordSchema } from '@src/features/auth/validators';
@@ -24,7 +24,7 @@ export const POST = withValidation(
 
     const hashedToken = hashToken(token);
 
-    const user = await prisma.user.findFirst({
+    const user = await findFirstMember({
       where: {
         passwordResetToken: hashedToken,
         passwordResetExpires: { gt: new Date() },

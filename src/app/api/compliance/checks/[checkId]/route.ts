@@ -1,9 +1,9 @@
 import { withAssociation, withRole } from '@src/shared/api';
 import { SuccessResponse } from '@src/shared/utils';
 import { BadRequestError, NotFoundError } from '@src/shared/errors';
-import { UserRole, Prisma } from '@prisma/client';
-import { prisma } from '@src/shared/lib/prisma';
+import { UserRole } from '@prisma/client';
 import { ComplianceCheckParamsSchema } from '@src/features/compliance/validators';
+import { findUniqueComplianceCheck, deleteComplianceCheck } from '@src/features/compliance/services';
 import { logger } from '@src/shared/logger/server';
 
 export const GET = withAssociation(
@@ -24,7 +24,7 @@ export const GET = withAssociation(
       throw new BadRequestError('Invalid check ID');
     }
 
-    const check = await prisma.complianceCheck.findFirst({
+    const check = await findUniqueComplianceCheck({
       where: { id: params.checkId, associationId: association.id },
     });
 
@@ -63,7 +63,7 @@ export const DELETE = withAssociation(
       throw new BadRequestError('Invalid check ID');
     }
 
-    const existing = await prisma.complianceCheck.findFirst({
+    const existing = await findUniqueComplianceCheck({
       where: { id: params.checkId, associationId: association.id },
     });
 
@@ -75,7 +75,7 @@ export const DELETE = withAssociation(
       throw new NotFoundError('Compliance check not found');
     }
 
-    await prisma.complianceCheck.delete({
+    await deleteComplianceCheck({
       where: { id: params.checkId },
     });
 

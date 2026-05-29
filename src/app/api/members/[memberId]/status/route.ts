@@ -1,7 +1,8 @@
 import { UserRole, UserStatus } from '@prisma/client';
 import { withAssociation, withRole } from '@src/shared/api';
 import { NotFoundError, UnauthorizedError } from '@src/shared/errors';
-import { prisma } from '@src/shared/lib/prisma';
+import { findFirstMember } from '@src/features/members/services/findFirstMember';
+import { updateMember } from '@src/features/members/services/updateMember';
 import { SuccessResponse } from '@src/shared/utils';
 import z from 'zod';
 import { logger } from '@src/shared/logger/server';
@@ -39,16 +40,15 @@ export const PATCH = withAssociation(
 
     if (!memberId) throw new UnauthorizedError('Unauthorized');
 
-    const target = await prisma.user.findUnique({
+    const target = await findFirstMember({
       where: { id: memberId, associationId: association.id },
     });
 
     if (!target) throw new NotFoundError('User does not exist in the association');
 
-    const updatedUser = await prisma.user.update({
+    const updatedUser = await updateMember({
       where: { id: memberId },
       data: { status: body?.status },
-      select: { id: true, status: true, email: true },
     });
 
     logger.info(

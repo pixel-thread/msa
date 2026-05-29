@@ -1,7 +1,7 @@
 import { withAssociation, withRole } from '@src/shared/api';
 import { SuccessResponse } from '@src/shared/utils/responses';
 import { UserRole, MeetingStatus } from '@prisma/client';
-import { prisma } from '@src/shared/lib/prisma';
+import { updateMeeting } from '@src/features/meetings/services/updateMeeting';
 import { logger } from '@src/shared/logger/server';
 
 export const POST = withAssociation({}, async (association, { traceId }, request, { params }) => {
@@ -21,11 +21,9 @@ export const POST = withAssociation({}, async (association, { traceId }, request
 
   logger.info({ traceId, meetingId }, 'POST /api/meetings/[meetingId]/notice - Issuing notice');
 
-  const meeting = await prisma.meeting.update({
-    where: {
-      id: meetingId,
-      associationId: association.id,
-    },
+  const meeting = await updateMeeting({
+    meetingId,
+    associationId: association.id,
     data: {
       status: MeetingStatus.NOTICE_ISSUED,
       noticeIssuedAt: new Date(),

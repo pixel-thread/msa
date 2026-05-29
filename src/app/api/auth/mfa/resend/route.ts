@@ -1,17 +1,19 @@
-import { prisma } from '@src/shared/lib/prisma';
 import { withValidation } from '@src/shared/api';
 import { generateOTP, hashToken } from '@src/shared/lib/password';
 import { sendVerificationEmail } from '@src/shared/lib/email';
 import { env } from '@src/env';
 import { ForbiddenError, NotFoundError, UnauthorizedError } from '@src/shared/errors';
 import { SuccessResponse } from '@src/shared/utils';
+import { findFirstMember } from '@src/features/members/services/findFirstMember';
+import { getVerificationCodeFirst } from '@src/features/auth/services/get-verification-code-first';
+import { createVerificationCode } from '@src/features/auth/services/create-verification-code';
 import { logger } from '@src/shared/logger/server';
 
 export const POST = withValidation({}, async (request) => {
   const userId = request.headers.get('x-user-id');
   if (!userId) throw new UnauthorizedError('Unauthorized');
 
-  const user = await prisma.user.findUnique({
+  const user = await findFirstMember({
     where: { id: userId },
     select: { email: true },
   });
@@ -20,7 +22,7 @@ export const POST = withValidation({}, async (request) => {
     throw new NotFoundError('User not found');
   }
 
-  const lastCode = await prisma.verificationCode.findFirst({
+  const lastCode = await getVerificationCodeFirst({
     where: {
       userId,
       type: 'SETUP_MFA',
@@ -48,7 +50,7 @@ export const POST = withValidation({}, async (request) => {
   const otpExpiry = new Date();
   otpExpiry.setMinutes(otpExpiry.getMinutes() + 5);
 
-  await prisma.verificationCode.create({
+  await createVerificationCode({
     data: {
       userId,
       code: hashedOTP,

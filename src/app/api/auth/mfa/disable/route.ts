@@ -1,10 +1,11 @@
 import { z } from 'zod';
 
-import { prisma } from '@src/shared/lib/prisma';
 import { withValidation } from '@src/shared/api';
 import { verifyPassword } from '@src/shared/lib/password';
 import { BadRequestError, UnauthorizedError } from '@src/shared/errors';
 import { SuccessResponse } from '@src/shared/utils';
+import { findFirstMember } from '@src/features/members/services/findFirstMember';
+import { updateMember } from '@src/features/members/services/updateMember';
 import { logger } from '@src/shared/logger/server';
 
 const DisableMfaSchema = z.object({
@@ -26,7 +27,7 @@ export const POST = withValidation(
 
     const { password } = body as DisableMfaBody;
 
-    const user = await prisma.user.findUnique({
+    const user = await findFirstMember({
       where: { id: userId },
       select: { password: true, mfaEnabled: true },
     });
@@ -48,7 +49,7 @@ export const POST = withValidation(
       throw new UnauthorizedError('Invalid password');
     }
 
-    await prisma.user.update({
+    await updateMember({
       where: { id: userId },
       data: { mfaEnabled: false },
     });

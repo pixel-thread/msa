@@ -3,7 +3,7 @@ import { SuccessResponse } from '@src/shared/utils/responses';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 import { logger } from '@src/shared/logger/server';
 import { UserRole } from '@prisma/client';
-import { prisma } from '@src/shared/lib/prisma';
+import { findPaymentTransactions } from '@src/features/payments/services/findPaymentTransactions';
 import { PaymentHistoryQuerySchema } from '@src/features/payments/validators';
 
 export const GET = withAssociation(
@@ -18,23 +18,14 @@ export const GET = withAssociation(
     const { page = 1, pageSize = 20 } = query || {};
     const skip = (page - 1) * pageSize;
 
-    const [payments, total] = await Promise.all([
-      prisma.paymentTransaction.findMany({
-        where: {
-          userId,
-          associationId: association.id,
-        },
-        orderBy: { paymentDate: 'desc' },
-        skip,
-        take: pageSize,
-      }),
-      prisma.paymentTransaction.count({
-        where: {
-          userId,
-          associationId: association.id,
-        },
-      }),
-    ]);
+    const { transactions: payments, total } = await findPaymentTransactions({
+      where: {
+        userId,
+        associationId: association.id,
+      },
+      page,
+      pageSize,
+    });
 
     logger.info({ traceId, count: payments.length, total }, 'GET /api/payments/my - Success');
 

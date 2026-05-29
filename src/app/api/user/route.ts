@@ -3,7 +3,6 @@ import { getUser, updateUser } from '@src/features/user/services';
 import { UpdateUserSchema } from '@src/features/user/validators';
 import { withValidation, withRole } from '@src/shared/api';
 import { UnauthorizedError } from '@src/shared/errors';
-import { prisma } from '@src/shared/lib/prisma';
 import { SuccessResponse } from '@src/shared/utils';
 import { logger } from '@src/shared/logger/server';
 
@@ -45,9 +44,7 @@ export const POST = withValidation(
 
     if (!userId) throw new UnauthorizedError('User not found');
 
-    const existing = await prisma.user.findUnique({
-      where: { id: userId },
-    });
+    const existing = await getUser({ id: userId });
 
     if (!existing) throw new UnauthorizedError('User not found');
 

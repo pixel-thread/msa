@@ -1,7 +1,8 @@
 import { withAssociation, withRole } from '@src/shared/api';
 import { SuccessResponse } from '@src/shared/utils/responses';
 import { NotFoundError, ValidationError } from '@src/shared/errors';
-import { prisma } from '@src/shared/lib/prisma';
+import { findFirstMember } from '@src/features/members/services/findFirstMember';
+import { updateMember } from '@src/features/members/services/updateMember';
 import { UserRole } from '@prisma/client';
 import z from 'zod';
 import { logger } from '@src/shared/logger/server';
@@ -29,7 +30,7 @@ export const GET = withAssociation(
       'GET /api/members/[memberId] - User authorized',
     );
 
-    const member = await prisma.user.findFirst({
+    const member = await findFirstMember({
       where: {
         id: params?.memberId,
         associationId: association.id,
@@ -113,11 +114,8 @@ export const PATCH = withAssociation(
 
     const memberId = params?.memberId;
 
-    const updatedUser = await prisma.user.update({
-      where: {
-        id: memberId,
-        associationId: association.id,
-      },
+    const updatedUser = await updateMember({
+      where: { id: memberId },
       data: {
         ...(body.name && { name: body.name }),
         ...(body.mobile && { mobile: body.mobile }),

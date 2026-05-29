@@ -1,7 +1,8 @@
 import { withAssociation, withRole } from '@src/shared/api';
 import { SuccessResponse } from '@src/shared/utils/responses';
 import { UserRole } from '@prisma/client';
-import { prisma } from '@src/shared/lib/prisma';
+import { updateAgendaItem } from '@src/features/meetings/services/updateAgendaItem';
+import { deleteAgendaItem } from '@src/features/meetings/services/deleteAgendaItem';
 import { z } from 'zod';
 import { ValidationError } from '@src/shared/errors';
 import { logger } from '@src/shared/logger/server';
@@ -37,10 +38,8 @@ export const PATCH = withAssociation(
       'PATCH /api/meetings/[meetingId]/agenda/[itemId] - Updating agenda item',
     );
 
-    const item = await prisma.agendaItem.update({
-      where: {
-        id: itemId,
-      },
+    const item = await updateAgendaItem({
+      where: { id: itemId },
       data: body,
     });
 
@@ -69,10 +68,8 @@ export const DELETE = withAssociation({}, async (association, { traceId }, reque
     'DELETE /api/meetings/[meetingId]/agenda/[itemId] - Deleting agenda item',
   );
 
-  const item = await prisma.agendaItem.delete({
-    where: {
-      id: itemId,
-    },
+  const item = await deleteAgendaItem({
+    where: { id: itemId },
   });
 
   logger.info({ traceId, itemId }, 'DELETE /api/meetings/[meetingId]/agenda/[itemId] - Success');

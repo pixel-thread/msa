@@ -1,11 +1,13 @@
 import { z } from 'zod';
 
-import { prisma } from '@src/shared/lib/prisma';
 import { withValidation } from '@src/shared/api';
 import { hashToken } from '@src/shared/lib/password';
 import { env } from '@src/env';
 import { TooManyRequestsError, UnauthorizedError } from '@src/shared/errors';
 import { SuccessResponse } from '@src/shared/utils';
+import { getVerificationCodeFirst } from '@src/features/auth/services/get-verification-code-first';
+import { updateVerificationCode } from '@src/features/auth/services/update-verification-code';
+import { updateMember } from '@src/features/members/services/updateMember';
 import { logger } from '@src/shared/logger/server';
 
 const VerifyMfaSchema = z.object({
@@ -29,7 +31,7 @@ export const POST = withValidation(
 
     const hashedCode = hashToken(code);
 
-    const verificationCode = await prisma.verificationCode.findFirst({
+    const verificationCode = await getVerificationCodeFirst({
       where: {
         userId,
         type: 'SETUP_MFA',
@@ -56,7 +58,7 @@ export const POST = withValidation(
     }
 
     if (verificationCode.code !== hashedCode) {
-      await prisma.verificationCode.update({
+      await updateVerificationCode({
         where: { id: verificationCode.id },
         data: { attempts: { increment: 1 } },
       });
@@ -68,12 +70,12 @@ export const POST = withValidation(
       throw new UnauthorizedError('Invalid verification code');
     }
 
-    await prisma.verificationCode.update({
+    await updateVerificationCode({
       where: { id: verificationCode.id },
       data: { usedAt: new Date() },
     });
 
-    await prisma.user.update({
+    await updateMember({
       where: { id: userId },
       data: { mfaEnabled: true },
     });
