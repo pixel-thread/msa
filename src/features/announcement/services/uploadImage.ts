@@ -1,3 +1,4 @@
+import 'server-only';
 import { env } from '@src/env';
 import { prisma } from '@lib/prisma';
 import { NotFoundError } from '@src/shared/errors';

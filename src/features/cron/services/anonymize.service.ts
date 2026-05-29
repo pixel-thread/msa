@@ -1,3 +1,4 @@
+import 'server-only';
 import { prisma } from '@src/shared/lib/prisma';
 import { UserStatus, AuditAction } from '@prisma/client';
 import { logAction } from '@src/shared/services/audit-logs';

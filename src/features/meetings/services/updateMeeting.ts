@@ -1,3 +1,4 @@
+import 'server-only';
 import { prisma } from '@lib/prisma';
 import { NotFoundError } from '@src/shared/errors';
 import { MeetingStatus } from '@prisma/client';

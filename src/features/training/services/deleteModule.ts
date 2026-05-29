@@ -1,3 +1,4 @@
+import 'server-only';
 import { AuditAction } from '@prisma/client';
 import { NotFoundError } from '@src/shared/errors';
 import { prisma } from '@src/shared/lib/prisma';

@@ -1,3 +1,4 @@
+import 'server-only';
 import { prisma } from '@src/shared/lib/prisma';
 import { AuditAction, PaymentGateway } from '@prisma/client';
 import { verifyWebhookSignature } from './razorpay.service';

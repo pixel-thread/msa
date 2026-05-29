@@ -1,3 +1,4 @@
+import 'server-only';
 import { prisma } from '@lib/prisma';
 import { NotFoundError } from '@src/shared/errors';
 import { AgendaOperationInput } from '../validators/agenda-items';

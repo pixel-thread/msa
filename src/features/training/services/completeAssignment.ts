@@ -1,3 +1,4 @@
+import 'server-only';
 import { prisma } from '@lib/prisma';
 import { PAGE_SIZE } from '@src/shared/constants';
 import { AuditAction, Prisma, TrainingAssignmentStatus } from '@prisma/client';

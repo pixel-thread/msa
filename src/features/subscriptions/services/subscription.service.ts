@@ -1,3 +1,4 @@
+import 'server-only';
 import { prisma } from '@src/shared/lib/prisma';
 import { NotFoundError, ConflictError, ForbiddenError } from '@src/shared/errors';
 import { PAGE_SIZE } from '@src/shared/constants';

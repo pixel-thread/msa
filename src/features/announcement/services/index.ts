@@ -1,3 +1,4 @@
+import 'server-only';
 export * from './createAnnouncement';
 export * from './updateAnnouncement';
 export * from './deleteAnnouncement';

@@ -1,3 +1,4 @@
+import 'server-only';
 export * from './assignAttendee';
 export * from './bulkAssignAttendees';
 export * from './createMeeting';

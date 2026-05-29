@@ -1,3 +1,4 @@
+import 'server-only';
 export * from './submitDsarTicket';
 export * from './findDsarTickets';
 export * from './respondToDsarTicket';

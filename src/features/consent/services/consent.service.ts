@@ -1,3 +1,4 @@
+import 'server-only';
 import { prisma } from '@src/shared/lib/prisma';
 import { AuditAction, ConsentPurpose, ConsentStatus, Prisma } from '@prisma/client';
 import {

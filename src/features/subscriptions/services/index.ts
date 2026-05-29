@@ -1,2 +1,3 @@
+import 'server-only';
 export * from './plan.service';
 export * from './subscription.service';

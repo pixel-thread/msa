@@ -1,3 +1,4 @@
+import 'server-only';
 import { prisma } from '@lib/prisma';
 import { UpdateTrainingCertificateInput } from '../validators/training';
 import { AuditAction, Prisma } from '@prisma/client';

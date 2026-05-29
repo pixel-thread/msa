@@ -1,3 +1,4 @@
+import 'server-only';
 import { prisma } from '@src/shared/lib/prisma';
 import { encrypt } from '@src/shared/lib/crypto';
 import { PaymentProviderType } from '@prisma/client';

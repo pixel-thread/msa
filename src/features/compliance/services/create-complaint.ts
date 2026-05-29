@@ -1,3 +1,4 @@
+import 'server-only';
 import { prisma } from '@src/shared/lib/prisma';
 import { AuditAction, ComplaintCategory } from '@prisma/client';
 import type { ComplianceSubmitFormData } from '@src/features/compliance/validators';

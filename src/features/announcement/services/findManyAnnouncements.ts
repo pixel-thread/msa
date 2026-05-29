@@ -1,3 +1,4 @@
+import 'server-only';
 import { prisma } from '@lib/prisma';
 import { AnnouncementStatus, AnnouncementPriority } from '@prisma/client';
 import { Prisma } from '@prisma/client';

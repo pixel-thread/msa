@@ -1,3 +1,4 @@
+import 'server-only';
 import { Prisma, ApprovalStatus } from '@prisma/client';
 import { prisma } from '@src/shared/lib/prisma';
 import { ValidationError, NotFoundError } from '@src/shared/errors';

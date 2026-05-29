@@ -1,3 +1,4 @@
+import 'server-only';
 import Razorpay from 'razorpay';
 import * as crypto from 'crypto';
 import { NotFoundError } from '@src/shared/errors';

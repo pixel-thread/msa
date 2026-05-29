@@ -1,3 +1,4 @@
+import 'server-only';
 import { ApplicationStatus, Prisma, UserRole } from '@prisma/client';
 import { prisma } from '@src/shared/lib/prisma';
 import { generateRandomPassword, hashPassword } from '@src/shared/lib/password';

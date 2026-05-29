@@ -1,3 +1,4 @@
+import 'server-only';
 import { Prisma } from '@prisma/client';
 import { PAGE_SIZE } from '@src/shared/constants';
 import { prisma } from '@src/shared/lib/prisma';

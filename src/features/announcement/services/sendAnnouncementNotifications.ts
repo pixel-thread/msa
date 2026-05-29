@@ -1,3 +1,4 @@
+import 'server-only';
 import { prisma } from '@lib/prisma';
 import { NotificationType, Prisma } from '@prisma/client';
 import { ExpoNotificationService } from '@lib/expo';

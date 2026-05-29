@@ -1,3 +1,4 @@
+import 'server-only';
 export * from './createModule';
 export * from './updateModule';
 export * from './findManyModules';

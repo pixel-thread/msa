@@ -1,3 +1,4 @@
+import 'server-only';
 import { prisma } from '@src/shared/lib/prisma';
 import type { AuditLogEntry, AuditLogQuery } from '../types';
 import { buildPagination } from '@src/shared/utils/build-pagination';
