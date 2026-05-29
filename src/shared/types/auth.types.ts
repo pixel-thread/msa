@@ -1,4 +1,5 @@
-export type { UserRole } from './enums';
+import type { UserRole } from './enums';
+export type { UserRole };
 
 /**
  * Standardized direction for sorting data.

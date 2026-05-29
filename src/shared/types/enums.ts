@@ -207,3 +207,34 @@ export interface Account {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface User {
+  id: string;
+  associationId: string;
+  email: string;
+  name: string;
+  mobile: string | null;
+  designation: string | null;
+  role: UserRole[];
+  status: UserStatus;
+  dateOfJoiningGovt: Date | null;
+  dateOfJoiningAssociation: Date | null;
+  membershipNumber: string | null;
+  overallConsentStatus: ConsentStatus;
+  dataRetentionUntil: Date;
+  failedLoginAttempts: number;
+  lockedUntil: Date | null;
+  imageUrl: string | null;
+  password: string | null;
+  passwordResetToken: string | null;
+  passwordResetExpires: Date | null;
+  mfaEnabled: boolean;
+  deletedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  memberTypeId: string | null;
+  _count?: {
+    payments?: number;
+    meetingAttendances?: number;
+  };
+}

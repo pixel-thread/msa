@@ -1,5 +1,7 @@
-export type { NotificationType } from './enums';
-export { NOTIFICATION_TYPE_VALUES } from './enums';
+import type { NotificationType } from './enums';
+import { NOTIFICATION_TYPE_VALUES } from './enums';
+export type { NotificationType };
+export { NOTIFICATION_TYPE_VALUES };
 
 export interface NotificationDataT {
   id?: string;
