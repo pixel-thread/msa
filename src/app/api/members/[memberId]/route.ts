@@ -11,17 +11,23 @@ const ParamSchema = z.object({ memberId: z.uuid() });
 export const GET = withAssociation(
   { params: ParamSchema },
   async (association, { params, traceId }, request) => {
-    logger.info({
-      traceId,
-      associationId: association.id,
-    }, "GET /api/members/[memberId] - Request started");
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+      },
+      "GET /api/members/[memberId] - Request started",
+    );
 
     const user = await withRole(request, UserRole.DPO);
 
-    logger.info({
-      traceId,
-      userId: user.id,
-    }, "GET /api/members/[memberId] - User authorized");
+    logger.info(
+      {
+        traceId,
+        userId: user.id,
+      },
+      "GET /api/members/[memberId] - User authorized",
+    );
 
     const member = await prisma.user.findFirst({
       where: {
@@ -53,10 +59,13 @@ export const GET = withAssociation(
       throw new NotFoundError("Member not found");
     }
 
-    logger.info({
-      traceId,
-      memberId: params?.memberId,
-    }, "GET /api/members/[memberId] - Success");
+    logger.info(
+      {
+        traceId,
+        memberId: params?.memberId,
+      },
+      "GET /api/members/[memberId] - Success",
+    );
 
     return SuccessResponse({ data: member });
   },
@@ -74,22 +83,29 @@ const AdminOnboardingSchema = z.object({
   dateOfJoiningGovt: z.coerce.date().optional(),
   dateOfJoiningAssociation: z.coerce.date().optional(),
   membershipNumber: z.string().optional(),
+  associationId: z.uuid(),
 });
 
 export const PATCH = withAssociation(
   { body: AdminOnboardingSchema, params: ParamSchema },
   async (association, { body, params, traceId }, request) => {
-    logger.info({
-      traceId,
-      associationId: association.id,
-    }, "PATCH /api/members/[memberId] - Request started");
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+      },
+      "PATCH /api/members/[memberId] - Request started",
+    );
 
     const user = await withRole(request, UserRole.SECRETARY);
 
-    logger.info({
-      traceId,
-      userId: user.id,
-    }, "PATCH /api/members/[memberId] - User authorized");
+    logger.info(
+      {
+        traceId,
+        userId: user.id,
+      },
+      "PATCH /api/members/[memberId] - User authorized",
+    );
 
     if (!body) {
       throw new ValidationError("Invalid request body");
@@ -115,13 +131,19 @@ export const PATCH = withAssociation(
         ...(body.membershipNumber && {
           membershipNumber: body.membershipNumber,
         }),
+        ...(body.associationId && {
+          associationId: body.associationId,
+        }),
       },
     });
 
-    logger.info({
-      traceId,
-      memberId,
-    }, "PATCH /api/members/[memberId] - Success");
+    logger.info(
+      {
+        traceId,
+        memberId,
+      },
+      "PATCH /api/members/[memberId] - Success",
+    );
 
     return SuccessResponse({
       data: {
