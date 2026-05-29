@@ -40,6 +40,9 @@ import {
 import { Avatar, AvatarFallback } from "@src/shared/components/ui/avatar";
 import { PublicHeader } from "@src/shared/components/public-header";
 import { PublicFooter } from "@src/shared/components/public-footer";
+import { useQuery } from "@tanstack/react-query";
+import http from "@src/shared/utils/http";
+import { Association } from "@sharedType/association";
 
 const FEATURES = [
   {
@@ -133,6 +136,11 @@ const TESTIMONIALS = [
 ];
 
 export default function Home() {
+  const {} = useQuery({
+    queryKey: ["associations", "current"],
+    queryFn: () => http.get<Association>("/associations/current"),
+    staleTime: 60_000,
+  });
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <PublicHeader />
