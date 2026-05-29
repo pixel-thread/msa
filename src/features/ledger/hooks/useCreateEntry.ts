@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import { toast } from 'sonner';
+import { ledgerEndpoints } from '../utils/constants/endpoints';
 
 export interface CreateLedgerLineInput {
   accountId: string;
@@ -18,7 +19,7 @@ export function useCreateEntry() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (input: CreateLedgerEntryInput) => http.post('/ledger/entries', input),
+    mutationFn: (input: CreateLedgerEntryInput) => http.post(ledgerEndpoints.entries, input),
     onSuccess: (response) => {
       if (response.success) {
         toast.success('Ledger entry created successfully');

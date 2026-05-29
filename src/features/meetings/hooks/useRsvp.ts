@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import { toast } from 'sonner';
 import type { RsvpForm } from '../types';
+import { meetingsEndpoints } from '../utils/constants/endpoints';
 
 export function useRsvp() {
   const queryClient = useQueryClient();
@@ -23,7 +24,7 @@ export function useRsvp() {
       formData: RsvpForm;
       userId?: string;
     }) =>
-      http.patch(`/meetings/${meetingId}/rsvp`, {
+      http.patch(meetingsEndpoints.rsvp(meetingId), {
         rsvpStatus: formData.status,
         rsvpNote: formData.note,
       }),

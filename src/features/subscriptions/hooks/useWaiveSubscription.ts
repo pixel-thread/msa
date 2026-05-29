@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import { toast } from 'sonner';
+import { subscriptionEndpoints } from '../utils/constants/endpoints';
 
 interface WaiveSubscriptionData {
   subscriptionId: string;
@@ -12,7 +13,7 @@ export function useWaiveSubscription() {
 
   return useMutation({
     mutationFn: ({ subscriptionId, reason }: WaiveSubscriptionData) =>
-      http.post(`/subscriptions/waive`, { subscriptionId, reason }),
+      http.post(subscriptionEndpoints.waive, { subscriptionId, reason }),
     onSuccess: (data) => {
       if (data.success) {
         toast.success('Subscription waived successfully');

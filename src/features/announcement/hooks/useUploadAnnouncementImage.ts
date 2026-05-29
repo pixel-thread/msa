@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import { toast } from 'sonner';
+import { announcementEndpoints } from '../utils/constants/endpoints';
 
 export function useUploadAnnouncementImage(announcementId: string | null) {
   const queryClient = useQueryClient();
@@ -9,7 +10,7 @@ export function useUploadAnnouncementImage(announcementId: string | null) {
     mutationFn: (file: File) => {
       const formData = new FormData();
       formData.append('file', file);
-      return http.post(`/announcements/${announcementId}/upload`, formData, {
+      return http.post(announcementEndpoints.upload(announcementId), formData, {
         headers: { 'Content-Type': undefined },
       });
     },

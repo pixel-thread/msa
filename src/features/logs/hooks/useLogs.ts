@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import type { LogEntry } from '../types';
+import { logsEndpoints } from '../utils/constants/endpoints';
 
 export interface UseLogsParams {
   page?: number;
@@ -51,7 +52,7 @@ export function useLogs(params: UseLogsParams = {}) {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['logs', params],
     queryFn: () =>
-      http.get<LogEntry[]>('/logs', {
+      http.get<LogEntry[]>(logsEndpoints.base, {
         params: queryParams,
       }),
   });

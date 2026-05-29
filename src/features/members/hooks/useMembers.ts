@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import type { User, UserStatus } from '@src/shared/types';
+import { membersEndpoints } from '../utils/constants/endpoints';
 
 interface UseMembersOptions {
   page?: number;
@@ -12,7 +13,7 @@ export function useMembers(options: UseMembersOptions = {}) {
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['members', page, status],
-    queryFn: () => http.get<User[]>(`/members?page=${page}&status=${status}`),
+    queryFn: () => http.get<User[]>(membersEndpoints.list(page, status)),
   });
 
   return {

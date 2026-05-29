@@ -3,6 +3,7 @@ import http from '@src/shared/utils/http';
 import type { ComplianceRecord } from '../types/compliance.types';
 import type { ApiResponse } from '@src/shared/utils/http';
 import type { PaginationMeta } from '@src/shared/types/api.types';
+import { complianceEndpoints } from '../utils/constants/endpoints';
 
 interface UseComplianceChecksOptions {
   page?: number;
@@ -26,7 +27,7 @@ export function useComplianceChecks(options?: UseComplianceChecksOptions) {
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['compliance-checks', options],
-    queryFn: async () => http.get<ComplianceRecord[]>(`/compliance/checks${qs ? `?${qs}` : ''}`),
+    queryFn: async () => http.get<ComplianceRecord[]>(`${complianceEndpoints.checks}${qs ? `?${qs}` : ''}`),
   });
 
   return {

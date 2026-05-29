@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import type { Meeting, Member, Attendee } from '../types';
 import type { CreateMeetingInput } from '../validators';
 import type { PaginationMeta } from '@src/shared/types/api.types';
+import { meetingsEndpoints } from '../utils/constants/endpoints';
 
 interface UseMeetingsOptions {
   page?: number;
@@ -15,11 +16,11 @@ export function useMeetings(options: UseMeetingsOptions = {}) {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['meetings', page],
-    queryFn: async () => http.get<Meeting[]>(`/meetings?page=${page}`),
+    queryFn: async () => http.get<Meeting[]>(meetingsEndpoints.list(page)),
   });
 
   const createMeetingMutation = useMutation({
-    mutationFn: (data: CreateMeetingInput) => http.post<Meeting>('/meetings', data),
+    mutationFn: (data: CreateMeetingInput) => http.post<Meeting>(meetingsEndpoints.base, data),
     onSuccess: (data) => {
       if (data.success) {
         queryClient.invalidateQueries({ queryKey: ['meetings'] });
@@ -33,7 +34,7 @@ export function useMeetings(options: UseMeetingsOptions = {}) {
 
   const deleteMeetingMutation = useMutation({
     mutationFn: async (meetingId: string) => {
-      const res = await http.delete(`/meetings/${meetingId}`);
+      const res = await http.delete(meetingsEndpoints.byId(meetingId));
       if (!res.success) throw new Error(res.message);
       return res;
     },
@@ -65,7 +66,7 @@ export function useMeetingAttendees(meetingId: string | null) {
   const { data, isLoading, isFetching, refetch } = useQuery({
     queryKey: ['meeting-attendees', meetingId],
     enabled: !!meetingId,
-    queryFn: async () => http.get<Attendee[]>(`/meetings/${meetingId}/attendees`),
+    queryFn: async () => http.get<Attendee[]>(meetingsEndpoints.attendees.base(meetingId)),
     select: (data) => data.data,
   });
 
@@ -79,7 +80,7 @@ export function useMeetingAttendees(meetingId: string | null) {
       userId: string;
       attendeeRole: string;
     }) =>
-      http.post(`/meetings/${meetingId}/attendees`, {
+      http.post(meetingsEndpoints.attendees.base(meetingId), {
         userId,
         attendeeRole,
       }),
@@ -100,7 +101,7 @@ export function useMeetingAttendees(meetingId: string | null) {
 
   const removeAttendeeMutation = useMutation({
     mutationFn: async ({ meetingId, userId }: { meetingId: string; userId: string }) =>
-      http.delete(`/meetings/${meetingId}/attendees/${userId}`),
+      http.delete(meetingsEndpoints.attendees.byId(meetingId, userId)),
     onSuccess: (data) => {
       if (data.success) {
         refetch();

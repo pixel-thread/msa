@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import { MembershipApplicationListItem } from '../types';
+import { membershipApplicationEndpoints } from '../utils/constants/endpoints';
 
 interface ApplicationsResponse {
   data: MembershipApplicationListItem[];
@@ -22,7 +23,7 @@ export function useMembershipApplications(options: UseMembershipApplicationsOpti
   const { page = 1, status } = options;
   const params = new URLSearchParams();
   params.set('page', String(page));
-  const url = `/admin/membership-applications?${params.toString()}`;
+  const url = `${membershipApplicationEndpoints.base}?${params.toString()}`;
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['membership-applications', page, status],

@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import { toast } from 'sonner';
 import type { CreateMeetingMinuteInput, UpdateMeetingMinuteInput } from '../validators';
+import { meetingsEndpoints } from '../utils/constants/endpoints';
 
 export interface ActionItem {
   assigneeId?: string;
@@ -25,7 +26,7 @@ export function useMeetingMinutes(meetingId: string | null) {
     queryKey: ['meeting-minutes', meetingId],
     enabled: !!meetingId,
     queryFn: async () => {
-      const res = await http.get<MeetingMinute[]>(`/meetings/${meetingId}/minutes`);
+      const res = await http.get<MeetingMinute[]>(meetingsEndpoints.minutes.base(meetingId));
       if (!res.success || !res.data) {
         throw new Error(res.message || 'Failed to fetch minutes');
       }
@@ -35,7 +36,7 @@ export function useMeetingMinutes(meetingId: string | null) {
 
   const createMinuteMutation = useMutation({
     mutationFn: (minuteData: CreateMeetingMinuteInput) =>
-      http.post<MeetingMinute>(`/meetings/${meetingId}/minutes`, minuteData),
+      http.post<MeetingMinute>(meetingsEndpoints.minutes.base(meetingId), minuteData),
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({
@@ -53,7 +54,7 @@ export function useMeetingMinutes(meetingId: string | null) {
 
   const updateMinuteMutation = useMutation({
     mutationFn: ({ minuteId, data }: { minuteId: string; data: UpdateMeetingMinuteInput }) =>
-      http.patch<MeetingMinute>(`/meetings/${meetingId}/minutes/${minuteId}`, data),
+      http.patch<MeetingMinute>(meetingsEndpoints.minutes.byId(meetingId, minuteId), data),
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({
@@ -70,7 +71,7 @@ export function useMeetingMinutes(meetingId: string | null) {
   });
 
   const deleteMinuteMutation = useMutation({
-    mutationFn: (minuteId: string) => http.delete(`/meetings/${meetingId}/minutes/${minuteId}`),
+    mutationFn: (minuteId: string) => http.delete(meetingsEndpoints.minutes.byId(meetingId, minuteId)),
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({

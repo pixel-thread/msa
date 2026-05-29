@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import { toast } from 'sonner';
+import { membershipApplicationEndpoints } from '../utils/constants/endpoints';
 
 interface RejectApplicationData {
   applicationId: string;
@@ -12,7 +13,7 @@ export function useRejectApplication() {
 
   return useMutation({
     mutationFn: (data: RejectApplicationData) =>
-      http.post(`/admin/membership-applications/${data.applicationId}/reject`, {
+      http.post(membershipApplicationEndpoints.reject(data.applicationId), {
         rejectionReason: data.rejectionReason,
       }),
     onSuccess: (response) => {

@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import { toast } from 'sonner';
+import { membershipApplicationEndpoints } from '../utils/constants/endpoints';
 
 interface ApproveApplicationData {
   applicationId: string;
@@ -14,7 +15,7 @@ export function useApproveApplication() {
 
   return useMutation({
     mutationFn: (data: ApproveApplicationData) =>
-      http.post(`/admin/membership-applications/${data.applicationId}/approve`, {
+      http.post(membershipApplicationEndpoints.approve(data.applicationId), {
         memberTypeId: data.memberTypeId,
         role: data.role,
         dateOfJoiningGovt: data.dateOfJoiningGovt,

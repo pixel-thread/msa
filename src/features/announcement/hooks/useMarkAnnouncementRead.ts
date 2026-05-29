@@ -1,12 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import { toast } from 'sonner';
+import { announcementEndpoints } from '../utils/constants/endpoints';
 
 export function useMarkAnnouncementRead(announcementId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => http.post(`/announcements/${announcementId}/read`),
+    mutationFn: () => http.post(announcementEndpoints.read(announcementId)),
     onSuccess: (data) => {
       if (data.success) {
         toast.success('Announcement marked as read');

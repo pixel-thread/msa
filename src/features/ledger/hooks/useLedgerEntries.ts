@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import type { PaginationMeta } from '@src/shared/types';
+import { ledgerEndpoints } from '../utils/constants/endpoints';
 
 export interface LedgerLineResponse {
   id: string;
@@ -35,7 +36,7 @@ export function useLedgerEntries(params: UseLedgerEntriesParams = {}) {
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['ledger-entries', page],
-    queryFn: () => http.get<LedgerEntryResponse[]>(`/ledger/entries?${queryParams.toString()}`),
+    queryFn: () => http.get<LedgerEntryResponse[]>(`${ledgerEndpoints.entries}?${queryParams.toString()}`),
   });
 
   return {

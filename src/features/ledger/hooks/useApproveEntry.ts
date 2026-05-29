@@ -1,12 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import { toast } from 'sonner';
+import { ledgerEndpoints } from '../utils/constants/endpoints';
 
 export function useApproveEntry() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (entryId: string) => http.post(`/ledger/entries/${entryId}/approve`),
+    mutationFn: (entryId: string) => http.post(ledgerEndpoints.approveEntry(entryId)),
     onSuccess: (response) => {
       if (response.success) {
         toast.success('Entry approved successfully');

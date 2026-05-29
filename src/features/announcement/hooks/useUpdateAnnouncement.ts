@@ -2,13 +2,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import { toast } from 'sonner';
 import type { UpdateAnnouncementInput } from '../validators';
+import { announcementEndpoints } from '../utils/constants/endpoints';
 
 export function useUpdateAnnouncement() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateAnnouncementInput }) =>
-      http.put(`/announcements/${id}`, data),
+      http.put(announcementEndpoints.byId(id), data),
     onSuccess: (data) => {
       if (data.success) {
         toast.success('Announcement updated successfully');
