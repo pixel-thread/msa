@@ -11,6 +11,7 @@ import {
 import { Button } from "@src/shared/components/ui/button";
 import { useAuthStore } from "@src/shared/stores/auth";
 import { useSignOut } from "@src/features/auth/hooks";
+import { env } from "@src/env";
 
 const NAV_ITEMS = [
   { label: "Features", href: "/#features" },
@@ -32,9 +33,9 @@ export function PublicHeader() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         <Link
           href="/"
-          className="font-heading text-lg font-bold tracking-wider uppercase"
+          className="font-heading text-lg font-bold tracking-wider text-primary uppercase"
         >
-          MFSA Connect
+          {env.NEXT_PUBLIC_ASSOCIATION_SLUG.toUpperCase()}
         </Link>
 
         <NavigationMenu className="hidden md:flex" viewport={false}>
