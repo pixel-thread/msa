@@ -43,12 +43,14 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
   const { mutate: signOut, isPending } = useSignOut();
+  const router = useRouter();
 
   const handleSignOut = async () => {
     signOut(undefined, {
       onSuccess: (data) => {
         if (data.success) {
           toast.success(data.message);
+          router.replace('/sign-in');
           return;
         }
         toast.error(data?.message);

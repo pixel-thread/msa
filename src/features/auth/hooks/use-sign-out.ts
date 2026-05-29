@@ -5,8 +5,6 @@ import { authEndpoints } from '../utils/constants/endpoints';
 
 export function useSignOut() {
   return useMutation({
-    mutationFn: async () => {
-      return http.post(authEndpoints.logout);
-    },
+    mutationFn: async () => http.post(authEndpoints.logout, {}),
   });
 }
