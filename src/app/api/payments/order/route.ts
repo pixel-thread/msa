@@ -1,7 +1,7 @@
 import { withAssociation, withRole } from '@src/shared/api';
 import { SuccessResponse } from '@utils/responses';
 import { logger } from '@src/shared/logger/server';
-import { UserRole } from '@prisma/client';
+import { UserRole, Prisma } from '@prisma/client';
 import { CreateOrderSchema } from '@feature/payments/validators';
 import { createPaymentOrder } from '@feature/payments/services/payment.service';
 import { findSubscriptionPlans } from '@src/features/payments/services/findSubscriptionPlans';
@@ -41,7 +41,11 @@ export const POST = withAssociation(
       whereClause.memberTypeId = null;
     }
 
-    let plans = await findSubscriptionPlans({
+    type PlanWithVersions = Awaited<ReturnType<typeof prisma.subscriptionPlan.findMany>>[number] & {
+      versions: Array<{ amount: number }>;
+    };
+
+    let plans = (await findSubscriptionPlans({
       where: whereClause as Parameters<typeof findSubscriptionPlans>[0]['where'],
       include: {
         versions: {
@@ -49,10 +53,10 @@ export const POST = withAssociation(
           orderBy: { createdAt: 'desc' },
         },
       },
-    });
+    })) as unknown as PlanWithVersions[];
 
     if (plans.length === 0) {
-      plans = await findSubscriptionPlans({
+      plans = (await findSubscriptionPlans({
         where: {
           associationId: association.id,
           isDefault: true,
@@ -64,7 +68,7 @@ export const POST = withAssociation(
             orderBy: { createdAt: 'desc' },
           },
         },
-      });
+      })) as unknown as PlanWithVersions[];
     }
 
     if (plans.length === 0 || !plans[0].versions[0]) {

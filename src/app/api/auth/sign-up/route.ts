@@ -3,7 +3,7 @@ import { ConflictError } from '@src/shared/errors';
 import { SuccessResponse } from '@src/shared/utils';
 import { env } from '@src/env';
 import { findFirstAssociation } from '@src/features/associations/services/findFirstAssociation';
-import { findUniqueMember } from '@src/features/members/services/findUniqueMember';
+import { findFirstMember } from '@src/features/members/services/findFirstMember';
 import {
   MembershipApplicationInput,
   MembershipApplicationSchema,
@@ -43,7 +43,7 @@ export const POST = withValidation(
         select: { id: true, name: true },
       }),
 
-      findUniqueMember({ where: { email } }),
+      findFirstMember({ where: { email } }),
     ]);
 
     if (!association) {

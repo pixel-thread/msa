@@ -8,5 +8,8 @@ type Props = {
 };
 
 export async function findFirstMember({ where, select, include }: Props) {
-  return await prisma.user.findFirst({ where, select, include });
+  const args: Prisma.UserFindFirstArgs = { where };
+  if (select) args.select = select;
+  if (include) args.include = include;
+  return await prisma.user.findFirst(args);
 }

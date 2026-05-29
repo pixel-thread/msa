@@ -56,7 +56,7 @@ export const POST = withValidation({ body: SetupMfaSchema }, async (request, _ct
 
   await createVerificationCode({
     data: {
-      userId,
+      user: { connect: { id: userId } },
       code: hashedOTP,
       type: 'SETUP_MFA',
       expiresAt: otpExpiry,

@@ -66,7 +66,7 @@ export const POST = withAssociation(
 
     const updatedMember = await updateMember({
       where: { id: body.memberId },
-      data: { associationId: association.id },
+      data: { association: { connect: { id: association.id } } },
     });
 
     logger.info(
