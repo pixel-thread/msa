@@ -15,6 +15,7 @@ import { useLedgerLineColumns } from '../hooks/useLedgerLineColumns';
 import { formatDate } from '@src/shared/utils/format';
 import { ArrowLeftIcon } from 'lucide-react';
 import { toast } from 'sonner';
+import { Loading } from '@components/loading';
 
 export default function LedgerEntryDetailPage() {
   const params = useParams();
@@ -39,11 +40,7 @@ export default function LedgerEntryDetailPage() {
   const { columns: lineColumns } = useLedgerLineColumns({ getAccountName });
 
   if (entriesLoading || accountsLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <p className="text-muted-foreground">Loading...</p>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (!entry) {

@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useLedgerSummary } from '../hooks/useLedgerSummary';
 import { useLedgerEntries } from '../hooks/useLedgerEntries';
 import { Card, CardContent } from '@src/shared/components/ui/card';
-import { SectionHeader } from '@src/shared/components/section-header';
 import { DataTable } from '@src/shared/components/data-table';
 import { DataTableFilters } from '@src/shared/components/data-table-filters';
 import { useRecentLedgerEntryColumns } from '../hooks/useRecentLedgerEntryColumns';
@@ -30,10 +29,16 @@ export default function LedgerDashboardPage() {
 
   return (
     <>
-      <SectionHeader
-        title="Ledger Dashboard"
-        description="Overview of accounts, entries, and financial activity"
-      />
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
+            Ledger Dashboard
+          </h1>
+          <p className="mt-1 text-base text-body">
+            Overview of accounts, entries, and financial activity
+          </p>
+        </div>
+      </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card className=" border-hairline bg-surface-card">

@@ -3,6 +3,7 @@ import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
 import { formatDate } from '@src/shared/utils/format';
 import type { LedgerEntryResponse } from './useLedgerEntries';
+import Link from 'next/link';
 
 interface UseLedgerEntriesColumnsOptions {
   onViewDetails?: (entry: LedgerEntryResponse) => void;
@@ -24,9 +25,12 @@ export function useLedgerEntriesColumns({
       accessorKey: 'description',
       header: 'Description',
       cell: ({ row }) => (
-        <span className="text-sm text-ink max-w-[300px] block truncate">
+        <Link
+          href={`/ledger/entries/${row.original.id}`}
+          className="text-sm text-ink max-w-[300px] block truncate hover:underline"
+        >
           {row.original.description}
-        </span>
+        </Link>
       ),
     },
     {
@@ -56,15 +60,7 @@ export function useLedgerEntriesColumns({
       id: 'actions',
       header: '',
       cell: ({ row }) => (
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 text-xs"
-            onClick={() => onViewDetails?.(row.original)}
-          >
-            View
-          </Button>
+        <div>
           {row.original.approvalStatus === 'PENDING' && (
             <Button
               variant="outline"
