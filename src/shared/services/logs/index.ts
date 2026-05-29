@@ -12,7 +12,13 @@ type GetLogsProps = {
 };
 
 export async function getLogs(props: GetLogsProps) {
-  const { where, page, sortBy = "createdAt", sortOrder = "desc", limit } = props;
+  const {
+    where,
+    page,
+    sortBy = "createdAt",
+    sortOrder = "desc",
+    limit,
+  } = props;
 
   const pageSize = limit ?? PAGE_SIZE;
 

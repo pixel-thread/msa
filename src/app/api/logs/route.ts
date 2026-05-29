@@ -1,15 +1,16 @@
-import { withValidation } from "@src/shared/api";
+import { withRole, withValidation } from "@src/shared/api";
 import { ValidationError } from "@src/shared/errors";
 import { createLogs, getLogs } from "@src/shared/services/logs";
 import { SuccessResponse } from "@src/shared/utils";
 import { LogIngestSchema, LogQuerySchema } from "@src/shared/validators/logs";
-import type { Log } from "@prisma/client";
-import { logger } from "@src/shared/logger/server";
+import { UserRole, type Log } from "@prisma/client";
+// import { logger } from "@src/shared/logger/server";
 
 export const GET = withValidation(
   { query: LogQuerySchema },
-  async (_req, _ctx, { query, traceId }) => {
-    logger.info({ traceId }, "GET /api/logs - Request started");
+  async (req, _ctx, { query }) => {
+    await withRole(req, UserRole.SUPER_ADMIN);
+    // logger.info({ traceId }, "GET /api/logs - Request started");
 
     const {
       page,
@@ -69,7 +70,7 @@ export const GET = withValidation(
       limit,
     });
 
-    logger.info({ traceId, count: logs.length }, "GET /api/logs - Success");
+    // logger.info({ traceId, count: logs.length }, "GET /api/logs - Success");
 
     return SuccessResponse<Log[]>({
       data: logs,
@@ -82,7 +83,7 @@ export const GET = withValidation(
 export const POST = withValidation(
   { body: LogIngestSchema.strict() },
   async (_req, _ctx, { body, traceId }) => {
-    logger.info({ traceId }, "POST /api/logs - Request started");
+    // logger.info({ traceId }, "POST /api/logs - Request started");
 
     const context = body?.context;
 
@@ -95,8 +96,8 @@ export const POST = withValidation(
     }
 
     const sanitizedContextJson = body?.context
-      ? JSON.parse(JSON.stringify(context))
-      : {};
+      ? JSON.parse(JSON.stringify({ ...context, traceId }))
+      : { traceId };
 
     const savedLog = await createLogs({
       data: {
@@ -107,10 +108,13 @@ export const POST = withValidation(
       },
     });
 
-    logger.info({ traceId, logId: savedLog.id }, "POST /api/logs - Success");
+    // logger.info({ traceId, logId: savedLog.id }, "POST /api/logs - Success");
 
     return SuccessResponse(
-      { data: { id: savedLog.id }, message: "Successfully log to server" },
+      {
+        data: { id: savedLog.id, traceId },
+        message: "Successfully log to server",
+      },
       201,
     );
   },
