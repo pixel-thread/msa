@@ -135,7 +135,7 @@ const TESTIMONIALS = [
   },
 ];
 const HERO_DESCRIPTION = [
-  "A unfied DPDP Compliant platform for Meghalaya Finance ServiceAssociation",
+  "A unified DPDP Compliant platform for Meghalaya Finance Service Association",
 
   "Manage memberships, meetings, finances, compliances and trainings with robust security feature.",
 
