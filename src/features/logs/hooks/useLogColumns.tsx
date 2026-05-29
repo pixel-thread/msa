@@ -1,21 +1,18 @@
-import type { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@src/shared/components/ui/badge";
-import { Button } from "@src/shared/components/ui/button";
-import { formatDate } from "@src/shared/utils";
-import type { LogEntry } from "../types";
+import type { ColumnDef } from '@tanstack/react-table';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { formatDate } from '@src/shared/utils';
+import type { LogEntry } from '../types';
 
-const levelBadgeVariant: Record<
-  string,
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  error: "destructive",
-  warn: "secondary",
-  info: "default",
-  debug: "outline",
+const levelBadgeVariant: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+  error: 'destructive',
+  warn: 'secondary',
+  info: 'default',
+  debug: 'outline',
 };
 
 function getLevelBadgeVariant(level: string) {
-  return levelBadgeVariant[level] ?? "outline";
+  return levelBadgeVariant[level] ?? 'outline';
 }
 
 interface UseLogColumnsOptions {
@@ -25,8 +22,8 @@ interface UseLogColumnsOptions {
 export function useLogColumns({ onViewDetails }: UseLogColumnsOptions = {}) {
   const columns: ColumnDef<LogEntry>[] = [
     {
-      accessorKey: "type",
-      header: "Level",
+      accessorKey: 'type',
+      header: 'Level',
       cell: ({ row }) => (
         <Badge variant={getLevelBadgeVariant(row.original.type)}>
           {row.original.type.toUpperCase()}
@@ -34,35 +31,31 @@ export function useLogColumns({ onViewDetails }: UseLogColumnsOptions = {}) {
       ),
     },
     {
-      accessorKey: "message",
-      header: "Message",
+      accessorKey: 'message',
+      header: 'Message',
       cell: ({ row }) => (
-        <span className="text-sm truncate max-w-[400px] block">
-          {row.original.message}
-        </span>
+        <span className="text-sm truncate max-w-[400px] block">{row.original.message}</span>
       ),
     },
     {
-      accessorKey: "isBackend",
-      header: "Source",
+      accessorKey: 'isBackend',
+      header: 'Source',
       cell: ({ row }) => (
-        <Badge variant={row.original.isBackend ? "default" : "secondary"}>
-          {row.original.isBackend ? "Backend" : "Client"}
+        <Badge variant={row.original.isBackend ? 'default' : 'secondary'}>
+          {row.original.isBackend ? 'Backend' : 'Client'}
         </Badge>
       ),
     },
     {
-      accessorKey: "createdAt",
-      header: "Timestamp",
+      accessorKey: 'createdAt',
+      header: 'Timestamp',
       cell: ({ row }) => (
-        <span className="text-sm text-muted-foreground">
-          {formatDate(row.original.createdAt)}
-        </span>
+        <span className="text-sm text-muted-foreground">{formatDate(row.original.createdAt)}</span>
       ),
     },
     {
-      id: "details",
-      header: "",
+      id: 'details',
+      header: '',
       cell: ({ row }) => (
         <Button
           variant="ghost"

@@ -4,28 +4,28 @@ name: Coinbase-design-analysis
 description: An institutional-grade crypto exchange whose marketing surfaces read like a quietly-confident financial-services brand. The base canvas is pure white; Coinbase Blue (`#0052ff`) is the single brand voltage, used scarcely on primary CTAs, signature glyphs, and inline accent moments. Type runs Coinbase's licensed CoinbaseDisplay (display) and CoinbaseSans (body) at modest weights — display sits at weight 400 not 700, signaling editorial calm rather than fintech-bombastic. Page rhythm rotates between bright white sections, soft gray elevation bands, and full-bleed dark editorial heroes (`#0a0b0d`) carrying product-ui mockup cards. Iconography is geometric and minimal; depth comes from card-on-card layering, never decorative shadows.
 
 colors:
-  primary: "#0052ff"
-  primary-active: "#003ecc"
-  primary-disabled: "#a8b8cc"
-  ink: "#0a0b0d"
-  body: "#5b616e"
-  body-strong: "#0a0b0d"
-  muted: "#7c828a"
-  muted-soft: "#a8acb3"
-  hairline: "#dee1e6"
-  hairline-soft: "#eef0f3"
-  canvas: "#ffffff"
-  surface-soft: "#f7f7f7"
-  surface-card: "#ffffff"
-  surface-strong: "#eef0f3"
-  surface-dark: "#0a0b0d"
-  surface-dark-elevated: "#16181c"
-  on-primary: "#ffffff"
-  on-dark: "#ffffff"
-  on-dark-soft: "#a8acb3"
-  semantic-up: "#05b169"
-  semantic-down: "#cf202f"
-  accent-yellow: "#f4b000"
+  primary: '#0052ff'
+  primary-active: '#003ecc'
+  primary-disabled: '#a8b8cc'
+  ink: '#0a0b0d'
+  body: '#5b616e'
+  body-strong: '#0a0b0d'
+  muted: '#7c828a'
+  muted-soft: '#a8acb3'
+  hairline: '#dee1e6'
+  hairline-soft: '#eef0f3'
+  canvas: '#ffffff'
+  surface-soft: '#f7f7f7'
+  surface-card: '#ffffff'
+  surface-strong: '#eef0f3'
+  surface-dark: '#0a0b0d'
+  surface-dark-elevated: '#16181c'
+  on-primary: '#ffffff'
+  on-dark: '#ffffff'
+  on-dark-soft: '#a8acb3'
+  semantic-up: '#05b169'
+  semantic-down: '#cf202f'
+  accent-yellow: '#f4b000'
 
 typography:
   display-mega:
@@ -148,155 +148,155 @@ spacing:
 
 components:
   top-nav-light:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.nav-link}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.nav-link}'
     height: 64px
   top-nav-on-dark:
-    backgroundColor: "{colors.surface-dark}"
-    textColor: "{colors.on-dark}"
-    typography: "{typography.nav-link}"
+    backgroundColor: '{colors.surface-dark}'
+    textColor: '{colors.on-dark}'
+    typography: '{typography.nav-link}'
     height: 64px
   button-primary:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.button}"
-    rounded: "{rounded.pill}"
+    backgroundColor: '{colors.primary}'
+    textColor: '{colors.on-primary}'
+    typography: '{typography.button}'
+    rounded: '{rounded.pill}'
     padding: 12px 20px
     height: 44px
   button-primary-active:
-    backgroundColor: "{colors.primary-active}"
-    textColor: "{colors.on-primary}"
-    rounded: "{rounded.pill}"
+    backgroundColor: '{colors.primary-active}'
+    textColor: '{colors.on-primary}'
+    rounded: '{rounded.pill}'
   button-primary-disabled:
-    backgroundColor: "{colors.primary-disabled}"
-    textColor: "{colors.on-primary}"
-    rounded: "{rounded.pill}"
+    backgroundColor: '{colors.primary-disabled}'
+    textColor: '{colors.on-primary}'
+    rounded: '{rounded.pill}'
   button-secondary-light:
-    backgroundColor: "{colors.surface-strong}"
-    textColor: "{colors.ink}"
-    typography: "{typography.button}"
-    rounded: "{rounded.pill}"
+    backgroundColor: '{colors.surface-strong}'
+    textColor: '{colors.ink}'
+    typography: '{typography.button}'
+    rounded: '{rounded.pill}'
     padding: 12px 20px
     height: 44px
   button-secondary-dark:
-    backgroundColor: "{colors.surface-dark-elevated}"
-    textColor: "{colors.on-dark}"
-    typography: "{typography.button}"
-    rounded: "{rounded.pill}"
+    backgroundColor: '{colors.surface-dark-elevated}'
+    textColor: '{colors.on-dark}'
+    typography: '{typography.button}'
+    rounded: '{rounded.pill}'
     padding: 12px 20px
     height: 44px
   button-outline-on-dark:
     backgroundColor: transparent
-    textColor: "{colors.on-dark}"
-    typography: "{typography.button}"
-    rounded: "{rounded.pill}"
+    textColor: '{colors.on-dark}'
+    typography: '{typography.button}'
+    rounded: '{rounded.pill}'
     padding: 11px 19px
     height: 44px
   button-tertiary-text:
     backgroundColor: transparent
-    textColor: "{colors.primary}"
-    typography: "{typography.button}"
+    textColor: '{colors.primary}'
+    typography: '{typography.button}'
   button-pill-cta:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.button}"
-    rounded: "{rounded.pill}"
+    backgroundColor: '{colors.primary}'
+    textColor: '{colors.on-primary}'
+    typography: '{typography.button}'
+    rounded: '{rounded.pill}'
     padding: 16px 32px
     height: 56px
   hero-band-dark:
-    backgroundColor: "{colors.surface-dark}"
-    textColor: "{colors.on-dark}"
-    typography: "{typography.display-mega}"
+    backgroundColor: '{colors.surface-dark}'
+    textColor: '{colors.on-dark}'
+    typography: '{typography.display-mega}'
     padding: 96px
   hero-band-light:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.display-mega}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.display-mega}'
     padding: 96px
   product-ui-card-dark:
-    backgroundColor: "{colors.surface-dark-elevated}"
-    textColor: "{colors.on-dark}"
-    rounded: "{rounded.xl}"
+    backgroundColor: '{colors.surface-dark-elevated}'
+    textColor: '{colors.on-dark}'
+    rounded: '{rounded.xl}'
     padding: 32px
   product-ui-card-light:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.xl}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    rounded: '{rounded.xl}'
     padding: 32px
   feature-card:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.title-md}"
-    rounded: "{rounded.xl}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.title-md}'
+    rounded: '{rounded.xl}'
     padding: 32px
   asset-row:
     backgroundColor: transparent
-    textColor: "{colors.ink}"
-    typography: "{typography.body-md}"
+    textColor: '{colors.ink}'
+    typography: '{typography.body-md}'
     padding: 16px 0
   price-up-cell:
     backgroundColor: transparent
-    textColor: "{colors.semantic-up}"
-    typography: "{typography.number-display}"
+    textColor: '{colors.semantic-up}'
+    typography: '{typography.number-display}'
   price-down-cell:
     backgroundColor: transparent
-    textColor: "{colors.semantic-down}"
-    typography: "{typography.number-display}"
+    textColor: '{colors.semantic-down}'
+    typography: '{typography.number-display}'
   pricing-tier-card:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.xl}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.body-md}'
+    rounded: '{rounded.xl}'
     padding: 32px
   pricing-tier-featured:
-    backgroundColor: "{colors.surface-dark}"
-    textColor: "{colors.on-dark}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.xl}"
+    backgroundColor: '{colors.surface-dark}'
+    textColor: '{colors.on-dark}'
+    typography: '{typography.body-md}'
+    rounded: '{rounded.xl}'
     padding: 32px
   cta-band-dark:
-    backgroundColor: "{colors.surface-dark}"
-    textColor: "{colors.on-dark}"
-    typography: "{typography.display-lg}"
+    backgroundColor: '{colors.surface-dark}'
+    textColor: '{colors.on-dark}'
+    typography: '{typography.display-lg}'
     padding: 96px
   text-input:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.md}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.body-md}'
+    rounded: '{rounded.md}'
     padding: 14px 16px
     height: 48px
   search-input-pill:
-    backgroundColor: "{colors.surface-strong}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.pill}"
+    backgroundColor: '{colors.surface-strong}'
+    textColor: '{colors.ink}'
+    typography: '{typography.body-md}'
+    rounded: '{rounded.pill}'
     padding: 12px 20px
     height: 44px
   badge-pill:
-    backgroundColor: "{colors.surface-strong}"
-    textColor: "{colors.ink}"
-    typography: "{typography.caption-strong}"
-    rounded: "{rounded.pill}"
+    backgroundColor: '{colors.surface-strong}'
+    textColor: '{colors.ink}'
+    typography: '{typography.caption-strong}'
+    rounded: '{rounded.pill}'
     padding: 4px 12px
   asset-icon-circular:
-    backgroundColor: "{colors.surface-strong}"
-    rounded: "{rounded.full}"
+    backgroundColor: '{colors.surface-strong}'
+    rounded: '{rounded.full}'
     size: 32px
   footer-light:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.body}"
-    typography: "{typography.body-sm}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.body}'
+    typography: '{typography.body-sm}'
     padding: 64px 48px
   footer-link:
     backgroundColor: transparent
-    textColor: "{colors.body}"
-    typography: "{typography.body-sm}"
+    textColor: '{colors.body}'
+    typography: '{typography.body-sm}'
   legal-band:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.muted}"
-    typography: "{typography.caption}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.muted}'
+    typography: '{typography.caption}'
 ---
 
 ## Overview

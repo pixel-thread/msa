@@ -1,5 +1,5 @@
-import { Prisma } from "@prisma/client";
-import { prisma } from "@src/shared/lib";
+import { Prisma } from '@prisma/client';
+import { prisma } from '@src/shared/lib';
 
 type Props = {
   where: Prisma.RefreshTokenWhereInput;

@@ -13,71 +13,53 @@ export const MAX_DOCUMENT_SIZE = 5 * 1024 * 1024; // 5MB
 // IMAGE
 // ======================================================
 
-export const ALLOWED_IMAGE_FORMATS = [
-  "jpg",
-  "jpeg",
-  "png",
-  "gif",
-  "webp",
-] as const;
+export const ALLOWED_IMAGE_FORMATS = ['jpg', 'jpeg', 'png', 'gif', 'webp'] as const;
 
 export const ALLOWED_IMAGE_MIME_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/gif",
-  "image/webp",
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/webp',
 ] as const;
 
 // ======================================================
 // VIDEO
 // ======================================================
 
-export const ALLOWED_VIDEO_FORMATS = [
-  "mp4",
-  "mov",
-  "wmv",
-  "avi",
-  "mkv",
-] as const;
+export const ALLOWED_VIDEO_FORMATS = ['mp4', 'mov', 'wmv', 'avi', 'mkv'] as const;
 
 export const ALLOWED_VIDEO_MIME_TYPES = [
-  "video/mp4",
-  "video/quicktime", // mov
-  "video/x-ms-wmv",
-  "video/x-msvideo", // avi
-  "video/x-matroska", // mkv
+  'video/mp4',
+  'video/quicktime', // mov
+  'video/x-ms-wmv',
+  'video/x-msvideo', // avi
+  'video/x-matroska', // mkv
 ] as const;
 
 // ======================================================
 // AUDIO
 // ======================================================
 
-export const ALLOWED_AUDIO_FORMATS = [
-  "mp3",
-  "wav",
-  "ogg",
-  "flac",
-  "m4a",
-] as const;
+export const ALLOWED_AUDIO_FORMATS = ['mp3', 'wav', 'ogg', 'flac', 'm4a'] as const;
 
 export const ALLOWED_AUDIO_MIME_TYPES = [
-  "audio/mpeg", // mp3
-  "audio/wav",
-  "audio/ogg",
-  "audio/flac",
-  "audio/mp4", // m4a
+  'audio/mpeg', // mp3
+  'audio/wav',
+  'audio/ogg',
+  'audio/flac',
+  'audio/mp4', // m4a
 ] as const;
 
 // ======================================================
 // DOCUMENTS
 // ======================================================
 
-export const ALLOWED_DOCUMENT_FORMATS = ["pdf", "doc", "docx"] as const;
+export const ALLOWED_DOCUMENT_FORMATS = ['pdf', 'doc', 'docx'] as const;
 
 export const ALLOWED_DOCUMENT_MIME_TYPES = [
-  "application/pdf",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ] as const;
 
 // ======================================================

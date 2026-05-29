@@ -1,7 +1,7 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 
-import { axiosClient } from "../api/axios";
-import { PaginationMeta } from "../types";
+import { axiosClient } from '../api/axios';
+import { PaginationMeta } from '../types';
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -13,19 +13,17 @@ export interface ApiResponse<T> {
 }
 
 export const handleAxiosError = <T>(error: unknown): ApiResponse<T> => {
-  let errorMessage = "Something went wrong. Please try again.";
-  let errorDetails: string | Record<string, unknown> = "";
+  let errorMessage = 'Something went wrong. Please try again.';
+  let errorDetails: string | Record<string, unknown> = '';
   if (error instanceof AxiosError) {
     if (error.response) {
-      errorMessage =
-        (error.response.data as { message?: string })?.message || errorMessage;
+      errorMessage = (error.response.data as { message?: string })?.message || errorMessage;
       errorDetails =
-        (error.response.data as { error?: string | Record<string, unknown> })
-          ?.error ||
+        (error.response.data as { error?: string | Record<string, unknown> })?.error ||
         error.response.data ||
-        "";
+        '';
     } else if (error.request) {
-      errorMessage = "No response from server. Please check your connection.";
+      errorMessage = 'No response from server. Please check your connection.';
     } else {
       errorMessage = error.message;
     }
@@ -41,12 +39,10 @@ export const handleAxiosError = <T>(error: unknown): ApiResponse<T> => {
   };
 };
 
-const handleResponse = <T>(
-  response: AxiosResponse<ApiResponse<T>>,
-): ApiResponse<T> => {
+const handleResponse = <T>(response: AxiosResponse<ApiResponse<T>>): ApiResponse<T> => {
   return {
     success: response.data.success,
-    message: response.data.message || "Request successful",
+    message: response.data.message || 'Request successful',
     data: response.data.data ?? null,
     meta: response?.data?.meta,
     token: response.data.token,
@@ -54,10 +50,7 @@ const handleResponse = <T>(
 };
 
 const http = {
-  get: async <T>(
-    url: string,
-    config?: AxiosRequestConfig,
-  ): Promise<ApiResponse<T>> => {
+  get: async <T>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> => {
     try {
       const response = await axiosClient.get(url, config);
       return handleResponse<T>(response);
@@ -77,7 +70,7 @@ const http = {
     try {
       const requestConfig: AxiosRequestConfig =
         data instanceof FormData
-          ? { ...config, headers: { ...config?.headers, "Content-Type": null } }
+          ? { ...config, headers: { ...config?.headers, 'Content-Type': null } }
           : { ...config };
       const response = await axiosClient.post(url, data, requestConfig);
       return handleResponse<T>(response);
@@ -113,7 +106,7 @@ const http = {
     try {
       const requestConfig: AxiosRequestConfig =
         data instanceof FormData
-          ? { ...config, headers: { ...config?.headers, "Content-Type": null } }
+          ? { ...config, headers: { ...config?.headers, 'Content-Type': null } }
           : { ...config };
       const response = await axiosClient.patch(url, data, requestConfig);
       return handleResponse<T>(response);
@@ -125,10 +118,7 @@ const http = {
     }
   },
 
-  delete: async <T>(
-    url: string,
-    config?: AxiosRequestConfig,
-  ): Promise<ApiResponse<T>> => {
+  delete: async <T>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> => {
     try {
       const response = await axiosClient.delete(url, config);
       return handleResponse<T>(response);

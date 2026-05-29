@@ -1,21 +1,18 @@
-import type { NextRequest } from "next/server";
-import { z, type ZodType } from "zod";
+import type { NextRequest } from 'next/server';
+import { z, type ZodType } from 'zod';
 
-import { RouteContext } from "@src/shared/api/with-validation";
-import {
-  AssociationDetails,
-  WithAssociationOptions,
-} from "@src/shared/api/with-association";
-import { handleApiErrors } from "@src/shared/api/handle-api-errors";
-import { prisma } from "@src/shared/lib/prisma";
+import { RouteContext } from '@src/shared/api/with-validation';
+import { AssociationDetails, WithAssociationOptions } from '@src/shared/api/with-association';
+import { handleApiErrors } from '@src/shared/api/handle-api-errors';
+import { prisma } from '@src/shared/lib/prisma';
 import {
   BadRequestError,
   ForbiddenError,
   UnauthorizedError,
   ValidationError,
-} from "@src/shared/errors";
-import { formatZodIssues } from "@validator/format-zod-issues";
-import { createTracingContext } from "./tracing-context";
+} from '@src/shared/errors';
+import { formatZodIssues } from '@validator/format-zod-issues';
+import { createTracingContext } from './tracing-context';
 
 /**
  * Zod preprocessor that parses a JSON string into the given schema.
@@ -29,7 +26,7 @@ import { createTracingContext } from "./tracing-context";
  */
 export function zjson<T extends ZodType>(schema: T): ZodType<z.infer<T>> {
   return z.preprocess((val) => {
-    if (typeof val !== "string") return val;
+    if (typeof val !== 'string') return val;
     try {
       return JSON.parse(val) as unknown;
     } catch {
@@ -52,7 +49,7 @@ const parseFormData = async <TFormData>(
   try {
     formData = await request.formData();
   } catch {
-    throw new BadRequestError("Invalid or missing form data");
+    throw new BadRequestError('Invalid or missing form data');
   }
 
   // Convert FormData to a plain object, preserving File instances
@@ -63,9 +60,7 @@ const parseFormData = async <TFormData>(
 
     if (existing !== undefined) {
       // Accumulate multiple values into an array
-      raw[key] = Array.isArray(existing)
-        ? [...existing, value]
-        : [existing, value];
+      raw[key] = Array.isArray(existing) ? [...existing, value] : [existing, value];
     } else {
       raw[key] = value;
     }
@@ -74,10 +69,7 @@ const parseFormData = async <TFormData>(
   const result = schema.safeParse(raw);
 
   if (!result.success) {
-    throw new ValidationError(
-      result.error.issues[0].message,
-      formatZodIssues(result.error.issues),
-    );
+    throw new ValidationError(result.error.issues[0].message, formatZodIssues(result.error.issues));
   }
 
   return result.data;
@@ -86,19 +78,13 @@ const parseFormData = async <TFormData>(
 /**
  * Parses query parameters from the request URL and validates against the schema.
  */
-const parseQuery = <TQuery>(
-  request: NextRequest,
-  schema: ZodType<TQuery>,
-): TQuery => {
+const parseQuery = <TQuery>(request: NextRequest, schema: ZodType<TQuery>): TQuery => {
   const url = new URL(request.url);
   const query = Object.fromEntries(url.searchParams.entries());
   const result = schema.safeParse(query);
 
   if (!result.success) {
-    throw new ValidationError(
-      result.error.issues[0].message,
-      formatZodIssues(result.error.issues),
-    );
+    throw new ValidationError(result.error.issues[0].message, formatZodIssues(result.error.issues));
   }
 
   return result.data;
@@ -118,10 +104,7 @@ const parseParams = async <
   const result = schema.safeParse(params);
 
   if (!result.success) {
-    throw new ValidationError(
-      result.error.issues[0].message,
-      formatZodIssues(result.error.issues),
-    );
+    throw new ValidationError(result.error.issues[0].message, formatZodIssues(result.error.issues));
   }
 
   return result.data;
@@ -215,10 +198,10 @@ export function withAssociationFormData<
   return withFormDataValidation<TFormData, TQuery, TParams>(
     schemas,
     async (request, context, validated) => {
-      const userId = request.headers.get("x-user-id");
+      const userId = request.headers.get('x-user-id');
 
       if (!userId) {
-        throw new UnauthorizedError("Unauthorized");
+        throw new UnauthorizedError('Unauthorized');
       }
 
       const user = await prisma.user.findUnique({
@@ -227,7 +210,7 @@ export function withAssociationFormData<
       });
 
       if (!user || !user.associationId) {
-        throw new ForbiddenError("User association not found");
+        throw new ForbiddenError('User association not found');
       }
 
       if (options?.slugParam) {
@@ -235,7 +218,7 @@ export function withAssociationFormData<
         const urlSlug = params[options.slugParam];
 
         if (urlSlug && user.association.slug !== urlSlug) {
-          throw new ForbiddenError("Access denied: Invalid association");
+          throw new ForbiddenError('Access denied: Invalid association');
         }
       }
 

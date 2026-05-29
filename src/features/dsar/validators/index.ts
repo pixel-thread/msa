@@ -1,12 +1,10 @@
-import { z } from "zod";
-import { DsarRequestType, DsarStatus } from "@prisma/client";
-import { pageNumberValidation } from "@src/shared/validators/common";
+import { z } from 'zod';
+import { DsarRequestType, DsarStatus } from '@prisma/client';
+import { pageNumberValidation } from '@src/shared/validators/common';
 
 export const SubmitDsarSchema = z.object({
   requestType: z.enum(DsarRequestType),
-  requestedData: z
-    .array(z.string())
-    .min(1, "At least one data category required"),
+  requestedData: z.array(z.string()).min(1, 'At least one data category required'),
   description: z
     .string()
     .max(500)
@@ -20,7 +18,7 @@ export const RespondDsarSchema = z.object({
   rejectedReason: z.string().max(500).optional(),
   responseType: z.string().optional(),
   storageKey: z.string().optional(),
-  deliveryMethod: z.string().default("secure_download"),
+  deliveryMethod: z.string().default('secure_download'),
 });
 
 export const DsarQuerySchema = z.object({

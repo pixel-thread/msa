@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -8,49 +8,38 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
-import { Button } from "@src/shared/components/ui/button";
-import { Input } from "@src/shared/components/ui/input";
-import { Label } from "@src/shared/components/ui/label";
+} from '@src/shared/components/ui/dialog';
+import { Button } from '@src/shared/components/ui/button';
+import { Input } from '@src/shared/components/ui/input';
+import { Label } from '@src/shared/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@src/shared/components/ui/select";
-import { useCreateAccount } from "../hooks/useCreateAccount";
+} from '@src/shared/components/ui/select';
+import { useCreateAccount } from '../hooks/useCreateAccount';
 
 interface CreateAccountDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const ACCOUNT_TYPES = [
-  "ASSET",
-  "LIABILITY",
-  "EQUITY",
-  "INCOME",
-  "EXPENSE",
-  "BANK",
-  "CASH",
-];
+const ACCOUNT_TYPES = ['ASSET', 'LIABILITY', 'EQUITY', 'INCOME', 'EXPENSE', 'BANK', 'CASH'];
 
-export function CreateAccountDialog({
-  open,
-  onOpenChange,
-}: CreateAccountDialogProps) {
+export function CreateAccountDialog({ open, onOpenChange }: CreateAccountDialogProps) {
   const createAccount = useCreateAccount();
-  const [code, setCode] = useState("");
-  const [name, setName] = useState("");
-  const [type, setType] = useState("");
-  const [description, setDescription] = useState("");
+  const [code, setCode] = useState('');
+  const [name, setName] = useState('');
+  const [type, setType] = useState('');
+  const [description, setDescription] = useState('');
 
   const resetForm = () => {
-    setCode("");
-    setName("");
-    setType("");
-    setDescription("");
+    setCode('');
+    setName('');
+    setType('');
+    setDescription('');
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -73,9 +62,7 @@ export function CreateAccountDialog({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Create Account</DialogTitle>
-          <DialogDescription>
-            Add a new account to the Chart of Accounts
-          </DialogDescription>
+          <DialogDescription>Add a new account to the Chart of Accounts</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit}>
@@ -142,11 +129,8 @@ export function CreateAccountDialog({
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={createAccount.isPending || !code || !name || !type}
-            >
-              {createAccount.isPending ? "Creating..." : "Create Account"}
+            <Button type="submit" disabled={createAccount.isPending || !code || !name || !type}>
+              {createAccount.isPending ? 'Creating...' : 'Create Account'}
             </Button>
           </DialogFooter>
         </form>

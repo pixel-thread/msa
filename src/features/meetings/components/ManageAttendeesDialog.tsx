@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
 import {
   CheckIcon as Check,
   ClockIcon as Clock,
   UserIcon as Users,
   XIcon,
-} from "@phosphor-icons/react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+} from '@phosphor-icons/react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 import {
   Dialog,
@@ -16,16 +16,16 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
-import { Button } from "@src/shared/components/ui/button";
-import { Avatar, AvatarFallback } from "@src/shared/components/ui/avatar";
+} from '@src/shared/components/ui/dialog';
+import { Button } from '@src/shared/components/ui/button';
+import { Avatar, AvatarFallback } from '@src/shared/components/ui/avatar';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@src/shared/components/ui/select";
+} from '@src/shared/components/ui/select';
 import {
   Form,
   FormControl,
@@ -33,11 +33,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
-import { cn } from "@src/shared/lib/utils";
-import type { Attendee } from "../types";
-import { AssignAttendeeSchema, type AssignAttendeeInput } from "../validators";
-import { MemberListItem } from "@src/features/members/types";
+} from '@src/shared/components/ui/form';
+import { cn } from '@src/shared/lib/utils';
+import type { Attendee } from '../types';
+import { AssignAttendeeSchema, type AssignAttendeeInput } from '../validators';
+import { MemberListItem } from '@src/features/members/types';
 
 interface ManageAttendeesDialogProps {
   open: boolean;
@@ -54,29 +54,29 @@ interface ManageAttendeesDialogProps {
 function RsvpStatusBadge({ status }: { status: string | undefined }) {
   const getStatusConfig = (status: string | undefined) => {
     switch (status?.toUpperCase()) {
-      case "ACCEPTED":
+      case 'ACCEPTED':
         return {
-          bg: "bg-emerald-50 dark:bg-emerald-950/30",
-          border: "border-emerald-200 dark:border-emerald-800",
-          text: "text-emerald-700 dark:text-emerald-400",
+          bg: 'bg-emerald-50 dark:bg-emerald-950/30',
+          border: 'border-emerald-200 dark:border-emerald-800',
+          text: 'text-emerald-700 dark:text-emerald-400',
           icon: <Check className="h-3 w-3" />,
-          label: "Accepted",
+          label: 'Accepted',
         };
-      case "DECLINED":
+      case 'DECLINED':
         return {
-          bg: "bg-red-50 dark:bg-red-950/30",
-          border: "border-red-200 dark:border-red-800",
-          text: "text-red-700 dark:text-red-400",
+          bg: 'bg-red-50 dark:bg-red-950/30',
+          border: 'border-red-200 dark:border-red-800',
+          text: 'text-red-700 dark:text-red-400',
           icon: <XIcon className="h-3 w-3" />,
-          label: "Declined",
+          label: 'Declined',
         };
       default:
         return {
-          bg: "bg-amber-50 dark:bg-amber-950/30",
-          border: "border-amber-200 dark:border-amber-800",
-          text: "text-amber-700 dark:text-amber-400",
+          bg: 'bg-amber-50 dark:bg-amber-950/30',
+          border: 'border-amber-200 dark:border-amber-800',
+          text: 'text-amber-700 dark:text-amber-400',
           icon: <Clock className="h-3 w-3" />,
-          label: "Pending",
+          label: 'Pending',
         };
     }
   };
@@ -86,7 +86,7 @@ function RsvpStatusBadge({ status }: { status: string | undefined }) {
   return (
     <div
       className={cn(
-        "inline-flex items-center gap-1.5 px-3 py-1.5  border text-xs font-medium",
+        'inline-flex items-center gap-1.5 px-3 py-1.5  border text-xs font-medium',
         config.bg,
         config.border,
         config.text,
@@ -109,27 +109,27 @@ function AttendeeCard({
 }) {
   const getInitials = (name: string) => {
     return name
-      .split(" ")
+      .split(' ')
       .map((n) => n[0])
-      .join("")
+      .join('')
       .toUpperCase()
       .slice(0, 2);
   };
 
   const getRoleColor = (role: string) => {
     switch (role) {
-      case "HOST":
-        return "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300";
-      case "CO_HOST":
-        return "bg-teal-100 text-teal-700 dark:bg-teal-900/50 dark:text-teal-300";
-      case "REQUIRED":
-        return "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300";
-      case "OPTIONAL":
-        return "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300";
-      case "OBSERVER":
-        return "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300";
+      case 'HOST':
+        return 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300';
+      case 'CO_HOST':
+        return 'bg-teal-100 text-teal-700 dark:bg-teal-900/50 dark:text-teal-300';
+      case 'REQUIRED':
+        return 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300';
+      case 'OPTIONAL':
+        return 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300';
+      case 'OBSERVER':
+        return 'bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300';
       default:
-        return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
+        return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300';
     }
   };
 
@@ -143,19 +143,14 @@ function AttendeeCard({
         </Avatar>
         <div className="flex flex-col">
           <span className="font-semibold text-sm">{attendee.user.name}</span>
-          <span className="text-xs text-muted-foreground">
-            {attendee.user.email}
-          </span>
+          <span className="text-xs text-muted-foreground">{attendee.user.email}</span>
         </div>
       </div>
 
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
           <span
-            className={cn(
-              "text-xs px-2.5 py-1  font-medium",
-              getRoleColor(attendee.attendeeRole),
-            )}
+            className={cn('text-xs px-2.5 py-1  font-medium', getRoleColor(attendee.attendeeRole))}
           >
             {attendee.attendeeRole}
           </span>
@@ -189,23 +184,22 @@ export function ManageAttendeesDialog({
   const form = useForm({
     resolver: zodResolver(AssignAttendeeSchema),
     defaultValues: {
-      userId: "",
-      attendeeRole: "OPTIONAL",
+      userId: '',
+      attendeeRole: 'OPTIONAL',
     },
   });
 
   const stats = {
     total: attendees.length,
-    accepted: attendees.filter((a) => a.rsvpStatus === "ACCEPTED").length,
-    declined: attendees.filter((a) => a.rsvpStatus === "DECLINED").length,
-    pending: attendees.filter(
-      (a) => a.rsvpStatus !== "ACCEPTED" && a.rsvpStatus !== "DECLINED",
-    ).length,
+    accepted: attendees.filter((a) => a.rsvpStatus === 'ACCEPTED').length,
+    declined: attendees.filter((a) => a.rsvpStatus === 'DECLINED').length,
+    pending: attendees.filter((a) => a.rsvpStatus !== 'ACCEPTED' && a.rsvpStatus !== 'DECLINED')
+      .length,
   };
 
   const onSubmit = (data: AssignAttendeeInput) => {
     onAddAttendee(data);
-    form.reset({ userId: "", attendeeRole: "OPTIONAL" });
+    form.reset({ userId: '', attendeeRole: 'OPTIONAL' });
   };
 
   return (
@@ -216,27 +210,21 @@ export function ManageAttendeesDialog({
             <div>
               <DialogTitle className="text-lg">Manage Attendees</DialogTitle>
               <DialogDescription className="text-sm mt-1">
-                {meeting?.title || "Select a meeting"}
+                {meeting?.title || 'Select a meeting'}
               </DialogDescription>
             </div>
             <div className="flex items-center gap-4 text-sm">
               <div className="flex items-center gap-1.5">
                 <div className="h-2 w-2 bg-emerald-500" />
-                <span className="text-muted-foreground">
-                  {stats.accepted} Accepted
-                </span>
+                <span className="text-muted-foreground">{stats.accepted} Accepted</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <div className="h-2 w-2 bg-red-500" />
-                <span className="text-muted-foreground">
-                  {stats.declined} Declined
-                </span>
+                <span className="text-muted-foreground">{stats.declined} Declined</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <div className="h-2 w-2 bg-amber-500" />
-                <span className="text-muted-foreground">
-                  {stats.pending} Pending
-                </span>
+                <span className="text-muted-foreground">{stats.pending} Pending</span>
               </div>
             </div>
           </div>
@@ -253,14 +241,9 @@ export function ManageAttendeesDialog({
                 name="userId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs font-medium">
-                      Select Member
-                    </FormLabel>
+                    <FormLabel className="text-xs font-medium">Select Member</FormLabel>
                     <FormControl>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
+                      <Select value={field.value} onValueChange={field.onChange}>
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Search and select a member..." />
                         </SelectTrigger>
@@ -290,10 +273,7 @@ export function ManageAttendeesDialog({
                   <FormItem>
                     <FormLabel className="text-xs font-medium">Role</FormLabel>
                     <FormControl>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
+                      <Select value={field.value} onValueChange={field.onChange}>
                         <SelectTrigger className="w-full">
                           <SelectValue />
                         </SelectTrigger>
@@ -324,9 +304,7 @@ export function ManageAttendeesDialog({
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold">
-                Attendees ({attendees.length})
-              </h3>
+              <h3 className="text-sm font-semibold">Attendees ({attendees.length})</h3>
             </div>
 
             {attendees.length === 0 ? (

@@ -1,2 +1,2 @@
-export * from "./useTrainingCompletions";
-export * from "./useTrainingCompletionsColumns";
+export * from './useTrainingCompletions';
+export * from './useTrainingCompletionsColumns';

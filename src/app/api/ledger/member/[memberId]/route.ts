@@ -1,12 +1,12 @@
-import { withAssociation, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@src/shared/utils/responses";
-import { buildPagination } from "@src/shared/utils";
-import { UserRole } from "@prisma/client";
-import { prisma } from "@src/shared/lib/prisma";
-import { pageNumberValidation } from "@src/shared/validators";
-import { PAGE_SIZE } from "@src/shared/constants";
-import { z } from "zod";
-import { logger } from "@src/shared/logger/server";
+import { withAssociation, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@src/shared/utils/responses';
+import { buildPagination } from '@src/shared/utils';
+import { UserRole } from '@prisma/client';
+import { prisma } from '@src/shared/lib/prisma';
+import { pageNumberValidation } from '@src/shared/validators';
+import { PAGE_SIZE } from '@src/shared/constants';
+import { z } from 'zod';
+import { logger } from '@src/shared/logger/server';
 
 const QuerySchema = z.object({
   page: pageNumberValidation,
@@ -20,7 +20,7 @@ export const GET = withAssociation(
         traceId,
         associationId: association.id,
       },
-      "GET /api/ledger/member/[memberId] - Request started",
+      'GET /api/ledger/member/[memberId] - Request started',
     );
 
     const user = await withRole(request, UserRole.FINANCE);
@@ -30,7 +30,7 @@ export const GET = withAssociation(
         traceId,
         userId: user.id,
       },
-      "GET /api/ledger/member/[memberId] - User authorized",
+      'GET /api/ledger/member/[memberId] - User authorized',
     );
 
     const { memberId } = (await params) as { memberId: string };
@@ -47,7 +47,7 @@ export const GET = withAssociation(
         include: {
           lines: true,
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
       }),
       prisma.ledgerEntry.count({ where }),
     ]);
@@ -58,7 +58,7 @@ export const GET = withAssociation(
         memberId,
         count: memberLedger.length,
       },
-      "GET /api/ledger/member/[memberId] - Success",
+      'GET /api/ledger/member/[memberId] - Success',
     );
 
     return SuccessResponse({

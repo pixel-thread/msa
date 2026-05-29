@@ -1,1 +1,1 @@
-export * from "./razorpay-checkout";
+export * from './razorpay-checkout';

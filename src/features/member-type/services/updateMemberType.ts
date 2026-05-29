@@ -1,7 +1,7 @@
-import { prisma } from "@lib/prisma";
-import { UpdateMemberTypeInput } from "../validators";
-import { AuditAction, Prisma } from "@prisma/client";
-import { ConflictError } from "@src/shared/errors";
+import { prisma } from '@lib/prisma';
+import { UpdateMemberTypeInput } from '../validators';
+import { AuditAction, Prisma } from '@prisma/client';
+import { ConflictError } from '@src/shared/errors';
 
 interface UpdateMemberTypeProps {
   associationId: string;
@@ -22,9 +22,7 @@ export async function updateMemberType({
     });
 
     if (existing) {
-      throw new ConflictError(
-        `Member type with level ${data.level} already exists`,
-      );
+      throw new ConflictError(`Member type with level ${data.level} already exists`);
     }
   }
 
@@ -39,7 +37,7 @@ export async function updateMemberType({
         associationId,
         actorId,
         action: AuditAction.UPDATE,
-        resourceType: "MemberType",
+        resourceType: 'MemberType',
         resourceId: memberTypeId,
         newValues: data as Prisma.InputJsonValue,
       },

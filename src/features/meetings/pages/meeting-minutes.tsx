@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
-import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
-import { useMeetingDetail } from "@src/features/meetings/hooks/useMeetingDetail";
+import { useParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useMeetingDetail } from '@src/features/meetings/hooks/useMeetingDetail';
 import {
   useMeetingMinutes,
   type MeetingMinute as MeetingMinuteType,
-} from "@src/features/meetings/hooks/useMeetingMinutes";
+} from '@src/features/meetings/hooks/useMeetingMinutes';
 import {
   CreateMinuteDialog,
   EditMinuteDialog,
   DeleteMinuteDialog,
-} from "@src/features/meetings/components";
-import { DataTable } from "@src/shared/components/data-table";
-import { DataTableFilters } from "@src/shared/components/data-table-filters";
-import { useMeetingMinutesColumns } from "@src/features/meetings/hooks/useMeetingMinutesColumns";
-import { Button } from "@src/shared/components/ui/button";
-import { ArrowLeft, FileText, Plus } from "lucide-react";
-import Link from "next/link";
+} from '@src/features/meetings/components';
+import { DataTable } from '@src/shared/components/data-table';
+import { DataTableFilters } from '@src/shared/components/data-table-filters';
+import { useMeetingMinutesColumns } from '@src/features/meetings/hooks/useMeetingMinutesColumns';
+import { Button } from '@src/shared/components/ui/button';
+import { ArrowLeft, FileText, Plus } from 'lucide-react';
+import Link from 'next/link';
 import type {
   CreateMeetingMinuteInput,
   UpdateMeetingMinuteInput,
-} from "@src/features/meetings/validators";
+} from '@src/features/meetings/validators';
 
 export default function MeetingMinutesPage() {
   const params = useParams();
@@ -29,11 +29,8 @@ export default function MeetingMinutesPage() {
   const meetingId = params.meetingId as string;
 
   const [createOpen, setCreateOpen] = useState(false);
-  const [editingMinute, setEditingMinute] = useState<MeetingMinuteType | null>(
-    null,
-  );
-  const [deletingMinute, setDeletingMinute] =
-    useState<MeetingMinuteType | null>(null);
+  const [editingMinute, setEditingMinute] = useState<MeetingMinuteType | null>(null);
+  const [deletingMinute, setDeletingMinute] = useState<MeetingMinuteType | null>(null);
 
   const { meeting, isLoading: meetingLoading } = useMeetingDetail(meetingId);
   const {
@@ -124,9 +121,9 @@ export default function MeetingMinutesPage() {
           <DataTableFilters
             fields={[
               {
-                type: "search",
-                id: "search",
-                placeholder: "Search minutes...",
+                type: 'search',
+                id: 'search',
+                placeholder: 'Search minutes...',
               },
             ]}
             onFilterChange={() => {}}
@@ -141,10 +138,7 @@ export default function MeetingMinutesPage() {
       </div>
 
       <div className="mt-4 flex items-center gap-4">
-        <Link
-          href={`/meetings/${meetingId}`}
-          className="text-sm text-primary hover:underline"
-        >
+        <Link href={`/meetings/${meetingId}`} className="text-sm text-primary hover:underline">
           ← Back to Meeting Details
         </Link>
         <Link
@@ -189,9 +183,7 @@ export default function MeetingMinutesPage() {
 
       <DeleteMinuteDialog
         minute={
-          deletingMinute
-            ? { id: deletingMinute.id, agendaPoint: deletingMinute.agendaPoint }
-            : null
+          deletingMinute ? { id: deletingMinute.id, agendaPoint: deletingMinute.agendaPoint } : null
         }
         open={!!deletingMinute}
         onOpenChange={(open) => {

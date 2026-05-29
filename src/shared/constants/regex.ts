@@ -9,8 +9,7 @@
 export const ALLOW = {
   EMAIL: /^[\w.%+-]+@[a-zA-Z\d-]+\.[a-zA-Z]{2,}$/,
 
-  PASSWORD:
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/,
+  PASSWORD: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/,
 
   PHONE_IN: /^\+91[6-9]\d{9}$/,
 
@@ -64,8 +63,7 @@ export const ALLOW = {
 export const DENY = {
   HTML_TAGS: /<[^>]*>/,
 
-  SQL_INJECTION:
-    /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|ALTER|CREATE|EXEC)\b)|(--)|(;)|(')/i,
+  SQL_INJECTION: /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|ALTER|CREATE|EXEC)\b)|(--)|(;)|(')/i,
 
   XSS_SCRIPT: /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
 };

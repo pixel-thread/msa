@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import { MembershipApplicationListItem } from "../types";
+import { useQuery } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import { MembershipApplicationListItem } from '../types';
 
 interface ApplicationsResponse {
   data: MembershipApplicationListItem[];
@@ -15,22 +15,20 @@ interface ApplicationsResponse {
 
 interface UseMembershipApplicationsOptions {
   page?: number;
-  status?: "PENDING" | "APPROVED" | "REJECTED";
+  status?: 'PENDING' | 'APPROVED' | 'REJECTED';
 }
 
-export function useMembershipApplications(
-  options: UseMembershipApplicationsOptions = {},
-) {
+export function useMembershipApplications(options: UseMembershipApplicationsOptions = {}) {
   const { page = 1, status } = options;
   const params = new URLSearchParams();
-  params.set("page", String(page));
+  params.set('page', String(page));
   const url = `/admin/membership-applications?${params.toString()}`;
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["membership-applications", page, status],
+    queryKey: ['membership-applications', page, status],
     queryFn: () => http.get<MembershipApplicationListItem[]>(url),
     refetchOnMount: true,
-    networkMode: "offlineFirst",
+    networkMode: 'offlineFirst',
   });
 
   const result = data?.data;

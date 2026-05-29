@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -8,20 +8,20 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
+} from '@src/shared/components/ui/dialog';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@src/shared/components/ui/select";
-import { Button } from "@src/shared/components/ui/button";
-import { Label } from "@src/shared/components/ui/label";
-import { Input } from "@src/shared/components/ui/input";
-import { Textarea } from "@src/shared/components/ui/textarea";
-import { useRespondToDsarTicket } from "../hooks";
-import type { DsarTicketRecord } from "../types";
+} from '@src/shared/components/ui/select';
+import { Button } from '@src/shared/components/ui/button';
+import { Label } from '@src/shared/components/ui/label';
+import { Input } from '@src/shared/components/ui/input';
+import { Textarea } from '@src/shared/components/ui/textarea';
+import { useRespondToDsarTicket } from '../hooks';
+import type { DsarTicketRecord } from '../types';
 
 interface DsarRespondDialogProps {
   record: DsarTicketRecord | null;
@@ -29,16 +29,12 @@ interface DsarRespondDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function DsarRespondDialog({
-  record,
-  open,
-  onOpenChange,
-}: DsarRespondDialogProps) {
-  const [status, setStatus] = useState("IN_PROGRESS");
-  const [notes, setNotes] = useState("");
-  const [responseType, setResponseType] = useState("");
-  const [storageKey, setStorageKey] = useState("");
-  const [deliveryMethod, setDeliveryMethod] = useState("secure_download");
+export function DsarRespondDialog({ record, open, onOpenChange }: DsarRespondDialogProps) {
+  const [status, setStatus] = useState('IN_PROGRESS');
+  const [notes, setNotes] = useState('');
+  const [responseType, setResponseType] = useState('');
+  const [storageKey, setStorageKey] = useState('');
+  const [deliveryMethod, setDeliveryMethod] = useState('secure_download');
 
   const respondMutation = useRespondToDsarTicket();
 
@@ -65,11 +61,11 @@ export function DsarRespondDialog({
   };
 
   const handleClose = () => {
-    setStatus("IN_PROGRESS");
-    setNotes("");
-    setResponseType("");
-    setStorageKey("");
-    setDeliveryMethod("secure_download");
+    setStatus('IN_PROGRESS');
+    setNotes('');
+    setResponseType('');
+    setStorageKey('');
+    setDeliveryMethod('secure_download');
     onOpenChange(false);
   };
 
@@ -147,7 +143,7 @@ export function DsarRespondDialog({
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={respondMutation.isPending}>
-            {respondMutation.isPending ? "Submitting..." : "Submit Response"}
+            {respondMutation.isPending ? 'Submitting...' : 'Submit Response'}
           </Button>
         </DialogFooter>
       </DialogContent>

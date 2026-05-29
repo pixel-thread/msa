@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import * as React from "react";
+import * as React from 'react';
 
-import { NavMain } from "@src/shared/components/nav-main";
-import { NavUser } from "@src/shared/components/nav-user";
+import { NavMain } from '@src/shared/components/nav-main';
+import { NavUser } from '@src/shared/components/nav-user';
 import {
   Sidebar,
   SidebarContent,
@@ -13,20 +13,20 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@src/shared/components/ui/sidebar";
-import { GalleryVerticalEndIcon } from "lucide-react";
-import { useAuthStore } from "@src/shared/stores/auth";
-import { DRAWER_NAV_MAIN } from "../constants/drawer";
-import { useAssociation } from "@hooks/use-association";
+} from '@src/shared/components/ui/sidebar';
+import { GalleryVerticalEndIcon } from 'lucide-react';
+import { useAuthStore } from '@src/shared/stores/auth';
+import { DRAWER_NAV_MAIN } from '../constants/drawer';
+import { useAssociation } from '@hooks/use-association';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuthStore();
   const { data } = useAssociation();
 
   const sidebarUser = {
-    name: user?.name || "",
-    email: user?.email || "",
-    avatar: user?.imageUrl || "",
+    name: user?.name || '',
+    email: user?.email || '',
+    avatar: user?.imageUrl || '',
   };
 
   return (
@@ -42,9 +42,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <GalleryVerticalEndIcon className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">
-                  {data?.slug.toUpperCase()}
-                </span>
+                <span className="truncate font-medium">{data?.slug.toUpperCase()}</span>
                 <span className="truncate text-xs">{data?.name}</span>
               </div>
             </SidebarMenuButton>

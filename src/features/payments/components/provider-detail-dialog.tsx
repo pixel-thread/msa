@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 import {
   useProviderDetail,
   useDeleteProvider,
-} from "@src/features/payments/hooks/usePaymentProviders";
-import { ProviderDetail } from "@src/features/payments/components/provider-detail";
+} from '@src/features/payments/hooks/usePaymentProviders';
+import { ProviderDetail } from '@src/features/payments/components/provider-detail';
 import {
   Dialog,
   DialogContent,
@@ -13,10 +13,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
-import { Button } from "@src/shared/components/ui/button";
-import { toast } from "sonner";
-import { useQueryClient } from "@tanstack/react-query";
+} from '@src/shared/components/ui/dialog';
+import { Button } from '@src/shared/components/ui/button';
+import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface ProviderDetailDialogProps {
   open: boolean;
@@ -40,16 +40,16 @@ export function ProviderDetailDialog({
     deleteProvider.mutate(providerId, {
       onSuccess: (response) => {
         if (response.success) {
-          toast.success(response.message || "Provider deleted successfully");
+          toast.success(response.message || 'Provider deleted successfully');
         } else {
-          toast.error(response.message || "Failed to delete provider");
+          toast.error(response.message || 'Failed to delete provider');
         }
         setDeleteDialogOpen(false);
-        queryClient.invalidateQueries({ queryKey: ["payment-providers"] });
+        queryClient.invalidateQueries({ queryKey: ['payment-providers'] });
         onOpenChange(false);
       },
       onError: () => {
-        toast.error("Failed to delete provider");
+        toast.error('Failed to delete provider');
         setDeleteDialogOpen(false);
       },
     });
@@ -60,12 +60,8 @@ export function ProviderDetailDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-3xl">
           <DialogHeader>
-            <DialogTitle>
-              {provider?.provider ?? "Provider Details"}
-            </DialogTitle>
-            <DialogDescription>
-              Payment provider configuration
-            </DialogDescription>
+            <DialogTitle>{provider?.provider ?? 'Provider Details'}</DialogTitle>
+            <DialogDescription>Payment provider configuration</DialogDescription>
           </DialogHeader>
           {isLoading ? (
             <div className="flex items-center justify-center py-16">
@@ -94,15 +90,11 @@ export function ProviderDetailDialog({
           <DialogHeader>
             <DialogTitle>Delete Provider</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this payment provider? This action
-              cannot be undone.
+              Are you sure you want to delete this payment provider? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-            >
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
               Cancel
             </Button>
             <Button
@@ -110,7 +102,7 @@ export function ProviderDetailDialog({
               onClick={handleDelete}
               disabled={deleteProvider.isPending}
             >
-              {deleteProvider.isPending ? "Deleting..." : "Delete"}
+              {deleteProvider.isPending ? 'Deleting...' : 'Delete'}
             </Button>
           </DialogFooter>
         </DialogContent>

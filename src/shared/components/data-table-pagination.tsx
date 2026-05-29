@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import type { PaginationMeta } from "@src/shared/types";
+import type { PaginationMeta } from '@src/shared/types';
 import {
   Pagination,
   PaginationContent,
@@ -9,7 +9,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@src/shared/components/ui/pagination";
+} from '@src/shared/components/ui/pagination';
 
 interface DataTablePaginationProps {
   meta?: PaginationMeta;
@@ -20,7 +20,7 @@ interface DataTablePaginationProps {
 export function DataTablePagination({
   meta,
   onPageChange,
-  label = "records",
+  label = 'records',
 }: DataTablePaginationProps) {
   if (!meta || meta.totalPages <= 1) return null;
 
@@ -55,13 +55,9 @@ export function DataTablePagination({
   return (
     <div className="flex items-center justify-between">
       <p className="text-sm text-body">
-        Showing{" "}
-        <span className="font-medium text-body-strong">{startItem}</span> to{" "}
-        <span className="font-medium text-body-strong">{endItem}</span> of{" "}
-        <span className="font-medium text-body-strong">
-          {meta.total.toLocaleString()}
-        </span>{" "}
-        {label}
+        Showing <span className="font-medium text-body-strong">{startItem}</span> to{' '}
+        <span className="font-medium text-body-strong">{endItem}</span> of{' '}
+        <span className="font-medium text-body-strong">{meta.total.toLocaleString()}</span> {label}
       </p>
 
       <Pagination>
@@ -69,11 +65,7 @@ export function DataTablePagination({
           <PaginationItem>
             <PaginationPrevious
               onClick={() => onPageChange(meta.page - 1)}
-              className={
-                meta.page <= 1
-                  ? "pointer-events-none opacity-50"
-                  : "cursor-pointer"
-              }
+              className={meta.page <= 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
             />
           </PaginationItem>
 
@@ -99,9 +91,7 @@ export function DataTablePagination({
             <PaginationNext
               onClick={() => onPageChange(meta.page + 1)}
               className={
-                meta.page >= meta.totalPages
-                  ? "pointer-events-none opacity-50"
-                  : "cursor-pointer"
+                meta.page >= meta.totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'
               }
             />
           </PaginationItem>

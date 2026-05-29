@@ -1,10 +1,10 @@
-import { UserRole } from "@prisma/client";
-import { getUserInvoice } from "@src/features/user/services";
-import { withAssociation, withRole } from "@src/shared/api";
-import { UnauthorizedError } from "@src/shared/errors";
-import { SuccessResponse } from "@src/shared/utils";
-import z from "zod";
-import { logger } from "@src/shared/logger/server";
+import { UserRole } from '@prisma/client';
+import { getUserInvoice } from '@src/features/user/services';
+import { withAssociation, withRole } from '@src/shared/api';
+import { UnauthorizedError } from '@src/shared/errors';
+import { SuccessResponse } from '@src/shared/utils';
+import z from 'zod';
+import { logger } from '@src/shared/logger/server';
 
 const InvoiceRouteParams = z.object({
   invoiceId: z.uuid(),
@@ -18,7 +18,7 @@ export const GET = withAssociation(
         traceId,
         associationId: association.id,
       },
-      "GET /api/user/invoices/[invoiceId] - Request started",
+      'GET /api/user/invoices/[invoiceId] - Request started',
     );
 
     const user = await withRole(req, UserRole.MEMBER);
@@ -28,12 +28,12 @@ export const GET = withAssociation(
         traceId,
         userId: user.id,
       },
-      "GET /api/user/invoices/[invoiceId] - User authorized",
+      'GET /api/user/invoices/[invoiceId] - User authorized',
     );
 
-    const userId = req.headers.get("x-user-id");
+    const userId = req.headers.get('x-user-id');
 
-    if (!userId) throw new UnauthorizedError("Unauthorized");
+    if (!userId) throw new UnauthorizedError('Unauthorized');
 
     const invoices = await getUserInvoice({
       where: {
@@ -48,12 +48,12 @@ export const GET = withAssociation(
         traceId,
         invoiceId: params?.invoiceId,
       },
-      "GET /api/user/invoices/[invoiceId] - Success",
+      'GET /api/user/invoices/[invoiceId] - Success',
     );
 
     return SuccessResponse({
       data: invoices,
-      message: "Invoices fetched successfully",
+      message: 'Invoices fetched successfully',
     });
   },
 );

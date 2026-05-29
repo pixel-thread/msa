@@ -1,11 +1,7 @@
-import { prisma } from "@lib/prisma";
-import {
-  AnnouncementStatus,
-  AnnouncementPriority,
-  UserRole,
-} from "@prisma/client";
-import { NotFoundError, ForbiddenError } from "@src/shared/errors";
-import { sendAnnouncementNotifications } from "./sendAnnouncementNotifications";
+import { prisma } from '@lib/prisma';
+import { AnnouncementStatus, AnnouncementPriority, UserRole } from '@prisma/client';
+import { NotFoundError, ForbiddenError } from '@src/shared/errors';
+import { sendAnnouncementNotifications } from './sendAnnouncementNotifications';
 
 interface UpdateAnnouncementProps {
   announcementId: string;
@@ -36,11 +32,11 @@ export async function updateAnnouncement({
   });
 
   if (!announcement) {
-    throw new NotFoundError("Announcement");
+    throw new NotFoundError('Announcement');
   }
 
   if (announcement.authorId !== authorId) {
-    throw new ForbiddenError("You can only update your own announcements");
+    throw new ForbiddenError('You can only update your own announcements');
   }
 
   const wasDraft = announcement.status === AnnouncementStatus.DRAFT;

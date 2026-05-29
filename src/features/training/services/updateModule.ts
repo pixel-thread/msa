@@ -1,6 +1,6 @@
-import { prisma } from "@lib/prisma";
-import { UpdateTrainingModuleInput } from "../validators/training";
-import { AuditAction, Prisma } from "@prisma/client";
+import { prisma } from '@lib/prisma';
+import { UpdateTrainingModuleInput } from '../validators/training';
+import { AuditAction, Prisma } from '@prisma/client';
 
 interface UpdateModuleProps {
   associationId: string;
@@ -9,12 +9,7 @@ interface UpdateModuleProps {
   data: UpdateTrainingModuleInput;
 }
 
-export async function updateModule({
-  associationId,
-  moduleId,
-  actorId,
-  data,
-}: UpdateModuleProps) {
+export async function updateModule({ associationId, moduleId, actorId, data }: UpdateModuleProps) {
   return await prisma.$transaction(async (tx) => {
     const oldModule = await tx.trainingModule.findUniqueOrThrow({
       where: { id: moduleId, associationId },
@@ -30,7 +25,7 @@ export async function updateModule({
         associationId,
         actorId,
         action: AuditAction.TRAINING_MODULE_UPDATE,
-        resourceType: "TrainingModule",
+        resourceType: 'TrainingModule',
         resourceId: moduleId,
         oldValues: oldModule as unknown as Prisma.InputJsonValue,
         newValues: updatedModule as unknown as Prisma.InputJsonValue,

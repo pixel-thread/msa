@@ -74,15 +74,14 @@ This plan implements the Multi-Tenant Payment Provider architecture described in
 
 ```typescript
 export const UpsertPaymentProviderSchema = z.object({
-  provider: z.enum(["razorpay", "stripe", "payu", "cashfree"]),
+  provider: z.enum(['razorpay', 'stripe', 'payu', 'cashfree']),
   keyId: z.string().min(1),
   keySecret: z.string().min(1),
   webhookSecret: z.string().optional(),
   isActive: z.boolean().default(true),
 });
 
-export const UpdatePaymentProviderSchema =
-  UpsertPaymentProviderSchema.partial();
+export const UpdatePaymentProviderSchema = UpsertPaymentProviderSchema.partial();
 
 export const PaymentProviderIdSchema = z.object({
   providerId: z.string().cuid(),
@@ -143,15 +142,10 @@ export const PaymentProviderIdSchema = z.object({
 2. Add helper function:
 
    ```typescript
-   export const getRazorpayClientForAssociation = async (
-     associationId: string,
-   ) => {
-     const provider = await getActiveProvider(associationId, "razorpay");
-     if (!provider) throw new BadRequest("No payment provider configured");
-     return createRazorpayClient(
-       provider.keyId,
-       decrypt(provider.encryptedKeySecret),
-     );
+   export const getRazorpayClientForAssociation = async (associationId: string) => {
+     const provider = await getActiveProvider(associationId, 'razorpay');
+     if (!provider) throw new BadRequest('No payment provider configured');
+     return createRazorpayClient(provider.keyId, decrypt(provider.encryptedKeySecret));
    };
    ```
 
@@ -196,13 +190,13 @@ async function migrate() {
   // 1. Check if any providers exist
   const existing = await prisma.paymentProvider.count();
   if (existing > 0) {
-    console.log("Providers already exist, skipping migration");
+    console.log('Providers already exist, skipping migration');
     return;
   }
 
   // 2. Check if env vars are set
   if (!env.RAZORPAY_KEY_ID) {
-    console.log("No global credentials to migrate");
+    console.log('No global credentials to migrate');
     return;
   }
 
@@ -212,7 +206,7 @@ async function migrate() {
     await prisma.paymentProvider.create({
       data: {
         associationId: assoc.id,
-        provider: "razorpay",
+        provider: 'razorpay',
         keyId: env.RAZORPAY_KEY_ID,
         encryptedKeySecret: encrypt(env.RAZORPAY_KEY_SECRET),
         encryptedWebhookSecret: env.RAZORPAY_WEBHOOK_SECRET

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Button } from "@src/shared/components/ui/button";
-import { Pencil, Trash2 } from "lucide-react";
-import type { Announcement } from "@src/features/announcement/types";
+import { Button } from '@src/shared/components/ui/button';
+import { Pencil, Trash2 } from 'lucide-react';
+import type { Announcement } from '@src/features/announcement/types';
 
 interface AnnouncementActionsCellProps {
   announcement: Announcement;

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { UserRole } from "@prisma/client";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { UserRole } from '@prisma/client';
 
 import {
   Dialog,
@@ -11,12 +11,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
-import { Button } from "@src/shared/components/ui/button";
-import { Input } from "@src/shared/components/ui/input";
-import { Textarea } from "@src/shared/components/ui/textarea";
-import { Switch } from "@src/shared/components/ui/switch";
-import { Checkbox } from "@src/shared/components/ui/checkbox";
+} from '@src/shared/components/ui/dialog';
+import { Button } from '@src/shared/components/ui/button';
+import { Input } from '@src/shared/components/ui/input';
+import { Textarea } from '@src/shared/components/ui/textarea';
+import { Switch } from '@src/shared/components/ui/switch';
+import { Checkbox } from '@src/shared/components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -24,12 +24,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
-import {
-  CreateTrainingModuleSchema,
-  type CreateTrainingModuleInput,
-} from "../validators/training";
-import { useCreateTrainingModule } from "../hooks";
+} from '@src/shared/components/ui/form';
+import { CreateTrainingModuleSchema, type CreateTrainingModuleInput } from '../validators/training';
+import { useCreateTrainingModule } from '../hooks';
 
 interface CreateModuleDialogProps {
   open: boolean;
@@ -38,18 +35,15 @@ interface CreateModuleDialogProps {
 
 const ROLES_LIST = Object.values(UserRole);
 
-export function CreateModuleDialog({
-  open,
-  onOpenChange,
-}: CreateModuleDialogProps) {
+export function CreateModuleDialog({ open, onOpenChange }: CreateModuleDialogProps) {
   const { createModule, isCreating } = useCreateTrainingModule();
 
   const form = useForm({
     resolver: zodResolver(CreateTrainingModuleSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      content: "",
+      title: '',
+      description: '',
+      content: '',
       durationMinutes: undefined,
       requiredForRoles: [UserRole.MEMBER],
       isActive: true,
@@ -72,9 +66,7 @@ export function CreateModuleDialog({
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create Training Module</DialogTitle>
-          <DialogDescription>
-            Add a new training module for association members.
-          </DialogDescription>
+          <DialogDescription>Add a new training module for association members.</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -142,11 +134,7 @@ export function CreateModuleDialog({
                         placeholder="e.g. 30"
                         {...field}
                         onChange={(e) =>
-                          field.onChange(
-                            e.target.value
-                              ? parseInt(e.target.value, 10)
-                              : undefined,
-                          )
+                          field.onChange(e.target.value ? parseInt(e.target.value, 10) : undefined)
                         }
                       />
                     </FormControl>
@@ -164,10 +152,7 @@ export function CreateModuleDialog({
                       <FormLabel className="text-sm">Active</FormLabel>
                     </div>
                     <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
+                      <Switch checked={field.value} onCheckedChange={field.onChange} />
                     </FormControl>
                   </FormItem>
                 )}
@@ -196,9 +181,7 @@ export function CreateModuleDialog({
                                 onCheckedChange={(checked) => {
                                   const updatedRoles = checked
                                     ? [...(field.value || []), role]
-                                    : (field.value || []).filter(
-                                        (r) => r !== role,
-                                      );
+                                    : (field.value || []).filter((r) => r !== role);
                                   field.onChange(updatedRoles);
                                 }}
                               />
@@ -220,15 +203,11 @@ export function CreateModuleDialog({
             />
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={isCreating}>
-                {isCreating ? "Creating..." : "Create Module"}
+                {isCreating ? 'Creating...' : 'Create Module'}
               </Button>
             </DialogFooter>
           </form>

@@ -1,10 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import { Subscription } from "../types";
+import { useQuery } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import { Subscription } from '../types';
 
 export function useMySubscription(page: number = 1) {
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["my-subscription", page],
+    queryKey: ['my-subscription', page],
     queryFn: () => http.get<Subscription>(`/subscriptions/my?page=${page}`),
   });
 

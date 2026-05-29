@@ -1,19 +1,16 @@
-import { withAssociation, withRole } from "@src/shared/api";
+import { withAssociation, withRole } from '@src/shared/api';
 import {
   UserRole,
   ComplianceCheckStatus as PrismaComplianceCheckStatus,
   Prisma,
-} from "@prisma/client";
-import { runComplianceCheck } from "@src/features/compliance/services";
-import {
-  ComplianceCheckQuerySchema,
-  ALL_CHECK_TYPES,
-} from "@src/features/compliance/validators";
-import { prisma } from "@src/shared/lib/prisma";
-import { SuccessResponse } from "@src/shared/utils";
-import { PAGE_SIZE } from "@src/shared/constants";
-import { buildPagination } from "@src/shared/utils/build-pagination";
-import { logger } from "@src/shared/logger/server";
+} from '@prisma/client';
+import { runComplianceCheck } from '@src/features/compliance/services';
+import { ComplianceCheckQuerySchema, ALL_CHECK_TYPES } from '@src/features/compliance/validators';
+import { prisma } from '@src/shared/lib/prisma';
+import { SuccessResponse } from '@src/shared/utils';
+import { PAGE_SIZE } from '@src/shared/constants';
+import { buildPagination } from '@src/shared/utils/build-pagination';
+import { logger } from '@src/shared/logger/server';
 
 const DPO_ROLE: UserRole = UserRole.DPO;
 
@@ -22,12 +19,12 @@ export const GET = withAssociation(
   async (association, { query, traceId }, req) => {
     logger.info(
       { traceId, associationId: association.id },
-      "GET /api/compliance/checks - Request started",
+      'GET /api/compliance/checks - Request started',
     );
     const user = await withRole(req, DPO_ROLE);
     logger.info(
       { traceId, userId: user.id, roles: user.role },
-      "GET /api/compliance/checks - User authorized",
+      'GET /api/compliance/checks - User authorized',
     );
 
     const where: Record<string, unknown> = {};
@@ -50,17 +47,14 @@ export const GET = withAssociation(
 
     const checks = await prisma.complianceCheck.findMany({
       where,
-      orderBy: { checkedAt: "desc" },
+      orderBy: { checkedAt: 'desc' },
       skip: ((query?.page ?? 1) - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
     });
 
     const total = await prisma.complianceCheck.count({ where });
 
-    logger.info(
-      { traceId, count: checks.length },
-      "GET /api/compliance/checks - Success",
-    );
+    logger.info({ traceId, count: checks.length }, 'GET /api/compliance/checks - Success');
 
     return SuccessResponse({
       data: checks,
@@ -69,55 +63,46 @@ export const GET = withAssociation(
   },
 );
 
-export const POST = withAssociation(
-  {},
-  async (association, { traceId }, request) => {
-    logger.info(
-      { traceId, associationId: association.id },
-      "POST /api/compliance/checks - Request started",
-    );
-    const user = await withRole(request, DPO_ROLE);
-    logger.info(
-      { traceId, userId: user.id, roles: user.role },
-      "POST /api/compliance/checks - User authorized",
-    );
+export const POST = withAssociation({}, async (association, { traceId }, request) => {
+  logger.info(
+    { traceId, associationId: association.id },
+    'POST /api/compliance/checks - Request started',
+  );
+  const user = await withRole(request, DPO_ROLE);
+  logger.info(
+    { traceId, userId: user.id, roles: user.role },
+    'POST /api/compliance/checks - User authorized',
+  );
 
-    let checkTypes: string[] = ALL_CHECK_TYPES;
-    const body = await request.json().catch(() => ({}));
+  let checkTypes: string[] = ALL_CHECK_TYPES;
+  const body = await request.json().catch(() => ({}));
 
-    if (body.checkTypes && Array.isArray(body.checkTypes)) {
-      const validTypes = body.checkTypes.filter((t: string) =>
-        ALL_CHECK_TYPES.includes(t),
-      );
-      if (validTypes.length > 0) {
-        checkTypes = validTypes;
-      }
+  if (body.checkTypes && Array.isArray(body.checkTypes)) {
+    const validTypes = body.checkTypes.filter((t: string) => ALL_CHECK_TYPES.includes(t));
+    if (validTypes.length > 0) {
+      checkTypes = validTypes;
     }
+  }
 
-    const results = await Promise.all(
-      checkTypes.map((type) => runComplianceCheck(association.id, type)),
-    );
+  const results = await Promise.all(
+    checkTypes.map((type) => runComplianceCheck(association.id, type)),
+  );
 
-    const checksData: Prisma.ComplianceCheckCreateManyArgs["data"][] =
-      results.map((result) => ({
-        associationId: association.id,
-        checkType: result.checkType,
-        status: result.status as PrismaComplianceCheckStatus,
-        score: result.score,
-        message: result.message,
-        details: result.details as Prisma.InputJsonValue,
-        recommendations: result.recommendations as Prisma.InputJsonValue,
-      }));
+  const checksData: Prisma.ComplianceCheckCreateManyArgs['data'][] = results.map((result) => ({
+    associationId: association.id,
+    checkType: result.checkType,
+    status: result.status as PrismaComplianceCheckStatus,
+    score: result.score,
+    message: result.message,
+    details: result.details as Prisma.InputJsonValue,
+    recommendations: result.recommendations as Prisma.InputJsonValue,
+  }));
 
-    await prisma.complianceCheck.createMany({
-      data: checksData as Prisma.ComplianceCheckCreateManyArgs["data"],
-    });
+  await prisma.complianceCheck.createMany({
+    data: checksData as Prisma.ComplianceCheckCreateManyArgs['data'],
+  });
 
-    logger.info(
-      { traceId, count: results.length },
-      "POST /api/compliance/checks - Success",
-    );
+  logger.info({ traceId, count: results.length }, 'POST /api/compliance/checks - Success');
 
-    return SuccessResponse({ data: results }, 201);
-  },
-);
+  return SuccessResponse({ data: results }, 201);
+});

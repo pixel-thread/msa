@@ -1,11 +1,8 @@
-import { prisma } from "@src/shared/lib/prisma";
-import { AuditAction, Prisma } from "@prisma/client";
-import type {
-  AuditLogEntry,
-  AuditLogQuery,
-} from "@src/shared/types/audit-logs";
-import { buildPagination } from "@src/shared/utils/build-pagination";
-import { PAGE_SIZE } from "../constants";
+import { prisma } from '@src/shared/lib/prisma';
+import { AuditAction, Prisma } from '@prisma/client';
+import type { AuditLogEntry, AuditLogQuery } from '@src/shared/types/audit-logs';
+import { buildPagination } from '@src/shared/utils/build-pagination';
+import { PAGE_SIZE } from '../constants';
 
 interface LogActionParams {
   actorId: string;
@@ -78,7 +75,7 @@ export async function findAuditLogs(
           select: { id: true, name: true, email: true },
         },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
     }),
@@ -119,10 +116,10 @@ export async function getAuditLogStats(associationId: string) {
     }),
     prisma.auditLog.count({ where: { associationId } }),
     prisma.auditLog.groupBy({
-      by: ["action"],
+      by: ['action'],
       where: { associationId },
       _count: { id: true },
-      orderBy: { _count: { id: "desc" } },
+      orderBy: { _count: { id: 'desc' } },
       take: 10,
     }),
   ]);

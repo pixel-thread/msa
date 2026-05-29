@@ -1,8 +1,8 @@
-import { prisma } from "@src/shared/lib/prisma";
-import { encrypt } from "@src/shared/lib/crypto";
-import { PaymentProviderType } from "@prisma/client";
-import { NotFoundError } from "@src/shared/errors";
-import { env } from "@src/env";
+import { prisma } from '@src/shared/lib/prisma';
+import { encrypt } from '@src/shared/lib/crypto';
+import { PaymentProviderType } from '@prisma/client';
+import { NotFoundError } from '@src/shared/errors';
+import { env } from '@src/env';
 
 export interface UpsertProviderInput {
   id: string;
@@ -53,14 +53,10 @@ function maskProvider(provider: any): ProviderResponse {
   };
 }
 
-export async function createProvider(
-  input: CreateProviderInput,
-): Promise<ProviderResponse> {
+export async function createProvider(input: CreateProviderInput): Promise<ProviderResponse> {
   const encryptedKeySecret = encrypt(input.keySecret);
 
-  const encryptedWebhookSecret = input.webhookSecret
-    ? encrypt(input.webhookSecret)
-    : null;
+  const encryptedWebhookSecret = input.webhookSecret ? encrypt(input.webhookSecret) : null;
 
   const provider = await prisma.paymentProvider.create({
     data: {
@@ -75,14 +71,10 @@ export async function createProvider(
 
   return maskProvider(provider);
 }
-export async function upsertProvider(
-  input: UpsertProviderInput,
-): Promise<ProviderResponse> {
+export async function upsertProvider(input: UpsertProviderInput): Promise<ProviderResponse> {
   const encryptedKeySecret = encrypt(input.keySecret);
 
-  const encryptedWebhookSecret = input.webhookSecret
-    ? encrypt(input.webhookSecret)
-    : null;
+  const encryptedWebhookSecret = input.webhookSecret ? encrypt(input.webhookSecret) : null;
 
   const provider = await prisma.paymentProvider.upsert({
     where: {
@@ -129,16 +121,13 @@ export async function getProvidersByAssociation(
 ): Promise<ProviderResponse[]> {
   const providers = await prisma.paymentProvider.findMany({
     where: { associationId },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: 'desc' },
   });
 
   return providers.map(maskProvider);
 }
 
-export async function getActiveProvider(
-  associationId: string,
-  providerType?: PaymentProviderType,
-) {
+export async function getActiveProvider(associationId: string, providerType?: PaymentProviderType) {
   const where: Record<string, unknown> = {
     associationId,
     isActive: true,
@@ -161,7 +150,7 @@ export async function setActiveProvider(
   });
 
   if (!provider) {
-    throw new NotFoundError("Provider not found");
+    throw new NotFoundError('Provider not found');
   }
 
   await prisma.paymentProvider.updateMany({
@@ -199,7 +188,7 @@ export async function updateProvider(
   });
 
   if (!provider) {
-    throw new NotFoundError("Provider not found");
+    throw new NotFoundError('Provider not found');
   }
 
   const updateData: Record<string, unknown> = {};
@@ -213,9 +202,7 @@ export async function updateProvider(
   }
 
   if (input.webhookSecret !== undefined) {
-    updateData.encryptedWebhookSecret = input.webhookSecret
-      ? encrypt(input.webhookSecret)
-      : null;
+    updateData.encryptedWebhookSecret = input.webhookSecret ? encrypt(input.webhookSecret) : null;
   }
 
   if (input.isActive !== undefined) {
@@ -230,17 +217,14 @@ export async function updateProvider(
   return maskProvider(updated);
 }
 
-export async function deleteProvider(
-  providerId: string,
-  associationId: string,
-): Promise<void> {
+export async function deleteProvider(providerId: string, associationId: string): Promise<void> {
   console.log(providerId, associationId);
   const provider = await prisma.paymentProvider.findUnique({
     where: { id: providerId, associationId },
   });
 
   if (!provider) {
-    throw new NotFoundError("Provider not found");
+    throw new NotFoundError('Provider not found');
   }
 
   await prisma.paymentProvider.delete({
@@ -251,7 +235,7 @@ export async function deleteProvider(
 export async function migrateFromEnv(): Promise<number> {
   const existing = await prisma.paymentProvider.count();
   if (existing > 0) {
-    console.log("Providers already exist, skipping migration");
+    console.log('Providers already exist, skipping migration');
     return 0;
   }
 
@@ -260,7 +244,7 @@ export async function migrateFromEnv(): Promise<number> {
   const webhookSecret = env.RAZORPAY_WEBHOOK_SECRET;
 
   if (!keyId || !keySecret) {
-    console.log("No global credentials to migrate");
+    console.log('No global credentials to migrate');
     return 0;
   }
 

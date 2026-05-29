@@ -1,5 +1,5 @@
-import { prisma } from "@lib/prisma";
-import { AuditAction, Prisma } from "@prisma/client";
+import { prisma } from '@lib/prisma';
+import { AuditAction, Prisma } from '@prisma/client';
 
 interface DeleteSupplementProps {
   associationId: string;
@@ -21,7 +21,7 @@ export async function deleteSupplement({
     });
 
     if (!supplement) {
-      throw new Error("Training supplement not found");
+      throw new Error('Training supplement not found');
     }
 
     const storageKey = supplement.file?.storageKey;
@@ -40,7 +40,7 @@ export async function deleteSupplement({
         associationId,
         actorId,
         action: AuditAction.TRAINING_MODULE_UPDATE,
-        resourceType: "TrainingSupplement",
+        resourceType: 'TrainingSupplement',
         resourceId: supplementId,
         oldValues: supplement as unknown as Prisma.InputJsonValue,
       },
@@ -48,7 +48,7 @@ export async function deleteSupplement({
 
     return {
       success: true,
-      message: "Training supplement deleted",
+      message: 'Training supplement deleted',
       storageKey,
     };
   });

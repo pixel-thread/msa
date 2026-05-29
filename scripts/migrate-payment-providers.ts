@@ -1,10 +1,10 @@
-import { prisma } from "@src/shared/lib/prisma";
-import { encrypt } from "@src/shared/lib/crypto";
-import { PaymentProviderType } from "@prisma/client";
-import { env } from "@src/env";
+import { prisma } from '@src/shared/lib/prisma';
+import { encrypt } from '@src/shared/lib/crypto';
+import { PaymentProviderType } from '@prisma/client';
+import { env } from '@src/env';
 
 async function migrate() {
-  console.log("Starting payment provider migration...");
+  console.log('Starting payment provider migration...');
 
   const existing = await prisma.paymentProvider.count();
   if (existing > 0) {
@@ -17,9 +17,7 @@ async function migrate() {
   const webhookSecret = env.RAZORPAY_WEBHOOK_SECRET;
 
   if (!keyId || !keySecret) {
-    console.log(
-      "No global Razorpay credentials found in environment, skipping",
-    );
+    console.log('No global Razorpay credentials found in environment, skipping');
     return;
   }
 
@@ -43,12 +41,12 @@ async function migrate() {
   }
 
   console.log(`\nMigration complete: ${migrated} provider(s) created`);
-  console.log("You can now make RAZORPAY_* env vars optional in env.ts");
+  console.log('You can now make RAZORPAY_* env vars optional in env.ts');
 }
 
 migrate()
   .catch((error) => {
-    console.error("Migration failed:", error);
+    console.error('Migration failed:', error);
     process.exit(1);
   })
   .finally(async () => {

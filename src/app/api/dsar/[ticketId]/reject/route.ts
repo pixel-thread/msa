@@ -1,9 +1,9 @@
-import { withAssociation, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@src/shared/utils";
-import { UserRole, DsarStatus, AuditAction } from "@prisma/client";
-import { prisma } from "@src/shared/lib/prisma";
-import { z } from "zod";
-import { logger } from "@src/shared/logger/server";
+import { withAssociation, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@src/shared/utils';
+import { UserRole, DsarStatus, AuditAction } from '@prisma/client';
+import { prisma } from '@src/shared/lib/prisma';
+import { z } from 'zod';
+import { logger } from '@src/shared/logger/server';
 
 const ParamsSchema = z.object({
   ticketId: z.uuid(),
@@ -35,10 +35,10 @@ export const POST = withAssociation(
         associationId: association.id,
         ticketId: params?.ticketId,
       },
-      "POST /api/dsar/[ticketId]/reject - Request started",
+      'POST /api/dsar/[ticketId]/reject - Request started',
     );
 
-    const actorId = request.headers.get("x-user-id")!;
+    const actorId = request.headers.get('x-user-id')!;
     const user = await withRole(request, UserRole.DPO);
 
     logger.info(
@@ -46,7 +46,7 @@ export const POST = withAssociation(
         traceId,
         userId: user.id,
       },
-      "POST /api/dsar/[ticketId]/reject - User authorized",
+      'POST /api/dsar/[ticketId]/reject - User authorized',
     );
 
     const ticket = await prisma.$transaction(async (tx) => {
@@ -64,7 +64,7 @@ export const POST = withAssociation(
           associationId: association.id,
           actorId,
           action: AuditAction.DSAR_RESPOND,
-          resourceType: "DsarTicket",
+          resourceType: 'DsarTicket',
           resourceId: params!.ticketId,
           newValues: {
             status: DsarStatus.REJECTED,
@@ -76,7 +76,7 @@ export const POST = withAssociation(
       return updated;
     });
 
-    logger.info({ traceId }, "POST /api/dsar/[ticketId]/reject - Success");
+    logger.info({ traceId }, 'POST /api/dsar/[ticketId]/reject - Success');
 
     return SuccessResponse({ data: ticket });
   },

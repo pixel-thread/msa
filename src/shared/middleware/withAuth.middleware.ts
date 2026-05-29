@@ -1,9 +1,9 @@
-import { MiddlewareFn } from "./chain";
-import { AppErrorResponse, getTraceId } from "../utils";
-import { isApiPublicRoute, isPublicRoute } from "./route-matchers";
-import { normalizeUnknownError, UnauthorizedError } from "../errors";
-import { verifyAccessToken } from "../lib";
-import { NextRequest } from "next/server";
+import { MiddlewareFn } from './chain';
+import { AppErrorResponse, getTraceId } from '../utils';
+import { isApiPublicRoute, isPublicRoute } from './route-matchers';
+import { normalizeUnknownError, UnauthorizedError } from '../errors';
+import { verifyAccessToken } from '../lib';
+import { NextRequest } from 'next/server';
 
 export const withAuth: MiddlewareFn = async (request, next) => {
   const traceId = getTraceId(request);
@@ -19,18 +19,18 @@ export const withAuth: MiddlewareFn = async (request, next) => {
 
     let accessToken: string | undefined;
 
-    accessToken = request.cookies.get("access_token")?.value;
+    accessToken = request.cookies.get('access_token')?.value;
 
     if (!accessToken) {
-      const authHeader = request.headers.get("authorization");
+      const authHeader = request.headers.get('authorization');
 
-      if (authHeader?.startsWith("Bearer ")) {
-        accessToken = authHeader.split(" ")[1];
+      if (authHeader?.startsWith('Bearer ')) {
+        accessToken = authHeader.split(' ')[1];
       }
     }
 
     if (!accessToken) {
-      throw new UnauthorizedError("Authentication required");
+      throw new UnauthorizedError('Authentication required');
     }
 
     const payload = await verifyAccessToken(accessToken);
@@ -39,10 +39,10 @@ export const withAuth: MiddlewareFn = async (request, next) => {
     const requestHeaders = new Headers(request.headers);
 
     // remove spoofed header
-    requestHeaders.delete("x-user-id");
+    requestHeaders.delete('x-user-id');
 
     // inject trusted identity
-    requestHeaders.set("x-user-id", payload.sub);
+    requestHeaders.set('x-user-id', payload.sub);
 
     const newRequest = new NextRequest(request, { headers: requestHeaders });
     return next(newRequest);

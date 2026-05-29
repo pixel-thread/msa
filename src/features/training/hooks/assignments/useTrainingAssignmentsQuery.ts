@@ -1,7 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import { trainingEndpoints, trainingQueryKeys } from "../../utils/constants";
-import type { TrainingAssignment } from "../../types";
+import { useQuery } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import { trainingEndpoints, trainingQueryKeys } from '../../utils/constants';
+import type { TrainingAssignment } from '../../types';
 
 type Props = {
   page?: number;
@@ -11,9 +11,7 @@ export function useTrainingAssignmentsQuery({ page = 1, moduleId }: Props) {
   const { data, isLoading, refetch } = useQuery({
     queryKey: trainingQueryKeys.assignments.all(moduleId, page),
     queryFn: async () =>
-      http.get<TrainingAssignment[]>(
-        trainingEndpoints.assignments.base(moduleId!, page),
-      ),
+      http.get<TrainingAssignment[]>(trainingEndpoints.assignments.base(moduleId!, page)),
     enabled: !!moduleId,
   });
 

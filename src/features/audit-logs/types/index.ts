@@ -1,1 +1,1 @@
-export * from "./audit-logs.types";
+export * from './audit-logs.types';

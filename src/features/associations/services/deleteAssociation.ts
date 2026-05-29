@@ -1,4 +1,4 @@
-import { prisma } from "@lib/prisma";
+import { prisma } from '@lib/prisma';
 
 type Props = {
   id: string;
@@ -7,6 +7,6 @@ type Props = {
 export async function deleteAssociation(props: Props) {
   return await prisma.association.update({
     where: { id: props.id },
-    data: { status: "DELETED" },
+    data: { status: 'DELETED' },
   });
 }

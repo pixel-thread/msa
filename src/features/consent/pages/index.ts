@@ -1,1 +1,1 @@
-export { default as ConsentAdminPage } from "./consent-admin";
+export { default as ConsentAdminPage } from './consent-admin';

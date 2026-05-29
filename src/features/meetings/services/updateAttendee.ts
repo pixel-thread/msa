@@ -1,7 +1,7 @@
-import { prisma } from "@lib/prisma";
-import { NotFoundError, ForbiddenError } from "@src/shared/errors";
-import { AttendeeRole, RsvpStatus } from "@prisma/client";
-import { logger } from "@src/shared/logger/server";
+import { prisma } from '@lib/prisma';
+import { NotFoundError, ForbiddenError } from '@src/shared/errors';
+import { AttendeeRole, RsvpStatus } from '@prisma/client';
+import { logger } from '@src/shared/logger/server';
 
 interface UpdateAttendeeProps {
   meetingId: string;
@@ -27,7 +27,7 @@ export async function updateAttendee({
   });
 
   if (!meeting) {
-    throw new NotFoundError("Meeting");
+    throw new NotFoundError('Meeting');
   }
 
   logger.debug(
@@ -35,7 +35,7 @@ export async function updateAttendee({
       meetingId,
       userId,
     },
-    "Update Attendee",
+    'Update Attendee',
   );
   const attendance = await prisma.meetingAttendee.findUnique({
     where: {
@@ -47,7 +47,7 @@ export async function updateAttendee({
   });
 
   if (!attendance) {
-    throw new ForbiddenError("User is not assigned to this meeting");
+    throw new ForbiddenError('User is not assigned to this meeting');
   }
 
   const updateData: any = {};

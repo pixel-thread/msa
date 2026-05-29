@@ -1,6 +1,6 @@
-import { prisma } from "@lib/prisma";
-import { CreateSupplementInput } from "../validators/training";
-import { AuditAction, Prisma } from "@prisma/client";
+import { prisma } from '@lib/prisma';
+import { CreateSupplementInput } from '../validators/training';
+import { AuditAction, Prisma } from '@prisma/client';
 
 interface CreateSupplementProps {
   associationId: string;
@@ -25,7 +25,7 @@ export async function createSupplement({
     });
 
     if (!trainingModule) {
-      throw new Error("Training module not found");
+      throw new Error('Training module not found');
     }
 
     const supplement = await tx.trainingSupplement.create({
@@ -42,7 +42,7 @@ export async function createSupplement({
         associationId,
         actorId,
         action: AuditAction.TRAINING_MODULE_UPDATE,
-        resourceType: "TrainingSupplement",
+        resourceType: 'TrainingSupplement',
         resourceId: supplement.id,
         newValues: data as Prisma.InputJsonValue,
       },

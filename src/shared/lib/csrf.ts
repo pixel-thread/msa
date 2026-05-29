@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto from 'crypto';
 
 /**
  * Generates a cryptographically random CSRF token for the double-submit cookie pattern.
@@ -7,7 +7,7 @@ import crypto from "crypto";
  * Suitable for the double-submit cookie CSRF protection pattern.
  */
 export function generateCsrfToken(): string {
-  return crypto.randomBytes(32).toString("hex");
+  return crypto.randomBytes(32).toString('hex');
 }
 
 /**

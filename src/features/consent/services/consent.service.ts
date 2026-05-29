@@ -1,24 +1,19 @@
-import { prisma } from "@src/shared/lib/prisma";
-import {
-  AuditAction,
-  ConsentPurpose,
-  ConsentStatus,
-  Prisma,
-} from "@prisma/client";
+import { prisma } from '@src/shared/lib/prisma';
+import { AuditAction, ConsentPurpose, ConsentStatus, Prisma } from '@prisma/client';
 import {
   UserConsentState,
   ConsentReceiptRecord,
   ConsentSummaryReport,
-} from "../types/consent.types";
+} from '../types/consent.types';
 import {
   ConsentUpdateInput,
   UpdateConsentReceiptInput,
   AllConsentRecordsQueryInput,
-} from "../validators/consent.validators";
-import { NotFoundError, BadRequestError } from "@src/shared/errors";
-import { PAGE_SIZE } from "@src/shared/constants";
-import { buildPagination } from "@src/shared/utils";
-import { PaginationMeta } from "@src/shared/types";
+} from '../validators/consent.validators';
+import { NotFoundError, BadRequestError } from '@src/shared/errors';
+import { PAGE_SIZE } from '@src/shared/constants';
+import { buildPagination } from '@src/shared/utils';
+import { PaginationMeta } from '@src/shared/types';
 
 /**
  * Service for managing user consent according to DPDP Act 2023.
@@ -40,9 +35,9 @@ export class ConsentService {
         userId,
         associationId,
       },
-      distinct: ["purpose"],
+      distinct: ['purpose'],
       orderBy: {
-        createdAt: "desc",
+        createdAt: 'desc',
       },
     });
 
@@ -116,7 +111,7 @@ export class ConsentService {
         skip: (pageNumber - 1) * PAGE_SIZE,
         take: PAGE_SIZE,
         orderBy: {
-          createdAt: "desc",
+          createdAt: 'desc',
         },
       }),
 
@@ -140,9 +135,7 @@ export class ConsentService {
    * @param associationId - The ID of the association.
    * @returns A promise that resolves to an array of ConsentSummaryReport objects.
    */
-  static async getConsentReport(
-    associationId: string,
-  ): Promise<ConsentSummaryReport[]> {
+  static async getConsentReport(associationId: string): Promise<ConsentSummaryReport[]> {
     const purposes = Object.values(ConsentPurpose);
     const report: ConsentSummaryReport[] = [];
 
@@ -156,9 +149,7 @@ export class ConsentService {
         ORDER BY "userId", "createdAt" DESC
       `;
 
-      const grantedCount = latestConsents.filter(
-        (c) => c.status === ConsentStatus.GRANTED,
-      ).length;
+      const grantedCount = latestConsents.filter((c) => c.status === ConsentStatus.GRANTED).length;
       const totalCount = latestConsents.length;
 
       report.push({
@@ -195,8 +186,8 @@ export class ConsentService {
     if (query?.search) {
       where.user = {
         OR: [
-          { name: { contains: query.search, mode: "insensitive" } },
-          { email: { contains: query.search, mode: "insensitive" } },
+          { name: { contains: query.search, mode: 'insensitive' } },
+          { email: { contains: query.search, mode: 'insensitive' } },
         ],
       };
     }
@@ -204,7 +195,7 @@ export class ConsentService {
     const [records, total] = await Promise.all([
       prisma.consentReceipt.findMany({
         where,
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
         skip,
         take: PAGE_SIZE,
         include: {
@@ -249,7 +240,7 @@ export class ConsentService {
     const existing = await prisma.consentReceipt.findFirst({
       where: { id: receiptId, associationId },
     });
-    if (!existing) throw new NotFoundError("Consent receipt not found");
+    if (!existing) throw new NotFoundError('Consent receipt not found');
 
     return (await prisma.$transaction(async (tx) => {
       const updated = await tx.consentReceipt.update({
@@ -262,7 +253,7 @@ export class ConsentService {
           associationId,
           actorId,
           action: AuditAction.UPDATE,
-          resourceType: "ConsentReceipt",
+          resourceType: 'ConsentReceipt',
           resourceId: receiptId,
           oldValues: {
             status: existing.status,
@@ -287,7 +278,7 @@ export class ConsentService {
     const existing = await prisma.consentReceipt.findFirst({
       where: { id: receiptId, associationId },
     });
-    if (!existing) throw new NotFoundError("Consent receipt not found");
+    if (!existing) throw new NotFoundError('Consent receipt not found');
 
     await prisma.$transaction(async (tx) => {
       await tx.consentReceipt.delete({ where: { id: receiptId } });
@@ -297,7 +288,7 @@ export class ConsentService {
           associationId,
           actorId,
           action: AuditAction.DELETE,
-          resourceType: "ConsentReceipt",
+          resourceType: 'ConsentReceipt',
           resourceId: receiptId,
           oldValues: {
             purpose: existing.purpose,
@@ -319,7 +310,7 @@ export class ConsentService {
     const [records, total] = await prisma.$transaction([
       prisma.consentReceipt.findMany({
         where: { userId, associationId },
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
         skip: (page - 1) * PAGE_SIZE,
         take: PAGE_SIZE,
         include: {

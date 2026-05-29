@@ -1,9 +1,9 @@
-import { withRole, withAssociation } from "@src/shared/api";
-import { SuccessResponse } from "@src/shared/utils";
-import { UserRole } from "@prisma/client";
-import { findDsarTickets } from "@src/features/dsar/services";
-import { DsarQuerySchema } from "@src/features/dsar/validators";
-import { logger } from "@src/shared/logger/server";
+import { withRole, withAssociation } from '@src/shared/api';
+import { SuccessResponse } from '@src/shared/utils';
+import { UserRole } from '@prisma/client';
+import { findDsarTickets } from '@src/features/dsar/services';
+import { DsarQuerySchema } from '@src/features/dsar/validators';
+import { logger } from '@src/shared/logger/server';
 
 /**
  * @api {get} /api/dsar List All DSAR Tickets
@@ -29,7 +29,7 @@ export const GET = withAssociation(
         traceId,
         associationId: association.id,
       },
-      "GET /api/dsar - Request started",
+      'GET /api/dsar - Request started',
     );
 
     const user = await withRole(request, UserRole.DPO);
@@ -39,7 +39,7 @@ export const GET = withAssociation(
         traceId,
         userId: user.id,
       },
-      "GET /api/dsar - User authorized",
+      'GET /api/dsar - User authorized',
     );
 
     const result = await findDsarTickets({
@@ -59,7 +59,7 @@ export const GET = withAssociation(
         traceId,
         count: result.tickets.length,
       },
-      "GET /api/dsar - Success",
+      'GET /api/dsar - Success',
     );
 
     return SuccessResponse({ data: result.tickets, meta: result.pagination });

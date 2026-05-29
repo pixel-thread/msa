@@ -1,32 +1,32 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   NavigationMenu,
   NavigationMenuList,
   NavigationMenuItem,
   NavigationMenuLink,
-} from "@src/shared/components/ui/navigation-menu";
-import { Button } from "@src/shared/components/ui/button";
-import { useAuthStore } from "@src/shared/stores/auth";
-import { useSignOut } from "@src/features/auth/hooks";
-import { env } from "@src/env";
+} from '@src/shared/components/ui/navigation-menu';
+import { Button } from '@src/shared/components/ui/button';
+import { useAuthStore } from '@src/shared/stores/auth';
+import { useSignOut } from '@src/features/auth/hooks';
+import { env } from '@src/env';
 
 const NAV_ITEMS = [
-  { label: "Features", href: "/#features" },
-  { label: "About", href: "/#about" },
-  { label: "Testimonials", href: "/#testimonials" },
-  { label: "Security", href: "/#security" },
-  { label: "Contact", href: "/#contact" },
+  { label: 'Features', href: '/#features' },
+  { label: 'About', href: '/#about' },
+  { label: 'Testimonials', href: '/#testimonials' },
+  { label: 'Security', href: '/#security' },
+  { label: 'Contact', href: '/#contact' },
 ];
 
 export function PublicHeader() {
   const { user, isLoading: isAuthLoading } = useAuthStore();
   const { mutate: logout, isPending: isLoading } = useSignOut();
   const pathname = usePathname();
-  const isSignIn = pathname.startsWith("/sign-in");
-  const isSignUp = pathname.startsWith("/sign-up");
+  const isSignIn = pathname.startsWith('/sign-in');
+  const isSignUp = pathname.startsWith('/sign-up');
 
   return (
     <header className="fixed top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">

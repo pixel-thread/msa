@@ -1,11 +1,6 @@
-"use client";
+'use client';
 
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  type ColumnDef,
-} from "@tanstack/react-table";
+import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table';
 
 import {
   Table,
@@ -14,10 +9,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@src/shared/components/ui/table";
-import { TableSkeleton } from "@src/shared/components/ui/table-skeleton";
-import { Card } from "@components/ui/card";
-import { PAGE_SIZE } from "@src/shared/constants";
+} from '@src/shared/components/ui/table';
+import { TableSkeleton } from '@src/shared/components/ui/table-skeleton';
+import { Card } from '@components/ui/card';
+import { PAGE_SIZE } from '@src/shared/constants';
 
 type DataTableProps<TData> = {
   loading?: boolean;
@@ -26,12 +21,7 @@ type DataTableProps<TData> = {
   meta?: Record<string, unknown>;
 };
 
-export function DataTable<TData>({
-  loading = false,
-  data,
-  columns,
-  meta,
-}: DataTableProps<TData>) {
+export function DataTable<TData>({ loading = false, data, columns, meta }: DataTableProps<TData>) {
   const table = useReactTable({
     data,
     columns,
@@ -47,16 +37,10 @@ export function DataTable<TData>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="text-inherit">
                 {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    className="text-primary-foreground hover:text-inherit"
-                  >
+                  <TableHead key={header.id} className="text-primary-foreground hover:text-inherit">
                     {header.isPlaceholder
                       ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                      : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}
               </TableRow>
@@ -71,20 +55,14 @@ export function DataTable<TData>({
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>

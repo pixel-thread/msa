@@ -1,25 +1,16 @@
-"use client";
+'use client';
 
-import { useState, useRef, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@src/shared/components/ui/card";
-import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from "@src/shared/components/ui/avatar";
-import { Badge } from "@src/shared/components/ui/badge";
-import { Button } from "@src/shared/components/ui/button";
-import { Input } from "@src/shared/components/ui/input";
-import { Textarea } from "@src/shared/components/ui/textarea";
-import { Skeleton } from "@src/shared/components/ui/skeleton";
-import { Spinner } from "@src/shared/components/ui/spinner";
+import { useState, useRef, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Card, CardHeader, CardTitle, CardContent } from '@src/shared/components/ui/card';
+import { Avatar, AvatarImage, AvatarFallback } from '@src/shared/components/ui/avatar';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Input } from '@src/shared/components/ui/input';
+import { Textarea } from '@src/shared/components/ui/textarea';
+import { Skeleton } from '@src/shared/components/ui/skeleton';
+import { Spinner } from '@src/shared/components/ui/spinner';
 import {
   Form,
   FormControl,
@@ -27,15 +18,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
-import { useUpdateAssociation } from "@src/features/associations/hooks/useUpdateAssociation";
-import { useUploadAssociationLogo } from "@src/features/associations/hooks/useUploadAssociationLogo";
+} from '@src/shared/components/ui/form';
+import { useUpdateAssociation } from '@src/features/associations/hooks/useUpdateAssociation';
+import { useUploadAssociationLogo } from '@src/features/associations/hooks/useUploadAssociationLogo';
 import {
   UpdateAssociationInput,
   UpdateAssociationSchema,
-} from "@src/features/associations/validators";
-import { Camera, Pencil, Save, X, Building2 } from "lucide-react";
-import { useAssociation } from "@hooks/use-association";
+} from '@src/features/associations/validators';
+import { Camera, Pencil, Save, X, Building2 } from 'lucide-react';
+import { useAssociation } from '@hooks/use-association';
 
 export default function AssociationDetailPage() {
   const { data: association, isFetching: isLoading } = useAssociation();
@@ -47,14 +38,14 @@ export default function AssociationDetailPage() {
   const form = useForm<UpdateAssociationInput>({
     resolver: zodResolver(UpdateAssociationSchema),
     defaultValues: {
-      slug: "",
-      name: "",
-      description: "",
-      state: "",
-      country: "IN",
-      contactEmail: "",
-      primaryColor: "",
-      secondaryColor: "",
+      slug: '',
+      name: '',
+      description: '',
+      state: '',
+      country: 'IN',
+      contactEmail: '',
+      primaryColor: '',
+      secondaryColor: '',
     },
   });
 
@@ -63,12 +54,12 @@ export default function AssociationDetailPage() {
       form.reset({
         slug: association.slug,
         name: association.name,
-        description: association.description ?? "",
-        state: association.state ?? "",
+        description: association.description ?? '',
+        state: association.state ?? '',
         country: association.country,
-        contactEmail: association.contactEmail ?? "",
-        primaryColor: association.primaryColor ?? "",
-        secondaryColor: association.secondaryColor ?? "",
+        contactEmail: association.contactEmail ?? '',
+        primaryColor: association.primaryColor ?? '',
+        secondaryColor: association.secondaryColor ?? '',
       });
     }
   }, [association, form]);
@@ -99,13 +90,13 @@ export default function AssociationDetailPage() {
       form.reset({
         slug: association.slug,
         name: association.name,
-        description: association.description ?? "",
-        state: association.state ?? "",
+        description: association.description ?? '',
+        state: association.state ?? '',
         country: association.country,
-        contactEmail: association.contactEmail ?? "",
-        contactPhone: association.contactPhone ?? "",
-        primaryColor: association.primaryColor ?? "",
-        secondaryColor: association.secondaryColor ?? "",
+        contactEmail: association.contactEmail ?? '',
+        contactPhone: association.contactPhone ?? '',
+        primaryColor: association.primaryColor ?? '',
+        secondaryColor: association.secondaryColor ?? '',
       });
     }
   }, [association, form]);
@@ -146,9 +137,7 @@ export default function AssociationDetailPage() {
           <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
             Association Settings
           </h1>
-          <p className="mt-1 text-base text-body">
-            Manage your association profile and branding
-          </p>
+          <p className="mt-1 text-base text-body">Manage your association profile and branding</p>
         </div>
         {!isEditing ? (
           <Button onClick={() => setIsEditing(true)}>
@@ -161,12 +150,9 @@ export default function AssociationDetailPage() {
               <X className="mr-2 h-4 w-4" />
               Cancel
             </Button>
-            <Button
-              onClick={form.handleSubmit(onSubmit)}
-              disabled={updateAssociation.isPending}
-            >
+            <Button onClick={form.handleSubmit(onSubmit)} disabled={updateAssociation.isPending}>
               <Save className="mr-2 h-4 w-4" />
-              {updateAssociation.isPending ? "Saving..." : "Save Changes"}
+              {updateAssociation.isPending ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>
         )}
@@ -179,7 +165,7 @@ export default function AssociationDetailPage() {
               <Avatar size="lg" className="rounded-none size-24">
                 <AvatarImage
                   className="rounded-none"
-                  src={association.logo ?? ""}
+                  src={association.logo ?? ''}
                   alt={association.name}
                 />
                 <AvatarFallback className="text-lg">
@@ -208,12 +194,10 @@ export default function AssociationDetailPage() {
             </div>
             <div>
               <p className="font-semibold">{association.name}</p>
-              <p className="text-sm text-muted-foreground">
-                {association.slug}
-              </p>
+              <p className="text-sm text-muted-foreground">{association.slug}</p>
             </div>
-            <Badge variant={association.isActive ? "default" : "destructive"}>
-              {association.isActive ? "Active" : "Inactive"}
+            <Badge variant={association.isActive ? 'default' : 'destructive'}>
+              {association.isActive ? 'Active' : 'Inactive'}
             </Badge>
           </CardContent>
         </Card>
@@ -224,10 +208,7 @@ export default function AssociationDetailPage() {
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4"
-              >
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
@@ -236,11 +217,7 @@ export default function AssociationDetailPage() {
                       <FormItem>
                         <FormLabel>Slug</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="e.g., mfsa"
-                            disabled={!isEditing}
-                            {...field}
-                          />
+                          <Input placeholder="e.g., mfsa" disabled={!isEditing} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -310,11 +287,7 @@ export default function AssociationDetailPage() {
                       <FormItem>
                         <FormLabel>State</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="e.g., Maharashtra"
-                            disabled={!isEditing}
-                            {...field}
-                          />
+                          <Input placeholder="e.g., Maharashtra" disabled={!isEditing} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

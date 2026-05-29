@@ -8,10 +8,10 @@ import {
   AlertDialogContent,
   AlertDialogMedia,
   AlertDialogTitle,
-} from "@components/ui/alert-dialog";
+} from '@components/ui/alert-dialog';
 
-import { Trash2 } from "lucide-react";
-import { useDeleteTrainingCertificate } from "../../hooks";
+import { Trash2 } from 'lucide-react';
+import { useDeleteTrainingCertificate } from '../../hooks';
 
 type RemoveCertificateProps = {
   isOpen: boolean;
@@ -36,10 +36,7 @@ export const RemoveCertificateAlertDialog = ({
   };
 
   return (
-    <AlertDialog
-      open={isOpen}
-      onOpenChange={(open) => !open && onValueChange(false)}
-    >
+    <AlertDialog open={isOpen} onOpenChange={(open) => !open && onValueChange(false)}>
       <AlertDialogContent size="sm">
         <AlertDialogHeader>
           <AlertDialogMedia>
@@ -47,20 +44,17 @@ export const RemoveCertificateAlertDialog = ({
           </AlertDialogMedia>
           <AlertDialogTitle>Remove Certificate</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to remove this certificate? This action cannot
-            be undone.
+            Are you sure you want to remove this certificate? This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => onValueChange(false)}>
-            Cancel
-          </AlertDialogCancel>
+          <AlertDialogCancel onClick={() => onValueChange(false)}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
             onClick={handleConfirmDelete}
             disabled={isDeleting}
           >
-            {isDeleting ? "Removing..." : "Remove"}
+            {isDeleting ? 'Removing...' : 'Remove'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

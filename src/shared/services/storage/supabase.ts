@@ -1,7 +1,7 @@
-import { StorageProvider, UploadParams } from "@src/shared/types/storage";
-import { UploadResult } from "@sharedType/storage";
-import { supabase as supabseClient } from "@lib/supabase";
-import { env } from "@src/env";
+import { StorageProvider, UploadParams } from '@src/shared/types/storage';
+import { UploadResult } from '@sharedType/storage';
+import { supabase as supabseClient } from '@lib/supabase';
+import { env } from '@src/env';
 
 // Supabase Storage-backed provider. Requires SUPABASE_URL and SUPABASE_SECRET_KEY env vars.
 export class SupabaseStorageProvider implements StorageProvider {
@@ -16,14 +16,12 @@ export class SupabaseStorageProvider implements StorageProvider {
       .upload(key, params.fileBuffer, {
         contentType: params.mimeType,
         upsert: true,
-        cacheControl: "3600",
+        cacheControl: '3600',
       });
 
     if (error) throw error;
 
-    const { data } = this.supabase.storage
-      .from(env.STORAGE_BUCKET)
-      .getPublicUrl(key);
+    const { data } = this.supabase.storage.from(env.STORAGE_BUCKET).getPublicUrl(key);
 
     return {
       key,
@@ -38,7 +36,6 @@ export class SupabaseStorageProvider implements StorageProvider {
 
   // Returns the public Supabase URL for a stored file.
   async getPublicUrl(fileKey: string) {
-    return this.supabase.storage.from(env.STORAGE_BUCKET).getPublicUrl(fileKey)
-      .data.publicUrl;
+    return this.supabase.storage.from(env.STORAGE_BUCKET).getPublicUrl(fileKey).data.publicUrl;
   }
 }

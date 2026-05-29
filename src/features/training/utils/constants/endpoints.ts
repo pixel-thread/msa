@@ -1,5 +1,5 @@
 export const trainingEndpoints = {
-  base: "/training/modules" as const,
+  base: '/training/modules' as const,
   byId: (id: string) => `/training/modules/${id}`,
   supplements: {
     list: (moduleId: string, page?: number) =>
@@ -19,7 +19,7 @@ export const trainingEndpoints = {
   },
   completions: {
     byId: (id: string) => `training/modules/${id}/complete`,
-    all: () => "/training/completions" as const,
+    all: () => '/training/completions' as const,
   },
   certificates: {
     list: (moduleId: string) => `/training/modules/${moduleId}/certificates`,

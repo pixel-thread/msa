@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { AuditAction } from "@prisma/client";
-import { logger } from "@src/shared/logger/server";
-import { processWebhookEvent } from "@feature/payments/services/webhook.service";
-import { WebhookSignatureError } from "@src/shared/errors";
-import { logAction } from "@src/shared/services/audit-logs";
+import { NextRequest, NextResponse } from 'next/server';
+import { AuditAction } from '@prisma/client';
+import { logger } from '@src/shared/logger/server';
+import { processWebhookEvent } from '@feature/payments/services/webhook.service';
+import { WebhookSignatureError } from '@src/shared/errors';
+import { logAction } from '@src/shared/services/audit-logs';
 
 /**
  * POST /api/payments/webhook
@@ -30,24 +30,18 @@ import { logAction } from "@src/shared/services/audit-logs";
 export async function POST(request: NextRequest) {
   let rawBody: string;
 
-  logger.info("POST /api/payments/webhook - Request started");
+  logger.info('POST /api/payments/webhook - Request started');
 
   try {
     rawBody = await request.text();
   } catch {
-    return NextResponse.json(
-      { error: "Failed to read request body" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: 'Failed to read request body' }, { status: 400 });
   }
 
-  const signature = request.headers.get("x-razorpay-signature");
+  const signature = request.headers.get('x-razorpay-signature');
 
   if (!signature) {
-    return NextResponse.json(
-      { error: "Missing x-razorpay-signature header" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: 'Missing x-razorpay-signature header' }, { status: 400 });
   }
 
   try {
@@ -63,10 +57,10 @@ export async function POST(request: NextRequest) {
       if (associationId) {
         await logAction({
           associationId,
-          actorId: "",
+          actorId: '',
           action: AuditAction.WEBHOOK_RECEIVED,
-          resourceType: "PaymentWebhookEvent",
-          resourceId: result.eventId ?? "",
+          resourceType: 'PaymentWebhookEvent',
+          resourceId: result.eventId ?? '',
           newValues: {
             event: payload.event,
             status: result.status,
@@ -77,24 +71,18 @@ export async function POST(request: NextRequest) {
       // Non-critical — don't fail the webhook for audit logging errors
     }
 
-    logger.info(
-      { event: result.status },
-      "POST /api/payments/webhook - Success",
-    );
+    logger.info({ event: result.status }, 'POST /api/payments/webhook - Success');
 
     return NextResponse.json({ status: result.status }, { status: 200 });
   } catch (error) {
     if (error instanceof WebhookSignatureError) {
-      return NextResponse.json(
-        { error: "Invalid webhook signature" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'Invalid webhook signature' }, { status: 400 });
     }
 
     // For all other errors, still return 200 to prevent infinite retries.
     // The error has already been stored in the webhook event record.
     return NextResponse.json(
-      { status: "error", message: "Webhook processing failed" },
+      { status: 'error', message: 'Webhook processing failed' },
       { status: 200 },
     );
   }

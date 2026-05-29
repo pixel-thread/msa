@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { UserRole } from "@prisma/client";
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { UserRole } from '@prisma/client';
 
 import {
   Dialog,
@@ -12,12 +12,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
-import { Button } from "@src/shared/components/ui/button";
-import { Input } from "@src/shared/components/ui/input";
-import { Textarea } from "@src/shared/components/ui/textarea";
-import { Switch } from "@src/shared/components/ui/switch";
-import { Checkbox } from "@src/shared/components/ui/checkbox";
+} from '@src/shared/components/ui/dialog';
+import { Button } from '@src/shared/components/ui/button';
+import { Input } from '@src/shared/components/ui/input';
+import { Textarea } from '@src/shared/components/ui/textarea';
+import { Switch } from '@src/shared/components/ui/switch';
+import { Checkbox } from '@src/shared/components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -25,13 +25,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
-import type { TrainingModuleListItem } from "../types";
-import {
-  UpdateTrainingModuleSchema,
-  type UpdateTrainingModuleInput,
-} from "../validators/training";
-import { useUpdateTrainingModule } from "../hooks";
+} from '@src/shared/components/ui/form';
+import type { TrainingModuleListItem } from '../types';
+import { UpdateTrainingModuleSchema, type UpdateTrainingModuleInput } from '../validators/training';
+import { useUpdateTrainingModule } from '../hooks';
 
 interface EditModuleDialogProps {
   open: boolean;
@@ -41,19 +38,15 @@ interface EditModuleDialogProps {
 
 const ROLES_LIST = Object.values(UserRole);
 
-export function EditModuleDialog({
-  open,
-  onOpenChange,
-  module,
-}: EditModuleDialogProps) {
+export function EditModuleDialog({ open, onOpenChange, module }: EditModuleDialogProps) {
   const { updateModule, isUpdating } = useUpdateTrainingModule();
 
   const form = useForm({
     resolver: zodResolver(UpdateTrainingModuleSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      content: "",
+      title: '',
+      description: '',
+      content: '',
       durationMinutes: undefined,
       requiredForRoles: [UserRole.MEMBER],
       isActive: true,
@@ -64,12 +57,10 @@ export function EditModuleDialog({
     if (module) {
       form.reset({
         title: module.title,
-        description: module.description || "",
+        description: module.description || '',
         content: module.content,
         durationMinutes: module.durationMinutes || undefined,
-        requiredForRoles: (module.requiredForRoles as UserRole[]) || [
-          UserRole.MEMBER,
-        ],
+        requiredForRoles: (module.requiredForRoles as UserRole[]) || [UserRole.MEMBER],
         isActive: module.isActive,
       });
     }
@@ -95,9 +86,7 @@ export function EditModuleDialog({
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Training Module</DialogTitle>
-          <DialogDescription>
-            Update the training module information.
-          </DialogDescription>
+          <DialogDescription>Update the training module information.</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -164,13 +153,9 @@ export function EditModuleDialog({
                         type="number"
                         placeholder="e.g. 30"
                         {...field}
-                        value={field.value ?? ""}
+                        value={field.value ?? ''}
                         onChange={(e) =>
-                          field.onChange(
-                            e.target.value
-                              ? parseInt(e.target.value, 10)
-                              : undefined,
-                          )
+                          field.onChange(e.target.value ? parseInt(e.target.value, 10) : undefined)
                         }
                       />
                     </FormControl>
@@ -188,10 +173,7 @@ export function EditModuleDialog({
                       <FormLabel className="text-sm">Active</FormLabel>
                     </div>
                     <FormControl>
-                      <Switch
-                        checked={field.value ?? false}
-                        onCheckedChange={field.onChange}
-                      />
+                      <Switch checked={field.value ?? false} onCheckedChange={field.onChange} />
                     </FormControl>
                   </FormItem>
                 )}
@@ -211,8 +193,7 @@ export function EditModuleDialog({
                         control={form.control}
                         name="requiredForRoles"
                         render={({ field }) => {
-                          const isChecked =
-                            field.value?.includes(role) ?? false;
+                          const isChecked = field.value?.includes(role) ?? false;
                           return (
                             <div className="flex items-center gap-2 space-y-0">
                               <Checkbox
@@ -221,9 +202,7 @@ export function EditModuleDialog({
                                 onCheckedChange={(checked) => {
                                   const updatedRoles = checked
                                     ? [...(field.value || []), role]
-                                    : (field.value || []).filter(
-                                        (r) => r !== role,
-                                      );
+                                    : (field.value || []).filter((r) => r !== role);
                                   field.onChange(updatedRoles);
                                 }}
                               />
@@ -245,15 +224,11 @@ export function EditModuleDialog({
             />
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={isUpdating}>
-                {isUpdating ? "Updating..." : "Save Changes"}
+                {isUpdating ? 'Updating...' : 'Save Changes'}
               </Button>
             </DialogFooter>
           </form>

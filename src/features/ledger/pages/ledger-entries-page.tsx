@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { useUrlFilters } from "@src/shared/hooks";
-import { DataTable } from "@src/shared/components/data-table";
-import { Card, CardContent } from "@src/shared/components/ui/card";
-import { Button } from "@src/shared/components/ui/button";
-import { DataTableFilters } from "@src/shared/components/data-table-filters";
+import { useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { useUrlFilters } from '@src/shared/hooks';
+import { DataTable } from '@src/shared/components/data-table';
+import { Card, CardContent } from '@src/shared/components/ui/card';
+import { Button } from '@src/shared/components/ui/button';
+import { DataTableFilters } from '@src/shared/components/data-table-filters';
 import {
   Pagination,
   PaginationContent,
@@ -15,20 +15,17 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@src/shared/components/ui/pagination";
-import {
-  useLedgerEntries,
-  type LedgerEntryResponse,
-} from "../hooks/useLedgerEntries";
-import { useLedgerEntriesColumns } from "../hooks/useLedgerEntriesColumns";
-import { CreateEntryDialog } from "../components/create-entry-dialog";
-import { ApproveEntryDialog } from "../components/approve-entry-dialog";
-import { Plus } from "lucide-react";
-import { DataTablePagination } from "@src/shared/components/data-table-pagination";
+} from '@src/shared/components/ui/pagination';
+import { useLedgerEntries, type LedgerEntryResponse } from '../hooks/useLedgerEntries';
+import { useLedgerEntriesColumns } from '../hooks/useLedgerEntriesColumns';
+import { CreateEntryDialog } from '../components/create-entry-dialog';
+import { ApproveEntryDialog } from '../components/approve-entry-dialog';
+import { Plus } from 'lucide-react';
+import { DataTablePagination } from '@src/shared/components/data-table-pagination';
 
 export default function LedgerEntriesPage() {
   const router = useRouter();
-  const { page, setPage } = useUrlFilters({ basePath: "/ledger/entries" });
+  const { page, setPage } = useUrlFilters({ basePath: '/ledger/entries' });
 
   const [createOpen, setCreateOpen] = useState(false);
   const [approveTarget, setApproveTarget] = useState<{
@@ -63,9 +60,7 @@ export default function LedgerEntriesPage() {
           <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
             Ledger Entries
           </h1>
-          <p className="mt-1 text-base text-body">
-            View and manage all ledger transactions
-          </p>
+          <p className="mt-1 text-base text-body">View and manage all ledger transactions</p>
         </div>
         <Button onClick={() => setCreateOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
@@ -76,13 +71,13 @@ export default function LedgerEntriesPage() {
       <DataTableFilters
         fields={[
           {
-            type: "select",
-            id: "status",
-            label: "Status",
+            type: 'select',
+            id: 'status',
+            label: 'Status',
             options: [
-              { value: "PENDING", label: "Pending" },
-              { value: "APPROVED", label: "Approved" },
-              { value: "REJECTED", label: "Rejected" },
+              { value: 'PENDING', label: 'Pending' },
+              { value: 'APPROVED', label: 'Approved' },
+              { value: 'REJECTED', label: 'Rejected' },
             ],
           },
         ]}
@@ -97,7 +92,7 @@ export default function LedgerEntriesPage() {
 
       <ApproveEntryDialog
         entryId={approveTarget?.id ?? null}
-        entryDescription={approveTarget?.description ?? ""}
+        entryDescription={approveTarget?.description ?? ''}
         open={!!approveTarget}
         onOpenChange={(open) => {
           if (!open) setApproveTarget(null);

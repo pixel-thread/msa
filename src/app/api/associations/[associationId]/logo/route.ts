@@ -1,11 +1,11 @@
-import { prisma } from "@lib/prisma";
-import { withAssociationFormData, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@utils/responses";
-import { NotFoundError } from "@src/shared/errors";
-import { UserRole } from "@prisma/client";
-import { uploadToBucket } from "@src/shared/lib/supabase/storage";
-import { z } from "zod";
-import { logger } from "@src/shared/logger/server";
+import { prisma } from '@lib/prisma';
+import { withAssociationFormData, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@utils/responses';
+import { NotFoundError } from '@src/shared/errors';
+import { UserRole } from '@prisma/client';
+import { uploadToBucket } from '@src/shared/lib/supabase/storage';
+import { z } from 'zod';
+import { logger } from '@src/shared/logger/server';
 
 const ParamsSchema = z.object({
   associationId: z.string().uuid(),
@@ -13,14 +13,11 @@ const ParamsSchema = z.object({
 
 const LogoFormSchema = z.object({
   logo: z
-    .instanceof(File, { message: "Logo file is required" })
-    .refine((f) => f.size > 0, "File is empty")
+    .instanceof(File, { message: 'Logo file is required' })
+    .refine((f) => f.size > 0, 'File is empty')
     .refine(
-      (f) =>
-        ["image/png", "image/jpeg", "image/webp", "image/svg+xml"].includes(
-          f.type,
-        ),
-      "Logo must be a PNG, JPEG, WebP, or SVG image",
+      (f) => ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'].includes(f.type),
+      'Logo must be a PNG, JPEG, WebP, or SVG image',
     ),
 });
 
@@ -32,13 +29,13 @@ export const POST = withAssociationFormData(
   async (association, { formData, traceId }, request) => {
     logger.info(
       { traceId, associationId: association.id },
-      "POST /api/associations/[associationId]/logo - Request started",
+      'POST /api/associations/[associationId]/logo - Request started',
     );
 
     const user = await withRole(request, UserRole.SUPER_ADMIN);
     logger.info(
       { traceId, userId: user.id },
-      "POST /api/associations/[associationId]/logo - User authorized",
+      'POST /api/associations/[associationId]/logo - User authorized',
     );
 
     const existing = await prisma.association.findUnique({
@@ -48,9 +45,9 @@ export const POST = withAssociationFormData(
     if (!existing) {
       logger.error(
         { traceId, associationId: association.id },
-        "POST /api/associations/[associationId]/logo - Association not found",
+        'POST /api/associations/[associationId]/logo - Association not found',
       );
-      throw new NotFoundError("Association not found");
+      throw new NotFoundError('Association not found');
     }
 
     const uploadResult = await uploadToBucket(
@@ -66,7 +63,7 @@ export const POST = withAssociationFormData(
 
     logger.info(
       { traceId, associationId: association.id },
-      "POST /api/associations/[associationId]/logo - Success",
+      'POST /api/associations/[associationId]/logo - Success',
     );
 
     return SuccessResponse(
@@ -75,7 +72,7 @@ export const POST = withAssociationFormData(
           key: uploadResult.key,
           url: uploadResult.url,
         },
-        message: "Logo uploaded successfully",
+        message: 'Logo uploaded successfully',
       },
       201,
     );

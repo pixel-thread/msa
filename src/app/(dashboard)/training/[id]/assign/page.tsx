@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { TrainingAssignPage } from "@src/features/training/pages";
+import { TrainingAssignPage } from '@src/features/training/pages';
 
 export default function TrainingAssignRoute() {
   return <TrainingAssignPage />;

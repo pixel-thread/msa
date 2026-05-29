@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Button } from "@src/shared/components/ui/button";
-import { Check, X } from "lucide-react";
-import { MembershipApplicationListItem } from "../../types";
+import { Button } from '@src/shared/components/ui/button';
+import { Check, X } from 'lucide-react';
+import { MembershipApplicationListItem } from '../../types';
 
 interface MembershipApplicationActionsCellProps {
   application: MembershipApplicationListItem;
@@ -17,10 +17,10 @@ export function MembershipApplicationActionsCell({
   onReject,
   isRejecting,
 }: MembershipApplicationActionsCellProps) {
-  if (application.status !== "PENDING") {
+  if (application.status !== 'PENDING') {
     return (
       <span className="text-sm text-muted-foreground">
-        {application.status === "APPROVED" ? "Approved" : "Rejected"}
+        {application.status === 'APPROVED' ? 'Approved' : 'Rejected'}
       </span>
     );
   }

@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useCallback, useMemo } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useCallback, useMemo } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
 interface UseUrlFiltersOptions {
   basePath?: string;
   pageKey?: string;
   resetPageOnFilter?: boolean;
-  mode?: "replace" | "push";
+  mode?: 'replace' | 'push';
 }
 
 interface UseUrlFiltersReturn {
@@ -20,15 +20,8 @@ interface UseUrlFiltersReturn {
   resetFilters: () => void;
 }
 
-export function useUrlFilters(
-  options: UseUrlFiltersOptions = {},
-): UseUrlFiltersReturn {
-  const {
-    basePath,
-    pageKey = "page",
-    resetPageOnFilter = true,
-    mode = "replace",
-  } = options;
+export function useUrlFilters(options: UseUrlFiltersOptions = {}): UseUrlFiltersReturn {
+  const { basePath, pageKey = 'page', resetPageOnFilter = true, mode = 'replace' } = options;
 
   const router = useRouter();
   const pathname = usePathname();
@@ -43,10 +36,7 @@ export function useUrlFilters(
     [resolvedPath, router, mode],
   );
 
-  const page = useMemo(
-    () => Number(searchParams.get(pageKey)) || 1,
-    [searchParams, pageKey],
-  );
+  const page = useMemo(() => Number(searchParams.get(pageKey)) || 1, [searchParams, pageKey]);
 
   const filters = useMemo(() => {
     const result: Record<string, string> = {};
@@ -73,7 +63,7 @@ export function useUrlFilters(
       } else {
         params.delete(key);
       }
-      if (resetPageOnFilter) params.set(pageKey, "1");
+      if (resetPageOnFilter) params.set(pageKey, '1');
       navigate(params);
     },
     [searchParams, navigate, resetPageOnFilter, pageKey],
@@ -89,7 +79,7 @@ export function useUrlFilters(
           params.delete(key);
         }
       }
-      if (resetPageOnFilter) params.set(pageKey, "1");
+      if (resetPageOnFilter) params.set(pageKey, '1');
       navigate(params);
     },
     [searchParams, navigate, resetPageOnFilter, pageKey],
@@ -99,7 +89,7 @@ export function useUrlFilters(
     (key: string) => {
       const params = new URLSearchParams(searchParams.toString());
       params.delete(key);
-      if (resetPageOnFilter) params.set(pageKey, "1");
+      if (resetPageOnFilter) params.set(pageKey, '1');
       navigate(params);
     },
     [searchParams, navigate, resetPageOnFilter, pageKey],
@@ -107,7 +97,7 @@ export function useUrlFilters(
 
   const resetFilters = useCallback(() => {
     const params = new URLSearchParams();
-    params.set(pageKey, "1");
+    params.set(pageKey, '1');
     navigate(params);
   }, [navigate, pageKey]);
 

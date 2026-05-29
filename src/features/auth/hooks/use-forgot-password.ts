@@ -1,11 +1,8 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation } from '@tanstack/react-query';
 
-import http from "@src/shared/utils/http";
-import {
-  ForgotPasswordSchema,
-  type ForgotPasswordInput,
-} from "@src/features/auth/validators";
-import { authEndpoints } from "../utils/constants/endpoints";
+import http from '@src/shared/utils/http';
+import { ForgotPasswordSchema, type ForgotPasswordInput } from '@src/features/auth/validators';
+import { authEndpoints } from '../utils/constants/endpoints';
 
 export function useForgotPassword() {
   return useMutation({

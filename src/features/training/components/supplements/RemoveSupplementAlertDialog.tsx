@@ -8,10 +8,10 @@ import {
   AlertDialogContent,
   AlertDialogMedia,
   AlertDialogTitle,
-} from "@components/ui/alert-dialog";
+} from '@components/ui/alert-dialog';
 
-import { Trash2 } from "lucide-react";
-import { useDeleteTrainingSupplement } from "../../hooks";
+import { Trash2 } from 'lucide-react';
+import { useDeleteTrainingSupplement } from '../../hooks';
 
 type RemoveSupplementProps = {
   isOpen: boolean;
@@ -34,10 +34,7 @@ export const RemoveSupplementAlertDialog = ({
   };
 
   return (
-    <AlertDialog
-      open={isOpen}
-      onOpenChange={(open) => !open && onValueChange(false)}
-    >
+    <AlertDialog open={isOpen} onOpenChange={(open) => !open && onValueChange(false)}>
       <AlertDialogContent size="sm">
         <AlertDialogHeader>
           <AlertDialogMedia>
@@ -45,20 +42,17 @@ export const RemoveSupplementAlertDialog = ({
           </AlertDialogMedia>
           <AlertDialogTitle>Remove Supplement</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to remove this supplement. This action cannot
-            be undone.
+            Are you sure you want to remove this supplement. This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => onValueChange(false)}>
-            Cancel
-          </AlertDialogCancel>
+          <AlertDialogCancel onClick={() => onValueChange(false)}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
             onClick={handleConfirmDeleteSupplement}
             disabled={isDeletingSupplement}
           >
-            {isDeletingSupplement ? "Removing..." : "Remove"}
+            {isDeletingSupplement ? 'Removing...' : 'Remove'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

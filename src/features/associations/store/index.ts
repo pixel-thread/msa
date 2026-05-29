@@ -1,5 +1,1 @@
-export {
-  associationStore,
-  getAssociationId,
-  runWithAssociation,
-} from "./association-store";
+export { associationStore, getAssociationId, runWithAssociation } from './association-store';

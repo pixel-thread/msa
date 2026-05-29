@@ -20,12 +20,9 @@
 - [ ] **Step 1: Create the service file with stubs**
 
 ```typescript
-import { prisma } from "@lib/prisma";
-import { NotFoundError } from "@src/shared/errors";
-import {
-  CreateMeetingMinuteInput,
-  UpdateMeetingMinuteInput,
-} from "../validators/minutes";
+import { prisma } from '@lib/prisma';
+import { NotFoundError } from '@src/shared/errors';
+import { CreateMeetingMinuteInput, UpdateMeetingMinuteInput } from '../validators/minutes';
 
 interface CreateMeetingMinuteProps {
   meetingId: string;
@@ -63,7 +60,7 @@ export async function updateMeetingMinute({
 Modify `src/features/meetings/services/index.ts`:
 
 ```typescript
-export * from "./minutes";
+export * from './minutes';
 ```
 
 - [ ] **Step 3: Commit**
@@ -83,17 +80,17 @@ git commit -m "feat: initialize meeting minutes services"
 - [ ] **Step 1: Write failing test for createMeetingMinute**
 
 ```typescript
-import { createMeetingMinute } from "../minutes";
-import { prisma } from "@lib/prisma";
-import { NotFoundError } from "@src/shared/errors";
+import { createMeetingMinute } from '../minutes';
+import { prisma } from '@lib/prisma';
+import { NotFoundError } from '@src/shared/errors';
 
-describe("createMeetingMinute", () => {
-  it("should throw NotFoundError if meeting does not exist or belongs to different association", async () => {
+describe('createMeetingMinute', () => {
+  it('should throw NotFoundError if meeting does not exist or belongs to different association', async () => {
     await expect(
       createMeetingMinute({
-        meetingId: "non-existent",
-        associationId: "assoc-1",
-        data: { agendaPoint: "Test", decision: "Test" },
+        meetingId: 'non-existent',
+        associationId: 'assoc-1',
+        data: { agendaPoint: 'Test', decision: 'Test' },
       }),
     ).rejects.toThrow(NotFoundError);
   });
@@ -116,7 +113,7 @@ export async function createMeetingMinute({
   const meeting = await prisma.meeting.findFirst({
     where: { id: meetingId, associationId },
   });
-  if (!meeting) throw new NotFoundError("Meeting");
+  if (!meeting) throw new NotFoundError('Meeting');
 
   return await prisma.meetingMinutes.create({
     data: {
@@ -131,7 +128,7 @@ export async function createMeetingMinute({
 - [ ] **Step 4: Add success test case**
 
 ```typescript
-it("should create meeting minute if meeting exists and belongs to association", async () => {
+it('should create meeting minute if meeting exists and belongs to association', async () => {
   // Mock prisma responses if possible or use real DB in test env
   // For now, assume integration test setup or just verify the calls
 });
@@ -158,14 +155,14 @@ git commit -m "feat: implement createMeetingMinute service"
 - [ ] **Step 1: Write failing test for updateMeetingMinute**
 
 ```typescript
-describe("updateMeetingMinute", () => {
-  it("should throw NotFoundError if minute does not exist or association mismatch", async () => {
+describe('updateMeetingMinute', () => {
+  it('should throw NotFoundError if minute does not exist or association mismatch', async () => {
     await expect(
       updateMeetingMinute({
-        meetingId: "meeting-1",
-        minuteId: "non-existent",
-        associationId: "assoc-1",
-        data: { decision: "Updated" },
+        meetingId: 'meeting-1',
+        minuteId: 'non-existent',
+        associationId: 'assoc-1',
+        data: { decision: 'Updated' },
       }),
     ).rejects.toThrow(NotFoundError);
   });
@@ -192,7 +189,7 @@ export async function updateMeetingMinute({
       meeting: { associationId },
     },
   });
-  if (!minute) throw new NotFoundError("Meeting Minute");
+  if (!minute) throw new NotFoundError('Meeting Minute');
 
   return await prisma.meetingMinutes.update({
     where: { id: minuteId },

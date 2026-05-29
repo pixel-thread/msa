@@ -1,6 +1,6 @@
-import { prisma } from "@src/shared/lib/prisma";
-import { AuditAction, ComplaintCategory } from "@prisma/client";
-import type { ComplianceSubmitFormData } from "@src/features/compliance/validators";
+import { prisma } from '@src/shared/lib/prisma';
+import { AuditAction, ComplaintCategory } from '@prisma/client';
+import type { ComplianceSubmitFormData } from '@src/features/compliance/validators';
 
 export async function createComplaint({
   associationId,
@@ -28,7 +28,7 @@ export async function createComplaint({
         associationId,
         actorId: userId,
         action: AuditAction.COMPLAINT_CREATE,
-        resourceType: "Complaint",
+        resourceType: 'Complaint',
         resourceId: complaint.id,
         newValues: complaint as any,
       },

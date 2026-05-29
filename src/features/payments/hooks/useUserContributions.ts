@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import { UserContributionData } from "../types";
+import { useQuery } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import { UserContributionData } from '../types';
 
 interface UseUserContributionsOptions {
   userId: string;
@@ -14,16 +14,16 @@ export function useUserContributions(options: UseUserContributionsOptions) {
   const { userId, fromYear, fromMonth, toYear, toMonth } = options;
 
   const params = new URLSearchParams();
-  if (fromYear) params.set("fromYear", String(fromYear));
-  if (fromMonth) params.set("fromMonth", String(fromMonth));
-  if (toYear) params.set("toYear", String(toYear));
-  if (toMonth) params.set("toMonth", String(toMonth));
+  if (fromYear) params.set('fromYear', String(fromYear));
+  if (fromMonth) params.set('fromMonth', String(fromMonth));
+  if (toYear) params.set('toYear', String(toYear));
+  if (toMonth) params.set('toMonth', String(toMonth));
 
   const queryString = params.toString();
-  const url = `/payments/users/${userId}/contributions${queryString ? `?${queryString}` : ""}`;
+  const url = `/payments/users/${userId}/contributions${queryString ? `?${queryString}` : ''}`;
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["user-contributions", userId, queryString],
+    queryKey: ['user-contributions', userId, queryString],
     queryFn: () => http.get<UserContributionData>(url),
     enabled: !!userId,
   });

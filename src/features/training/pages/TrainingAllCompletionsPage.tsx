@@ -1,22 +1,19 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { useUrlFilters } from "@src/shared/hooks";
-import { Award, ArrowLeft } from "lucide-react";
+import { useRouter } from 'next/navigation';
+import { useUrlFilters } from '@src/shared/hooks';
+import { Award, ArrowLeft } from 'lucide-react';
 
-import { Button } from "@src/shared/components/ui/button";
-import { DataTablePagination } from "@src/shared/components/data-table-pagination";
-import { DataTable } from "@src/shared/components/data-table";
-import { DataTableFilters } from "@src/shared/components/data-table-filters";
-import {
-  useTrainingCompletionsColumns,
-  useTrainingCompletions,
-} from "../hooks";
+import { Button } from '@src/shared/components/ui/button';
+import { DataTablePagination } from '@src/shared/components/data-table-pagination';
+import { DataTable } from '@src/shared/components/data-table';
+import { DataTableFilters } from '@src/shared/components/data-table-filters';
+import { useTrainingCompletionsColumns, useTrainingCompletions } from '../hooks';
 
 export function TrainingAllCompletionsPage() {
   const router = useRouter();
   const { page, setPage } = useUrlFilters({
-    basePath: "/training/completions",
+    basePath: '/training/completions',
   });
 
   const { completions, meta, isLoading } = useTrainingCompletions(null, {
@@ -32,7 +29,7 @@ export function TrainingAllCompletionsPage() {
           variant="ghost"
           size="icon"
           className="h-9 w-9"
-          onClick={() => router.push("/training")}
+          onClick={() => router.push('/training')}
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -51,9 +48,7 @@ export function TrainingAllCompletionsPage() {
             <Award className="h-4 w-4" />
             Total Completions
           </div>
-          <p className="text-2xl font-bold text-ink">
-            {meta ? meta.total : completions.length}
-          </p>
+          <p className="text-2xl font-bold text-ink">{meta ? meta.total : completions.length}</p>
         </div>
       </div>
 
@@ -61,9 +56,9 @@ export function TrainingAllCompletionsPage() {
       <DataTableFilters
         fields={[
           {
-            type: "search",
-            id: "search",
-            placeholder: "Search completions...",
+            type: 'search',
+            id: 'search',
+            placeholder: 'Search completions...',
           },
         ]}
         onFilterChange={() => {}}
@@ -71,11 +66,7 @@ export function TrainingAllCompletionsPage() {
 
       <DataTable loading={isLoading} data={completions} columns={columns} />
 
-      <DataTablePagination
-        meta={meta}
-        onPageChange={setPage}
-        label="completions"
-      />
+      <DataTablePagination meta={meta} onPageChange={setPage} label="completions" />
     </div>
   );
 }

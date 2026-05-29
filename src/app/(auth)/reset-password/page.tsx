@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-import { Button } from "@src/shared/components/ui/button";
-import { Input } from "@src/shared/components/ui/input";
+import { Button } from '@src/shared/components/ui/button';
+import { Input } from '@src/shared/components/ui/input';
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
-} from "@src/shared/components/ui/card";
-import { Alert, AlertDescription } from "@src/shared/components/ui/alert";
+} from '@src/shared/components/ui/card';
+import { Alert, AlertDescription } from '@src/shared/components/ui/alert';
 import {
   Form,
   FormControl,
@@ -23,25 +23,22 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
-import {
-  ResetPasswordSchema,
-  type ResetPasswordInput,
-} from "@src/features/auth/validators";
-import { useResetPassword } from "@src/features/auth/hooks";
+} from '@src/shared/components/ui/form';
+import { ResetPasswordSchema, type ResetPasswordInput } from '@src/features/auth/validators';
+import { useResetPassword } from '@src/features/auth/hooks';
 
 export default function ResetPasswordPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const token = searchParams.get('token');
   const [isSuccess, setIsSuccess] = useState(false);
   const resetPasswordMutation = useResetPassword();
 
   const form = useForm<ResetPasswordInput>({
     resolver: zodResolver(ResetPasswordSchema),
     defaultValues: {
-      token: token || "",
-      password: "",
+      token: token || '',
+      password: '',
     },
   });
 
@@ -61,8 +58,7 @@ export default function ResetPasswordPage() {
               Invalid Reset Link
             </CardTitle>
             <CardDescription className="text-body text-base">
-              The password reset link is invalid or has expired. Please request
-              a new one.
+              The password reset link is invalid or has expired. Please request a new one.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -87,8 +83,7 @@ export default function ResetPasswordPage() {
               Password Reset Successful
             </CardTitle>
             <CardDescription className="text-body text-base">
-              Your password has been reset successfully. You can now sign in
-              with your new password.
+              Your password has been reset successfully. You can now sign in with your new password.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -121,8 +116,7 @@ export default function ResetPasswordPage() {
               {resetPasswordMutation.isError && (
                 <Alert variant="destructive">
                   <AlertDescription>
-                    {resetPasswordMutation.error?.message ||
-                      "Password reset failed"}
+                    {resetPasswordMutation.error?.message || 'Password reset failed'}
                   </AlertDescription>
                 </Alert>
               )}
@@ -159,9 +153,7 @@ export default function ResetPasswordPage() {
                 className="h-11 w-full bg-primary px-5 text-base font-semibold text-on-primary hover:bg-primary-active disabled:bg-primary-disabled"
                 disabled={resetPasswordMutation.isPending}
               >
-                {resetPasswordMutation.isPending
-                  ? "Resetting..."
-                  : "Reset password"}
+                {resetPasswordMutation.isPending ? 'Resetting...' : 'Reset password'}
               </Button>
 
               <div className="text-center">

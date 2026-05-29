@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { Button } from "@src/shared/components/ui/button";
-import { Pencil, Trash2 } from "lucide-react";
+import { Button } from '@src/shared/components/ui/button';
+import { Pencil, Trash2 } from 'lucide-react';
 
 interface MemberType {
   id: string;

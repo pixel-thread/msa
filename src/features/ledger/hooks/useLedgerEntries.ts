@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import type { PaginationMeta } from "@src/shared/types";
+import { useQuery } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import type { PaginationMeta } from '@src/shared/types';
 
 export interface LedgerLineResponse {
   id: string;
@@ -15,7 +15,7 @@ export interface LedgerEntryResponse {
   id: string;
   paymentTransactionId: string | null;
   description: string;
-  approvalStatus: "PENDING" | "APPROVED" | "REJECTED";
+  approvalStatus: 'PENDING' | 'APPROVED' | 'REJECTED';
   createdById: string;
   approvedById: string | null;
   createdAt: string;
@@ -31,14 +31,11 @@ export function useLedgerEntries(params: UseLedgerEntriesParams = {}) {
   const { page = 1 } = params;
 
   const queryParams = new URLSearchParams();
-  queryParams.set("page", String(page));
+  queryParams.set('page', String(page));
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["ledger-entries", page],
-    queryFn: () =>
-      http.get<LedgerEntryResponse[]>(
-        `/ledger/entries?${queryParams.toString()}`,
-      ),
+    queryKey: ['ledger-entries', page],
+    queryFn: () => http.get<LedgerEntryResponse[]>(`/ledger/entries?${queryParams.toString()}`),
   });
 
   return {

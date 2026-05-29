@@ -1,7 +1,7 @@
-"use client";
-import Link from "next/link";
+'use client';
+import Link from 'next/link';
 
-import { Button } from "@src/shared/components/ui/button";
+import { Button } from '@src/shared/components/ui/button';
 import {
   Card,
   CardHeader,
@@ -9,8 +9,8 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "@src/shared/components/ui/card";
-import { useAuthStore } from "@src/shared/stores";
+} from '@src/shared/components/ui/card';
+import { useAuthStore } from '@src/shared/stores';
 
 export default function ForbiddenPage() {
   const { isSignedIn } = useAuthStore();
@@ -22,9 +22,8 @@ export default function ForbiddenPage() {
             Access Denied
           </CardTitle>
           <CardDescription className="text-body text-base">
-            You don't have permission to access this page. Please check your
-            credentials or contact an administrator if you believe this is an
-            error.
+            You don't have permission to access this page. Please check your credentials or contact
+            an administrator if you believe this is an error.
           </CardDescription>
         </CardHeader>
         <CardContent>

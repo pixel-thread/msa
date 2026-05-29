@@ -1,12 +1,12 @@
-import { logger } from "../logger";
-import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
-import { env } from "@src/env";
-import { MiddlewareFn } from "./chain";
-import { TooManyRequestsError, normalizeUnknownError } from "../errors";
-import { AppErrorResponse, getTraceId } from "../utils";
+import { logger } from '../logger';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+import { env } from '@src/env';
+import { MiddlewareFn } from './chain';
+import { TooManyRequestsError, normalizeUnknownError } from '../errors';
+import { AppErrorResponse, getTraceId } from '../utils';
 
-const isProd = env.NODE_ENV === "production";
+const isProd = env.NODE_ENV === 'production';
 
 /**
  * ----------------------------------------------------------------------------
@@ -14,26 +14,23 @@ const isProd = env.NODE_ENV === "production";
  * ----------------------------------------------------------------------------
  */
 
-type Duration = `${number} ${"s" | "m" | "h" | "d"}`;
+type Duration = `${number} ${'s' | 'm' | 'h' | 'd'}`;
 
 type RouteMatch =
-  | { type: "skip" }
-  | { type: "limit"; config: { requests: number; window: Duration } };
+  | { type: 'skip' }
+  | { type: 'limit'; config: { requests: number; window: Duration } };
 
 const GLOBAL_LIMIT: { requests: number; window: Duration } = {
   requests: 20,
-  window: "1 s",
+  window: '1 s',
 };
 
-const routeLimits: Record<
-  string,
-  { requests: number; window: Duration } | "skip"
-> = {
-  "/api/auth/*": { requests: 20, window: "1 s" },
-  "/health": "skip",
-  "/favicon.ico": "skip",
-  "/api/*": GLOBAL_LIMIT,
-  "/*": "skip",
+const routeLimits: Record<string, { requests: number; window: Duration } | 'skip'> = {
+  '/api/auth/*': { requests: 20, window: '1 s' },
+  '/health': 'skip',
+  '/favicon.ico': 'skip',
+  '/api/*': GLOBAL_LIMIT,
+  '/*': 'skip',
 };
 
 /**
@@ -44,16 +41,16 @@ const routeLimits: Record<
 
 const matchRoute = (pathname: string): RouteMatch => {
   for (const [pattern, config] of Object.entries(routeLimits)) {
-    if (pattern.endsWith("/*")) {
+    if (pattern.endsWith('/*')) {
       const prefix = pattern.slice(0, -1);
       if (pathname.startsWith(prefix)) {
-        return config === "skip" ? { type: "skip" } : { type: "limit", config };
+        return config === 'skip' ? { type: 'skip' } : { type: 'limit', config };
       }
     } else if (pathname === pattern) {
-      return config === "skip" ? { type: "skip" } : { type: "limit", config };
+      return config === 'skip' ? { type: 'skip' } : { type: 'limit', config };
     }
   }
-  return { type: "limit", config: GLOBAL_LIMIT };
+  return { type: 'limit', config: GLOBAL_LIMIT };
 };
 
 /**
@@ -71,10 +68,7 @@ const redis = isProd
 
 const limiterCache = new Map<string, Ratelimit>();
 
-const getLimiter = (config: {
-  requests: number;
-  window: Duration;
-}): Ratelimit | null => {
+const getLimiter = (config: { requests: number; window: Duration }): Ratelimit | null => {
   if (!isProd || !redis) return null;
 
   const key = `${config.requests}:${config.window}`;
@@ -128,25 +122,25 @@ if (!isProd) {
 const WINDOW_MS = 60_000;
 
 const getClientIp = (request: Request): string => {
-  const cfIp = request.headers.get("cf-connecting-ip");
+  const cfIp = request.headers.get('cf-connecting-ip');
 
   if (cfIp) {
     return cfIp.trim();
   }
 
-  const realIp = request.headers.get("x-real-ip");
+  const realIp = request.headers.get('x-real-ip');
 
   if (realIp) {
     return realIp.trim();
   }
 
-  const forwardedFor = request.headers.get("x-forwarded-for");
+  const forwardedFor = request.headers.get('x-forwarded-for');
 
   if (forwardedFor) {
-    return forwardedFor.split(",")[0]?.trim() ?? "unknown";
+    return forwardedFor.split(',')[0]?.trim() ?? 'unknown';
   }
 
-  return "unknown";
+  return 'unknown';
 };
 
 const checkLocalRateLimit = (
@@ -193,7 +187,7 @@ const checkRateLimit = async (
 
     return await limiter.limit(identifier);
   } catch (error) {
-    logger.error("Rate limiter unavailable", {
+    logger.error('Rate limiter unavailable', {
       error,
       identifier,
     });
@@ -221,7 +215,7 @@ export const withRateLimiting: MiddlewareFn = async (request, next) => {
 
     const match = matchRoute(url.pathname);
 
-    if (match.type === "skip") {
+    if (match.type === 'skip') {
       return await next(request);
     }
 
@@ -232,30 +226,25 @@ export const withRateLimiting: MiddlewareFn = async (request, next) => {
     const result = await checkRateLimit(identifier, match.config);
 
     if (!result.success) {
-      logger.warn("Rate limit exceeded", {
+      logger.warn('Rate limit exceeded', {
         identifier,
         traceId,
         route: url.pathname,
       });
 
-      throw new TooManyRequestsError(
-        "Too many requests. Please try again later.",
-      );
+      throw new TooManyRequestsError('Too many requests. Please try again later.');
     }
 
     const response = await next(request);
 
-    response.headers.set("RateLimit-Limit", String(result.limit));
+    response.headers.set('RateLimit-Limit', String(result.limit));
 
-    response.headers.set("RateLimit-Remaining", String(result.remaining));
+    response.headers.set('RateLimit-Remaining', String(result.remaining));
 
-    response.headers.set(
-      "RateLimit-Reset",
-      String(Math.ceil(result.reset / 1000)),
-    );
+    response.headers.set('RateLimit-Reset', String(Math.ceil(result.reset / 1000)));
 
     response.headers.set(
-      "Retry-After",
+      'Retry-After',
       String(Math.max(0, Math.ceil((result.reset - Date.now()) / 1000))),
     );
 

@@ -1,15 +1,15 @@
-import { withValidation, withRole } from "@src/shared/api";
-import { CreateAssociationInput } from "@validator/associations";
-import { UpdateAssociationSchema } from "@src/features/associations/validators";
-import { findUniqueAssociation } from "@src/features/associations/services/findUniqueAssociation";
-import { findFirstAssociation } from "@src/features/associations/services/findFirstAssociation";
-import { updateAssociation } from "@src/features/associations/services/updateAssociation";
-import { SuccessResponse } from "@src/shared/utils";
-import type { Association } from "@prisma/client";
-import { ConflictError, NotFoundError } from "@src/shared/errors";
-import z from "zod";
-import { logger } from "@src/shared/logger/server";
-import { UserRole } from "@prisma/client";
+import { withValidation, withRole } from '@src/shared/api';
+import { CreateAssociationInput } from '@validator/associations';
+import { UpdateAssociationSchema } from '@src/features/associations/validators';
+import { findUniqueAssociation } from '@src/features/associations/services/findUniqueAssociation';
+import { findFirstAssociation } from '@src/features/associations/services/findFirstAssociation';
+import { updateAssociation } from '@src/features/associations/services/updateAssociation';
+import { SuccessResponse } from '@src/shared/utils';
+import type { Association } from '@prisma/client';
+import { ConflictError, NotFoundError } from '@src/shared/errors';
+import z from 'zod';
+import { logger } from '@src/shared/logger/server';
+import { UserRole } from '@prisma/client';
 
 const ParamsSchema = z.object({
   associationId: z.uuid(),
@@ -20,12 +20,12 @@ export const GET = withValidation(
   async (req, _ctx, { params, traceId }) => {
     logger.info(
       { traceId, associationId: params?.associationId },
-      "GET /api/associations/[associationId] - Request started",
+      'GET /api/associations/[associationId] - Request started',
     );
     const user = await withRole(req, UserRole.SUPER_ADMIN);
     logger.info(
       { traceId, userId: user.id, roles: user.role },
-      "GET /api/associations/[associationId] - User authorized",
+      'GET /api/associations/[associationId] - User authorized',
     );
 
     const association = await findUniqueAssociation({
@@ -35,19 +35,19 @@ export const GET = withValidation(
     if (!association) {
       logger.error(
         { traceId, associationId: params?.associationId },
-        "GET /api/associations/[associationId] - Association not found",
+        'GET /api/associations/[associationId] - Association not found',
       );
-      throw new NotFoundError("Association not found");
+      throw new NotFoundError('Association not found');
     }
 
     logger.info(
       { traceId, associationId: params?.associationId },
-      "GET /api/associations/[associationId] - Success",
+      'GET /api/associations/[associationId] - Success',
     );
 
     return SuccessResponse<Association>({
       data: association,
-      message: "Association found successfully",
+      message: 'Association found successfully',
     });
   },
 );
@@ -57,12 +57,12 @@ export const PATCH = withValidation(
   async (req, _ctx, { body, params, traceId }) => {
     logger.info(
       { traceId, associationId: params?.associationId },
-      "PATCH /api/associations/[associationId] - Request started",
+      'PATCH /api/associations/[associationId] - Request started',
     );
     const user = await withRole(req, UserRole.SUPER_ADMIN);
     logger.info(
       { traceId, userId: user.id, roles: user.role },
-      "PATCH /api/associations/[associationId] - User authorized",
+      'PATCH /api/associations/[associationId] - User authorized',
     );
 
     const existing = await findUniqueAssociation({
@@ -72,9 +72,9 @@ export const PATCH = withValidation(
     if (!existing) {
       logger.error(
         { traceId, associationId: params?.associationId },
-        "PATCH /api/associations/[associationId] - Association Not Found",
+        'PATCH /api/associations/[associationId] - Association Not Found',
       );
-      throw new NotFoundError("Association Not Found");
+      throw new NotFoundError('Association Not Found');
     }
 
     if (body?.slug !== existing.slug || body?.name !== existing.name) {
@@ -89,11 +89,9 @@ export const PATCH = withValidation(
       if (conflict) {
         logger.error(
           { traceId, slug: body?.slug, name: body?.name },
-          "PATCH /api/associations/[associationId] - Association conflict",
+          'PATCH /api/associations/[associationId] - Association conflict',
         );
-        throw new ConflictError(
-          "Association with this slug or name already exists",
-        );
+        throw new ConflictError('Association with this slug or name already exists');
       }
     }
 
@@ -104,11 +102,11 @@ export const PATCH = withValidation(
 
     logger.info(
       { traceId, associationId: params?.associationId },
-      "PATCH /api/associations/[associationId] - Success",
+      'PATCH /api/associations/[associationId] - Success',
     );
 
     return SuccessResponse<Association>(
-      { data: updated, message: "Association updated successfully" },
+      { data: updated, message: 'Association updated successfully' },
       200,
     );
   },

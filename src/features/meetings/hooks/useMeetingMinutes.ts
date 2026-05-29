@@ -1,10 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import { toast } from "sonner";
-import type {
-  CreateMeetingMinuteInput,
-  UpdateMeetingMinuteInput,
-} from "../validators";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import { toast } from 'sonner';
+import type { CreateMeetingMinuteInput, UpdateMeetingMinuteInput } from '../validators';
 
 export interface ActionItem {
   assigneeId?: string;
@@ -25,14 +22,12 @@ export function useMeetingMinutes(meetingId: string | null) {
   const queryClient = useQueryClient();
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["meeting-minutes", meetingId],
+    queryKey: ['meeting-minutes', meetingId],
     enabled: !!meetingId,
     queryFn: async () => {
-      const res = await http.get<MeetingMinute[]>(
-        `/meetings/${meetingId}/minutes`,
-      );
+      const res = await http.get<MeetingMinute[]>(`/meetings/${meetingId}/minutes`);
       if (!res.success || !res.data) {
-        throw new Error(res.message || "Failed to fetch minutes");
+        throw new Error(res.message || 'Failed to fetch minutes');
       }
       return res.data;
     },
@@ -44,60 +39,50 @@ export function useMeetingMinutes(meetingId: string | null) {
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({
-          queryKey: ["meeting-minutes", meetingId],
+          queryKey: ['meeting-minutes', meetingId],
         });
-        toast.success("Minute added successfully");
+        toast.success('Minute added successfully');
       } else {
-        toast.error(res.message || "Failed to add minute");
+        toast.error(res.message || 'Failed to add minute');
       }
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Failed to add minute");
+      toast.error(err.message || 'Failed to add minute');
     },
   });
 
   const updateMinuteMutation = useMutation({
-    mutationFn: ({
-      minuteId,
-      data,
-    }: {
-      minuteId: string;
-      data: UpdateMeetingMinuteInput;
-    }) =>
-      http.patch<MeetingMinute>(
-        `/meetings/${meetingId}/minutes/${minuteId}`,
-        data,
-      ),
+    mutationFn: ({ minuteId, data }: { minuteId: string; data: UpdateMeetingMinuteInput }) =>
+      http.patch<MeetingMinute>(`/meetings/${meetingId}/minutes/${minuteId}`, data),
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({
-          queryKey: ["meeting-minutes", meetingId],
+          queryKey: ['meeting-minutes', meetingId],
         });
-        toast.success("Minute updated successfully");
+        toast.success('Minute updated successfully');
       } else {
-        toast.error(res.message || "Failed to update minute");
+        toast.error(res.message || 'Failed to update minute');
       }
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Failed to update minute");
+      toast.error(err.message || 'Failed to update minute');
     },
   });
 
   const deleteMinuteMutation = useMutation({
-    mutationFn: (minuteId: string) =>
-      http.delete(`/meetings/${meetingId}/minutes/${minuteId}`),
+    mutationFn: (minuteId: string) => http.delete(`/meetings/${meetingId}/minutes/${minuteId}`),
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({
-          queryKey: ["meeting-minutes", meetingId],
+          queryKey: ['meeting-minutes', meetingId],
         });
-        toast.success("Minute deleted successfully");
+        toast.success('Minute deleted successfully');
       } else {
-        toast.error(res.message || "Failed to delete minute");
+        toast.error(res.message || 'Failed to delete minute');
       }
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Failed to delete minute");
+      toast.error(err.message || 'Failed to delete minute');
     },
   });
 

@@ -1,11 +1,8 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation } from '@tanstack/react-query';
 
-import http from "@src/shared/utils/http";
-import {
-  ChangePasswordSchema,
-  type ChangePasswordInput,
-} from "@src/features/auth/validators";
-import { authEndpoints } from "../utils/constants/endpoints";
+import http from '@src/shared/utils/http';
+import { ChangePasswordSchema, type ChangePasswordInput } from '@src/features/auth/validators';
+import { authEndpoints } from '../utils/constants/endpoints';
 
 export function useChangePassword() {
   return useMutation({

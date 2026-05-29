@@ -1,9 +1,9 @@
-import { ColumnDef } from "@tanstack/react-table";
-import Link from "next/link";
-import { Avatar, AvatarFallback } from "@components/ui/avatar";
-import { getInitials } from "../utils/helper/get-initials";
-import { PendingActionsCell } from "@src/features/members/components/cells/pending-actions-cell";
-import { MemberListItem } from "../types";
+import { ColumnDef } from '@tanstack/react-table';
+import Link from 'next/link';
+import { Avatar, AvatarFallback } from '@components/ui/avatar';
+import { getInitials } from '../utils/helper/get-initials';
+import { PendingActionsCell } from '@src/features/members/components/cells/pending-actions-cell';
+import { MemberListItem } from '../types';
 
 interface UsePendingMemberColumnsOptions {
   onAccept: (member: MemberListItem) => void;
@@ -18,8 +18,8 @@ export function usePendingMemberColumns({
 }: UsePendingMemberColumnsOptions) {
   const columns: ColumnDef<MemberListItem>[] = [
     {
-      accessorKey: "name",
-      header: "Member",
+      accessorKey: 'name',
+      header: 'Member',
       cell: ({ row }) => {
         const member = row.original;
         return (
@@ -35,9 +35,7 @@ export function usePendingMemberColumns({
             <div className="flex flex-col">
               <span className="text-sm font-medium">{member.name}</span>
               {member.membershipNumber && (
-                <span className="text-xs text-muted-foreground">
-                  {member.membershipNumber}
-                </span>
+                <span className="text-xs text-muted-foreground">{member.membershipNumber}</span>
               )}
             </div>
           </Link>
@@ -45,16 +43,16 @@ export function usePendingMemberColumns({
       },
     },
     {
-      accessorKey: "email",
-      header: "Email",
+      accessorKey: 'email',
+      header: 'Email',
     },
     {
-      accessorKey: "status",
-      header: "Status",
+      accessorKey: 'status',
+      header: 'Status',
     },
     {
-      accessorKey: "actions",
-      header: "Actions",
+      accessorKey: 'actions',
+      header: 'Actions',
       cell: ({ row }) => (
         <PendingActionsCell
           member={row.original}

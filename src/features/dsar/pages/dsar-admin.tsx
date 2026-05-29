@@ -1,48 +1,38 @@
-"use client";
+'use client';
 
-import { useState, useCallback } from "react";
-import { DataTable } from "@src/shared/components/data-table";
-import { DataTableFilters } from "@src/shared/components/data-table-filters";
-import { useDsarTickets, useDeleteDsarTicket, useDsarColumns } from "../hooks";
-import { DsarDetailDialog } from "../components/dsar-detail-dialog";
-import { DsarRespondDialog } from "../components/dsar-respond-dialog";
-import { DsarRejectDialog } from "../components/dsar-reject-dialog";
-import { DsarAssignDialog } from "../components/dsar-assign-dialog";
-import { DsarDeleteDialog } from "../components/dsar-delete-dialog";
-import { DsarSlaCards } from "../components/dsar-sla-cards";
-import { DataTablePagination } from "@src/shared/components/data-table-pagination";
-import type { DsarTicketRecord } from "../types";
+import { useState, useCallback } from 'react';
+import { DataTable } from '@src/shared/components/data-table';
+import { DataTableFilters } from '@src/shared/components/data-table-filters';
+import { useDsarTickets, useDeleteDsarTicket, useDsarColumns } from '../hooks';
+import { DsarDetailDialog } from '../components/dsar-detail-dialog';
+import { DsarRespondDialog } from '../components/dsar-respond-dialog';
+import { DsarRejectDialog } from '../components/dsar-reject-dialog';
+import { DsarAssignDialog } from '../components/dsar-assign-dialog';
+import { DsarDeleteDialog } from '../components/dsar-delete-dialog';
+import { DsarSlaCards } from '../components/dsar-sla-cards';
+import { DataTablePagination } from '@src/shared/components/data-table-pagination';
+import type { DsarTicketRecord } from '../types';
 
 const requestTypes = [
-  "ACCESS",
-  "DELETION",
-  "PORTABILITY",
-  "RECTIFICATION",
-  "RESTRICTION",
-  "OBJECTION",
+  'ACCESS',
+  'DELETION',
+  'PORTABILITY',
+  'RECTIFICATION',
+  'RESTRICTION',
+  'OBJECTION',
 ];
-const statuses = ["PENDING", "IN_PROGRESS", "COMPLETED", "REJECTED"];
+const statuses = ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'REJECTED'];
 
 export default function DsarAdminPage() {
   const [page, setPage] = useState(1);
-  const [statusFilter, setStatusFilter] = useState("");
-  const [requestTypeFilter, setRequestTypeFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState('');
+  const [requestTypeFilter, setRequestTypeFilter] = useState('');
 
-  const [detailRecord, setDetailRecord] = useState<DsarTicketRecord | null>(
-    null,
-  );
-  const [respondRecord, setRespondRecord] = useState<DsarTicketRecord | null>(
-    null,
-  );
-  const [rejectRecord, setRejectRecord] = useState<DsarTicketRecord | null>(
-    null,
-  );
-  const [assignRecord, setAssignRecord] = useState<DsarTicketRecord | null>(
-    null,
-  );
-  const [deletingRecord, setDeletingRecord] = useState<DsarTicketRecord | null>(
-    null,
-  );
+  const [detailRecord, setDetailRecord] = useState<DsarTicketRecord | null>(null);
+  const [respondRecord, setRespondRecord] = useState<DsarTicketRecord | null>(null);
+  const [rejectRecord, setRejectRecord] = useState<DsarTicketRecord | null>(null);
+  const [assignRecord, setAssignRecord] = useState<DsarTicketRecord | null>(null);
+  const [deletingRecord, setDeletingRecord] = useState<DsarTicketRecord | null>(null);
 
   const { tickets, meta, isLoading } = useDsarTickets({
     page,
@@ -56,7 +46,7 @@ export default function DsarAdminPage() {
   const { columns } = useDsarColumns({
     onViewDetail: setDetailRecord,
     onRespond: (record) => {
-      if (record.status === "REJECTED" || record.status === "COMPLETED") {
+      if (record.status === 'REJECTED' || record.status === 'COMPLETED') {
         setDetailRecord(record);
       } else {
         setRespondRecord(record);
@@ -92,24 +82,21 @@ export default function DsarAdminPage() {
       <DataTableFilters
         fields={[
           {
-            type: "select",
-            id: "requestType",
-            label: "Type",
+            type: 'select',
+            id: 'requestType',
+            label: 'Type',
             options: requestTypes.map((t) => ({
               value: t,
               label: t.charAt(0) + t.slice(1).toLowerCase(),
             })),
           },
           {
-            type: "select",
-            id: "status",
-            label: "Status",
+            type: 'select',
+            id: 'status',
+            label: 'Status',
             options: statuses.map((s) => ({
               value: s,
-              label:
-                s === "IN_PROGRESS"
-                  ? "In Progress"
-                  : s.charAt(0) + s.slice(1).toLowerCase(),
+              label: s === 'IN_PROGRESS' ? 'In Progress' : s.charAt(0) + s.slice(1).toLowerCase(),
             })),
           },
         ]}
@@ -122,11 +109,7 @@ export default function DsarAdminPage() {
         columns={columns}
       />
 
-      <DataTablePagination
-        meta={meta}
-        onPageChange={setPage}
-        label="requests"
-      />
+      <DataTablePagination meta={meta} onPageChange={setPage} label="requests" />
 
       <DsarDetailDialog
         record={detailRecord}

@@ -1,33 +1,33 @@
-import { env } from "@src/env";
+import { env } from '@src/env';
 
-const isProduction = env.NEXT_PUBLIC_NODE_ENV === "production";
+const isProduction = env.NEXT_PUBLIC_NODE_ENV === 'production';
 
 export const safeStringify = (obj: unknown): string => {
   const sensitiveKeys = [
-    "password",
-    "token",
-    "jwt",
-    "authorization",
-    "secret",
-    "key",
-    "cookie",
-    "sig",
-    "host",
-    "ip",
-    "username",
-    "userName",
+    'password',
+    'token',
+    'jwt',
+    'authorization',
+    'secret',
+    'key',
+    'cookie',
+    'sig',
+    'host',
+    'ip',
+    'username',
+    'userName',
   ];
 
   const seen = new WeakSet();
 
   const redacted = (value: unknown): unknown => {
-    if (typeof value === "bigint") {
+    if (typeof value === 'bigint') {
       return value.toString();
     }
 
-    if (value && typeof value === "object") {
+    if (value && typeof value === 'object') {
       if (seen.has(value)) {
-        return "[Circular]";
+        return '[Circular]';
       }
       seen.add(value);
 
@@ -46,9 +46,7 @@ export const safeStringify = (obj: unknown): string => {
       return Object.fromEntries(
         Object.entries(value).map(([k, v]) => [
           k,
-          sensitiveKeys.some((sk) => k.toLowerCase().includes(sk))
-            ? "[REDACTED]"
-            : redacted(v),
+          sensitiveKeys.some((sk) => k.toLowerCase().includes(sk)) ? '[REDACTED]' : redacted(v),
         ]),
       );
     }

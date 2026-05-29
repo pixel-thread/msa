@@ -16,9 +16,7 @@
 // Three-mode cycle: auto → light → dark → auto (or auto → dark → light → auto depending on system preference)
 const getNextTheme = (current: ThemeMode): ThemeMode => {
   const themes =
-    getSystemTheme() === "dark"
-      ? ["auto", "light", "dark"]
-      : ["auto", "dark", "light"];
+    getSystemTheme() === 'dark' ? ['auto', 'light', 'dark'] : ['auto', 'dark', 'light'];
   return themes[(themes.indexOf(current) + 1) % themes.length];
 };
 ```

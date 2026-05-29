@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Button } from "@src/shared/components/ui/button";
-import { Eye, Trash2 } from "lucide-react";
-import type { ComplianceRecord } from "../../types/compliance.types";
+import { Button } from '@src/shared/components/ui/button';
+import { Eye, Trash2 } from 'lucide-react';
+import type { ComplianceRecord } from '../../types/compliance.types';
 
 interface ComplianceActionsCellProps {
   record: ComplianceRecord;

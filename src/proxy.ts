@@ -9,8 +9,8 @@ import {
   withBotProtection,
   withRequestSizeLimit,
   withTraceId,
-} from "./shared/middleware";
-import { withSleep } from "./shared/middleware/with-sleep.middleware";
+} from './shared/middleware';
+import { withSleep } from './shared/middleware/with-sleep.middleware';
 
 export default chain([
   withSleep,
@@ -26,5 +26,5 @@ export default chain([
 ]);
 
 export const config = {
-  matcher: ["/api/:path*"],
+  matcher: ['/api/:path*'],
 };

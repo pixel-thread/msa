@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
-import type { ErrorEnvelope } from "@src/shared/types";
+import type { ErrorEnvelope } from '@src/shared/types';
 
 interface ErrorResponseOptions {
   message: string;
@@ -34,7 +34,7 @@ export function ErrorResponse({
     {
       status,
       headers: {
-        "x-trace-id": finalTraceId,
+        'x-trace-id': finalTraceId,
       },
     },
   );

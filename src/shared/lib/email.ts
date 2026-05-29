@@ -1,12 +1,12 @@
-import { Resend } from "resend";
+import { Resend } from 'resend';
 
-import { env } from "@src/env";
-import { logger } from "@src/shared/logger/server";
+import { env } from '@src/env';
+import { logger } from '@src/shared/logger/server';
 
 const resend = env.RESEND_API_KEY ? new Resend(env.RESEND_API_KEY) : null;
 
-const APP_NAME = "MFSA";
-const APP_URL = env.NEXT_PUBLIC_APP_URL?.toString() || "http://localhost:3000";
+const APP_NAME = 'MFSA';
+const APP_URL = env.NEXT_PUBLIC_APP_URL?.toString() || 'http://localhost:3000';
 
 interface EmailProps {
   to: string;
@@ -16,7 +16,7 @@ interface EmailProps {
 
 async function sendEmail({ to, subject, html }: EmailProps) {
   if (!resend) {
-    logger.warn("[Email] Resend not configured, skipping email send");
+    logger.warn('[Email] Resend not configured, skipping email send');
     logger.debug(`[Email] Would send to: ${to}`);
     logger.debug(`[Email] Subject: ${subject}`);
     return { success: true };
@@ -31,14 +31,14 @@ async function sendEmail({ to, subject, html }: EmailProps) {
     });
 
     if (result.error) {
-      logger.error({ error: result.error, to }, "[Email] Error sending email");
+      logger.error({ error: result.error, to }, '[Email] Error sending email');
       return { success: false, error: result.error };
     }
 
-    logger.info({ to }, "[Email] Sent successfully");
+    logger.info({ to }, '[Email] Sent successfully');
     return { success: true };
   } catch (error) {
-    logger.error({ error, to }, "[Email] Exception sending email");
+    logger.error({ error, to }, '[Email] Exception sending email');
     return { success: false, error };
   }
 }
@@ -46,13 +46,11 @@ async function sendEmail({ to, subject, html }: EmailProps) {
 export async function sendVerificationEmail(
   email: string,
   code: string,
-  type: "LOGIN_MFA" | "SETUP_MFA",
+  type: 'LOGIN_MFA' | 'SETUP_MFA',
 ): Promise<{ success: boolean }> {
-  const isSetup = type === "SETUP_MFA";
-  const subject = isSetup
-    ? "Verify your email to enable MFA"
-    : "Your MFA Verification Code";
-  const title = isSetup ? "Verify Your Email" : "Your Verification Code";
+  const isSetup = type === 'SETUP_MFA';
+  const subject = isSetup ? 'Verify your email to enable MFA' : 'Your MFA Verification Code';
+  const title = isSetup ? 'Verify Your Email' : 'Your Verification Code';
 
   const html = `
 <!DOCTYPE html>
@@ -148,15 +146,12 @@ export async function sendPasswordResetEmail(
 
   return sendEmail({
     to: email,
-    subject: "Reset Your Password - MFSA",
+    subject: 'Reset Your Password - MFSA',
     html,
   });
 }
 
-export async function sendWelcomeEmail(
-  email: string,
-  name: string,
-): Promise<{ success: boolean }> {
+export async function sendWelcomeEmail(email: string, name: string): Promise<{ success: boolean }> {
   const html = `
 <!DOCTYPE html>
 <html>

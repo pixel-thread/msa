@@ -1,10 +1,10 @@
-import { withAssociation, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@src/shared/utils/responses";
-import { NotFoundError, ValidationError } from "@src/shared/errors";
-import { prisma } from "@src/shared/lib/prisma";
-import { UserRole } from "@prisma/client";
-import z from "zod";
-import { logger } from "@src/shared/logger/server";
+import { withAssociation, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@src/shared/utils/responses';
+import { NotFoundError, ValidationError } from '@src/shared/errors';
+import { prisma } from '@src/shared/lib/prisma';
+import { UserRole } from '@prisma/client';
+import z from 'zod';
+import { logger } from '@src/shared/logger/server';
 
 const ParamSchema = z.object({ memberId: z.uuid() });
 
@@ -16,7 +16,7 @@ export const GET = withAssociation(
         traceId,
         associationId: association.id,
       },
-      "GET /api/members/[memberId] - Request started",
+      'GET /api/members/[memberId] - Request started',
     );
 
     const user = await withRole(request, UserRole.DPO);
@@ -26,7 +26,7 @@ export const GET = withAssociation(
         traceId,
         userId: user.id,
       },
-      "GET /api/members/[memberId] - User authorized",
+      'GET /api/members/[memberId] - User authorized',
     );
 
     const member = await prisma.user.findFirst({
@@ -56,7 +56,7 @@ export const GET = withAssociation(
     });
 
     if (!member || member.id !== params?.memberId) {
-      throw new NotFoundError("Member not found");
+      throw new NotFoundError('Member not found');
     }
 
     logger.info(
@@ -64,7 +64,7 @@ export const GET = withAssociation(
         traceId,
         memberId: params?.memberId,
       },
-      "GET /api/members/[memberId] - Success",
+      'GET /api/members/[memberId] - Success',
     );
 
     return SuccessResponse({ data: member });
@@ -72,12 +72,12 @@ export const GET = withAssociation(
 );
 
 const AdminOnboardingSchema = z.object({
-  name: z.string().min(1, "Name is required").optional(),
+  name: z.string().min(1, 'Name is required').optional(),
   mobile: z
     .string()
-    .min(10, "Mobile must be 10 digits")
-    .max(10, "Mobile must be 10 digits")
-    .regex(/^[0-9]+$/, "Mobile should contain only numbers")
+    .min(10, 'Mobile must be 10 digits')
+    .max(10, 'Mobile must be 10 digits')
+    .regex(/^[0-9]+$/, 'Mobile should contain only numbers')
     .optional(),
   designation: z.string().optional(),
   dateOfJoiningGovt: z.coerce.date().optional(),
@@ -94,7 +94,7 @@ export const PATCH = withAssociation(
         traceId,
         associationId: association.id,
       },
-      "PATCH /api/members/[memberId] - Request started",
+      'PATCH /api/members/[memberId] - Request started',
     );
 
     const user = await withRole(request, UserRole.SECRETARY);
@@ -104,11 +104,11 @@ export const PATCH = withAssociation(
         traceId,
         userId: user.id,
       },
-      "PATCH /api/members/[memberId] - User authorized",
+      'PATCH /api/members/[memberId] - User authorized',
     );
 
     if (!body) {
-      throw new ValidationError("Invalid request body");
+      throw new ValidationError('Invalid request body');
     }
 
     const memberId = params?.memberId;
@@ -142,7 +142,7 @@ export const PATCH = withAssociation(
         traceId,
         memberId,
       },
-      "PATCH /api/members/[memberId] - Success",
+      'PATCH /api/members/[memberId] - Success',
     );
 
     return SuccessResponse({

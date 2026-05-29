@@ -158,7 +158,7 @@ export default function FeaturePage() {
   const deleteMutation = useDeleteFeature();
 
   // 2. Client state (search, filters, page)
-  const [search, setSearch] = React.useState("");
+  const [search, setSearch] = React.useState('');
   const [filters, setFilters] = React.useState({});
   const [page, setPage] = React.useState(1);
 
@@ -209,28 +209,21 @@ ui/sidebar.tsx         # Complex compound with context provider
 
 ```tsx
 // Named exports for compound components
-export {
-  Card,
-  CardHeader,
-  CardContent,
-  CardFooter,
-  CardTitle,
-  CardDescription,
-};
+export { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription };
 ```
 
 ### Icon Import Convention
 
 ```tsx
 // HugeIcons (primary icon set)
-import { HugeiconsIcon } from "@hugeicons/react";
-import { UserGroupIcon, Payment01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from '@hugeicons/react';
+import { UserGroupIcon, Payment01Icon } from '@hugeicons/core-free-icons';
 
 // Lucide (supplementary)
-import { MoonIcon, SunIcon, Search } from "lucide-react";
+import { MoonIcon, SunIcon, Search } from 'lucide-react';
 
 // Radix UI icons (minimal)
-import { DesktopIcon } from "@radix-ui/react-icons";
+import { DesktopIcon } from '@radix-ui/react-icons';
 ```
 
 ### Import Aliases (from tsconfig.json)

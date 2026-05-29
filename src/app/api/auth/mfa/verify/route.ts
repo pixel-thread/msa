@@ -1,15 +1,15 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-import { prisma } from "@src/shared/lib/prisma";
-import { withValidation } from "@src/shared/api";
-import { hashToken } from "@src/shared/lib/password";
-import { env } from "@src/env";
-import { TooManyRequestsError, UnauthorizedError } from "@src/shared/errors";
-import { SuccessResponse } from "@src/shared/utils";
-import { logger } from "@src/shared/logger/server";
+import { prisma } from '@src/shared/lib/prisma';
+import { withValidation } from '@src/shared/api';
+import { hashToken } from '@src/shared/lib/password';
+import { env } from '@src/env';
+import { TooManyRequestsError, UnauthorizedError } from '@src/shared/errors';
+import { SuccessResponse } from '@src/shared/utils';
+import { logger } from '@src/shared/logger/server';
 
 const VerifyMfaSchema = z.object({
-  code: z.string().length(6, "Code must be 6 digits"),
+  code: z.string().length(6, 'Code must be 6 digits'),
 });
 
 type VerifyMfaBody = z.infer<typeof VerifyMfaSchema>;
@@ -17,18 +17,12 @@ type VerifyMfaBody = z.infer<typeof VerifyMfaSchema>;
 export const POST = withValidation(
   { body: VerifyMfaSchema },
   async (request, _ctx, { body, traceId }) => {
-    const userId = request.headers.get("x-user-id");
-    logger.info(
-      { traceId, userId },
-      "POST /api/auth/mfa/verify - Request started",
-    );
+    const userId = request.headers.get('x-user-id');
+    logger.info({ traceId, userId }, 'POST /api/auth/mfa/verify - Request started');
 
     if (!userId) {
-      logger.error(
-        { traceId },
-        "POST /api/auth/mfa/verify - Unauthorized (missing x-user-id)",
-      );
-      throw new UnauthorizedError("Unauthorized");
+      logger.error({ traceId }, 'POST /api/auth/mfa/verify - Unauthorized (missing x-user-id)');
+      throw new UnauthorizedError('Unauthorized');
     }
 
     const { code } = body as VerifyMfaBody;
@@ -38,29 +32,27 @@ export const POST = withValidation(
     const verificationCode = await prisma.verificationCode.findFirst({
       where: {
         userId,
-        type: "SETUP_MFA",
+        type: 'SETUP_MFA',
         expiresAt: { gt: new Date() },
         usedAt: null,
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
     });
 
     if (!verificationCode) {
       logger.error(
         { traceId, userId },
-        "POST /api/auth/mfa/verify - Invalid or expired verification code",
+        'POST /api/auth/mfa/verify - Invalid or expired verification code',
       );
-      throw new UnauthorizedError("Invalid or expired verification code");
+      throw new UnauthorizedError('Invalid or expired verification code');
     }
 
     if (verificationCode.attempts >= env.OTP_MAX_ATTEMPTS) {
       logger.error(
         { traceId, userId, verificationCodeId: verificationCode.id },
-        "POST /api/auth/mfa/verify - Too many attempts",
+        'POST /api/auth/mfa/verify - Too many attempts',
       );
-      throw new TooManyRequestsError(
-        "Too many attempts. Please request a new code",
-      );
+      throw new TooManyRequestsError('Too many attempts. Please request a new code');
     }
 
     if (verificationCode.code !== hashedCode) {
@@ -71,9 +63,9 @@ export const POST = withValidation(
 
       logger.error(
         { traceId, userId, verificationCodeId: verificationCode.id },
-        "POST /api/auth/mfa/verify - Invalid verification code input",
+        'POST /api/auth/mfa/verify - Invalid verification code input',
       );
-      throw new UnauthorizedError("Invalid verification code");
+      throw new UnauthorizedError('Invalid verification code');
     }
 
     await prisma.verificationCode.update({
@@ -86,10 +78,10 @@ export const POST = withValidation(
       data: { mfaEnabled: true },
     });
 
-    logger.info({ traceId, userId }, "POST /api/auth/mfa/verify - Success");
+    logger.info({ traceId, userId }, 'POST /api/auth/mfa/verify - Success');
 
     return SuccessResponse({
-      message: "MFA enabled successfully",
+      message: 'MFA enabled successfully',
       data: { mfaEnabled: true },
     });
   },

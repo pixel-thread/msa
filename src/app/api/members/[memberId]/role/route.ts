@@ -1,10 +1,10 @@
-import { UserRole } from "@prisma/client";
-import { withAssociation, withRole } from "@src/shared/api";
-import { ConflictError, NotFoundError } from "@src/shared/errors";
-import { prisma } from "@src/shared/lib/prisma";
-import { SuccessResponse } from "@src/shared/utils";
-import z from "zod";
-import { logger } from "@src/shared/logger/server";
+import { UserRole } from '@prisma/client';
+import { withAssociation, withRole } from '@src/shared/api';
+import { ConflictError, NotFoundError } from '@src/shared/errors';
+import { prisma } from '@src/shared/lib/prisma';
+import { SuccessResponse } from '@src/shared/utils';
+import z from 'zod';
+import { logger } from '@src/shared/logger/server';
 
 const UpdateUserRoleSchema = z.object({
   role: z.enum(UserRole),
@@ -22,7 +22,7 @@ export const POST = withAssociation(
         traceId,
         associationId: association.id,
       },
-      "POST /api/members/[memberId]/role - Request started",
+      'POST /api/members/[memberId]/role - Request started',
     );
 
     const user = await withRole(req, UserRole.PRESIDENT);
@@ -32,22 +32,21 @@ export const POST = withAssociation(
         traceId,
         userId: user.id,
       },
-      "POST /api/members/[memberId]/role - User authorized",
+      'POST /api/members/[memberId]/role - User authorized',
     );
 
     const target = await prisma.user.findUnique({
       where: { id: params?.memberId, associationId: association.id },
     });
 
-    if (!target)
-      throw new NotFoundError("User does not exist in the association");
+    if (!target) throw new NotFoundError('User does not exist in the association');
 
     const userRole = target.role;
 
     const newRole = body?.role as UserRole;
 
     if (userRole.includes(newRole)) {
-      throw new ConflictError("User already has the role");
+      throw new ConflictError('User already has the role');
     }
     const updatedUser = await prisma.user.update({
       where: { id: params?.memberId },
@@ -61,12 +60,12 @@ export const POST = withAssociation(
         memberId: params?.memberId,
         newRole,
       },
-      "POST /api/members/[memberId]/role - Success",
+      'POST /api/members/[memberId]/role - Success',
     );
 
     return SuccessResponse({
       data: updatedUser,
-      message: "User role updated successfully",
+      message: 'User role updated successfully',
     });
   },
 );
@@ -79,7 +78,7 @@ export const PUT = withAssociation(
         traceId,
         associationId: association.id,
       },
-      "PUT /api/members/[memberId]/role - Request started",
+      'PUT /api/members/[memberId]/role - Request started',
     );
 
     const user = await withRole(req, UserRole.PRESIDENT);
@@ -89,22 +88,21 @@ export const PUT = withAssociation(
         traceId,
         userId: user.id,
       },
-      "PUT /api/members/[memberId]/role - User authorized",
+      'PUT /api/members/[memberId]/role - User authorized',
     );
 
     const target = await prisma.user.findUnique({
       where: { id: params?.memberId, associationId: association.id },
     });
 
-    if (!target)
-      throw new NotFoundError("User does not exist in the association");
+    if (!target) throw new NotFoundError('User does not exist in the association');
 
     const userRole = target.role;
 
     const removeRole = body?.role as UserRole;
 
     if (!userRole.includes(removeRole)) {
-      throw new ConflictError("User does not have the role");
+      throw new ConflictError('User does not have the role');
     }
 
     const updatedUser = await prisma.user.update({
@@ -119,12 +117,12 @@ export const PUT = withAssociation(
         memberId: params?.memberId,
         removeRole,
       },
-      "PUT /api/members/[memberId]/role - Success",
+      'PUT /api/members/[memberId]/role - Success',
     );
 
     return SuccessResponse({
       data: updatedUser,
-      message: "User role updated successfully",
+      message: 'User role updated successfully',
     });
   },
 );

@@ -1,7 +1,7 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import { toast } from "sonner";
-import { trainingEndpoints, trainingQueryKeys } from "../utils/constants";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import { toast } from 'sonner';
+import { trainingEndpoints, trainingQueryKeys } from '../utils/constants';
 
 export function useDeleteTrainingModule() {
   const queryClient = useQueryClient();
@@ -14,10 +14,10 @@ export function useDeleteTrainingModule() {
         queryClient.invalidateQueries({
           queryKey: trainingQueryKeys.modules.all(),
         });
-        toast.success("Training module deleted successfully");
+        toast.success('Training module deleted successfully');
         return res;
       }
-      toast.error(res.message || "Failed to delete module");
+      toast.error(res.message || 'Failed to delete module');
       return res;
     },
   });

@@ -1,6 +1,6 @@
-import { prisma } from "@lib/prisma";
-import { PAGE_SIZE } from "@src/shared/constants";
-import { buildPagination } from "@src/shared/utils/build-pagination";
+import { prisma } from '@lib/prisma';
+import { PAGE_SIZE } from '@src/shared/constants';
+import { buildPagination } from '@src/shared/utils/build-pagination';
 
 interface FindManyCompletionsProps {
   associationId: string;
@@ -41,7 +41,7 @@ export async function findManyCompletions({
           },
         },
       },
-      orderBy: { completedAt: "desc" },
+      orderBy: { completedAt: 'desc' },
     }),
 
     prisma.trainingCompletion.count({

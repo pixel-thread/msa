@@ -1,7 +1,7 @@
-import { prisma } from "@src/shared/lib/prisma";
-import { DsarRequestType, DsarStatus } from "@prisma/client";
-import { PAGE_SIZE } from "@src/shared/constants";
-import { buildPagination } from "@src/shared/utils/build-pagination";
+import { prisma } from '@src/shared/lib/prisma';
+import { DsarRequestType, DsarStatus } from '@prisma/client';
+import { PAGE_SIZE } from '@src/shared/constants';
+import { buildPagination } from '@src/shared/utils/build-pagination';
 
 interface FindDsarTicketsProps {
   associationId: string;
@@ -57,7 +57,7 @@ export async function findDsarTickets({
           },
         },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
       skip: (pagination.page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
     }),

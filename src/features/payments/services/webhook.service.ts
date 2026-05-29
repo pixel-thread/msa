@@ -1,10 +1,10 @@
-import { prisma } from "@src/shared/lib/prisma";
-import { AuditAction, PaymentGateway } from "@prisma/client";
-import { verifyWebhookSignature } from "./razorpay.service";
-import { markPaymentFailed } from "./payment.service";
-import { getActiveProvider } from "./payment-provider.service";
-import { decrypt } from "@src/shared/lib/crypto";
-import { WebhookSignatureError } from "@src/shared/errors";
+import { prisma } from '@src/shared/lib/prisma';
+import { AuditAction, PaymentGateway } from '@prisma/client';
+import { verifyWebhookSignature } from './razorpay.service';
+import { markPaymentFailed } from './payment.service';
+import { getActiveProvider } from './payment-provider.service';
+import { decrypt } from '@src/shared/lib/crypto';
+import { WebhookSignatureError } from '@src/shared/errors';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -75,7 +75,7 @@ interface RazorpayWebhookPayload {
 export async function processWebhookEvent(
   rawBody: string,
   signature: string,
-): Promise<{ status: "ok" | "duplicate" | "unhandled"; eventId?: string }> {
+): Promise<{ status: 'ok' | 'duplicate' | 'unhandled'; eventId?: string }> {
   const payload: RazorpayWebhookPayload = JSON.parse(rawBody);
 
   let webhookSecret: string | undefined;
@@ -87,10 +87,7 @@ export async function processWebhookEvent(
     });
 
     if (transaction) {
-      const provider = await getActiveProvider(
-        transaction.associationId,
-        "RAZORPAY",
-      );
+      const provider = await getActiveProvider(transaction.associationId, 'RAZORPAY');
       if (provider && provider.encryptedWebhookSecret) {
         webhookSecret = decrypt(provider.encryptedWebhookSecret);
       }
@@ -99,7 +96,7 @@ export async function processWebhookEvent(
 
   const isValid = verifyWebhookSignature(rawBody, signature, webhookSecret);
   if (!isValid) {
-    throw new WebhookSignatureError("Invalid webhook signature");
+    throw new WebhookSignatureError('Invalid webhook signature');
   }
 
   // Construct a deterministic event ID from Razorpay's data
@@ -114,13 +111,13 @@ export async function processWebhookEvent(
     });
 
     if (existing?.processed) {
-      return { status: "duplicate", eventId };
+      return { status: 'duplicate', eventId };
     }
   }
 
   // 3. Store the raw event (before processing, so we never lose data)
   const webhookEvent = await prisma.paymentWebhookEvent.upsert({
-    where: { eventId: eventId ?? "" },
+    where: { eventId: eventId ?? '' },
     create: {
       eventId,
       eventType: payload.event,
@@ -146,14 +143,13 @@ export async function processWebhookEvent(
       },
     });
 
-    return { status: "ok", eventId: eventId ?? undefined };
+    return { status: 'ok', eventId: eventId ?? undefined };
   } catch (error) {
     // Store error but don't crash — Razorpay will retry
     await prisma.paymentWebhookEvent.update({
       where: { id: webhookEvent.id },
       data: {
-        errorMessage:
-          error instanceof Error ? error.message : "Unknown processing error",
+        errorMessage: error instanceof Error ? error.message : 'Unknown processing error',
       },
     });
 
@@ -165,34 +161,32 @@ export async function processWebhookEvent(
 // Event Router
 // ---------------------------------------------------------------------------
 
-async function routeWebhookEvent(
-  payload: RazorpayWebhookPayload,
-): Promise<void> {
+async function routeWebhookEvent(payload: RazorpayWebhookPayload): Promise<void> {
   const event = payload.event;
 
   switch (event) {
-    case "payment.authorized":
+    case 'payment.authorized':
       // Payment authorized but not yet captured
       // In most flows with auto-capture, this is followed by payment.captured
       await handlePaymentAuthorized(payload);
       break;
 
-    case "payment.captured":
+    case 'payment.captured':
       // Payment successfully captured — this is the "success" event
       await handlePaymentCaptured(payload);
       break;
 
-    case "payment.failed":
+    case 'payment.failed':
       // Payment attempt failed
       await handlePaymentFailed(payload);
       break;
 
-    case "refund.created":
-    case "refund.processed":
+    case 'refund.created':
+    case 'refund.processed':
       await handleRefund(payload);
       break;
 
-    case "order.paid":
+    case 'order.paid':
       // Order fully paid — can be used as a secondary confirmation
       // We primarily rely on payment.captured
       break;
@@ -207,21 +201,15 @@ async function routeWebhookEvent(
 // Event Handlers
 // ---------------------------------------------------------------------------
 
-async function handlePaymentAuthorized(
-  payload: RazorpayWebhookPayload,
-): Promise<void> {
+async function handlePaymentAuthorized(payload: RazorpayWebhookPayload): Promise<void> {
   const payment = payload.payload.payment?.entity;
   if (!payment) return;
 
   // Just log it — we wait for payment.captured to complete the flow
-  console.info(
-    `[Webhook] Payment authorized: ${payment.id} for order ${payment.order_id}`,
-  );
+  console.info(`[Webhook] Payment authorized: ${payment.id} for order ${payment.order_id}`);
 }
 
-async function handlePaymentCaptured(
-  payload: RazorpayWebhookPayload,
-): Promise<void> {
+async function handlePaymentCaptured(payload: RazorpayWebhookPayload): Promise<void> {
   const payment = payload.payload.payment?.entity;
   if (!payment) return;
 
@@ -231,14 +219,12 @@ async function handlePaymentCaptured(
   });
 
   if (!transaction) {
-    console.error(
-      `[Webhook] No transaction found for order: ${payment.order_id}`,
-    );
+    console.error(`[Webhook] No transaction found for order: ${payment.order_id}`);
     return;
   }
 
   // If already completed, skip (idempotent)
-  if (transaction.status === "COMPLETED") {
+  if (transaction.status === 'COMPLETED') {
     return;
   }
 
@@ -251,21 +237,15 @@ async function handlePaymentCaptured(
   );
 }
 
-async function handlePaymentFailed(
-  payload: RazorpayWebhookPayload,
-): Promise<void> {
+async function handlePaymentFailed(payload: RazorpayWebhookPayload): Promise<void> {
   const payment = payload.payload.payment?.entity;
   if (!payment) return;
 
-  const reason = [
-    payment.error_code,
-    payment.error_description,
-    payment.error_reason,
-  ]
+  const reason = [payment.error_code, payment.error_description, payment.error_reason]
     .filter(Boolean)
-    .join(" — ");
+    .join(' — ');
 
-  await markPaymentFailed(payment.order_id, reason || "Payment failed");
+  await markPaymentFailed(payment.order_id, reason || 'Payment failed');
 }
 
 async function handleRefund(payload: RazorpayWebhookPayload): Promise<void> {
@@ -278,9 +258,7 @@ async function handleRefund(payload: RazorpayWebhookPayload): Promise<void> {
   });
 
   if (!transaction) {
-    console.error(
-      `[Webhook] No transaction found for refund payment: ${refund.payment_id}`,
-    );
+    console.error(`[Webhook] No transaction found for refund payment: ${refund.payment_id}`);
     return;
   }
 
@@ -289,7 +267,7 @@ async function handleRefund(payload: RazorpayWebhookPayload): Promise<void> {
     await tx.paymentTransaction.update({
       where: { id: transaction.id },
       data: {
-        status: "REFUNDED",
+        status: 'REFUNDED',
         razorpayRefundId: refund.id,
       },
     });
@@ -300,7 +278,7 @@ async function handleRefund(payload: RazorpayWebhookPayload): Promise<void> {
         associationId: transaction.associationId,
         actorId: null, // System-initiated via webhook
         action: AuditAction.PAYMENT_REFUNDED,
-        resourceType: "PaymentTransaction",
+        resourceType: 'PaymentTransaction',
         resourceId: transaction.id,
         newValues: {
           refundId: refund.id,
@@ -318,17 +296,15 @@ async function handleRefund(payload: RazorpayWebhookPayload): Promise<void> {
 
     for (const allocation of allocations) {
       const period = allocation.contributionPeriod;
-      const newPaidAmount =
-        Number(period.paidAmount) - Number(allocation.allocatedAmount);
-      const newDueAmount =
-        Number(period.dueAmount) + Number(allocation.allocatedAmount);
+      const newPaidAmount = Number(period.paidAmount) - Number(allocation.allocatedAmount);
+      const newDueAmount = Number(period.dueAmount) + Number(allocation.allocatedAmount);
 
       await tx.contributionPeriod.update({
         where: { id: period.id },
         data: {
           paidAmount: Math.max(newPaidAmount, 0),
           dueAmount: newDueAmount,
-          status: newPaidAmount <= 0 ? "DUE" : "PARTIAL",
+          status: newPaidAmount <= 0 ? 'DUE' : 'PARTIAL',
         },
       });
     }
@@ -343,17 +319,17 @@ async function handleRefund(payload: RazorpayWebhookPayload): Promise<void> {
       data: {
         paymentTransactionId: transaction.id,
         description: `Refund — Razorpay refund ${refund.id}`,
-        approvalStatus: "APPROVED",
+        approvalStatus: 'APPROVED',
         createdById: transaction.userId,
         lines: {
           create: [
             {
-              accountId: "SUBSCRIPTION_INCOME",
+              accountId: 'SUBSCRIPTION_INCOME',
               isDebit: true,
               amount: refund.amount / 100,
             },
             {
-              accountId: "BANK",
+              accountId: 'BANK',
               isDebit: false,
               amount: refund.amount / 100,
             },
@@ -379,7 +355,7 @@ async function verifyAndCompletePaymentFromWebhook(
       where: { id: transactionId },
     });
 
-    if (!transaction || transaction.status === "COMPLETED") {
+    if (!transaction || transaction.status === 'COMPLETED') {
       return transaction;
     }
 
@@ -387,10 +363,10 @@ async function verifyAndCompletePaymentFromWebhook(
     const updated = await tx.paymentTransaction.update({
       where: { id: transactionId },
       data: {
-        status: "COMPLETED",
+        status: 'COMPLETED',
         razorpayPaymentId,
         paidAt: now,
-        method: "ONLINE",
+        method: 'ONLINE',
       },
     });
 
@@ -398,9 +374,9 @@ async function verifyAndCompletePaymentFromWebhook(
     const outstanding = await tx.contributionPeriod.findMany({
       where: {
         userId: transaction.userId,
-        status: { in: ["DUE", "PARTIAL", "OVERDUE"] },
+        status: { in: ['DUE', 'PARTIAL', 'OVERDUE'] },
       },
-      orderBy: [{ year: "asc" }, { month: "asc" }],
+      orderBy: [{ year: 'asc' }, { month: 'asc' }],
     });
 
     let remaining = Number(transaction.amount);
@@ -426,7 +402,7 @@ async function verifyAndCompletePaymentFromWebhook(
         data: {
           paidAmount: newPaidAmount,
           dueAmount: Math.max(newDueAmount, 0),
-          status: newDueAmount <= 0 ? "PAID" : "PARTIAL",
+          status: newDueAmount <= 0 ? 'PAID' : 'PARTIAL',
         },
       });
 
@@ -437,18 +413,18 @@ async function verifyAndCompletePaymentFromWebhook(
     await tx.ledgerEntry.create({
       data: {
         paymentTransactionId: transactionId,
-        description: "Online payment via Razorpay (webhook confirmed)",
-        approvalStatus: "APPROVED",
+        description: 'Online payment via Razorpay (webhook confirmed)',
+        approvalStatus: 'APPROVED',
         createdById: transaction.userId,
         lines: {
           create: [
             {
-              accountId: "BANK",
+              accountId: 'BANK',
               isDebit: true,
               amount: Number(transaction.amount),
             },
             {
-              accountId: "SUBSCRIPTION_INCOME",
+              accountId: 'SUBSCRIPTION_INCOME',
               isDebit: false,
               amount: Number(transaction.amount),
             },
@@ -463,11 +439,11 @@ async function verifyAndCompletePaymentFromWebhook(
         associationId: transaction.associationId,
         actorId: transaction.userId,
         action: AuditAction.PAYMENT_COMPLETED,
-        resourceType: "PaymentTransaction",
+        resourceType: 'PaymentTransaction',
         resourceId: transactionId,
         newValues: {
           razorpayPaymentId,
-          source: "webhook",
+          source: 'webhook',
           amount: Number(transaction.amount),
         },
       },

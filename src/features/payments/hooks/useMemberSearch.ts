@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
+import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
 
 interface MemberSearchResult {
   id: string;
@@ -12,7 +12,7 @@ interface MemberSearchResult {
 }
 
 export function useMemberSearch(query: string) {
-  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState('');
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedQuery(query), 300);
@@ -20,11 +20,9 @@ export function useMemberSearch(query: string) {
   }, [query]);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["member-search", debouncedQuery],
+    queryKey: ['member-search', debouncedQuery],
     queryFn: () =>
-      http.get<MemberSearchResult[]>(
-        `/members?search=${encodeURIComponent(debouncedQuery)}`,
-      ),
+      http.get<MemberSearchResult[]>(`/members?search=${encodeURIComponent(debouncedQuery)}`),
     enabled: debouncedQuery.length >= 2,
   });
 

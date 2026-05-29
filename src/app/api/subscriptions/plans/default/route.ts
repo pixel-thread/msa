@@ -1,11 +1,11 @@
-import { withAssociation, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@utils/responses";
-import { UserRole } from "@prisma/client";
-import { prisma } from "@src/shared/lib/prisma";
-import { z } from "zod";
-import { ValidationError, NotFoundError } from "@src/shared/errors";
-import { getTraceId } from "@src/shared/utils";
-import { logger } from "@src/shared/logger/server";
+import { withAssociation, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@utils/responses';
+import { UserRole } from '@prisma/client';
+import { prisma } from '@src/shared/lib/prisma';
+import { z } from 'zod';
+import { ValidationError, NotFoundError } from '@src/shared/errors';
+import { getTraceId } from '@src/shared/utils';
+import { logger } from '@src/shared/logger/server';
 
 const SetDefaultPlanSchema = z.object({
   planId: z.string().uuid(),
@@ -18,10 +18,10 @@ export const POST = withAssociation(
     await withRole(request, UserRole.SUPER_ADMIN);
 
     if (!body) {
-      throw new ValidationError("Invalid request body");
+      throw new ValidationError('Invalid request body');
     }
 
-    logger.info({ traceId, planId: body.planId }, "Verifying plan exists");
+    logger.info({ traceId, planId: body.planId }, 'Verifying plan exists');
 
     const plan = await prisma.subscriptionPlan.findFirst({
       where: {
@@ -31,10 +31,10 @@ export const POST = withAssociation(
     });
 
     if (!plan) {
-      throw new NotFoundError("Plan not found in this association");
+      throw new NotFoundError('Plan not found in this association');
     }
 
-    logger.info({ traceId, planId: body.planId }, "Setting plan as default");
+    logger.info({ traceId, planId: body.planId }, 'Setting plan as default');
 
     const updated = await prisma.$transaction(async (tx) => {
       await tx.subscriptionPlan.updateMany({
@@ -48,10 +48,7 @@ export const POST = withAssociation(
       });
     });
 
-    logger.info(
-      { traceId, planId: updated.id },
-      "Default plan updated successfully",
-    );
+    logger.info({ traceId, planId: updated.id }, 'Default plan updated successfully');
 
     return SuccessResponse({ data: updated });
   },

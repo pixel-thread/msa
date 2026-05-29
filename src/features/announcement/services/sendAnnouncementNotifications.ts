@@ -1,14 +1,11 @@
-import { prisma } from "@lib/prisma";
-import { NotificationType, Prisma } from "@prisma/client";
-import { ExpoNotificationService } from "@lib/expo";
-import { logger } from "@src/shared/logger/server";
-import { EXPO_ROUTES } from "@src/shared/constants/expo-route";
-import { createNotification } from "@src/shared/services/notification";
+import { prisma } from '@lib/prisma';
+import { NotificationType, Prisma } from '@prisma/client';
+import { ExpoNotificationService } from '@lib/expo';
+import { logger } from '@src/shared/logger/server';
+import { EXPO_ROUTES } from '@src/shared/constants/expo-route';
+import { createNotification } from '@src/shared/services/notification';
 
-export async function sendAnnouncementNotifications(
-  announcementId: string,
-  associationId: string,
-) {
+export async function sendAnnouncementNotifications(announcementId: string, associationId: string) {
   try {
     const announcement = await prisma.announcement.findUnique({
       where: { id: announcementId },
@@ -18,7 +15,7 @@ export async function sendAnnouncementNotifications(
 
     const whereClause: Prisma.UserWhereInput = {
       associationId,
-      status: "ACTIVE",
+      status: 'ACTIVE',
     };
 
     if (announcement.targetRoles && announcement.targetRoles.length > 0) {
@@ -45,7 +42,7 @@ export async function sendAnnouncementNotifications(
           userId: user.id,
           title: announcement.title,
           type: NotificationType.SYSTEM,
-          body: announcement.summary ?? "New announcement posted",
+          body: announcement.summary ?? 'New announcement posted',
           route: EXPO_ROUTES.ANNOUNCEMENTS.DETAIL(announcement.id),
           entityId: announcement.id,
           imageUrl: announcement.imageUrl,
@@ -57,12 +54,12 @@ export async function sendAnnouncementNotifications(
       await ExpoNotificationService.sendPushNotifications(
         pushTokens.map((t) => t.token),
         announcement.title,
-        announcement.summary ?? "New announcement posted",
+        announcement.summary ?? 'New announcement posted',
         {
           id: notification.id,
           title: announcement.title,
-          body: announcement.summary ?? "New announcement posted",
-          type: "GENERAL_MESSAGE",
+          body: announcement.summary ?? 'New announcement posted',
+          type: 'GENERAL_MESSAGE',
           entityId: announcement.id,
           route: EXPO_ROUTES.ANNOUNCEMENTS.DETAIL(announcement.id),
         },
@@ -71,6 +68,6 @@ export async function sendAnnouncementNotifications(
 
     await Promise.allSettled(notificationPromises);
   } catch (error) {
-    logger.error({ error }, "Failed to send announcement notifications:");
+    logger.error({ error }, 'Failed to send announcement notifications:');
   }
 }

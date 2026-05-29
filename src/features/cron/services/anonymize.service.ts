@@ -1,6 +1,6 @@
-import { prisma } from "@src/shared/lib/prisma";
-import { UserStatus, AuditAction } from "@prisma/client";
-import { logAction } from "@src/shared/services/audit-logs";
+import { prisma } from '@src/shared/lib/prisma';
+import { UserStatus, AuditAction } from '@prisma/client';
+import { logAction } from '@src/shared/services/audit-logs';
 
 export interface AnonymizeResult {
   associationId: string;
@@ -10,9 +10,7 @@ export interface AnonymizeResult {
   error?: string;
 }
 
-export async function anonymizeExpiredUsers(
-  associationId: string,
-): Promise<AnonymizeResult> {
+export async function anonymizeExpiredUsers(associationId: string): Promise<AnonymizeResult> {
   try {
     const now = new Date();
 
@@ -24,10 +22,10 @@ export async function anonymizeExpiredUsers(
     if (!association) {
       return {
         associationId,
-        associationSlug: "unknown",
+        associationSlug: 'unknown',
         processed: 0,
         failed: 0,
-        error: "Association not found",
+        error: 'Association not found',
       };
     }
 
@@ -57,7 +55,7 @@ export async function anonymizeExpiredUsers(
         prisma.user.update({
           where: { id: userId },
           data: {
-            name: "Anonymous User",
+            name: 'Anonymous User',
             email: `anonymous+${userId.slice(0, 8)}@deleted.invalid`,
             mobile: null,
             designation: null,
@@ -69,10 +67,10 @@ export async function anonymizeExpiredUsers(
     );
 
     await logAction({
-      actorId: "",
+      actorId: '',
       associationId,
       action: AuditAction.ANONYMIZE,
-      resourceType: "User",
+      resourceType: 'User',
     });
 
     return {
@@ -84,10 +82,10 @@ export async function anonymizeExpiredUsers(
   } catch (error) {
     return {
       associationId,
-      associationSlug: "unknown",
+      associationSlug: 'unknown',
       processed: 0,
       failed: 0,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
@@ -98,9 +96,7 @@ export async function runAnonymizeCron(): Promise<AnonymizeResult[]> {
     select: { id: true },
   });
 
-  const results = await Promise.all(
-    associations.map((assoc) => anonymizeExpiredUsers(assoc.id)),
-  );
+  const results = await Promise.all(associations.map((assoc) => anonymizeExpiredUsers(assoc.id)));
 
   return results;
 }

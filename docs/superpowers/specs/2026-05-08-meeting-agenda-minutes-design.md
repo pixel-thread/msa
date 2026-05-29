@@ -43,19 +43,17 @@ Define `AgendaOperationSchema` and `MeetingMinutesSchema`.
 ```typescript
 const AgendaOperationSchema = z.object({
   operations: z.array(
-    z.discriminatedUnion("type", [
-      z.object({ type: z.literal("CREATE"), data: CreateAgendaItemSchema }),
+    z.discriminatedUnion('type', [
+      z.object({ type: z.literal('CREATE'), data: CreateAgendaItemSchema }),
       z.object({
-        type: z.literal("UPDATE"),
+        type: z.literal('UPDATE'),
         id: z.string().uuid(),
         data: UpdateAgendaItemSchema,
       }),
-      z.object({ type: z.literal("DELETE"), id: z.string().uuid() }),
+      z.object({ type: z.literal('DELETE'), id: z.string().uuid() }),
       z.object({
-        type: z.literal("REORDER"),
-        mappings: z.array(
-          z.object({ id: z.string().uuid(), order: z.number().int() }),
-        ),
+        type: z.literal('REORDER'),
+        mappings: z.array(z.object({ id: z.string().uuid(), order: z.number().int() })),
       }),
     ]),
   ),

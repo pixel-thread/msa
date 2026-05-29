@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { CheckSquare, Square } from "lucide-react";
-import { Button } from "@src/shared/components/ui/button";
+import { CheckSquare, Square } from 'lucide-react';
+import { Button } from '@src/shared/components/ui/button';
 
 interface PaneHeaderProps {
   title: string;
@@ -10,12 +10,7 @@ interface PaneHeaderProps {
   onToggleAll: () => void;
 }
 
-export function PaneHeader({
-  title,
-  count,
-  total,
-  onToggleAll,
-}: PaneHeaderProps) {
+export function PaneHeader({ title, count, total, onToggleAll }: PaneHeaderProps) {
   const allSelected = count === total && total > 0;
   return (
     <div className="flex items-center gap-3 pb-2 border-b text-xs font-medium">

@@ -1,4 +1,4 @@
-import { TrainingModule, TrainingCompletion } from "@prisma/client";
+import { TrainingModule, TrainingCompletion } from '@prisma/client';
 
 export type TrainingModuleWithCompletions = TrainingModule & {
   completions: TrainingCompletion[];

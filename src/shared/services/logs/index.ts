@@ -1,24 +1,18 @@
-import { prisma } from "@src/shared/lib/prisma";
-import { PAGE_SIZE } from "@src/shared/constants";
-import { Prisma } from "@prisma/client";
-import { buildPagination } from "@src/shared/utils/build-pagination";
+import { prisma } from '@src/shared/lib/prisma';
+import { PAGE_SIZE } from '@src/shared/constants';
+import { Prisma } from '@prisma/client';
+import { buildPagination } from '@src/shared/utils/build-pagination';
 
 type GetLogsProps = {
   where: Prisma.LogWhereInput;
   page: number;
-  sortBy?: "createdAt" | "type" | "message";
-  sortOrder?: "asc" | "desc";
+  sortBy?: 'createdAt' | 'type' | 'message';
+  sortOrder?: 'asc' | 'desc';
   limit?: number;
 };
 
 export async function getLogs(props: GetLogsProps) {
-  const {
-    where,
-    page,
-    sortBy = "createdAt",
-    sortOrder = "desc",
-    limit,
-  } = props;
+  const { where, page, sortBy = 'createdAt', sortOrder = 'desc', limit } = props;
 
   const pageSize = limit ?? PAGE_SIZE;
 

@@ -1345,25 +1345,25 @@ REVOKE UPDATE, DELETE ON audit_logs FROM mfsa_app;
 
 ```typescript
 // lib/validations/meetings.ts
-import { z } from "zod";
+import { z } from 'zod';
 
 // Admin assigning members to a meeting
 export const AssignAttendeesSchema = z.object({
   attendees: z
     .array(
       z.object({
-        userId: z.string().cuid("Invalid member ID"),
-        role: z.enum(["REQUIRED", "OPTIONAL", "OBSERVER"]).default("OPTIONAL"),
+        userId: z.string().cuid('Invalid member ID'),
+        role: z.enum(['REQUIRED', 'OPTIONAL', 'OBSERVER']).default('OPTIONAL'),
       }),
     )
-    .min(1, "At least one member required")
-    .max(200, "Cannot assign more than 200 members at once"),
+    .min(1, 'At least one member required')
+    .max(200, 'Cannot assign more than 200 members at once'),
   sendNotice: z.boolean().default(false), // Immediately email meeting notice
 });
 
 // Member submitting RSVP
 export const RsvpSchema = z.object({
-  status: z.enum(["ACCEPTED", "DECLINED"]),
+  status: z.enum(['ACCEPTED', 'DECLINED']),
   note: z
     .string()
     .max(300)
@@ -1374,11 +1374,11 @@ export const RsvpSchema = z.object({
 // Schedule a new meeting
 export const CreateMeetingSchema = z.object({
   title: z.string().min(3).max(200).trim(),
-  type: z.enum(["EC_MEETING", "GENERAL_MEETING"]),
+  type: z.enum(['EC_MEETING', 'GENERAL_MEETING']),
   scheduledAt: z
     .string()
     .datetime()
-    .refine((d) => new Date(d) > new Date(), "Must be in the future"),
+    .refine((d) => new Date(d) > new Date(), 'Must be in the future'),
   venue: z.string().max(300).optional(),
   agendaItems: z
     .array(
@@ -1393,16 +1393,16 @@ export const CreateMeetingSchema = z.object({
 
 // lib/validations/dsar.ts
 export const SubmitDsarSchema = z.object({
-  requestType: z.enum(["ACCESS", "CORRECTION", "DELETION", "PORTABILITY"]),
+  requestType: z.enum(['ACCESS', 'CORRECTION', 'DELETION', 'PORTABILITY']),
   requestedData: z
     .array(
       z.enum([
-        "PROFILE_DATA",
-        "PAYMENT_HISTORY",
-        "CONSENT_RECORDS",
-        "MEETING_ATTENDANCE",
-        "TRAINING_RECORDS",
-        "ALL",
+        'PROFILE_DATA',
+        'PAYMENT_HISTORY',
+        'CONSENT_RECORDS',
+        'MEETING_ATTENDANCE',
+        'TRAINING_RECORDS',
+        'ALL',
       ]),
     )
     .min(1)
@@ -1417,18 +1417,10 @@ export const SubmitDsarSchema = z.object({
 // lib/validations/consent.ts
 export const ConsentUpdateSchema = z.object({
   purposes: z
-    .array(
-      z.enum([
-        "PAYMENTS",
-        "COMMUNICATIONS",
-        "MEETINGS",
-        "ANALYTICS",
-        "MARKETING",
-      ]),
-    )
+    .array(z.enum(['PAYMENTS', 'COMMUNICATIONS', 'MEETINGS', 'ANALYTICS', 'MARKETING']))
     .min(1),
-  action: z.enum(["GRANT", "REVOKE"]),
-  channel: z.enum(["web", "mobile", "email"]).default("web"),
+  action: z.enum(['GRANT', 'REVOKE']),
+  channel: z.enum(['web', 'mobile', 'email']).default('web'),
 });
 
 // lib/validations/associations.ts
@@ -1441,7 +1433,7 @@ export const CreateAssociationSchema = z.object({
     .regex(/^[a-z]+$/),
   name: z.string().min(3).max(200),
   state: z.string().max(100).optional(),
-  country: z.string().length(2).default("IN"),
+  country: z.string().length(2).default('IN'),
   contactEmail: z.string().email().optional(),
   primaryColor: z
     .string()
@@ -1458,17 +1450,17 @@ export const CreateLedgerEntrySchema = z.object({
   description: z.string().min(3).max(500).trim(),
   transactionDate: z.string().datetime(),
   category: z.enum([
-    "MEMBERSHIP_FEE",
-    "DONATION",
-    "EVENT_INCOME",
-    "BANK_INTEREST",
-    "MEETING_EXPENSE",
-    "CONFERENCE_EXPENSE",
-    "PICNIC_EXPENSE",
-    "RELIEF_EXPENSE",
-    "ADMINISTRATIVE_EXPENSE",
-    "BANK_CHARGES",
-    "MISCELLANEOUS",
+    'MEMBERSHIP_FEE',
+    'DONATION',
+    'EVENT_INCOME',
+    'BANK_INTEREST',
+    'MEETING_EXPENSE',
+    'CONFERENCE_EXPENSE',
+    'PICNIC_EXPENSE',
+    'RELIEF_EXPENSE',
+    'ADMINISTRATIVE_EXPENSE',
+    'BANK_CHARGES',
+    'MISCELLANEOUS',
   ]),
   lines: z
     .array(
@@ -1479,12 +1471,9 @@ export const CreateLedgerEntrySchema = z.object({
           amount: z.number().positive().multipleOf(0.01),
           narration: z.string().max(200).optional(),
         })
-        .refine(
-          (l) => l.debitAccountId || l.creditAccountId,
-          "Need debit or credit account",
-        ),
+        .refine((l) => l.debitAccountId || l.creditAccountId, 'Need debit or credit account'),
     )
-    .min(2, "Double-entry requires at least two lines"),
+    .min(2, 'Double-entry requires at least two lines'),
   paymentId: z.string().cuid().optional(),
 });
 
@@ -1493,14 +1482,12 @@ export const OnboardingSchema = z.object({
   dateOfJoiningGovt: z
     .string()
     .datetime()
-    .refine((d) => new Date(d) < new Date(), "Cannot be in the future"),
+    .refine((d) => new Date(d) < new Date(), 'Cannot be in the future'),
   dateOfJoiningAssociation: z
     .string()
     .datetime()
-    .refine((d) => new Date(d) < new Date(), "Cannot be in the future"),
-  mobile: z
-    .string()
-    .regex(/^[6-9]\d{9}$/, "Valid Indian mobile number required"),
+    .refine((d) => new Date(d) < new Date(), 'Cannot be in the future'),
+  mobile: z.string().regex(/^[6-9]\d{9}$/, 'Valid Indian mobile number required'),
   designation: z.string().min(2).max(100).trim(),
 });
 ```
@@ -1515,50 +1502,42 @@ PII fields (`mobile`, `designation`) encrypted with AES-256-GCM before writing t
 
 ```typescript
 // lib/prisma/encryption-middleware.ts
-import * as crypto from "crypto";
-import { prisma } from "./prisma";
+import * as crypto from 'crypto';
+import { prisma } from './prisma';
 
-const KEY = Buffer.from(process.env.FIELD_ENCRYPTION_KEY!, "hex");
+const KEY = Buffer.from(process.env.FIELD_ENCRYPTION_KEY!, 'hex');
 
 export const encrypt = (plain: string): string => {
   const iv = crypto.randomBytes(16);
-  const cipher = crypto.createCipheriv("aes-256-gcm", KEY, iv);
-  const encrypted = Buffer.concat([
-    cipher.update(plain, "utf8"),
-    cipher.final(),
-  ]);
+  const cipher = crypto.createCipheriv('aes-256-gcm', KEY, iv);
+  const encrypted = Buffer.concat([cipher.update(plain, 'utf8'), cipher.final()]);
   const tag = cipher.getAuthTag();
-  return [
-    iv.toString("hex"),
-    tag.toString("hex"),
-    encrypted.toString("hex"),
-  ].join(":");
+  return [iv.toString('hex'), tag.toString('hex'), encrypted.toString('hex')].join(':');
 };
 
 export const decrypt = (ciphertext: string): string => {
-  const [ivHex, tagHex, encHex] = ciphertext.split(":");
-  const iv = Buffer.from(ivHex!, "hex");
-  const tag = Buffer.from(tagHex!, "hex");
-  const enc = Buffer.from(encHex!, "hex");
-  const dec = crypto.createDecipheriv("aes-256-gcm", KEY, iv);
+  const [ivHex, tagHex, encHex] = ciphertext.split(':');
+  const iv = Buffer.from(ivHex!, 'hex');
+  const tag = Buffer.from(tagHex!, 'hex');
+  const enc = Buffer.from(encHex!, 'hex');
+  const dec = crypto.createDecipheriv('aes-256-gcm', KEY, iv);
   dec.setAuthTag(tag);
-  return Buffer.concat([dec.update(enc), dec.final()]).toString("utf8");
+  return Buffer.concat([dec.update(enc), dec.final()]).toString('utf8');
 };
 
 const ENCRYPTED_FIELDS: Record<string, string[]> = {
-  User: ["mobile", "designation"],
+  User: ['mobile', 'designation'],
 };
 
 prisma.$use(async (params, next) => {
-  const fields = ENCRYPTED_FIELDS[params.model ?? ""];
-  if (fields && ["create", "update", "upsert"].includes(params.action)) {
+  const fields = ENCRYPTED_FIELDS[params.model ?? ''];
+  if (fields && ['create', 'update', 'upsert'].includes(params.action)) {
     for (const f of fields) {
-      if (params.args.data?.[f])
-        params.args.data[f] = encrypt(params.args.data[f] as string);
+      if (params.args.data?.[f]) params.args.data[f] = encrypt(params.args.data[f] as string);
     }
   }
   const result = await next(params);
-  if (fields && result && typeof result === "object") {
+  if (fields && result && typeof result === 'object') {
     for (const f of fields) {
       const r = result as Record<string, unknown>;
       if (r[f]) r[f] = decrypt(r[f] as string);
@@ -1574,48 +1553,48 @@ Auto-injects `associationId` from `AsyncLocalStorage` into every query — no ro
 
 ```typescript
 // lib/prisma/association-middleware.ts
-import { AsyncLocalStorage } from "async_hooks";
-import { prisma } from "./prisma";
+import { AsyncLocalStorage } from 'async_hooks';
+import { prisma } from './prisma';
 
 export const associationStore = new AsyncLocalStorage<string>();
 
 const SCOPED = [
-  "User",
-  "ConsentReceipt",
-  "DsarTicket",
-  "SubscriptionPlan",
-  "Subscription",
-  "Payment",
-  "Account",
-  "LedgerEntry",
-  "Meeting",
-  "MeetingAttendee",
-  "TrainingModule",
-  "AuditLog",
+  'User',
+  'ConsentReceipt',
+  'DsarTicket',
+  'SubscriptionPlan',
+  'Subscription',
+  'Payment',
+  'Account',
+  'LedgerEntry',
+  'Meeting',
+  'MeetingAttendee',
+  'TrainingModule',
+  'AuditLog',
 ];
 
 prisma.$use(async (params, next) => {
   const aid = associationStore.getStore();
-  if (!aid || !SCOPED.includes(params.model ?? "")) return next(params);
+  if (!aid || !SCOPED.includes(params.model ?? '')) return next(params);
 
-  if (["create", "upsert"].includes(params.action)) {
+  if (['create', 'upsert'].includes(params.action)) {
     params.args.data = { ...params.args.data, associationId: aid };
   }
   if (
     [
-      "update",
-      "updateMany",
-      "findMany",
-      "findFirst",
-      "findFirstOrThrow",
-      "count",
-      "delete",
-      "deleteMany",
+      'update',
+      'updateMany',
+      'findMany',
+      'findFirst',
+      'findFirstOrThrow',
+      'count',
+      'delete',
+      'deleteMany',
     ].includes(params.action)
   ) {
     params.args.where = { ...params.args.where, associationId: aid };
   }
-  if (["findUnique", "findUniqueOrThrow"].includes(params.action)) {
+  if (['findUnique', 'findUniqueOrThrow'].includes(params.action)) {
     params.args.where = { ...params.args.where, associationId: aid };
   }
 
@@ -1647,13 +1626,13 @@ export async function assignAttendees(
     where: {
       id: { in: attendees.map((a) => a.userId) },
       associationId,
-      status: "ACTIVE",
+      status: 'ACTIVE',
     },
   });
 
   if (validCount !== attendees.length) {
     throw new ForbiddenError(
-      "One or more members do not belong to this association or are not active.",
+      'One or more members do not belong to this association or are not active.',
     );
   }
 
@@ -1807,29 +1786,27 @@ COMPLETED
 
 ```typescript
 // env.ts
-import { createEnv } from "@t3-oss/env-nextjs";
-import { z } from "zod";
+import { createEnv } from '@t3-oss/env-nextjs';
+import { z } from 'zod';
 
 export const env = createEnv({
   server: {
     DATABASE_URL: z.string().url(),
-    CLERK_SECRET_KEY: z.string().startsWith("sk_"),
-    CLERK_WEBHOOK_SECRET: z.string().startsWith("whsec_"),
+    CLERK_SECRET_KEY: z.string().startsWith('sk_'),
+    CLERK_WEBHOOK_SECRET: z.string().startsWith('whsec_'),
     UPSTASH_REDIS_REST_URL: z.string().url(),
     UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
     FIELD_ENCRYPTION_KEY: z.string().length(64), // 32-byte hex
     CRON_SECRET: z.string().min(32),
     BLOB_READ_WRITE_TOKEN: z.string().optional(),
-    RESEND_API_KEY: z.string().startsWith("re_").optional(),
+    RESEND_API_KEY: z.string().startsWith('re_').optional(),
   },
   client: {
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().startsWith("pk_"),
-    NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string().default("/sign-in"),
-    NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string().default("/sign-up"),
-    NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: z
-      .string()
-      .default("/member/dashboard"),
-    NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: z.string().default("/onboarding"),
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().startsWith('pk_'),
+    NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string().default('/sign-in'),
+    NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string().default('/sign-up'),
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: z.string().default('/member/dashboard'),
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: z.string().default('/onboarding'),
     NEXT_PUBLIC_APP_URL: z.string().url(),
     NEXT_PUBLIC_ASSOCIATION_SLUG: z.string().min(2).max(10), // Set per-app build
   },
@@ -1843,14 +1820,11 @@ export const env = createEnv({
     CRON_SECRET: process.env.CRON_SECRET,
     BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
-      process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL,
     NEXT_PUBLIC_CLERK_SIGN_UP_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL,
-    NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL:
-      process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL,
-    NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL:
-      process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL,
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL,
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_ASSOCIATION_SLUG: process.env.NEXT_PUBLIC_ASSOCIATION_SLUG,
   },

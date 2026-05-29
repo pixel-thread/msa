@@ -1,16 +1,14 @@
-import type { NextRequest } from "next/server";
-import type { ZodType } from "zod";
+import type { NextRequest } from 'next/server';
+import type { ZodType } from 'zod';
 
-import { InvalidJsonError, ValidationError } from "@src/shared/errors";
-import { formatZodIssues } from "@validator/format-zod-issues";
-import { handleApiErrors } from "./handle-api-errors";
-import { createTracingContext } from "./tracing-context";
+import { InvalidJsonError, ValidationError } from '@src/shared/errors';
+import { formatZodIssues } from '@validator/format-zod-issues';
+import { handleApiErrors } from './handle-api-errors';
+import { createTracingContext } from './tracing-context';
 
 type MaybePromise<T> = Promise<T> | T;
 
-export interface RouteContext<
-  TParams extends Record<string, string> = Record<string, string>,
-> {
+export interface RouteContext<TParams extends Record<string, string> = Record<string, string>> {
   params?: MaybePromise<TParams>;
 }
 
@@ -38,10 +36,7 @@ type ValidatedHandler<
   validated: ValidatedValues<TBody, TQuery, TParams>,
 ) => Promise<Response>;
 
-const parseNextRequestBody = async <TBody>(
-  request: NextRequest,
-  schema: ZodType<TBody>,
-) => {
+const parseNextRequestBody = async <TBody>(request: NextRequest, schema: ZodType<TBody>) => {
   let payload: unknown;
 
   try {
@@ -53,28 +48,19 @@ const parseNextRequestBody = async <TBody>(
   const result = schema.safeParse(payload);
 
   if (!result.success) {
-    throw new ValidationError(
-      result.error.issues[0].message,
-      formatZodIssues(result.error.issues),
-    );
+    throw new ValidationError(result.error.issues[0].message, formatZodIssues(result.error.issues));
   }
 
   return result.data;
 };
 
-const parseNextRequestQuery = <TQuery>(
-  request: NextRequest,
-  schema: ZodType<TQuery>,
-) => {
+const parseNextRequestQuery = <TQuery>(request: NextRequest, schema: ZodType<TQuery>) => {
   const url = new URL(request.url);
   const query = Object.fromEntries(url.searchParams.entries());
   const result = schema.safeParse(query);
 
   if (!result.success) {
-    throw new ValidationError(
-      result.error.issues[0].message,
-      formatZodIssues(result.error.issues),
-    );
+    throw new ValidationError(result.error.issues[0].message, formatZodIssues(result.error.issues));
   }
 
   return result.data;
@@ -91,10 +77,7 @@ const parseRouteParams = async <
   const result = schema.safeParse(params);
 
   if (!result.success) {
-    throw new ValidationError(
-      result.error.issues[0].message,
-      formatZodIssues(result.error.issues),
-    );
+    throw new ValidationError(result.error.issues[0].message, formatZodIssues(result.error.issues));
   }
 
   return result.data;

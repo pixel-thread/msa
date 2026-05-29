@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useParams, useRouter } from "next/navigation";
-import { useContributionDetail } from "@src/features/payments/hooks/useContributionDetail";
-import { Button } from "@src/shared/components/ui/button";
-import { ContributionDetail } from "@src/features/payments/components/contribution-detail";
-import { ArrowLeft } from "lucide-react";
+import { useParams, useRouter } from 'next/navigation';
+import { useContributionDetail } from '@src/features/payments/hooks/useContributionDetail';
+import { Button } from '@src/shared/components/ui/button';
+import { ContributionDetail } from '@src/features/payments/components/contribution-detail';
+import { ArrowLeft } from 'lucide-react';
 
 export function ContributionDetailPage() {
   const params = useParams();
@@ -44,11 +44,11 @@ export function ContributionDetailPage() {
             Contribution Details
           </h1>
           <p className="mt-1 text-base text-body">
-            {contribution.user?.name || "Member"} &mdash;{" "}
-            {new Date(
-              contribution.year,
-              contribution.month - 1,
-            ).toLocaleDateString("en-IN", { month: "long", year: "numeric" })}
+            {contribution.user?.name || 'Member'} &mdash;{' '}
+            {new Date(contribution.year, contribution.month - 1).toLocaleDateString('en-IN', {
+              month: 'long',
+              year: 'numeric',
+            })}
           </p>
         </div>
       </div>

@@ -1,54 +1,49 @@
-"use client";
+'use client';
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@src/shared/components/ui/card";
-import { Users, IndianRupee, Clock, CreditCard } from "lucide-react";
-import type { DashboardOverview } from "@feature/dashboard/services/dashboard.service";
+import { Card, CardContent, CardHeader, CardTitle } from '@src/shared/components/ui/card';
+import { Users, IndianRupee, Clock, CreditCard } from 'lucide-react';
+import type { DashboardOverview } from '@feature/dashboard/services/dashboard.service';
 
 interface StatsCardsProps {
-  stats: DashboardOverview["stats"];
+  stats: DashboardOverview['stats'];
 }
 
 export function StatsCards({ stats }: StatsCardsProps) {
   const cards = [
     {
-      title: "Total Members",
+      title: 'Total Members',
       value: stats.totalMembers.toLocaleString(),
       subtitle: `${stats.activeMembers} active`,
       icon: Users,
     },
     {
-      title: "Revenue This Month",
-      value: new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
+      title: 'Revenue This Month',
+      value: new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
         maximumFractionDigits: 0,
       }).format(stats.totalRevenueMonth),
-      subtitle: `${new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
+      subtitle: `${new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
         maximumFractionDigits: 0,
       }).format(stats.totalRevenueYear)} this year`,
       icon: IndianRupee,
     },
     {
-      title: "Pending Dues",
-      value: new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
+      title: 'Pending Dues',
+      value: new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
         maximumFractionDigits: 0,
       }).format(stats.pendingDuesAmount),
       subtitle: `${stats.pendingDuesCount} members`,
       icon: Clock,
     },
     {
-      title: "New Members",
+      title: 'New Members',
       value: stats.newMembersThisMonth.toLocaleString(),
-      subtitle: "Joined this month",
+      subtitle: 'Joined this month',
       icon: CreditCard,
     },
   ];

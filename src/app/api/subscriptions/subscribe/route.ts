@@ -1,14 +1,10 @@
-import { withAssociation, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@utils/responses";
-import { UserRole } from "@prisma/client";
-import { prisma } from "@src/shared/lib/prisma";
-import { SubscribeSchema } from "@feature/subscriptions/validators";
-import {
-  NotFoundError,
-  ConflictError,
-  ValidationError,
-} from "@src/shared/errors";
-import { logger } from "@src/shared/logger/server";
+import { withAssociation, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@utils/responses';
+import { UserRole } from '@prisma/client';
+import { prisma } from '@src/shared/lib/prisma';
+import { SubscribeSchema } from '@feature/subscriptions/validators';
+import { NotFoundError, ConflictError, ValidationError } from '@src/shared/errors';
+import { logger } from '@src/shared/logger/server';
 
 export const POST = withAssociation(
   { body: SubscribeSchema },
@@ -18,7 +14,7 @@ export const POST = withAssociation(
         traceId,
         associationId: association.id,
       },
-      "POST /api/subscriptions/subscribe - Request started",
+      'POST /api/subscriptions/subscribe - Request started',
     );
 
     const user = await withRole(request, UserRole.MEMBER);
@@ -28,11 +24,11 @@ export const POST = withAssociation(
         traceId,
         userId: user.id,
       },
-      "POST /api/subscriptions/subscribe - User authorized",
+      'POST /api/subscriptions/subscribe - User authorized',
     );
 
     if (!body) {
-      throw new ValidationError("Invalid request body");
+      throw new ValidationError('Invalid request body');
     }
 
     const plan = await prisma.subscriptionPlan.findUnique({
@@ -50,7 +46,7 @@ export const POST = withAssociation(
     });
 
     if (!plan || plan.versions.length === 0) {
-      throw new NotFoundError("Plan not found or has no active version");
+      throw new NotFoundError('Plan not found or has no active version');
     }
 
     const activeVersion = plan.versions[0];
@@ -59,13 +55,13 @@ export const POST = withAssociation(
       where: { userId: user.id },
     });
 
-    if (existing && existing.status === "ACTIVE") {
-      throw new ConflictError("User already has an active subscription");
+    if (existing && existing.status === 'ACTIVE') {
+      throw new ConflictError('User already has an active subscription');
     }
 
     const startDate = new Date();
     const endDate = new Date();
-    if (activeVersion.billingCycle === "YEARLY") {
+    if (activeVersion.billingCycle === 'YEARLY') {
       endDate.setFullYear(endDate.getFullYear() + 1);
     } else {
       endDate.setMonth(endDate.getMonth() + 1);
@@ -76,7 +72,7 @@ export const POST = withAssociation(
       update: {
         planId: plan.id,
         planVersionId: activeVersion.id,
-        status: "ACTIVE",
+        status: 'ACTIVE',
         startDate,
         endDate,
         waivedAt: null,
@@ -87,7 +83,7 @@ export const POST = withAssociation(
         userId: user.id,
         planId: plan.id,
         planVersionId: activeVersion.id,
-        status: "ACTIVE",
+        status: 'ACTIVE',
         startDate,
         endDate,
       },
@@ -98,7 +94,7 @@ export const POST = withAssociation(
         subscriptionId: subscription.id,
         planVersionId: activeVersion.id,
         amountCharged: activeVersion.amount,
-        status: "PENDING",
+        status: 'PENDING',
         periodStart: startDate,
         periodEnd: endDate,
         dueDate: startDate,
@@ -110,7 +106,7 @@ export const POST = withAssociation(
         traceId,
         subscriptionId: subscription.id,
       },
-      "POST /api/subscriptions/subscribe - Success",
+      'POST /api/subscriptions/subscribe - Success',
     );
 
     return SuccessResponse({ data: subscription }, 201);

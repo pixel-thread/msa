@@ -1,19 +1,15 @@
-import { withValidation } from "@src/shared/api";
-import { verifyMfaTempToken } from "@src/shared/lib/jwt";
-import { generateOTP, hashToken } from "@src/shared/lib/password";
-import { sendVerificationEmail } from "@src/shared/lib/email";
-import { env } from "@src/env";
-import z from "zod";
-import {
-  BadRequestError,
-  NotFoundError,
-  TooManyRequestsError,
-} from "@src/shared/errors";
-import { SuccessResponse } from "@src/shared/utils";
-import { getUniqueUser } from "@src/shared/services/user/get-unique-user";
-import { getVerificationCodeFirst } from "@src/features/auth/services/get-verification-code-first";
-import { createVerificationCode } from "@src/features/auth/services/create-verification-code";
-import { logger } from "@src/shared/logger/server";
+import { withValidation } from '@src/shared/api';
+import { verifyMfaTempToken } from '@src/shared/lib/jwt';
+import { generateOTP, hashToken } from '@src/shared/lib/password';
+import { sendVerificationEmail } from '@src/shared/lib/email';
+import { env } from '@src/env';
+import z from 'zod';
+import { BadRequestError, NotFoundError, TooManyRequestsError } from '@src/shared/errors';
+import { SuccessResponse } from '@src/shared/utils';
+import { getUniqueUser } from '@src/shared/services/user/get-unique-user';
+import { getVerificationCodeFirst } from '@src/features/auth/services/get-verification-code-first';
+import { createVerificationCode } from '@src/features/auth/services/create-verification-code';
+import { logger } from '@src/shared/logger/server';
 
 const ResendSignInCodeSchema = z.object({
   mfa_temp_token: z.string(),
@@ -22,11 +18,10 @@ const ResendSignInCodeSchema = z.object({
 export const POST = withValidation(
   { body: ResendSignInCodeSchema },
   async (request, _ctx, { body }) => {
-    const mfaCookie =
-      request.cookies.get("mfa_temp_token")?.value || body?.mfa_temp_token;
+    const mfaCookie = request.cookies.get('mfa_temp_token')?.value || body?.mfa_temp_token;
 
     if (!mfaCookie) {
-      throw new BadRequestError("Session expired. Please signin again");
+      throw new BadRequestError('Session expired. Please signin again');
     }
 
     let payload;
@@ -34,7 +29,7 @@ export const POST = withValidation(
     try {
       payload = await verifyMfaTempToken(mfaCookie);
     } catch {
-      throw new BadRequestError("Session expired. Please signin again");
+      throw new BadRequestError('Session expired. Please signin again');
     }
 
     const user = await getUniqueUser({
@@ -42,17 +37,17 @@ export const POST = withValidation(
     });
 
     if (!user) {
-      throw new NotFoundError("User not found");
+      throw new NotFoundError('User not found');
     }
 
     const lastCode = await getVerificationCodeFirst({
       where: {
         userId: payload.sub,
-        type: "LOGIN_MFA",
+        type: 'LOGIN_MFA',
         expiresAt: { gt: new Date() },
         usedAt: null,
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
     });
 
     if (lastCode) {
@@ -60,9 +55,7 @@ export const POST = withValidation(
       const cooldownMs = env.OTP_RESEND_COOLDOWN * 1000;
 
       if (timeSinceLastCode < cooldownMs) {
-        const remainingSeconds = Math.ceil(
-          (cooldownMs - timeSinceLastCode) / 1000,
-        );
+        const remainingSeconds = Math.ceil((cooldownMs - timeSinceLastCode) / 1000);
         throw new TooManyRequestsError(
           `Please wait ${remainingSeconds} seconds before requesting a new code`,
         );
@@ -79,21 +72,21 @@ export const POST = withValidation(
       data: {
         user: { connect: { id: user.id } },
         code: hashedOTP,
-        type: "LOGIN_MFA",
+        type: 'LOGIN_MFA',
         expiresAt: otpExpiry,
       },
     });
 
-    if (env.NODE_ENV === "production") {
-      await sendVerificationEmail(user.email, otp, "LOGIN_MFA");
+    if (env.NODE_ENV === 'production') {
+      await sendVerificationEmail(user.email, otp, 'LOGIN_MFA');
     }
 
-    if (env.NODE_ENV === "development") {
-      logger.debug("Verification code: " + otp);
+    if (env.NODE_ENV === 'development') {
+      logger.debug('Verification code: ' + otp);
     }
 
     return SuccessResponse({
-      message: "Verification code sent to your email",
+      message: 'Verification code sent to your email',
       data: {
         codeSent: true,
       },

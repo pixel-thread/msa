@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import { toast } from "sonner";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import { toast } from 'sonner';
 
 interface WaiveSubscriptionData {
   subscriptionId: string;
@@ -15,15 +15,15 @@ export function useWaiveSubscription() {
       http.post(`/subscriptions/waive`, { subscriptionId, reason }),
     onSuccess: (data) => {
       if (data.success) {
-        toast.success("Subscription waived successfully");
-        queryClient.invalidateQueries({ queryKey: ["my-subscription"] });
-        queryClient.invalidateQueries({ queryKey: ["subscription-plans"] });
+        toast.success('Subscription waived successfully');
+        queryClient.invalidateQueries({ queryKey: ['my-subscription'] });
+        queryClient.invalidateQueries({ queryKey: ['subscription-plans'] });
         return;
       }
       toast.error(data.message);
     },
     onError: () => {
-      toast.error("Failed to waive subscription");
+      toast.error('Failed to waive subscription');
     },
   });
 }

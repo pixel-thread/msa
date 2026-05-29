@@ -1,21 +1,14 @@
-import { withAssociation, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@utils/responses";
-import {
-  BadRequestError,
-  ForbiddenError,
-  NotFoundError,
-} from "@src/shared/errors";
-import { UserRole } from "@prisma/client";
+import { withAssociation, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@utils/responses';
+import { BadRequestError, ForbiddenError, NotFoundError } from '@src/shared/errors';
+import { UserRole } from '@prisma/client';
 import {
   findUniqueMemberType,
   updateMemberType,
   deleteMemberType,
-} from "@feature/member-type/services";
-import {
-  UpdateMemberTypeSchema,
-  MemberTypeParamsSchema,
-} from "@feature/member-type/validators";
-import { logger } from "@src/shared/logger/server";
+} from '@feature/member-type/services';
+import { UpdateMemberTypeSchema, MemberTypeParamsSchema } from '@feature/member-type/validators';
+import { logger } from '@src/shared/logger/server';
 
 export const GET = withAssociation(
   { params: MemberTypeParamsSchema },
@@ -25,11 +18,11 @@ export const GET = withAssociation(
         traceId,
         associationId: association.id,
       },
-      "GET /api/member-types/[memberTypeId] - Request started",
+      'GET /api/member-types/[memberTypeId] - Request started',
     );
 
     if (!params) {
-      throw new BadRequestError("Invalid member type ID");
+      throw new BadRequestError('Invalid member type ID');
     }
 
     const user = await withRole(request, UserRole.MEMBER);
@@ -39,7 +32,7 @@ export const GET = withAssociation(
         traceId,
         userId: user.id,
       },
-      "GET /api/member-types/[memberTypeId] - User authorized",
+      'GET /api/member-types/[memberTypeId] - User authorized',
     );
 
     const { memberTypeId } = params;
@@ -50,7 +43,7 @@ export const GET = withAssociation(
     });
 
     if (!memberType) {
-      throw new NotFoundError("Member type not found");
+      throw new NotFoundError('Member type not found');
     }
 
     logger.info(
@@ -58,10 +51,10 @@ export const GET = withAssociation(
         traceId,
         memberTypeId,
       },
-      "GET /api/member-types/[memberTypeId] - Success",
+      'GET /api/member-types/[memberTypeId] - Success',
     );
 
-    return SuccessResponse({ data: memberType, message: "Member type found" });
+    return SuccessResponse({ data: memberType, message: 'Member type found' });
   },
 );
 
@@ -73,15 +66,15 @@ export const PATCH = withAssociation(
         traceId,
         associationId: association.id,
       },
-      "PATCH /api/member-types/[memberTypeId] - Request started",
+      'PATCH /api/member-types/[memberTypeId] - Request started',
     );
 
     if (!params) {
-      throw new ForbiddenError("Invalid member type ID");
+      throw new ForbiddenError('Invalid member type ID');
     }
 
     if (!body) {
-      throw new ForbiddenError("Invalid request body");
+      throw new ForbiddenError('Invalid request body');
     }
 
     const user = await withRole(request, UserRole.PRESIDENT);
@@ -91,7 +84,7 @@ export const PATCH = withAssociation(
         traceId,
         userId: user.id,
       },
-      "PATCH /api/member-types/[memberTypeId] - User authorized",
+      'PATCH /api/member-types/[memberTypeId] - User authorized',
     );
 
     const { memberTypeId } = params;
@@ -108,12 +101,12 @@ export const PATCH = withAssociation(
         traceId,
         memberTypeId,
       },
-      "PATCH /api/member-types/[memberTypeId] - Success",
+      'PATCH /api/member-types/[memberTypeId] - Success',
     );
 
     return SuccessResponse({
       data: memberType,
-      message: "Member type updated successfully",
+      message: 'Member type updated successfully',
     });
   },
 );
@@ -126,11 +119,11 @@ export const DELETE = withAssociation(
         traceId,
         associationId: association.id,
       },
-      "DELETE /api/member-types/[memberTypeId] - Request started",
+      'DELETE /api/member-types/[memberTypeId] - Request started',
     );
 
     if (!params) {
-      throw new ForbiddenError("Invalid member type ID");
+      throw new ForbiddenError('Invalid member type ID');
     }
 
     const user = await withRole(request, UserRole.PRESIDENT);
@@ -140,7 +133,7 @@ export const DELETE = withAssociation(
         traceId,
         userId: user.id,
       },
-      "DELETE /api/member-types/[memberTypeId] - User authorized",
+      'DELETE /api/member-types/[memberTypeId] - User authorized',
     );
 
     const { memberTypeId } = params;
@@ -156,12 +149,12 @@ export const DELETE = withAssociation(
         traceId,
         memberTypeId,
       },
-      "DELETE /api/member-types/[memberTypeId] - Success",
+      'DELETE /api/member-types/[memberTypeId] - Success',
     );
 
     return SuccessResponse({
       data: null,
-      message: "Member type deleted successfully",
+      message: 'Member type deleted successfully',
     });
   },
 );

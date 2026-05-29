@@ -1,7 +1,7 @@
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import {
   Dialog,
   DialogContent,
@@ -9,7 +9,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
+} from '@src/shared/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -17,28 +17,28 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
+} from '@src/shared/components/ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@src/shared/components/ui/select";
-import { Button } from "@src/shared/components/ui/button";
-import { Input } from "@src/shared/components/ui/input";
-import { Switch } from "@src/shared/components/ui/switch";
-import { useUpdatePlan } from "@src/features/subscriptions/hooks/useUpdatePlan";
-import { useMemberTypes } from "@src/features/members/hooks/useMemberTypes";
-import { BILLING_CYCLES } from "../utils/constants";
-import { SubscriptionPlan } from "../types";
+} from '@src/shared/components/ui/select';
+import { Button } from '@src/shared/components/ui/button';
+import { Input } from '@src/shared/components/ui/input';
+import { Switch } from '@src/shared/components/ui/switch';
+import { useUpdatePlan } from '@src/features/subscriptions/hooks/useUpdatePlan';
+import { useMemberTypes } from '@src/features/members/hooks/useMemberTypes';
+import { BILLING_CYCLES } from '../utils/constants';
+import { SubscriptionPlan } from '../types';
 
 const EditPlanSchema = z.object({
-  name: z.string().min(1, "Plan name is required"),
+  name: z.string().min(1, 'Plan name is required'),
   description: z.string(),
-  amount: z.number().min(0, "Amount must be non-negative"),
+  amount: z.number().min(0, 'Amount must be non-negative'),
   currency: z.string(),
-  billingCycle: z.enum(["MONTHLY", "YEARLY"]),
+  billingCycle: z.enum(['MONTHLY', 'YEARLY']),
   features: z.record(z.string(), z.any()),
   memberTypeId: z.string().optional(),
   effectiveTo: z.string().optional(),
@@ -54,26 +54,22 @@ interface EditPlanDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function EditPlanDialog({
-  plan,
-  open,
-  onOpenChange,
-}: EditPlanDialogProps) {
+export function EditPlanDialog({ plan, open, onOpenChange }: EditPlanDialogProps) {
   const updatePlan = useUpdatePlan();
   const { memberTypes } = useMemberTypes();
 
   const form = useForm<EditPlanForm>({
     resolver: zodResolver(EditPlanSchema),
     defaultValues: {
-      name: "",
-      description: "",
+      name: '',
+      description: '',
       amount: 0,
-      currency: "INR",
-      billingCycle: "YEARLY",
+      currency: 'INR',
+      billingCycle: 'YEARLY',
       features: {},
-      memberTypeId: "",
-      effectiveTo: "",
-      effectiveFrom: "",
+      memberTypeId: '',
+      effectiveTo: '',
+      effectiveFrom: '',
       isActive: true,
     },
   });
@@ -82,17 +78,14 @@ export function EditPlanDialog({
     if (plan && open) {
       form.reset({
         name: plan.name,
-        description: plan.description || "",
+        description: plan.description || '',
         amount: plan.activeVersion?.amount ?? 0,
-        currency: plan.activeVersion?.currency ?? "INR",
-        billingCycle: (plan.activeVersion.billingCycle ?? "YEARLY") as
-          | "MONTHLY"
-          | "YEARLY",
-        features:
-          (plan.activeVersion?.features as Record<string, unknown>) || {},
-        memberTypeId: plan.memberTypeId || "",
-        effectiveTo: plan.activeVersion?.effectiveTo || "",
-        effectiveFrom: plan.activeVersion?.effectiveFrom || "",
+        currency: plan.activeVersion?.currency ?? 'INR',
+        billingCycle: (plan.activeVersion.billingCycle ?? 'YEARLY') as 'MONTHLY' | 'YEARLY',
+        features: (plan.activeVersion?.features as Record<string, unknown>) || {},
+        memberTypeId: plan.memberTypeId || '',
+        effectiveTo: plan.activeVersion?.effectiveTo || '',
+        effectiveFrom: plan.activeVersion?.effectiveFrom || '',
         isActive: plan.isActive,
       });
     }
@@ -101,8 +94,7 @@ export function EditPlanDialog({
   const onSubmit = (data: EditPlanForm) => {
     if (!plan) return;
 
-    const { memberTypeId, effectiveTo, effectiveFrom, isActive, ...rest } =
-      data;
+    const { memberTypeId, effectiveTo, effectiveFrom, isActive, ...rest } = data;
     updatePlan.mutate(
       {
         planId: plan.id,
@@ -123,9 +115,7 @@ export function EditPlanDialog({
       <DialogContent className="sm:max-w-125">
         <DialogHeader>
           <DialogTitle>Edit Subscription Plan</DialogTitle>
-          <DialogDescription>
-            Update the details of the subscription plan.
-          </DialogDescription>
+          <DialogDescription>Update the details of the subscription plan.</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -257,7 +247,7 @@ export function EditPlanDialog({
                       {memberTypes.map((type) => (
                         <SelectItem key={type.id} value={type.id}>
                           Level {type.level}
-                          {type.description ? ` - ${type.description}` : ""}
+                          {type.description ? ` - ${type.description}` : ''}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -273,10 +263,7 @@ export function EditPlanDialog({
               render={({ field }) => (
                 <FormItem className="flex items-center gap-3">
                   <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
                   </FormControl>
                   <FormLabel className="mb-0">Active</FormLabel>
                   <FormMessage />
@@ -285,15 +272,11 @@ export function EditPlanDialog({
             />
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={updatePlan.isPending}>
-                {updatePlan.isPending ? "Updating..." : "Update Plan"}
+                {updatePlan.isPending ? 'Updating...' : 'Update Plan'}
               </Button>
             </DialogFooter>
           </form>

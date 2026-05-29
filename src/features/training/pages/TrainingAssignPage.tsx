@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import { useState, useMemo } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Search, Plus, Trash2, X } from "lucide-react";
+import { useState, useMemo } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { ArrowLeft, Search, Plus, Trash2, X } from 'lucide-react';
 
-import { Button } from "@src/shared/components/ui/button";
-import { Input } from "@src/shared/components/ui/input";
+import { Button } from '@src/shared/components/ui/button';
+import { Input } from '@src/shared/components/ui/input';
 import {
   useTrainingAssignmentsQuery,
   useAssignTrainingModule,
   useBulkAssignTrainingModule,
   useRemoveTrainingAssignment,
   useBulkRemoveTrainingAssignment,
-} from "../hooks/assignments";
-import { useTrainingModule } from "../hooks/useTrainingModules";
-import { useMembers } from "@src/features/members/hooks/useMembers";
-import { UserRow } from "../components/UserRow";
-import { PaneHeader } from "../components/PaneHeader";
-import { DataTablePagination } from "@src/shared/components/data-table-pagination";
-import { useUrlFilters } from "@hooks/use-url-filters";
+} from '../hooks/assignments';
+import { useTrainingModule } from '../hooks/useTrainingModules';
+import { useMembers } from '@src/features/members/hooks/useMembers';
+import { UserRow } from '../components/UserRow';
+import { PaneHeader } from '../components/PaneHeader';
+import { DataTablePagination } from '@src/shared/components/data-table-pagination';
+import { useUrlFilters } from '@hooks/use-url-filters';
 
 interface UserDisplay {
   id: string;
@@ -32,10 +32,9 @@ export function TrainingAssignPage() {
   const moduleId = params.id as string;
   const { page, setPage } = useUrlFilters();
 
-  const { module: trainingModule, isLoading: isModuleLoading } =
-    useTrainingModule(moduleId);
+  const { module: trainingModule, isLoading: isModuleLoading } = useTrainingModule(moduleId);
 
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedCurrent, setSelectedCurrent] = useState<string[]>([]);
   const [selectedAdd, setSelectedAdd] = useState<string[]>([]);
   const [assignmentPage, setAssignmentPage] = useState(1);
@@ -46,30 +45,22 @@ export function TrainingAssignPage() {
     assignmentMeta,
   } = useTrainingAssignmentsQuery({ moduleId, page: assignmentPage });
   const { assignUser, isAssigning } = useAssignTrainingModule(moduleId);
-  const { bulkAssignUsers, isBulkAssigning } =
-    useBulkAssignTrainingModule(moduleId);
+  const { bulkAssignUsers, isBulkAssigning } = useBulkAssignTrainingModule(moduleId);
   const { removeUser, isRemoving } = useRemoveTrainingAssignment(moduleId);
-  const { bulkRemoveUsers, isBulkRemoving } =
-    useBulkRemoveTrainingAssignment(moduleId);
+  const { bulkRemoveUsers, isBulkRemoving } = useBulkRemoveTrainingAssignment(moduleId);
 
   const {
     members,
     meta,
     isLoading: isMembersLoading,
   } = useMembers({
-    status: "ACTIVE",
+    status: 'ACTIVE',
     page,
   });
 
-  const assignedUserIds = useMemo(
-    () => new Set(assignments.map((a) => a.userId)),
-    [assignments],
-  );
+  const assignedUserIds = useMemo(() => new Set(assignments.map((a) => a.userId)), [assignments]);
 
-  const assignedUsers = useMemo(
-    () => assignments.map((a) => a.user),
-    [assignments],
-  );
+  const assignedUsers = useMemo(() => assignments.map((a) => a.user), [assignments]);
 
   const unassignedMembers = useMemo(
     () => members.filter((member) => !assignedUserIds.has(member.id)),
@@ -80,8 +71,7 @@ export function TrainingAssignPage() {
     const query = searchQuery.toLowerCase().trim();
     if (!query) return null;
     return (u: UserDisplay) =>
-      u.name?.toLowerCase().includes(query) ||
-      u.email?.toLowerCase().includes(query);
+      u.name?.toLowerCase().includes(query) || u.email?.toLowerCase().includes(query);
   }, [searchQuery]);
 
   const filteredCurrent = useMemo(
@@ -129,25 +119,19 @@ export function TrainingAssignPage() {
 
   const toggleSelectCurrent = (userId: string) => {
     setSelectedCurrent((prev) =>
-      prev.includes(userId)
-        ? prev.filter((id) => id !== userId)
-        : [...prev, userId],
+      prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId],
     );
   };
 
   const toggleSelectAdd = (userId: string) => {
     setSelectedAdd((prev) =>
-      prev.includes(userId)
-        ? prev.filter((id) => id !== userId)
-        : [...prev, userId],
+      prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId],
     );
   };
 
   const toggleAllCurrent = () => {
     setSelectedCurrent((prev) =>
-      prev.length === filteredCurrent.length
-        ? []
-        : filteredCurrent.map((u) => u.id),
+      prev.length === filteredCurrent.length ? [] : filteredCurrent.map((u) => u.id),
     );
   };
 
@@ -172,11 +156,9 @@ export function TrainingAssignPage() {
             <p className="text-sm text-muted-foreground">Loading...</p>
           ) : (
             <p className="text-sm text-muted-foreground">
-              Assign users to{" "}
-              <span className="font-semibold text-ink">
-                {trainingModule?.title}
-              </span>{" "}
-              or remove them.
+              Assign users to{' '}
+              <span className="font-semibold text-ink">{trainingModule?.title}</span> or remove
+              them.
             </p>
           )}
         </div>
@@ -206,9 +188,7 @@ export function TrainingAssignPage() {
 
           <div className="flex-1 space-y-2 overflow-y-auto mt-2 pr-1">
             {isLoading ? (
-              <p className="text-center text-sm text-muted-foreground py-8">
-                Loading...
-              </p>
+              <p className="text-center text-sm text-muted-foreground py-8">Loading...</p>
             ) : filteredCurrent.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8 text-center">
                 <p className="text-sm text-muted-foreground">
@@ -246,10 +226,7 @@ export function TrainingAssignPage() {
                 />
               ))
             )}
-            <DataTablePagination
-              meta={assignmentMeta}
-              onPageChange={setAssignmentPage}
-            />
+            <DataTablePagination meta={assignmentMeta} onPageChange={setAssignmentPage} />
           </div>
         </div>
 
@@ -264,9 +241,7 @@ export function TrainingAssignPage() {
 
           <div className="flex-1 space-y-1 overflow-y-auto mt-2 pr-1">
             {isLoading ? (
-              <p className="text-center text-sm text-muted-foreground py-8">
-                Loading...
-              </p>
+              <p className="text-center text-sm text-muted-foreground py-8">Loading...</p>
             ) : filteredAdd.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8 text-center">
                 <p className="text-sm text-muted-foreground">
@@ -314,9 +289,7 @@ export function TrainingAssignPage() {
         <div className="shrink-0 pt-3">
           <div className="flex items-center justify-between bg-ink text-white px-5 py-3">
             <div className="flex items-center gap-3">
-              <span className="text-sm font-medium">
-                {totalSelected} selected
-              </span>
+              <span className="text-sm font-medium">{totalSelected} selected</span>
               <Button
                 variant="ghost"
                 size="icon"

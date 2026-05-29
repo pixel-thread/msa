@@ -1,7 +1,7 @@
-import { prisma } from "@lib/prisma";
-import { UserRole } from "@prisma/client";
-import { PAGE_SIZE } from "@src/shared/constants";
-import { buildPagination } from "@src/shared/utils/build-pagination";
+import { prisma } from '@lib/prisma';
+import { UserRole } from '@prisma/client';
+import { PAGE_SIZE } from '@src/shared/constants';
+import { buildPagination } from '@src/shared/utils/build-pagination';
 
 interface FindManyModulesProps {
   associationId: string;
@@ -30,7 +30,7 @@ export async function findManyModules({
             }
           : {}),
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
       take: PAGE_SIZE,
       skip: (page - 1) * PAGE_SIZE,
       include: { completions: true },

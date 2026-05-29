@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useCallback, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useCallback, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Dialog,
   DialogContent,
@@ -10,9 +10,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
-import { Button } from "@src/shared/components/ui/button";
-import { Input } from "@src/shared/components/ui/input";
+} from '@src/shared/components/ui/dialog';
+import { Button } from '@src/shared/components/ui/button';
+import { Input } from '@src/shared/components/ui/input';
 import {
   Form,
   FormControl,
@@ -20,13 +20,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
-import { Paperclip, X } from "lucide-react";
-import { useCreateTrainingCertificate } from "../../hooks";
+} from '@src/shared/components/ui/form';
+import { Paperclip, X } from 'lucide-react';
+import { useCreateTrainingCertificate } from '../../hooks';
 import {
   CreateTrainingCertificateSchema,
   CreateTrainingCertificateInput,
-} from "../../validators/training";
+} from '../../validators/training';
 
 interface AddCertificateDialogProps {
   open: boolean;
@@ -34,22 +34,17 @@ interface AddCertificateDialogProps {
   moduleId: string;
 }
 
-export function AddCertificateDialog({
-  open,
-  onOpenChange,
-  moduleId,
-}: AddCertificateDialogProps) {
-  const { mutate: createCertificate, isPending } =
-    useCreateTrainingCertificate(moduleId);
+export function AddCertificateDialog({ open, onOpenChange, moduleId }: AddCertificateDialogProps) {
+  const { mutate: createCertificate, isPending } = useCreateTrainingCertificate(moduleId);
 
   const [file, setFile] = useState<File | null>(null);
 
   const form = useForm({
     resolver: zodResolver(CreateTrainingCertificateSchema),
     defaultValues: {
-      userId: "",
-      certificateNumber: "",
-      issuedAt: "",
+      userId: '',
+      certificateNumber: '',
+      issuedAt: '',
     },
   });
 
@@ -63,8 +58,8 @@ export function AddCertificateDialog({
     if (!file) return;
 
     const formData = new FormData();
-    formData.append("file", file);
-    formData.append("metadata", JSON.stringify(values));
+    formData.append('file', file);
+    formData.append('metadata', JSON.stringify(values));
 
     createCertificate(formData, {
       onSuccess: (res) => {
@@ -87,9 +82,7 @@ export function AddCertificateDialog({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Add Certificate</DialogTitle>
-          <DialogDescription>
-            Upload a certificate file and assign it to a user.
-          </DialogDescription>
+          <DialogDescription>Upload a certificate file and assign it to a user.</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -143,9 +136,7 @@ export function AddCertificateDialog({
                   <div className="flex items-center justify-between border border-hairline bg-canvas px-3 py-2">
                     <div className="flex items-center gap-2 min-w-0">
                       <Paperclip className="h-4 w-4 shrink-0 text-muted-foreground" />
-                      <span className="text-sm text-body truncate">
-                        {file.name}
-                      </span>
+                      <span className="text-sm text-body truncate">{file.name}</span>
                       <span className="text-xs text-muted-foreground shrink-0">
                         ({(file.size / 1024).toFixed(1)} KB)
                       </span>
@@ -181,7 +172,7 @@ export function AddCertificateDialog({
                 Cancel
               </Button>
               <Button type="submit" disabled={isPending || !file}>
-                {isPending ? "Adding..." : "Add Certificate"}
+                {isPending ? 'Adding...' : 'Add Certificate'}
               </Button>
             </DialogFooter>
           </form>

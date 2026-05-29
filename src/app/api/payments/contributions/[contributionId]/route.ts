@@ -1,12 +1,12 @@
-import { withAssociation } from "@src/shared/api";
-import { SuccessResponse } from "@src/shared/utils/responses";
-import { prisma } from "@src/shared/lib/prisma";
-import { logger } from "@src/shared/logger/server";
-import { z } from "zod";
-import { NotFoundError } from "@src/shared/errors";
+import { withAssociation } from '@src/shared/api';
+import { SuccessResponse } from '@src/shared/utils/responses';
+import { prisma } from '@src/shared/lib/prisma';
+import { logger } from '@src/shared/logger/server';
+import { z } from 'zod';
+import { NotFoundError } from '@src/shared/errors';
 
 const ParamsSchema = z.object({
-  contributionId: z.string().uuid("Invalid contribution ID"),
+  contributionId: z.string().uuid('Invalid contribution ID'),
 });
 
 export const GET = withAssociation(
@@ -14,7 +14,7 @@ export const GET = withAssociation(
   async (association, { params, traceId }) => {
     logger.info(
       { traceId, contributionId: params!.contributionId },
-      "GET /api/payments/contributions/[contributionId] - Request started",
+      'GET /api/payments/contributions/[contributionId] - Request started',
     );
     const contribution = await prisma.contributionPeriod.findFirst({
       where: {
@@ -48,12 +48,12 @@ export const GET = withAssociation(
     });
 
     if (!contribution) {
-      throw new NotFoundError("Contribution not found");
+      throw new NotFoundError('Contribution not found');
     }
 
     logger.info(
       { traceId, contributionId: params!.contributionId },
-      "GET /api/payments/contributions/[contributionId] - Success",
+      'GET /api/payments/contributions/[contributionId] - Success',
     );
 
     return SuccessResponse({ data: contribution });

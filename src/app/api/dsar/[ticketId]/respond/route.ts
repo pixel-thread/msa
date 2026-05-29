@@ -1,10 +1,10 @@
-import { withAssociation, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@src/shared/utils";
-import { UserRole } from "@prisma/client";
-import { respondToDsarTicket } from "@src/features/dsar/services";
-import { RespondDsarSchema } from "@src/features/dsar/validators";
-import { z } from "zod";
-import { logger } from "@src/shared/logger/server";
+import { withAssociation, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@src/shared/utils';
+import { UserRole } from '@prisma/client';
+import { respondToDsarTicket } from '@src/features/dsar/services';
+import { RespondDsarSchema } from '@src/features/dsar/validators';
+import { z } from 'zod';
+import { logger } from '@src/shared/logger/server';
 
 const ParamsSchema = z.object({ ticketId: z.uuid() });
 
@@ -35,10 +35,10 @@ export const POST = withAssociation(
         associationId: association.id,
         ticketId: params?.ticketId,
       },
-      "POST /api/dsar/[ticketId]/respond - Request started",
+      'POST /api/dsar/[ticketId]/respond - Request started',
     );
 
-    const actorId = request.headers.get("x-user-id")!;
+    const actorId = request.headers.get('x-user-id')!;
     const actor = await withRole(request, UserRole.DPO);
 
     logger.info(
@@ -46,7 +46,7 @@ export const POST = withAssociation(
         traceId,
         userId: actor.id,
       },
-      "POST /api/dsar/[ticketId]/respond - User authorized",
+      'POST /api/dsar/[ticketId]/respond - User authorized',
     );
 
     const ticket = await respondToDsarTicket({
@@ -56,7 +56,7 @@ export const POST = withAssociation(
       data: body!,
     });
 
-    logger.info({ traceId }, "POST /api/dsar/[ticketId]/respond - Success");
+    logger.info({ traceId }, 'POST /api/dsar/[ticketId]/respond - Success');
 
     return SuccessResponse({ data: ticket });
   },

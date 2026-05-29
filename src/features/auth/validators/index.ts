@@ -1,17 +1,17 @@
-import { passwordValidation } from "@validator/auth";
-import z from "zod";
+import { passwordValidation } from '@validator/auth';
+import z from 'zod';
 
 export const SignUpSchema = z
   .object({
-    email: z.email("Invalid email address"),
+    email: z.email('Invalid email address'),
     associationSlug: z.string().optional(),
-    firstName: z.string().min(3, "First name must be at least 3 characters"),
-    lastName: z.string().min(3, "Last name must be at least 3 characters"),
-    dateOfBirth: z.string("Invalid date of birth"),
+    firstName: z.string().min(3, 'First name must be at least 3 characters'),
+    lastName: z.string().min(3, 'Last name must be at least 3 characters'),
+    dateOfBirth: z.string('Invalid date of birth'),
     age: z
-      .number("age must be a number")
-      .positive("age must be a positive number")
-      .gte(18, "Age must be greater than 18"),
+      .number('age must be a number')
+      .positive('age must be a positive number')
+      .gte(18, 'Age must be greater than 18'),
     // gender: z.enum(["MALE", "FEMALE", "OTHER"], "Invalid gender"),
     address: z.string().optional(),
     city: z.string().optional(),
@@ -20,7 +20,7 @@ export const SignUpSchema = z
     postalCode: z.string().optional(),
   })
   .refine((val) => !Boolean(val.lastName === val.firstName), {
-    message: "First name and last name cannot be the same",
+    message: 'First name and last name cannot be the same',
   })
   .refine(
     (data) => {
@@ -42,8 +42,8 @@ export const SignUpSchema = z
       return age >= 18 || data.age !== age;
     },
     {
-      message: "You must be at least 18 years old to sign up.",
-      path: ["dateOfBirth"], // Attaches the error directly to the dateOfBirth field
+      message: 'You must be at least 18 years old to sign up.',
+      path: ['dateOfBirth'], // Attaches the error directly to the dateOfBirth field
     },
   )
   .strict();
@@ -52,7 +52,7 @@ export type SignUpInput = z.infer<typeof SignUpSchema>;
 
 export const ResetPasswordSchema = z
   .object({
-    token: z.string().min(1, "Token is required"),
+    token: z.string().min(1, 'Token is required'),
     password: passwordValidation,
   })
   .strict();
@@ -61,7 +61,7 @@ export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>;
 
 export const SignInSchema = z
   .object({
-    email: z.email("Invalid email address"),
+    email: z.email('Invalid email address'),
     password: passwordValidation,
   })
   .strict();
@@ -70,7 +70,7 @@ export type SignInInput = z.infer<typeof SignInSchema>;
 
 export const VerifySignInSchema = z
   .object({
-    code: z.string().length(6, "Code must be 6 digits"),
+    code: z.string().length(6, 'Code must be 6 digits'),
     mfa_temp_token: z.string().optional(),
   })
   .strict();
@@ -91,7 +91,7 @@ export const SignOutSchema = z
 
 export const ForgotPasswordSchema = z
   .object({
-    email: z.email("Invalid email address"),
+    email: z.email('Invalid email address'),
   })
   .strict();
 
@@ -104,8 +104,8 @@ export const ChangePasswordSchema = z
     confirmPassword: passwordValidation,
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
   })
   .strict();
 

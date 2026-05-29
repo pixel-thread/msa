@@ -1,5 +1,5 @@
-import { prisma } from "@src/shared/lib/prisma";
-import { PaymentStatus, ContributionStatus, Prisma } from "@prisma/client";
+import { prisma } from '@src/shared/lib/prisma';
+import { PaymentStatus, ContributionStatus, Prisma } from '@prisma/client';
 
 export type DashboardOverview = {
   stats: {
@@ -43,61 +43,49 @@ export type DashboardOverview = {
 
 function toMonthKey(date: Date): string {
   const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const m = String(date.getMonth() + 1).padStart(2, '0');
   return `${y}-${m}`;
 }
 
-export async function getDashboardOverview(
-  associationId: string,
-): Promise<DashboardOverview> {
+export async function getDashboardOverview(associationId: string): Promise<DashboardOverview> {
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const startOfYear = new Date(now.getFullYear(), 0, 1);
   const twelveMonthsAgo = new Date(now.getFullYear() - 1, now.getMonth(), 1);
 
-  const [
-    totalMembers,
-    activeMembers,
-    newMembersThisMonth,
-    monthRevenue,
-    yearRevenue,
-    duesAgg,
-  ] = await Promise.all([
-    prisma.user.count({ where: { associationId } }),
-    prisma.user.count({ where: { associationId, status: "ACTIVE" } }),
-    prisma.user.count({
-      where: { associationId, createdAt: { gte: startOfMonth } },
-    }),
-    prisma.paymentTransaction.aggregate({
-      where: {
-        associationId,
-        status: PaymentStatus.COMPLETED,
-        paidAt: { gte: startOfMonth },
-      },
-      _sum: { amount: true },
-    }),
-    prisma.paymentTransaction.aggregate({
-      where: {
-        associationId,
-        status: PaymentStatus.COMPLETED,
-        paidAt: { gte: startOfYear },
-      },
-      _sum: { amount: true },
-    }),
-    prisma.contributionPeriod.aggregate({
-      where: {
-        associationId,
-        status: {
-          in: [
-            ContributionStatus.DUE,
-            ContributionStatus.PARTIAL,
-            ContributionStatus.OVERDUE,
-          ],
+  const [totalMembers, activeMembers, newMembersThisMonth, monthRevenue, yearRevenue, duesAgg] =
+    await Promise.all([
+      prisma.user.count({ where: { associationId } }),
+      prisma.user.count({ where: { associationId, status: 'ACTIVE' } }),
+      prisma.user.count({
+        where: { associationId, createdAt: { gte: startOfMonth } },
+      }),
+      prisma.paymentTransaction.aggregate({
+        where: {
+          associationId,
+          status: PaymentStatus.COMPLETED,
+          paidAt: { gte: startOfMonth },
         },
-      },
-      _sum: { dueAmount: true },
-    }),
-  ]);
+        _sum: { amount: true },
+      }),
+      prisma.paymentTransaction.aggregate({
+        where: {
+          associationId,
+          status: PaymentStatus.COMPLETED,
+          paidAt: { gte: startOfYear },
+        },
+        _sum: { amount: true },
+      }),
+      prisma.contributionPeriod.aggregate({
+        where: {
+          associationId,
+          status: {
+            in: [ContributionStatus.DUE, ContributionStatus.PARTIAL, ContributionStatus.OVERDUE],
+          },
+        },
+        _sum: { dueAmount: true },
+      }),
+    ]);
 
   const pendingDuesAmount = Number(duesAgg._sum.dueAmount || 0);
 
@@ -107,11 +95,7 @@ export async function getDashboardOverview(
         associationId,
         paidAt: { gte: twelveMonthsAgo },
         status: {
-          in: [
-            PaymentStatus.COMPLETED,
-            PaymentStatus.PENDING,
-            PaymentStatus.REFUNDED,
-          ],
+          in: [PaymentStatus.COMPLETED, PaymentStatus.PENDING, PaymentStatus.REFUNDED],
         },
       },
       select: { amount: true, status: true, paidAt: true },
@@ -121,21 +105,14 @@ export async function getDashboardOverview(
       select: { createdAt: true },
     }),
     prisma.user.findMany({
-      where: { associationId, status: "ACTIVE" },
+      where: { associationId, status: 'ACTIVE' },
       select: { role: true },
     }),
   ]);
 
-  const revenueOverTime = buildRevenueOverTime(
-    paymentTransactions,
-    twelveMonthsAgo,
-  );
+  const revenueOverTime = buildRevenueOverTime(paymentTransactions, twelveMonthsAgo);
   const memberGrowthRaw = buildMemberCountByMonth(membersSince);
-  const memberGrowth = buildMemberGrowthSeries(
-    memberGrowthRaw,
-    twelveMonthsAgo,
-    totalMembers,
-  );
+  const memberGrowth = buildMemberGrowthSeries(memberGrowthRaw, twelveMonthsAgo, totalMembers);
   const memberRoleDistribution = buildRoleDistribution(activeUsers);
 
   const [paymentMethodDist, recentPaymentsRaw] = await Promise.all([
@@ -169,19 +146,16 @@ function buildRevenueOverTime(
   }>,
   since: Date,
 ) {
-  const grouped: Record<
-    string,
-    { revenue: number; pending: number; refunded: number }
-  > = {};
+  const grouped: Record<string, { revenue: number; pending: number; refunded: number }> = {};
 
   for (const t of transactions) {
     if (!t.paidAt) continue;
     const key = toMonthKey(t.paidAt);
     if (!grouped[key]) grouped[key] = { revenue: 0, pending: 0, refunded: 0 };
     const amount = Number(t.amount);
-    if (t.status === "COMPLETED") grouped[key].revenue += amount;
-    else if (t.status === "PENDING") grouped[key].pending += amount;
-    else if (t.status === "REFUNDED") grouped[key].refunded += amount;
+    if (t.status === 'COMPLETED') grouped[key].revenue += amount;
+    else if (t.status === 'PENDING') grouped[key].pending += amount;
+    else if (t.status === 'REFUNDED') grouped[key].refunded += amount;
   }
 
   return fillMonthlyGaps(grouped, since);
@@ -239,14 +213,14 @@ function buildRoleDistribution(
 
 async function getPaymentMethodDistribution(associationId: string) {
   const rows = await prisma.paymentTransaction.groupBy({
-    by: ["method"],
+    by: ['method'],
     where: { associationId, status: PaymentStatus.COMPLETED },
     _count: { id: true },
     _sum: { amount: true },
   });
 
   return rows.map((r) => ({
-    method: r.method ?? "UNKNOWN",
+    method: r.method ?? 'UNKNOWN',
     count: r._count.id,
     total: Number(r._sum.amount || 0),
   }));
@@ -282,10 +256,7 @@ function getMonthRange(from: Date, to: Date): string[] {
 }
 
 function fillMonthlyGaps(
-  grouped: Record<
-    string,
-    { revenue: number; pending: number; refunded: number }
-  >,
+  grouped: Record<string, { revenue: number; pending: number; refunded: number }>,
   since: Date,
 ) {
   const months = getMonthRange(since, new Date());

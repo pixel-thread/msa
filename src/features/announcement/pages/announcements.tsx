@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { useState, useMemo } from "react";
-import { useUrlFilters } from "@src/shared/hooks";
-import { DataTable } from "@src/shared/components/data-table";
-import { DataTableFilters } from "@src/shared/components/data-table-filters";
-import { DataTablePagination } from "@src/shared/components/data-table-pagination";
-import { useAnnouncementsList } from "@src/features/announcement/hooks/useAnnouncementsList";
-import { useDeleteAnnouncement } from "@src/features/announcement/hooks/useDeleteAnnouncement";
-import { useAnnouncementColumns } from "@src/features/announcement/hooks/useAnnouncementColumns";
-import { CreateAnnouncementDialog } from "@src/features/announcement/components/create-announcement-dialog";
-import { EditAnnouncementDialog } from "@src/features/announcement/components/edit-announcement-dialog";
-import { DeleteAnnouncementDialog } from "@src/features/announcement/components/delete-announcement-dialog";
-import type { Announcement } from "@src/features/announcement/types";
+import { useState, useMemo } from 'react';
+import { useUrlFilters } from '@src/shared/hooks';
+import { DataTable } from '@src/shared/components/data-table';
+import { DataTableFilters } from '@src/shared/components/data-table-filters';
+import { DataTablePagination } from '@src/shared/components/data-table-pagination';
+import { useAnnouncementsList } from '@src/features/announcement/hooks/useAnnouncementsList';
+import { useDeleteAnnouncement } from '@src/features/announcement/hooks/useDeleteAnnouncement';
+import { useAnnouncementColumns } from '@src/features/announcement/hooks/useAnnouncementColumns';
+import { CreateAnnouncementDialog } from '@src/features/announcement/components/create-announcement-dialog';
+import { EditAnnouncementDialog } from '@src/features/announcement/components/edit-announcement-dialog';
+import { DeleteAnnouncementDialog } from '@src/features/announcement/components/delete-announcement-dialog';
+import type { Announcement } from '@src/features/announcement/types';
 
 interface AnnouncementsPageProps {
   status?: string;
@@ -19,15 +19,13 @@ interface AnnouncementsPageProps {
 
 export default function AnnouncementsPage({ status }: AnnouncementsPageProps) {
   const basePath = useMemo(
-    () => `/announcement${status ? `/${status.toLowerCase()}` : ""}`,
+    () => `/announcement${status ? `/${status.toLowerCase()}` : ''}`,
     [status],
   );
   const { page, setPage } = useUrlFilters({ basePath });
 
-  const [editingAnnouncement, setEditingAnnouncement] =
-    useState<Announcement | null>(null);
-  const [deletingAnnouncement, setDeletingAnnouncement] =
-    useState<Announcement | null>(null);
+  const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null);
+  const [deletingAnnouncement, setDeletingAnnouncement] = useState<Announcement | null>(null);
 
   const { announcements, meta, isLoading } = useAnnouncementsList(status, page);
   const deleteAnnouncement = useDeleteAnnouncement();
@@ -52,9 +50,7 @@ export default function AnnouncementsPage({ status }: AnnouncementsPageProps) {
           <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
             Announcements
           </h1>
-          <p className="mt-1 text-base text-body">
-            Manage announcements for your association
-          </p>
+          <p className="mt-1 text-base text-body">Manage announcements for your association</p>
         </div>
         <CreateAnnouncementDialog />
       </div>
@@ -62,9 +58,9 @@ export default function AnnouncementsPage({ status }: AnnouncementsPageProps) {
       <DataTableFilters
         fields={[
           {
-            type: "search",
-            id: "search",
-            placeholder: "Search announcements...",
+            type: 'search',
+            id: 'search',
+            placeholder: 'Search announcements...',
           },
         ]}
         onFilterChange={() => {}}
@@ -72,11 +68,7 @@ export default function AnnouncementsPage({ status }: AnnouncementsPageProps) {
 
       <DataTable loading={isLoading} data={announcements} columns={columns} />
 
-      <DataTablePagination
-        meta={meta}
-        onPageChange={setPage}
-        label="announcements"
-      />
+      <DataTablePagination meta={meta} onPageChange={setPage} label="announcements" />
 
       <EditAnnouncementDialog
         announcement={editingAnnouncement}

@@ -1,21 +1,19 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { DataTable } from "@src/shared/components/data-table";
-import { DataTableFilters } from "@src/shared/components/data-table-filters";
-import { useAssociationsList } from "@src/features/associations/hooks/useAssociationsList";
-import { useDeactivateAssociation } from "@src/features/associations/hooks/useDeactivateAssociation";
-import { useAssociationColumns } from "@src/features/associations/hooks/useAssociationColumns";
-import { CreateAssociationDialog } from "@src/features/associations/components/create-association-dialog";
-import { EditAssociationDialog } from "@src/features/associations/components/edit-association-dialog";
-import { DeactivateAssociationDialog } from "@src/features/associations/components/deactivate-association-dialog";
-import type { Association } from "@src/features/associations/types/association";
+import { useState } from 'react';
+import { DataTable } from '@src/shared/components/data-table';
+import { DataTableFilters } from '@src/shared/components/data-table-filters';
+import { useAssociationsList } from '@src/features/associations/hooks/useAssociationsList';
+import { useDeactivateAssociation } from '@src/features/associations/hooks/useDeactivateAssociation';
+import { useAssociationColumns } from '@src/features/associations/hooks/useAssociationColumns';
+import { CreateAssociationDialog } from '@src/features/associations/components/create-association-dialog';
+import { EditAssociationDialog } from '@src/features/associations/components/edit-association-dialog';
+import { DeactivateAssociationDialog } from '@src/features/associations/components/deactivate-association-dialog';
+import type { Association } from '@src/features/associations/types/association';
 
 export default function AssociationsPage() {
-  const [editingAssociation, setEditingAssociation] =
-    useState<Association | null>(null);
-  const [deactivatingAssociation, setDeactivatingAssociation] =
-    useState<Association | null>(null);
+  const [editingAssociation, setEditingAssociation] = useState<Association | null>(null);
+  const [deactivatingAssociation, setDeactivatingAssociation] = useState<Association | null>(null);
 
   const { associations, isLoading } = useAssociationsList();
   const deactivateAssociation = useDeactivateAssociation();
@@ -40,9 +38,7 @@ export default function AssociationsPage() {
           <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
             Associations
           </h1>
-          <p className="mt-1 text-base text-body">
-            Manage associations and their settings
-          </p>
+          <p className="mt-1 text-base text-body">Manage associations and their settings</p>
         </div>
         <CreateAssociationDialog />
       </div>
@@ -50,9 +46,9 @@ export default function AssociationsPage() {
       <DataTableFilters
         fields={[
           {
-            type: "search",
-            id: "search",
-            placeholder: "Search associations...",
+            type: 'search',
+            id: 'search',
+            placeholder: 'Search associations...',
           },
         ]}
         onFilterChange={() => {}}

@@ -1,10 +1,10 @@
-import { ForbiddenError, normalizeUnknownError } from "@src/shared/errors";
-import { generateCsrfToken, verifyCsrfToken } from "../lib/csrf";
-import type { MiddlewareFn } from "./chain";
-import { env } from "@src/env";
-import { AppErrorResponse, getTraceId } from "../utils";
-import { logger } from "../logger";
-import { cookies } from "next/headers";
+import { ForbiddenError, normalizeUnknownError } from '@src/shared/errors';
+import { generateCsrfToken, verifyCsrfToken } from '../lib/csrf';
+import type { MiddlewareFn } from './chain';
+import { env } from '@src/env';
+import { AppErrorResponse, getTraceId } from '../utils';
+import { logger } from '../logger';
+import { cookies } from 'next/headers';
 
 /**
  * CSRF protection middleware using the double-submit cookie pattern.
@@ -27,30 +27,26 @@ export const withCsrf: MiddlewareFn = async (request, next) => {
   try {
     const method = request.method.toUpperCase();
     const pathname = request.nextUrl.pathname;
-    const isPublicPath = pathname.startsWith("/api/auth");
-    const authHeader = request.headers.get("authorization");
-    const clientType = request.headers.get("x-client-type");
+    const isPublicPath = pathname.startsWith('/api/auth');
+    const authHeader = request.headers.get('authorization');
+    const clientType = request.headers.get('x-client-type');
     const traceId = getTraceId(request);
 
-    if (
-      isPublicPath ||
-      authHeader?.startsWith("Bearer ") ||
-      clientType === "mobile"
-    ) {
+    if (isPublicPath || authHeader?.startsWith('Bearer ') || clientType === 'mobile') {
       return next(request);
     }
 
     // SAFE METHODS
-    if (["GET", "HEAD", "OPTIONS"].includes(method)) {
+    if (['GET', 'HEAD', 'OPTIONS'].includes(method)) {
       const response = await next(request);
 
       const token = generateCsrfToken();
 
-      response.cookies.set("csrf-token", token, {
+      response.cookies.set('csrf-token', token, {
         httpOnly: false,
-        secure: env.NODE_ENV === "production",
-        sameSite: "strict",
-        path: "/",
+        secure: env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        path: '/',
         maxAge: 60 * 60 * 24,
       });
 
@@ -58,20 +54,16 @@ export const withCsrf: MiddlewareFn = async (request, next) => {
     }
 
     // MUTATING METHODS
-    const csrfCookie = request.cookies.get("csrf-token")?.value;
-    const csrfHeader = request.headers.get("x-csrf-token");
+    const csrfCookie = request.cookies.get('csrf-token')?.value;
+    const csrfHeader = request.headers.get('x-csrf-token');
 
-    if (
-      !csrfCookie ||
-      !csrfHeader ||
-      !verifyCsrfToken(csrfHeader, csrfCookie)
-    ) {
-      logger.info("Invalid or missing CSRF token", {
+    if (!csrfCookie || !csrfHeader || !verifyCsrfToken(csrfHeader, csrfCookie)) {
+      logger.info('Invalid or missing CSRF token', {
         traceId,
         cookies: !!csrfCookie,
         hearder: !!csrfHeader,
       });
-      throw new ForbiddenError("Invalid or missing CSRF token");
+      throw new ForbiddenError('Invalid or missing CSRF token');
     }
 
     return next(request);

@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import { toast } from "sonner";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import { toast } from 'sonner';
 
 export function useUploadAnnouncementImage(announcementId: string | null) {
   const queryClient = useQueryClient();
@@ -8,25 +8,25 @@ export function useUploadAnnouncementImage(announcementId: string | null) {
   const uploadMutation = useMutation({
     mutationFn: (file: File) => {
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append('file', file);
       return http.post(`/announcements/${announcementId}/upload`, formData, {
-        headers: { "Content-Type": undefined },
+        headers: { 'Content-Type': undefined },
       });
     },
     onSuccess: (res) => {
       if (res.success) {
-        queryClient.invalidateQueries({ queryKey: ["announcements-list"] });
+        queryClient.invalidateQueries({ queryKey: ['announcements-list'] });
         queryClient.invalidateQueries({
-          queryKey: ["announcement", announcementId],
+          queryKey: ['announcement', announcementId],
         });
-        toast.success("Image uploaded successfully");
+        toast.success('Image uploaded successfully');
         return res;
       }
-      toast.error(res.message || "Failed to upload image");
+      toast.error(res.message || 'Failed to upload image');
       return res;
     },
     onError: (err) => {
-      toast.error("Failed to upload image");
+      toast.error('Failed to upload image');
     },
   });
 

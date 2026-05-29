@@ -1,5 +1,5 @@
-import { prisma } from "@lib/prisma";
-import { NotFoundError, ForbiddenError } from "@src/shared/errors";
+import { prisma } from '@lib/prisma';
+import { NotFoundError, ForbiddenError } from '@src/shared/errors';
 
 interface RemoveAttendeeProps {
   meetingId: string;
@@ -7,17 +7,13 @@ interface RemoveAttendeeProps {
   userId: string;
 }
 
-export async function removeAttendee({
-  meetingId,
-  associationId,
-  userId,
-}: RemoveAttendeeProps) {
+export async function removeAttendee({ meetingId, associationId, userId }: RemoveAttendeeProps) {
   const meeting = await prisma.meeting.findFirst({
     where: { id: meetingId, associationId },
   });
 
   if (!meeting) {
-    throw new NotFoundError("Meeting");
+    throw new NotFoundError('Meeting');
   }
 
   const attendance = await prisma.meetingAttendee.findUnique({
@@ -30,7 +26,7 @@ export async function removeAttendee({
   });
 
   if (!attendance) {
-    throw new ForbiddenError("User is not assigned to this meeting");
+    throw new ForbiddenError('User is not assigned to this meeting');
   }
 
   await prisma.meetingAttendee.delete({

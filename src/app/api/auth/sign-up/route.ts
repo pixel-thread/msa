@@ -1,14 +1,14 @@
-import { prisma } from "@src/shared/lib/prisma";
-import { withValidation } from "@src/shared/api";
-import { ConflictError } from "@src/shared/errors";
-import { SuccessResponse } from "@src/shared/utils";
-import { env } from "@src/env";
+import { prisma } from '@src/shared/lib/prisma';
+import { withValidation } from '@src/shared/api';
+import { ConflictError } from '@src/shared/errors';
+import { SuccessResponse } from '@src/shared/utils';
+import { env } from '@src/env';
 import {
   MembershipApplicationInput,
   MembershipApplicationSchema,
-} from "@src/features/membership-applications/validators";
-import { createMembershipApplication } from "@src/features/membership-applications/services";
-import { logger } from "@src/shared/logger/server";
+} from '@src/features/membership-applications/validators';
+import { createMembershipApplication } from '@src/features/membership-applications/services';
+import { logger } from '@src/shared/logger/server';
 
 export const POST = withValidation(
   { body: MembershipApplicationSchema },
@@ -18,7 +18,7 @@ export const POST = withValidation(
         traceId,
         email: body?.email,
       },
-      "POST /api/auth/sign-up - Request started",
+      'POST /api/auth/sign-up - Request started',
     );
     const {
       email,
@@ -54,17 +54,17 @@ export const POST = withValidation(
           traceId,
           associationSlug,
         },
-        "POST /api/auth/sign-up - Association not found",
+        'POST /api/auth/sign-up - Association not found',
       );
-      throw new ConflictError("Association not found");
+      throw new ConflictError('Association not found');
     }
 
-    if (user && user.status === "ACTIVE") {
+    if (user && user.status === 'ACTIVE') {
       logger.error(
         { traceId, email },
-        "POST /api/auth/sign-up - Active User already exists with this email",
+        'POST /api/auth/sign-up - Active User already exists with this email',
       );
-      throw new ConflictError("An Active User already exist with this email");
+      throw new ConflictError('An Active User already exist with this email');
     }
 
     const application = await createMembershipApplication({
@@ -88,13 +88,12 @@ export const POST = withValidation(
         traceId,
         applicationId: application.id,
       },
-      "POST /api/auth/sign-up - Success",
+      'POST /api/auth/sign-up - Success',
     );
 
     return SuccessResponse(
       {
-        message:
-          "Application submitted successfully. Your membership request is pending approval.",
+        message: 'Application submitted successfully. Your membership request is pending approval.',
         data: {
           id: application.id,
           email: application.email,

@@ -1,19 +1,14 @@
-"use client";
+'use client';
 
-import { useParams, useRouter } from "next/navigation";
-import { usePaymentDetail } from "@src/features/payments/hooks/usePaymentDetail";
-import { Button } from "@src/shared/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@src/shared/components/ui/card";
-import { Separator } from "@src/shared/components/ui/separator";
-import { User, CreditCard } from "lucide-react";
-import Link from "next/link";
-import { getStatusBadge } from "@src/shared/utils/helper/get-status-badge";
-import { formatDate, formattedAmount } from "@src/shared/utils";
+import { useParams, useRouter } from 'next/navigation';
+import { usePaymentDetail } from '@src/features/payments/hooks/usePaymentDetail';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '@src/shared/components/ui/card';
+import { Separator } from '@src/shared/components/ui/separator';
+import { User, CreditCard } from 'lucide-react';
+import Link from 'next/link';
+import { getStatusBadge } from '@src/shared/utils/helper/get-status-badge';
+import { formatDate, formattedAmount } from '@src/shared/utils';
 
 export function PaymentDetailPage() {
   const params = useParams();
@@ -52,9 +47,7 @@ export function PaymentDetailPage() {
           <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
             Payment Details
           </h1>
-          <p className="mt-1 text-base text-body">
-            Transaction ID: {payment.id.slice(0, 8)}...
-          </p>
+          <p className="mt-1 text-base text-body">Transaction ID: {payment.id.slice(0, 8)}...</p>
         </div>
         <div className="ml-auto">{getStatusBadge(payment.status)}</div>
       </div>
@@ -70,42 +63,30 @@ export function PaymentDetailPage() {
             <div className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Amount
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground">Amount</p>
                   <p className="text-lg font-medium text-ink mt-1">
                     {formattedAmount(payment.amount, payment.currency)}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Gateway
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground">Gateway</p>
                   <p className="text-sm text-ink mt-1 capitalize">
                     {payment.gateway.toLowerCase()}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Method
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground">Method</p>
                   <p className="text-sm text-ink mt-1 capitalize">
-                    {payment.method
-                      ? payment.method.toLowerCase().replace("_", " ")
-                      : "-"}
+                    {payment.method ? payment.method.toLowerCase().replace('_', ' ') : '-'}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Payment Date
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground">Payment Date</p>
                   <p className="text-sm text-ink mt-1">
-                    {payment.paymentDate
-                      ? formatDate(payment.paymentDate)
-                      : "N/A"}
+                    {payment.paymentDate ? formatDate(payment.paymentDate) : 'N/A'}
                   </p>
                 </div>
               </div>
@@ -114,38 +95,26 @@ export function PaymentDetailPage() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Reference Number
-                  </p>
-                  <p className="text-sm text-ink mt-1">
-                    {payment.referenceNumber || "-"}
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground">Reference Number</p>
+                  <p className="text-sm text-ink mt-1">{payment.referenceNumber || '-'}</p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Receipt Number
-                  </p>
-                  <p className="text-sm text-ink mt-1">
-                    {payment.receiptNumber || "-"}
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground">Receipt Number</p>
+                  <p className="text-sm text-ink mt-1">{payment.receiptNumber || '-'}</p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Razorpay Payment ID
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground">Razorpay Payment ID</p>
                   <p className="text-sm text-ink mt-1 font-mono text-xs">
-                    {payment.razorpayPaymentId || "-"}
+                    {payment.razorpayPaymentId || '-'}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Razorpay Order ID
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground">Razorpay Order ID</p>
                   <p className="text-sm text-ink mt-1 font-mono text-xs">
-                    {payment.razorpayOrderId || "-"}
+                    {payment.razorpayOrderId || '-'}
                   </p>
                 </div>
               </div>
@@ -154,9 +123,7 @@ export function PaymentDetailPage() {
                 <>
                   <Separator className="bg-hairline" />
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground">
-                      Notes
-                    </p>
+                    <p className="text-xs font-medium text-muted-foreground">Notes</p>
                     <p className="text-sm text-ink mt-1">{payment.notes}</p>
                   </div>
                 </>
@@ -179,17 +146,13 @@ export function PaymentDetailPage() {
                   href={`/payments/users/${payment.userId}`}
                   className="text-sm text-primary hover:underline"
                 >
-                  {payment.user?.name || "Unknown User"}
+                  {payment.user?.name || 'Unknown User'}
                 </Link>
                 {payment.user?.email && (
-                  <p className="text-sm text-muted-foreground">
-                    {payment.user.email}
-                  </p>
+                  <p className="text-sm text-muted-foreground">{payment.user.email}</p>
                 )}
                 {payment.user?.membershipNumber && (
-                  <p className="text-sm text-muted-foreground">
-                    #{payment.user.membershipNumber}
-                  </p>
+                  <p className="text-sm text-muted-foreground">#{payment.user.membershipNumber}</p>
                 )}
               </div>
             </CardContent>
@@ -206,22 +169,17 @@ export function PaymentDetailPage() {
               {payment.allocations && payment.allocations.length > 0 ? (
                 <div className="space-y-2">
                   {payment.allocations.map((alloc) => (
-                    <div
-                      key={alloc.id}
-                      className="flex items-center justify-between text-sm"
-                    >
+                    <div key={alloc.id} className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">
                         {new Date(
                           alloc.contributionPeriod.year,
                           alloc.contributionPeriod.month - 1,
-                        ).toLocaleDateString("en-IN", {
-                          month: "short",
-                          year: "numeric",
+                        ).toLocaleDateString('en-IN', {
+                          month: 'short',
+                          year: 'numeric',
                         })}
                       </span>
-                      <span className="font-medium">
-                        {formattedAmount(alloc.allocatedAmount)}
-                      </span>
+                      <span className="font-medium">{formattedAmount(alloc.allocatedAmount)}</span>
                     </div>
                   ))}
                 </div>
@@ -240,31 +198,21 @@ export function PaymentDetailPage() {
             <CardContent>
               <div className="space-y-3">
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Created
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground">Created</p>
                   <p className="text-sm text-ink mt-1">
-                    {payment.createdAt
-                      ? formatDate(payment.createdAt || "")
-                      : "-"}
+                    {payment.createdAt ? formatDate(payment.createdAt || '') : '-'}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Paid At
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground">Paid At</p>
                   <p className="text-sm text-ink mt-1">
-                    {payment.createdAt ? formatDate(payment.paidAt || "") : "-"}
+                    {payment.createdAt ? formatDate(payment.paidAt || '') : '-'}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Last Updated
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground">Last Updated</p>
                   <p className="text-sm text-ink mt-1">
-                    {payment.createdAt
-                      ? formatDate(payment.updatedAt || "")
-                      : "-"}
+                    {payment.createdAt ? formatDate(payment.updatedAt || '') : '-'}
                   </p>
                 </div>
               </div>

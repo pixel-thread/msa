@@ -1,27 +1,24 @@
-import { withAssociation, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@src/shared/utils";
-import { buildPagination } from "@src/shared/utils/build-pagination";
-import { UserRole } from "@prisma/client";
-import { prisma } from "@src/shared/lib/prisma";
-import { PAGE_SIZE } from "@src/shared/constants";
-import {
-  ComplaintQuerySchema,
-  CreateComplaintSchema,
-} from "@src/features/compliance/validators";
-import { createComplaint } from "@src/features/compliance/services";
-import { logger } from "@src/shared/logger/server";
+import { withAssociation, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@src/shared/utils';
+import { buildPagination } from '@src/shared/utils/build-pagination';
+import { UserRole } from '@prisma/client';
+import { prisma } from '@src/shared/lib/prisma';
+import { PAGE_SIZE } from '@src/shared/constants';
+import { ComplaintQuerySchema, CreateComplaintSchema } from '@src/features/compliance/validators';
+import { createComplaint } from '@src/features/compliance/services';
+import { logger } from '@src/shared/logger/server';
 
 export const GET = withAssociation(
   { query: ComplaintQuerySchema },
   async (association, { query, traceId }, req) => {
     logger.info(
       { traceId, associationId: association.id },
-      "GET /api/compliance - Request started",
+      'GET /api/compliance - Request started',
     );
     const user = await withRole(req, UserRole.DPO);
     logger.info(
       { traceId, userId: user.id, roles: user.role },
-      "GET /api/compliance - User authorized",
+      'GET /api/compliance - User authorized',
     );
 
     const where: Record<string, unknown> = {
@@ -49,7 +46,7 @@ export const GET = withAssociation(
 
     const complaints = await prisma.complaint.findMany({
       where,
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
       skip: ((query?.page ?? 1) - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
       include: {
@@ -61,10 +58,7 @@ export const GET = withAssociation(
 
     const total = await prisma.complaint.count({ where });
 
-    logger.info(
-      { traceId, count: complaints.length },
-      "GET /api/compliance - Success",
-    );
+    logger.info({ traceId, count: complaints.length }, 'GET /api/compliance - Success');
 
     return SuccessResponse({
       data: complaints,
@@ -78,9 +72,9 @@ export const POST = withAssociation(
   async (association, { body, traceId }, request) => {
     logger.info(
       { traceId, associationId: association.id },
-      "POST /api/compliance - Request started",
+      'POST /api/compliance - Request started',
     );
-    const userId = request.headers.get("x-user-id")!;
+    const userId = request.headers.get('x-user-id')!;
 
     const complaint = await createComplaint({
       associationId: association.id,
@@ -88,10 +82,7 @@ export const POST = withAssociation(
       data: body!,
     });
 
-    logger.info(
-      { traceId, complaintId: complaint.id },
-      "POST /api/compliance - Success",
-    );
+    logger.info({ traceId, complaintId: complaint.id }, 'POST /api/compliance - Success');
 
     return SuccessResponse({ data: complaint }, 201);
   },

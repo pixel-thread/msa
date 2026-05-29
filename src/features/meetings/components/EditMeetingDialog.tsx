@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useEffect } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
 import {
   Dialog,
@@ -10,16 +10,16 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
-import { Button } from "@src/shared/components/ui/button";
-import { Input } from "@src/shared/components/ui/input";
+} from '@src/shared/components/ui/dialog';
+import { Button } from '@src/shared/components/ui/button';
+import { Input } from '@src/shared/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@src/shared/components/ui/select";
+} from '@src/shared/components/ui/select';
 import {
   Form,
   FormControl,
@@ -27,12 +27,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import { toast } from "sonner";
-import { UpdateMeetingSchema, type UpdateMeetingInput } from "../validators";
-import { zodResolver } from "@hookform/resolvers/zod";
+} from '@src/shared/components/ui/form';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import { toast } from 'sonner';
+import { UpdateMeetingSchema, type UpdateMeetingInput } from '../validators';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 interface MeetingData {
   id: string;
@@ -56,11 +56,7 @@ interface EditMeetingDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function EditMeetingDialog({
-  meeting,
-  open,
-  onOpenChange,
-}: EditMeetingDialogProps) {
+export function EditMeetingDialog({ meeting, open, onOpenChange }: EditMeetingDialogProps) {
   const queryClient = useQueryClient();
 
   const form = useForm<UpdateMeetingInput>({
@@ -69,7 +65,7 @@ export function EditMeetingDialog({
       title: meeting.title,
       type: meeting.type as any,
       scheduledAt: new Date(meeting.scheduledAt),
-      venue: meeting.venue || "",
+      venue: meeting.venue || '',
       status: meeting.status as any,
     },
   });
@@ -80,7 +76,7 @@ export function EditMeetingDialog({
         title: meeting.title,
         type: meeting.type as any,
         scheduledAt: new Date(meeting.scheduledAt),
-        venue: meeting.venue || "",
+        venue: meeting.venue || '',
         status: meeting.status as any,
       });
     }
@@ -92,25 +88,23 @@ export function EditMeetingDialog({
     },
     onSuccess: (data) => {
       if (data.success) {
-        queryClient.invalidateQueries({ queryKey: ["meeting", meeting.id] });
-        queryClient.invalidateQueries({ queryKey: ["meetings"] });
-        toast.success("Meeting updated successfully");
+        queryClient.invalidateQueries({ queryKey: ['meeting', meeting.id] });
+        queryClient.invalidateQueries({ queryKey: ['meetings'] });
+        toast.success('Meeting updated successfully');
         onOpenChange(false);
       } else {
         toast.error(data.message);
       }
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Failed to update meeting");
+      toast.error(err.message || 'Failed to update meeting');
     },
   });
 
   const onSubmit: SubmitHandler<UpdateMeetingInput> = (values) => {
     const formattedData: UpdateMeetingInput = {
       ...values,
-      scheduledAt: values.scheduledAt
-        ? new Date(values.scheduledAt)
-        : undefined,
+      scheduledAt: values.scheduledAt ? new Date(values.scheduledAt) : undefined,
     };
 
     updateMeetingMutation.mutate(formattedData);
@@ -121,9 +115,7 @@ export function EditMeetingDialog({
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Meeting</DialogTitle>
-          <DialogDescription>
-            Update the meeting details below.
-          </DialogDescription>
+          <DialogDescription>Update the meeting details below.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -149,21 +141,14 @@ export function EditMeetingDialog({
                   <FormItem className="flex w-full flex-col">
                     <FormLabel>Type</FormLabel>
                     <FormControl>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
+                      <Select value={field.value} onValueChange={field.onChange}>
                         <SelectTrigger className="w-full">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="GENERAL_MEETING">
-                            General Meeting
-                          </SelectItem>
+                          <SelectItem value="GENERAL_MEETING">General Meeting</SelectItem>
                           <SelectItem value="EC_MEETING">EC Meeting</SelectItem>
-                          <SelectItem value="SPECIAL_MEETING">
-                            Special Meeting
-                          </SelectItem>
+                          <SelectItem value="SPECIAL_MEETING">Special Meeting</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -179,18 +164,13 @@ export function EditMeetingDialog({
                   <FormItem className="flex w-full flex-col">
                     <FormLabel>Status</FormLabel>
                     <FormControl>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
+                      <Select value={field.value} onValueChange={field.onChange}>
                         <SelectTrigger className="w-full">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="SCHEDULED">Scheduled</SelectItem>
-                          <SelectItem value="IN_PROGRESS">
-                            In Progress
-                          </SelectItem>
+                          <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
                           <SelectItem value="COMPLETED">Completed</SelectItem>
                           <SelectItem value="CANCELLED">Cancelled</SelectItem>
                         </SelectContent>
@@ -212,9 +192,7 @@ export function EditMeetingDialog({
                     <Input
                       type="datetime-local"
                       value={
-                        field.value instanceof Date
-                          ? field.value.toISOString().slice(0, 16)
-                          : ""
+                        field.value instanceof Date ? field.value.toISOString().slice(0, 16) : ''
                       }
                       onChange={(e) => field.onChange(new Date(e.target.value))}
                     />
@@ -239,17 +217,11 @@ export function EditMeetingDialog({
             />
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={updateMeetingMutation.isPending}>
-                {updateMeetingMutation.isPending
-                  ? "Updating..."
-                  : "Update Meeting"}
+                {updateMeetingMutation.isPending ? 'Updating...' : 'Update Meeting'}
               </Button>
             </DialogFooter>
           </form>

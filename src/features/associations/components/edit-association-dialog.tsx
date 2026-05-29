@@ -1,6 +1,6 @@
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Dialog,
   DialogContent,
@@ -8,7 +8,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
+} from '@src/shared/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -16,15 +16,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
-import { Input } from "@src/shared/components/ui/input";
-import { Textarea } from "@src/shared/components/ui/textarea";
-import { Button } from "@src/shared/components/ui/button";
-import { useUpdateAssociation } from "@src/features/associations/hooks/useUpdateAssociation";
+} from '@src/shared/components/ui/form';
+import { Input } from '@src/shared/components/ui/input';
+import { Textarea } from '@src/shared/components/ui/textarea';
+import { Button } from '@src/shared/components/ui/button';
+import { useUpdateAssociation } from '@src/features/associations/hooks/useUpdateAssociation';
 import {
   UpdateAssociationInput,
   UpdateAssociationSchema,
-} from "@src/features/associations/validators";
+} from '@src/features/associations/validators';
 
 interface Association {
   id: string;
@@ -54,14 +54,14 @@ export function EditAssociationDialog({
   const form = useForm<UpdateAssociationInput>({
     resolver: zodResolver(UpdateAssociationSchema),
     defaultValues: {
-      slug: "",
-      name: "",
-      description: "",
-      state: "",
-      country: "IN",
-      contactEmail: "",
-      primaryColor: "",
-      secondaryColor: "",
+      slug: '',
+      name: '',
+      description: '',
+      state: '',
+      country: 'IN',
+      contactEmail: '',
+      primaryColor: '',
+      secondaryColor: '',
     },
   });
 
@@ -70,12 +70,12 @@ export function EditAssociationDialog({
       form.reset({
         slug: association.slug,
         name: association.name,
-        description: association.description ?? "",
-        state: association.state ?? "",
+        description: association.description ?? '',
+        state: association.state ?? '',
         country: association.country,
-        contactEmail: association.contactEmail ?? "",
-        primaryColor: association.primaryColor ?? "",
-        secondaryColor: association.secondaryColor ?? "",
+        contactEmail: association.contactEmail ?? '',
+        primaryColor: association.primaryColor ?? '',
+        secondaryColor: association.secondaryColor ?? '',
       });
     }
   }, [open, association, form]);
@@ -99,9 +99,7 @@ export function EditAssociationDialog({
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Edit Association</DialogTitle>
-          <DialogDescription>
-            Update settings for {association.name}
-          </DialogDescription>
+          <DialogDescription>Update settings for {association.name}</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -142,10 +140,7 @@ export function EditAssociationDialog({
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Brief description of the association"
-                      {...field}
-                    />
+                    <Textarea placeholder="Brief description of the association" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -193,11 +188,7 @@ export function EditAssociationDialog({
                 <FormItem>
                   <FormLabel>Contact Email</FormLabel>
                   <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="admin@association.org"
-                      {...field}
-                    />
+                    <Input type="email" placeholder="admin@association.org" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -216,14 +207,10 @@ export function EditAssociationDialog({
                         <div
                           className="h-9 w-9 border shrink-0"
                           style={{
-                            backgroundColor: field.value || "#1f2937",
+                            backgroundColor: field.value || '#1f2937',
                           }}
                         />
-                        <Input
-                          placeholder="#1f2937"
-                          className="font-mono"
-                          {...field}
-                        />
+                        <Input placeholder="#1f2937" className="font-mono" {...field} />
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -241,14 +228,10 @@ export function EditAssociationDialog({
                         <div
                           className="h-9 w-9 border shrink-0"
                           style={{
-                            backgroundColor: field.value || "#3b82f6",
+                            backgroundColor: field.value || '#3b82f6',
                           }}
                         />
-                        <Input
-                          placeholder="#3b82f6"
-                          className="font-mono"
-                          {...field}
-                        />
+                        <Input placeholder="#3b82f6" className="font-mono" {...field} />
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -258,15 +241,11 @@ export function EditAssociationDialog({
             </div>
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={updateAssociation.isPending}>
-                {updateAssociation.isPending ? "Saving..." : "Save Changes"}
+                {updateAssociation.isPending ? 'Saving...' : 'Save Changes'}
               </Button>
             </DialogFooter>
           </form>

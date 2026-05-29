@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useDashboard } from "@src/shared/hooks/use-dashboard";
-import { StatsCards } from "@src/shared/components/dashboard/stats-cards";
-import { RevenueAreaChart } from "@src/shared/components/dashboard/revenue-area-chart";
-import { MemberBarChart } from "@src/shared/components/dashboard/member-bar-chart";
-import { RevenueLineChart } from "@src/shared/components/dashboard/revenue-line-chart";
-import { PaymentPieChart } from "@src/shared/components/dashboard/payment-pie-chart";
-import { RolesRadarChart } from "@src/shared/components/dashboard/roles-radar-chart";
-import { RecentPaymentsTable } from "@src/shared/components/dashboard/recent-payments-table";
-import { DashboardSkeleton } from "@src/shared/components/dashboard/dashboard-skeleton";
+import { useDashboard } from '@src/shared/hooks/use-dashboard';
+import { StatsCards } from '@src/shared/components/dashboard/stats-cards';
+import { RevenueAreaChart } from '@src/shared/components/dashboard/revenue-area-chart';
+import { MemberBarChart } from '@src/shared/components/dashboard/member-bar-chart';
+import { RevenueLineChart } from '@src/shared/components/dashboard/revenue-line-chart';
+import { PaymentPieChart } from '@src/shared/components/dashboard/payment-pie-chart';
+import { RolesRadarChart } from '@src/shared/components/dashboard/roles-radar-chart';
+import { RecentPaymentsTable } from '@src/shared/components/dashboard/recent-payments-table';
+import { DashboardSkeleton } from '@src/shared/components/dashboard/dashboard-skeleton';
 
 export default function DashboardPage() {
   const { data, isLoading, error } = useDashboard();
@@ -20,9 +20,7 @@ export default function DashboardPage() {
           <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
             Dashboard
           </h1>
-          <p className="mt-1 text-base text-body">
-            Association analytics and overview
-          </p>
+          <p className="mt-1 text-base text-body">Association analytics and overview</p>
         </div>
         <DashboardSkeleton />
       </div>
@@ -33,13 +31,9 @@ export default function DashboardPage() {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
         <div className="text-center">
-          <h2 className="text-xl font-semibold text-ink">
-            Failed to load dashboard
-          </h2>
+          <h2 className="text-xl font-semibold text-ink">Failed to load dashboard</h2>
           <p className="mt-2 text-sm text-body">
-            {error instanceof Error
-              ? error.message
-              : "An unexpected error occurred"}
+            {error instanceof Error ? error.message : 'An unexpected error occurred'}
           </p>
           <button
             onClick={() => window.location.reload()}
@@ -55,12 +49,8 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-          Dashboard
-        </h1>
-        <p className="mt-1 text-base text-body">
-          Association analytics and overview
-        </p>
+        <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">Dashboard</h1>
+        <p className="mt-1 text-base text-body">Association analytics and overview</p>
       </div>
 
       <StatsCards stats={data.stats} />
@@ -69,10 +59,7 @@ export default function DashboardPage() {
 
       <div className="grid gap-4 md:grid-cols-2">
         <MemberBarChart data={data.memberGrowth} />
-        <RevenueLineChart
-          revenueData={data.revenueOverTime}
-          memberData={data.memberGrowth}
-        />
+        <RevenueLineChart revenueData={data.revenueOverTime} memberData={data.memberGrowth} />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">

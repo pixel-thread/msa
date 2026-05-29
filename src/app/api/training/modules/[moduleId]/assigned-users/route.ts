@@ -1,18 +1,15 @@
-import { withAssociation, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@utils/responses";
-import { buildPagination } from "@src/shared/utils";
-import { ForbiddenError, BadRequestError } from "@src/shared/errors";
-import { UserRole } from "@prisma/client";
-import {
-  getAssignedUsers,
-  completeAssignment,
-} from "@feature/training/services";
-import { pageNumberValidation } from "@src/shared/validators";
-import { z } from "zod";
-import { logger } from "@src/shared/logger/server";
+import { withAssociation, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@utils/responses';
+import { buildPagination } from '@src/shared/utils';
+import { ForbiddenError, BadRequestError } from '@src/shared/errors';
+import { UserRole } from '@prisma/client';
+import { getAssignedUsers, completeAssignment } from '@feature/training/services';
+import { pageNumberValidation } from '@src/shared/validators';
+import { z } from 'zod';
+import { logger } from '@src/shared/logger/server';
 
 const TrainingParamsSchema = z.object({
-  moduleId: z.uuid("Invalid module ID"),
+  moduleId: z.uuid('Invalid module ID'),
 });
 
 const TrainingQuerySchema = z.object({
@@ -27,19 +24,16 @@ export const GET = withAssociation(
   { params: TrainingParamsSchema, query: TrainingQuerySchema },
   async (association, { params, query, traceId }, request) => {
     if (!params) {
-      throw new ForbiddenError("Invalid module ID");
+      throw new ForbiddenError('Invalid module ID');
     }
 
     logger.info(
       { traceId, associationId: association.id },
-      "GET /training/modules/{moduleId}/assigned-users - Request started",
+      'GET /training/modules/{moduleId}/assigned-users - Request started',
     );
 
     await withRole(request, UserRole.SECRETARY);
-    logger.info(
-      { traceId },
-      "GET /training/modules/{moduleId}/assigned-users - User authorized",
-    );
+    logger.info({ traceId }, 'GET /training/modules/{moduleId}/assigned-users - User authorized');
 
     const { moduleId } = params;
     const page = query?.page || 1;
@@ -50,10 +44,7 @@ export const GET = withAssociation(
       page,
     });
 
-    logger.info(
-      { traceId },
-      "GET /training/modules/{moduleId}/assigned-users - Success",
-    );
+    logger.info({ traceId }, 'GET /training/modules/{moduleId}/assigned-users - Success');
     return SuccessResponse({
       data: result.data,
       meta: buildPagination(result.total, page),

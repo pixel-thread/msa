@@ -1,5 +1,5 @@
-import { prisma } from "@src/shared/lib/prisma";
-import { AuditAction } from "@prisma/client";
+import { prisma } from '@src/shared/lib/prisma';
+import { AuditAction } from '@prisma/client';
 
 interface DeleteDsarTicketProps {
   associationId: string;
@@ -24,7 +24,7 @@ export async function deleteDsarTicket({
         associationId,
         actorId,
         action: AuditAction.DELETE,
-        resourceType: "DsarTicket",
+        resourceType: 'DsarTicket',
         resourceId: ticketId,
       },
     });

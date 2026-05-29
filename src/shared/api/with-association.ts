@@ -1,7 +1,7 @@
-import { ForbiddenError, UnauthorizedError } from "@src/shared/errors";
-import { withValidation, RouteContext } from "@src/shared/api/with-validation";
-import { prisma } from "@src/shared/lib/prisma";
-import type { NextRequest } from "next/server";
+import { ForbiddenError, UnauthorizedError } from '@src/shared/errors';
+import { withValidation, RouteContext } from '@src/shared/api/with-validation';
+import { prisma } from '@src/shared/lib/prisma';
+import type { NextRequest } from 'next/server';
 
 export interface AssociationDetails {
   id: string;
@@ -36,40 +36,37 @@ export function withAssociation<
   ) => Promise<Response>,
   options?: WithAssociationOptions,
 ) {
-  return withValidation<TBody, TQuery, TParams>(
-    schemas,
-    async (request, context, validated) => {
-      const userId = request.headers.get("x-user-id");
+  return withValidation<TBody, TQuery, TParams>(schemas, async (request, context, validated) => {
+    const userId = request.headers.get('x-user-id');
 
-      if (!userId) {
-        throw new UnauthorizedError("Unauthorized");
+    if (!userId) {
+      throw new UnauthorizedError('Unauthorized');
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { association: true },
+    });
+
+    if (!user || !user.associationId) {
+      throw new ForbiddenError('User association not found');
+    }
+
+    if (options?.slugParam) {
+      const params = (await context.params) as TParams;
+      const urlSlug = params[options.slugParam];
+
+      if (urlSlug && user.association.slug !== urlSlug) {
+        throw new ForbiddenError('Access denied: Invalid association');
       }
+    }
 
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        include: { association: true },
-      });
+    const association: AssociationDetails = {
+      id: user.association.id,
+      slug: user.association.slug,
+      name: user.association.name,
+    };
 
-      if (!user || !user.associationId) {
-        throw new ForbiddenError("User association not found");
-      }
-
-      if (options?.slugParam) {
-        const params = (await context.params) as TParams;
-        const urlSlug = params[options.slugParam];
-
-        if (urlSlug && user.association.slug !== urlSlug) {
-          throw new ForbiddenError("Access denied: Invalid association");
-        }
-      }
-
-      const association: AssociationDetails = {
-        id: user.association.id,
-        slug: user.association.slug,
-        name: user.association.name,
-      };
-
-      return handler(association, validated, request, context);
-    },
-  );
+    return handler(association, validated, request, context);
+  });
 }

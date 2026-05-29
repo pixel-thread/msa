@@ -1,5 +1,5 @@
-import { prisma } from "@lib/prisma";
-import { AuditAction, Prisma } from "@prisma/client";
+import { prisma } from '@lib/prisma';
+import { AuditAction, Prisma } from '@prisma/client';
 
 interface DeleteCertificateProps {
   associationId: string;
@@ -21,7 +21,7 @@ export async function deleteCertificate({
     });
 
     if (!certificate) {
-      throw new Error("Training certificate not found");
+      throw new Error('Training certificate not found');
     }
 
     const storageKey = certificate.file?.storageKey;
@@ -40,7 +40,7 @@ export async function deleteCertificate({
         associationId,
         actorId,
         action: AuditAction.TRAINING_MODULE_UPDATE,
-        resourceType: "TrainingCertificate",
+        resourceType: 'TrainingCertificate',
         resourceId: certificateId,
         oldValues: certificate as unknown as Prisma.InputJsonValue,
       },
@@ -48,7 +48,7 @@ export async function deleteCertificate({
 
     return {
       success: true,
-      message: "Training certificate deleted",
+      message: 'Training certificate deleted',
       storageKey,
     };
   });

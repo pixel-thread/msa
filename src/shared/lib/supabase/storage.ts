@@ -1,7 +1,7 @@
-import { supabase } from "@src/shared/lib/supabase/client";
-import { env } from "@src/env";
-import { getStorageProvider } from "@src/shared/services/storage";
-import { logger } from "@src/shared/logger/server";
+import { supabase } from '@src/shared/lib/supabase/client';
+import { env } from '@src/env';
+import { getStorageProvider } from '@src/shared/services/storage';
+import { logger } from '@src/shared/logger/server';
 
 export interface UploadResult {
   key: string;
@@ -16,8 +16,8 @@ export async function uploadToBucket(
   traceId?: string,
 ): Promise<UploadResult> {
   const storage = getStorageProvider();
-  const ext = file.name.split(".").pop() || "";
-  const fileName = `${crypto.randomUUID()}${ext ? `.${ext}` : ""}`;
+  const ext = file.name.split('.').pop() || '';
+  const fileName = `${crypto.randomUUID()}${ext ? `.${ext}` : ''}`;
   const mimeType = file.type;
   const fileSize = file.size;
 
@@ -33,7 +33,7 @@ export async function uploadToBucket(
       fileSize,
       storage: env.STORAGE_PROVIDER,
     },
-    "Uploading file started",
+    'Uploading file started',
   );
 
   const { key, url } = await storage.upload({
@@ -51,7 +51,7 @@ export async function uploadToBucket(
       fileSize,
       storage: env.STORAGE_PROVIDER,
     },
-    "Uploading file completed",
+    'Uploading file completed',
   );
   return {
     mimeType,

@@ -1,22 +1,22 @@
 export const associationPaths = {
-  "/associations": {
+  '/associations': {
     get: {
-      tags: ["Associations"],
-      summary: "Get all associations",
-      description: "Retrieve a list of all associations",
+      tags: ['Associations'],
+      summary: 'Get all associations',
+      description: 'Retrieve a list of all associations',
       security: [{ bearerAuth: [] }],
       responses: {
-        "200": {
-          description: "List of associations",
+        '200': {
+          description: 'List of associations',
           content: {
-            "application/json": {
+            'application/json': {
               schema: {
-                type: "array",
+                type: 'array',
                 items: {
-                  type: "object",
+                  type: 'object',
                   properties: {
-                    id: { type: "string", format: "uuid" },
-                    name: { type: "string" },
+                    id: { type: 'string', format: 'uuid' },
+                    name: { type: 'string' },
                   },
                 },
               },
@@ -26,34 +26,33 @@ export const associationPaths = {
       },
     },
   },
-  "/associations/{associationId}/members": {
+  '/associations/{associationId}/members': {
     post: {
-      tags: ["Associations"],
-      summary: "Add member to association",
-      description:
-        "Add an existing user as a member to the association (PRESIDENT only)",
+      tags: ['Associations'],
+      summary: 'Add member to association',
+      description: 'Add an existing user as a member to the association (PRESIDENT only)',
       security: [{ bearerAuth: [] }],
       parameters: [
         {
-          name: "associationId",
-          in: "path",
+          name: 'associationId',
+          in: 'path',
           required: true,
-          schema: { type: "string", format: "uuid" },
-          description: "ID of the association",
+          schema: { type: 'string', format: 'uuid' },
+          description: 'ID of the association',
         },
       ],
       requestBody: {
         required: true,
         content: {
-          "application/json": {
+          'application/json': {
             schema: {
-              type: "object",
-              required: ["memberId"],
+              type: 'object',
+              required: ['memberId'],
               properties: {
                 memberId: {
-                  type: "string",
-                  format: "uuid",
-                  description: "ID of the user to add",
+                  type: 'string',
+                  format: 'uuid',
+                  description: 'ID of the user to add',
                 },
               },
             },
@@ -61,27 +60,27 @@ export const associationPaths = {
         },
       },
       responses: {
-        "201": {
-          description: "Member added to association",
+        '201': {
+          description: 'Member added to association',
           content: {
-            "application/json": {
+            'application/json': {
               schema: {
-                type: "object",
+                type: 'object',
                 properties: {
-                  id: { type: "string" },
-                  name: { type: "string" },
-                  email: { type: "string" },
-                  role: { type: "array", items: { type: "string" } },
-                  status: { type: "string" },
-                  membershipNumber: { type: "string" },
-                  associationId: { type: "string" },
+                  id: { type: 'string' },
+                  name: { type: 'string' },
+                  email: { type: 'string' },
+                  role: { type: 'array', items: { type: 'string' } },
+                  status: { type: 'string' },
+                  membershipNumber: { type: 'string' },
+                  associationId: { type: 'string' },
                 },
               },
             },
           },
         },
-        "404": { description: "Member not found" },
-        "409": { description: "Member already in this association" },
+        '404': { description: 'Member not found' },
+        '409': { description: 'Member already in this association' },
       },
     },
   },

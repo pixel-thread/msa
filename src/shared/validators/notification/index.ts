@@ -1,5 +1,5 @@
-import { NotificationType } from "@prisma/client";
-import z from "zod";
+import { NotificationType } from '@prisma/client';
+import z from 'zod';
 
 export const CreateNotificationSchema = z.object({
   userId: z.uuid(),

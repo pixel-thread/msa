@@ -1,7 +1,7 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import { toast } from "sonner";
-import { trainingEndpoints, trainingQueryKeys } from "../../utils/constants";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import { toast } from 'sonner';
+import { trainingEndpoints, trainingQueryKeys } from '../../utils/constants';
 
 export function useCreateTrainingSupplement(moduleId: string | null) {
   const queryClient = useQueryClient();
@@ -17,7 +17,7 @@ export function useCreateTrainingSupplement(moduleId: string | null) {
         toast.success(res.message);
         return res;
       }
-      toast.error(res.message || "Failed to add supplement");
+      toast.error(res.message || 'Failed to add supplement');
       return res;
     },
   });

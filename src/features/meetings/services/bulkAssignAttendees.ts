@@ -1,9 +1,9 @@
-import { prisma } from "@lib/prisma";
-import { NotFoundError, ForbiddenError } from "@src/shared/errors";
-import { $Enums, AttendeeRole } from "@prisma/client";
-import { ExpoNotificationService } from "@lib/expo";
-import { EXPO_ROUTES } from "@src/shared/constants/expo-route";
-import { logger } from "@src/shared/logger/server";
+import { prisma } from '@lib/prisma';
+import { NotFoundError, ForbiddenError } from '@src/shared/errors';
+import { $Enums, AttendeeRole } from '@prisma/client';
+import { ExpoNotificationService } from '@lib/expo';
+import { EXPO_ROUTES } from '@src/shared/constants/expo-route';
+import { logger } from '@src/shared/logger/server';
 
 interface BulkAssignAttendeesProps {
   meetingId: string;
@@ -24,7 +24,7 @@ export async function bulkAssignAttendees({
   });
 
   if (!meeting) {
-    throw new NotFoundError("Meeting");
+    throw new NotFoundError('Meeting');
   }
 
   // 2. Verify all provided userIds exist within this association
@@ -41,7 +41,7 @@ export async function bulkAssignAttendees({
 
   if (notFoundIds.length > 0) {
     throw new ForbiddenError(
-      `Access Denied: Users not found in this association: ${notFoundIds.join(", ")}`,
+      `Access Denied: Users not found in this association: ${notFoundIds.join(', ')}`,
     );
   }
 
@@ -95,7 +95,7 @@ export async function bulkAssignAttendees({
           body: `You have been assigned to: ${meeting.title}`,
           route: EXPO_ROUTES.MEETINGS.MEETING_DETAIL(meeting.id),
           entityId: meetingId,
-          meta: { id: meeting.id, type: "MEETING" },
+          meta: { id: meeting.id, type: 'MEETING' },
           associationId,
         }));
 
@@ -110,10 +110,10 @@ export async function bulkAssignAttendees({
 
           await ExpoNotificationService.sendPushNotifications(
             allTokens,
-            "New Meeting Assigned",
+            'New Meeting Assigned',
             `You have been assigned to: ${meeting.title}`,
             {
-              title: "New Meeting Assigned",
+              title: 'New Meeting Assigned',
               body: `You have been assigned to: ${meeting.title}`,
               entityId: meeting.id,
               route: EXPO_ROUTES.MEETINGS.MEETING_DETAIL(meeting.id),
@@ -127,7 +127,7 @@ export async function bulkAssignAttendees({
           meetingId,
           error,
         },
-        "Background notification processing failed",
+        'Background notification processing failed',
       );
     }
   })();

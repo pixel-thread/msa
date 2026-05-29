@@ -1,14 +1,14 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-import { prisma } from "@src/shared/lib/prisma";
-import { withValidation } from "@src/shared/api";
-import { verifyPassword } from "@src/shared/lib/password";
-import { BadRequestError, UnauthorizedError } from "@src/shared/errors";
-import { SuccessResponse } from "@src/shared/utils";
-import { logger } from "@src/shared/logger/server";
+import { prisma } from '@src/shared/lib/prisma';
+import { withValidation } from '@src/shared/api';
+import { verifyPassword } from '@src/shared/lib/password';
+import { BadRequestError, UnauthorizedError } from '@src/shared/errors';
+import { SuccessResponse } from '@src/shared/utils';
+import { logger } from '@src/shared/logger/server';
 
 const DisableMfaSchema = z.object({
-  password: z.string().min(1, "Password is required"),
+  password: z.string().min(1, 'Password is required'),
 });
 
 type DisableMfaBody = z.infer<typeof DisableMfaSchema>;
@@ -16,18 +16,12 @@ type DisableMfaBody = z.infer<typeof DisableMfaSchema>;
 export const POST = withValidation(
   { body: DisableMfaSchema },
   async (request, _ctx, { body, traceId }) => {
-    const userId = request.headers.get("x-user-id");
-    logger.info(
-      { traceId, userId },
-      "POST /api/auth/mfa/disable - Request started",
-    );
+    const userId = request.headers.get('x-user-id');
+    logger.info({ traceId, userId }, 'POST /api/auth/mfa/disable - Request started');
 
     if (!userId) {
-      logger.error(
-        { traceId },
-        "POST /api/auth/mfa/disable - Unauthorized (missing x-user-id)",
-      );
-      throw new UnauthorizedError("Unauthorized");
+      logger.error({ traceId }, 'POST /api/auth/mfa/disable - Unauthorized (missing x-user-id)');
+      throw new UnauthorizedError('Unauthorized');
     }
 
     const { password } = body as DisableMfaBody;
@@ -38,29 +32,20 @@ export const POST = withValidation(
     });
 
     if (!user || !user.mfaEnabled) {
-      logger.error(
-        { traceId, userId },
-        "POST /api/auth/mfa/disable - MFA is not enabled",
-      );
-      throw new BadRequestError("MFA is not enabled");
+      logger.error({ traceId, userId }, 'POST /api/auth/mfa/disable - MFA is not enabled');
+      throw new BadRequestError('MFA is not enabled');
     }
 
     if (!user.password) {
-      logger.error(
-        { traceId, userId },
-        "POST /api/auth/mfa/disable - User password not set",
-      );
-      throw new BadRequestError("Please set a password first");
+      logger.error({ traceId, userId }, 'POST /api/auth/mfa/disable - User password not set');
+      throw new BadRequestError('Please set a password first');
     }
 
     const isValid = await verifyPassword(password, user.password);
 
     if (!isValid) {
-      logger.error(
-        { traceId, userId },
-        "POST /api/auth/mfa/disable - Invalid password",
-      );
-      throw new UnauthorizedError("Invalid password");
+      logger.error({ traceId, userId }, 'POST /api/auth/mfa/disable - Invalid password');
+      throw new UnauthorizedError('Invalid password');
     }
 
     await prisma.user.update({
@@ -68,10 +53,10 @@ export const POST = withValidation(
       data: { mfaEnabled: false },
     });
 
-    logger.info({ traceId, userId }, "POST /api/auth/mfa/disable - Success");
+    logger.info({ traceId, userId }, 'POST /api/auth/mfa/disable - Success');
 
     return SuccessResponse({
-      message: "MFA disabled successfully",
+      message: 'MFA disabled successfully',
       data: { mfaEnabled: false },
     });
   },

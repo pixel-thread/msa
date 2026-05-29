@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import {
   Dialog,
   DialogContent,
@@ -11,9 +11,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
-import { Button } from "@src/shared/components/ui/button";
-import { Input } from "@src/shared/components/ui/input";
+} from '@src/shared/components/ui/dialog';
+import { Button } from '@src/shared/components/ui/button';
+import { Input } from '@src/shared/components/ui/input';
 import {
   Form,
   FormControl,
@@ -21,17 +21,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from "@src/shared/components/ui/radio-group";
-import { Label } from "@src/shared/components/ui/label";
-import { Paperclip, X, Globe, Upload, Ban } from "lucide-react";
+} from '@src/shared/components/ui/form';
+import { RadioGroup, RadioGroupItem } from '@src/shared/components/ui/radio-group';
+import { Label } from '@src/shared/components/ui/label';
+import { Paperclip, X, Globe, Upload, Ban } from 'lucide-react';
 
 const CompleteAssignmentSchema = z.object({
   scorePercent: z.number().min(0).max(100).optional(),
-  certificateOption: z.enum(["none", "global", "custom"]).default("none"),
+  certificateOption: z.enum(['none', 'global', 'custom']).default('none'),
 });
 
 type CompleteAssignmentInput = z.infer<typeof CompleteAssignmentSchema>;
@@ -50,7 +47,7 @@ interface CompleteAssignmentDialogProps {
   onComplete: (data: {
     userId: string;
     scorePercent?: number;
-    certificateOption?: "none" | "global" | "custom";
+    certificateOption?: 'none' | 'global' | 'custom';
     certificateFile?: File | null;
   }) => void;
   isCompleting: boolean;
@@ -72,17 +69,17 @@ export function CompleteAssignmentDialog({
     resolver: zodResolver(CompleteAssignmentSchema),
     defaultValues: {
       scorePercent: undefined,
-      certificateOption: certificateTemplate ? "global" : "none",
+      certificateOption: certificateTemplate ? 'global' : 'none',
     },
   });
 
-  const certOption = form.watch("certificateOption");
+  const certOption = form.watch('certificateOption');
 
   const onSubmit = (values: CompleteAssignmentInput) => {
     onComplete({
       userId,
       scorePercent: values.scorePercent,
-      certificateOption: certFile ? "custom" : values.certificateOption,
+      certificateOption: certFile ? 'custom' : values.certificateOption,
       certificateFile: certFile,
     });
     onOpenChange(false);
@@ -107,8 +104,7 @@ export function CompleteAssignmentDialog({
                 <span className="font-medium text-ink">User:</span> {userName}
               </p>
               <p className="text-sm text-body mt-1">
-                <span className="font-medium text-ink">Module ID:</span>{" "}
-                {moduleId}
+                <span className="font-medium text-ink">Module ID:</span> {moduleId}
               </p>
             </div>
 
@@ -126,11 +122,7 @@ export function CompleteAssignmentDialog({
                       max={100}
                       {...field}
                       onChange={(e) =>
-                        field.onChange(
-                          e.target.value
-                            ? parseInt(e.target.value, 10)
-                            : undefined,
-                        )
+                        field.onChange(e.target.value ? parseInt(e.target.value, 10) : undefined)
                       }
                     />
                   </FormControl>
@@ -147,9 +139,9 @@ export function CompleteAssignmentDialog({
                   <FormLabel>Certificate</FormLabel>
                   <FormControl>
                     <RadioGroup
-                      value={certFile ? "custom" : field.value}
+                      value={certFile ? 'custom' : field.value}
                       onValueChange={(val) => {
-                        if (val !== "custom") {
+                        if (val !== 'custom') {
                           setCertFile(null);
                         }
                         field.onChange(val);
@@ -164,9 +156,7 @@ export function CompleteAssignmentDialog({
                         >
                           <Ban className="h-4 w-4 text-muted-foreground" />
                           <div>
-                            <span className="text-sm font-medium">
-                              No certificate
-                            </span>
+                            <span className="text-sm font-medium">No certificate</span>
                             <p className="text-xs text-muted-foreground">
                               Mark complete without issuing a certificate
                             </p>
@@ -183,9 +173,7 @@ export function CompleteAssignmentDialog({
                           >
                             <Globe className="h-4 w-4 text-primary" />
                             <div>
-                              <span className="text-sm font-medium">
-                                Use template certificate
-                              </span>
+                              <span className="text-sm font-medium">Use template certificate</span>
                               <p className="text-xs text-muted-foreground">
                                 {certificateTemplate.name}
                               </p>
@@ -202,9 +190,7 @@ export function CompleteAssignmentDialog({
                         >
                           <Upload className="h-4 w-4 text-primary" />
                           <div>
-                            <span className="text-sm font-medium">
-                              Upload custom certificate
-                            </span>
+                            <span className="text-sm font-medium">Upload custom certificate</span>
                             <p className="text-xs text-muted-foreground">
                               Upload a personalized certificate file
                             </p>
@@ -218,7 +204,7 @@ export function CompleteAssignmentDialog({
               )}
             />
 
-            {certOption === "custom" || certFile ? (
+            {certOption === 'custom' || certFile ? (
               <FormItem>
                 <FormLabel>Certificate File</FormLabel>
                 <FormControl>
@@ -226,9 +212,7 @@ export function CompleteAssignmentDialog({
                     <div className="flex items-center justify-between border border-hairline bg-canvas px-3 py-2">
                       <div className="flex items-center gap-2 min-w-0">
                         <Paperclip className="h-4 w-4 shrink-0 text-muted-foreground" />
-                        <span className="text-sm text-body truncate">
-                          {certFile.name}
-                        </span>
+                        <span className="text-sm text-body truncate">{certFile.name}</span>
                         <span className="text-xs text-muted-foreground shrink-0">
                           ({(certFile.size / 1024).toFixed(1)} KB)
                         </span>
@@ -240,7 +224,7 @@ export function CompleteAssignmentDialog({
                         className="h-6 w-6 p-0"
                         onClick={() => {
                           setCertFile(null);
-                          form.setValue("certificateOption", "none");
+                          form.setValue('certificateOption', 'none');
                         }}
                       >
                         <X className="h-4 w-4" />
@@ -258,7 +242,7 @@ export function CompleteAssignmentDialog({
                           const file = e.target.files?.[0] ?? null;
                           setCertFile(file);
                           if (file) {
-                            form.setValue("certificateOption", "custom");
+                            form.setValue('certificateOption', 'custom');
                           }
                         }}
                       />
@@ -270,15 +254,11 @@ export function CompleteAssignmentDialog({
             ) : null}
 
             <DialogFooter className="pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={isCompleting}>
-                {isCompleting ? "Recording..." : "Mark as Completed"}
+                {isCompleting ? 'Recording...' : 'Mark as Completed'}
               </Button>
             </DialogFooter>
           </form>

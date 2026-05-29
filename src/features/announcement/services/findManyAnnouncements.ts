@@ -1,8 +1,8 @@
-import { prisma } from "@lib/prisma";
-import { AnnouncementStatus, AnnouncementPriority } from "@prisma/client";
-import { Prisma } from "@prisma/client";
-import { PAGE_SIZE } from "@src/shared/constants";
-import { buildPagination } from "@src/shared/utils/build-pagination";
+import { prisma } from '@lib/prisma';
+import { AnnouncementStatus, AnnouncementPriority } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import { PAGE_SIZE } from '@src/shared/constants';
+import { buildPagination } from '@src/shared/utils/build-pagination';
 
 interface FindManyAnnouncementsProps {
   associationId: string;
@@ -32,8 +32,8 @@ export async function findManyAnnouncements({
     ...(filters?.search && {
       publishedAt: { not: null },
       OR: [
-        { title: { contains: filters.search, mode: "insensitive" } },
-        { summary: { contains: filters.search, mode: "insensitive" } },
+        { title: { contains: filters.search, mode: 'insensitive' } },
+        { summary: { contains: filters.search, mode: 'insensitive' } },
       ],
     }),
   };
@@ -43,11 +43,7 @@ export async function findManyAnnouncements({
       where,
       skip,
       take: limit,
-      orderBy: [
-        { isPinned: "desc" },
-        { publishedAt: "desc" },
-        { createdAt: "desc" },
-      ],
+      orderBy: [{ isPinned: 'desc' }, { publishedAt: 'desc' }, { createdAt: 'desc' }],
       include: {
         author: {
           select: { id: true, name: true, imageUrl: true },

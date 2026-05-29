@@ -1,10 +1,7 @@
-import { prisma } from "@lib/prisma";
-import { Prisma } from "@prisma/client";
-import { NotFoundError } from "@src/shared/errors";
-import {
-  CreateMeetingMinuteInput,
-  UpdateMeetingMinuteInput,
-} from "../validators/minutes";
+import { prisma } from '@lib/prisma';
+import { Prisma } from '@prisma/client';
+import { NotFoundError } from '@src/shared/errors';
+import { CreateMeetingMinuteInput, UpdateMeetingMinuteInput } from '../validators/minutes';
 
 interface CreateMeetingMinuteProps {
   meetingId: string;
@@ -28,7 +25,7 @@ export async function createMeetingMinute({
   const meeting = await prisma.meeting.findFirst({
     where: { id: meetingId, associationId },
   });
-  if (!meeting) throw new NotFoundError("Meeting");
+  if (!meeting) throw new NotFoundError('Meeting');
 
   return await prisma.meetingMinutes.create({
     data: {
@@ -54,7 +51,7 @@ export async function updateMeetingMinute({
       meeting: { associationId },
     },
   });
-  if (!minute) throw new NotFoundError("Meeting Minute");
+  if (!minute) throw new NotFoundError('Meeting Minute');
 
   return await prisma.meetingMinutes.update({
     where: { id: minuteId },
@@ -77,8 +74,6 @@ type DeleteMeetingMinuiteProps = {
   where: Prisma.MeetingMinutesWhereUniqueInput;
 };
 
-export async function deleteMeetingMinute({
-  where,
-}: DeleteMeetingMinuiteProps) {
+export async function deleteMeetingMinute({ where }: DeleteMeetingMinuiteProps) {
   return await prisma.meetingMinutes.delete({ where });
 }

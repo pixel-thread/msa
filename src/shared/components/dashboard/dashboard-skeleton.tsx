@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { Skeleton } from "@src/shared/components/ui/skeleton";
-import { Card, CardContent, CardHeader } from "@src/shared/components/ui/card";
+import { Skeleton } from '@src/shared/components/ui/skeleton';
+import { Card, CardContent, CardHeader } from '@src/shared/components/ui/card';
 
 export function DashboardSkeleton() {
   return (

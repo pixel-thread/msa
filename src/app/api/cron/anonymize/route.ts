@@ -1,18 +1,15 @@
-import { NextResponse } from "next/server";
-import { env } from "@src/env";
-import { runAnonymizeCron } from "@src/features/cron/services";
-import { logger } from "@src/shared/logger/server";
+import { NextResponse } from 'next/server';
+import { env } from '@src/env';
+import { runAnonymizeCron } from '@src/features/cron/services';
+import { logger } from '@src/shared/logger/server';
 
 export async function GET(request: Request) {
-  logger.info("GET /api/cron/anonymize - Request started");
-  const authHeader = request.headers.get("authorization");
+  logger.info('GET /api/cron/anonymize - Request started');
+  const authHeader = request.headers.get('authorization');
 
   if (authHeader !== `Bearer ${env.CRON_SECRET}`) {
-    logger.warn("GET /api/cron/anonymize - Unauthorized access attempt");
-    return NextResponse.json(
-      { error: "Unauthorized", code: "UNAUTHORIZED" },
-      { status: 401 },
-    );
+    logger.warn('GET /api/cron/anonymize - Unauthorized access attempt');
+    return NextResponse.json({ error: 'Unauthorized', code: 'UNAUTHORIZED' }, { status: 401 });
   }
 
   try {
@@ -20,9 +17,7 @@ export async function GET(request: Request) {
 
     const totalProcessed = results.reduce((sum, r) => sum + r.processed, 0);
     const totalFailed = results.reduce((sum, r) => sum + r.failed, 0);
-    const processedAssociations = results.filter(
-      (r) => r.processed && !r.error,
-    ).length;
+    const processedAssociations = results.filter((r) => r.processed && !r.error).length;
 
     logger.info(
       {
@@ -31,12 +26,12 @@ export async function GET(request: Request) {
         totalAnonymized: totalProcessed,
         totalFailed,
       },
-      "GET /api/cron/anonymize - Anonymization completed",
+      'GET /api/cron/anonymize - Anonymization completed',
     );
 
     return NextResponse.json({
       success: true,
-      message: "User anonymization completed",
+      message: 'User anonymization completed',
       summary: {
         totalAssociations: results.length,
         processedAssociations,
@@ -46,12 +41,12 @@ export async function GET(request: Request) {
       results,
     });
   } catch (error) {
-    logger.error({ error }, "GET /api/cron/anonymize - Unhandled error");
+    logger.error({ error }, 'GET /api/cron/anonymize - Unhandled error');
     return NextResponse.json(
       {
-        error: "Internal server error",
-        code: "INTERNAL_ERROR",
-        message: error instanceof Error ? error.message : "Unknown error",
+        error: 'Internal server error',
+        code: 'INTERNAL_ERROR',
+        message: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 },
     );

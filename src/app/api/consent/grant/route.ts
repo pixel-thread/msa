@@ -1,9 +1,9 @@
-import { withAssociation } from "@src/shared/api";
-import { ConsentService, ConsentUpdateSchema } from "@src/features/consent";
-import { ConsentStatus } from "@prisma/client";
-import { SuccessResponse } from "@src/shared/utils";
-import { BadRequestError, UnauthorizedError } from "@src/shared/errors";
-import { logger } from "@src/shared/logger/server";
+import { withAssociation } from '@src/shared/api';
+import { ConsentService, ConsentUpdateSchema } from '@src/features/consent';
+import { ConsentStatus } from '@prisma/client';
+import { SuccessResponse } from '@src/shared/utils';
+import { BadRequestError, UnauthorizedError } from '@src/shared/errors';
+import { logger } from '@src/shared/logger/server';
 
 /**
  * POST /api/consent/grant
@@ -20,20 +20,20 @@ export const POST = withAssociation(
         traceId,
         associationId: association.id,
       },
-      "POST /api/consent/grant - Request started",
+      'POST /api/consent/grant - Request started',
     );
 
-    const userId = request.headers.get("x-user-id");
+    const userId = request.headers.get('x-user-id');
 
-    if (!userId) throw new UnauthorizedError("Unauthorized");
+    if (!userId) throw new UnauthorizedError('Unauthorized');
 
     if (!body) {
-      throw new BadRequestError("Request body is required");
+      throw new BadRequestError('Request body is required');
     }
 
-    const ipAddress = request.headers.get("x-forwarded-for") || "unknown";
+    const ipAddress = request.headers.get('x-forwarded-for') || 'unknown';
 
-    const userAgent = request.headers.get("user-agent") || "unknown";
+    const userAgent = request.headers.get('user-agent') || 'unknown';
 
     const receipts = await ConsentService.updateConsent(
       userId,
@@ -51,11 +51,11 @@ export const POST = withAssociation(
         traceId,
         userId,
       },
-      "POST /api/consent/grant - Consent granted successfully",
+      'POST /api/consent/grant - Consent granted successfully',
     );
 
     return SuccessResponse({
-      message: "Consent granted successfully",
+      message: 'Consent granted successfully',
       data: receipts,
     });
   },

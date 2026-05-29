@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { OTPInput, OTPInputContext } from "input-otp";
+import * as React from 'react';
+import { OTPInput, OTPInputContext } from 'input-otp';
 
-import { cn } from "@src/shared/lib/utils";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { MinusSignIcon } from "@hugeicons/core-free-icons";
+import { cn } from '@src/shared/lib/utils';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { MinusSignIcon } from '@hugeicons/core-free-icons';
 
 function InputOTP({
   className,
@@ -18,22 +18,22 @@ function InputOTP({
     <OTPInput
       data-slot="input-otp"
       containerClassName={cn(
-        "cn-input-otp flex items-center has-disabled:opacity-50",
+        'cn-input-otp flex items-center has-disabled:opacity-50',
         containerClassName,
       )}
       spellCheck={false}
-      className={cn("disabled:cursor-not-allowed", className)}
+      className={cn('disabled:cursor-not-allowed', className)}
       {...props}
     />
   );
 }
 
-function InputOTPGroup({ className, ...props }: React.ComponentProps<"div">) {
+function InputOTPGroup({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="input-otp-group"
       className={cn(
-        "flex items-center gap-1 rounded-none has-aria-invalid:border-b-destructive dark:has-aria-invalid:border-b-destructive/50",
+        'flex items-center gap-1 rounded-none has-aria-invalid:border-b-destructive dark:has-aria-invalid:border-b-destructive/50',
         className,
       )}
       {...props}
@@ -45,7 +45,7 @@ function InputOTPSlot({
   index,
   className,
   ...props
-}: React.ComponentProps<"div"> & {
+}: React.ComponentProps<'div'> & {
   index: number;
 }) {
   const inputOTPContext = React.useContext(OTPInputContext);
@@ -56,7 +56,7 @@ function InputOTPSlot({
       data-slot="input-otp-slot"
       data-active={isActive}
       className={cn(
-        "relative flex size-10 items-center justify-center border border-transparent border-b-input bg-transparent text-sm transition-[color,border-color] outline-none first:rounded-none last:rounded-none aria-invalid:border-b-destructive data-[active=true]:z-10 data-[active=true]:border-b-ring dark:aria-invalid:border-b-destructive/50",
+        'relative flex size-10 items-center justify-center border border-transparent border-b-input bg-transparent text-sm transition-[color,border-color] outline-none first:rounded-none last:rounded-none aria-invalid:border-b-destructive data-[active=true]:z-10 data-[active=true]:border-b-ring dark:aria-invalid:border-b-destructive/50',
         className,
       )}
       {...props}
@@ -71,7 +71,7 @@ function InputOTPSlot({
   );
 }
 
-function InputOTPSeparator({ ...props }: React.ComponentProps<"div">) {
+function InputOTPSeparator({ ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="input-otp-separator"

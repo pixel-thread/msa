@@ -5,9 +5,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
-import { Button } from "@src/shared/components/ui/button";
-import { SubscriptionPlan } from "../types";
+} from '@src/shared/components/ui/dialog';
+import { Button } from '@src/shared/components/ui/button';
+import { SubscriptionPlan } from '../types';
 
 interface DeletePlanDialogProps {
   plan: SubscriptionPlan | null;
@@ -30,26 +30,17 @@ export function DeletePlanDialog({
         <DialogHeader>
           <DialogTitle>Delete Subscription Plan</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete the plan &quot;{plan?.name}&quot;?
-            This action cannot be undone.
+            Are you sure you want to delete the plan &quot;{plan?.name}&quot;? This action cannot be
+            undone.
           </DialogDescription>
         </DialogHeader>
 
         <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-          >
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={onConfirm}
-            disabled={isDeleting}
-          >
-            {isDeleting ? "Deleting..." : "Delete Plan"}
+          <Button type="button" variant="destructive" onClick={onConfirm} disabled={isDeleting}>
+            {isDeleting ? 'Deleting...' : 'Delete Plan'}
           </Button>
         </DialogFooter>
       </DialogContent>

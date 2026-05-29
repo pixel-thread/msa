@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
-import type { ResponseMeta, SuccessEnvelope } from "@src/shared/types";
+import type { ResponseMeta, SuccessEnvelope } from '@src/shared/types';
 
 export function SuccessResponse<T>(
   { data, meta, message }: { data: T; meta?: ResponseMeta; message?: string },

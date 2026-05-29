@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
-import { Badge } from "@src/shared/components/ui/badge";
-import { useDsarTicketDetail } from "../hooks";
-import type { DsarTicketRecord } from "../types";
+} from '@src/shared/components/ui/dialog';
+import { Badge } from '@src/shared/components/ui/badge';
+import { useDsarTicketDetail } from '../hooks';
+import type { DsarTicketRecord } from '../types';
 
 interface DsarDetailDialogProps {
   record: DsarTicketRecord | null;
@@ -19,26 +19,22 @@ interface DsarDetailDialogProps {
 }
 
 const statusStyles: Record<string, string> = {
-  PENDING: "bg-[#FFFAEB] text-[#B54708] border-[#FEDF89]",
-  IN_PROGRESS: "bg-[#EFF8FF] text-[#175CD3] border-[#B2DDFF]",
-  COMPLETED: "bg-[#ECFDF3] text-[#067647] border-[#ABEFC6]",
-  REJECTED: "bg-[#FEF3F2] text-[#B42318] border-[#FECDCA]",
+  PENDING: 'bg-[#FFFAEB] text-[#B54708] border-[#FEDF89]',
+  IN_PROGRESS: 'bg-[#EFF8FF] text-[#175CD3] border-[#B2DDFF]',
+  COMPLETED: 'bg-[#ECFDF3] text-[#067647] border-[#ABEFC6]',
+  REJECTED: 'bg-[#FEF3F2] text-[#B42318] border-[#FECDCA]',
 };
 
 const requestTypeLabels: Record<string, string> = {
-  ACCESS: "Access",
-  DELETION: "Deletion",
-  PORTABILITY: "Portability",
-  RECTIFICATION: "Rectification",
-  RESTRICTION: "Restriction",
-  OBJECTION: "Objection",
+  ACCESS: 'Access',
+  DELETION: 'Deletion',
+  PORTABILITY: 'Portability',
+  RECTIFICATION: 'Rectification',
+  RESTRICTION: 'Restriction',
+  OBJECTION: 'Objection',
 };
 
-export function DsarDetailDialog({
-  record,
-  open,
-  onOpenChange,
-}: DsarDetailDialogProps) {
+export function DsarDetailDialog({ record, open, onOpenChange }: DsarDetailDialogProps) {
   const [fetchId, setFetchId] = useState<string | null>(null);
 
   const { ticket, isLoading } = useDsarTicketDetail(fetchId);
@@ -59,8 +55,7 @@ export function DsarDetailDialog({
     ? Math.max(
         0,
         Math.ceil(
-          (new Date(detail.responseDeadline).getTime() - Date.now()) /
-            (1000 * 60 * 60 * 24),
+          (new Date(detail.responseDeadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
         ),
       )
     : null;
@@ -71,8 +66,7 @@ export function DsarDetailDialog({
         <DialogHeader>
           <DialogTitle>DSAR Ticket Detail</DialogTitle>
           <DialogDescription>
-            {detail.ticketNumber} —{" "}
-            {requestTypeLabels[detail.requestType] || detail.requestType}
+            {detail.ticketNumber} — {requestTypeLabels[detail.requestType] || detail.requestType}
           </DialogDescription>
         </DialogHeader>
 
@@ -84,56 +78,43 @@ export function DsarDetailDialog({
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-xs font-medium text-body uppercase tracking-wider">
-                  Status
-                </p>
+                <p className="text-xs font-medium text-body uppercase tracking-wider">Status</p>
                 <div className="mt-1">
                   <Badge
                     variant="outline"
-                    className={`text-xs font-medium ${statusStyles[detail.status] || ""}`}
+                    className={`text-xs font-medium ${statusStyles[detail.status] || ''}`}
                   >
-                    {detail.status === "IN_PROGRESS"
-                      ? "In Progress"
-                      : detail.status.charAt(0) +
-                        detail.status.slice(1).toLowerCase()}
+                    {detail.status === 'IN_PROGRESS'
+                      ? 'In Progress'
+                      : detail.status.charAt(0) + detail.status.slice(1).toLowerCase()}
                   </Badge>
                 </div>
               </div>
               <div>
-                <p className="text-xs font-medium text-body uppercase tracking-wider">
-                  SLA
-                </p>
+                <p className="text-xs font-medium text-body uppercase tracking-wider">SLA</p>
                 <p className="text-sm text-ink mt-1 font-semibold">
                   {daysRemaining !== null
                     ? daysRemaining === 0
-                      ? "Due today"
-                      : `${daysRemaining} day${daysRemaining > 1 ? "s" : ""} remaining`
-                    : "-"}
+                      ? 'Due today'
+                      : `${daysRemaining} day${daysRemaining > 1 ? 's' : ''} remaining`
+                    : '-'}
                 </p>
               </div>
             </div>
 
             <div>
-              <p className="text-xs font-medium text-body uppercase tracking-wider">
-                Member
-              </p>
+              <p className="text-xs font-medium text-body uppercase tracking-wider">Member</p>
               <p className="text-sm text-ink mt-1">
-                {detail.member?.name || "Unknown"}
+                {detail.member?.name || 'Unknown'}
                 {detail.member?.email && (
-                  <span className="text-body ml-2">
-                    ({detail.member.email})
-                  </span>
+                  <span className="text-body ml-2">({detail.member.email})</span>
                 )}
               </p>
             </div>
 
             <div>
-              <p className="text-xs font-medium text-body uppercase tracking-wider">
-                Assigned To
-              </p>
-              <p className="text-sm text-ink mt-1">
-                {detail.assignedTo?.name || "Not assigned"}
-              </p>
+              <p className="text-xs font-medium text-body uppercase tracking-wider">Assigned To</p>
+              <p className="text-sm text-ink mt-1">{detail.assignedTo?.name || 'Not assigned'}</p>
             </div>
 
             {detail.description && (
@@ -166,17 +147,13 @@ export function DsarDetailDialog({
                 <div className="space-y-2">
                   {detail.responses.map((response) => (
                     <div key={response.id} className=" bg-muted p-3 text-sm">
-                      <p className="font-medium text-ink">
-                        {response.responseType}
-                      </p>
+                      <p className="font-medium text-ink">{response.responseType}</p>
                       <p className="text-body text-xs mt-1">
                         Delivered via {response.deliveryMethod}
                       </p>
-                      {response.notes && (
-                        <p className="text-body mt-1">{response.notes}</p>
-                      )}
+                      {response.notes && <p className="text-body mt-1">{response.notes}</p>}
                       <p className="text-body text-xs mt-1">
-                        {new Date(response.createdAt).toLocaleString("en-IN")}
+                        {new Date(response.createdAt).toLocaleString('en-IN')}
                       </p>
                     </div>
                   ))}
@@ -195,11 +172,9 @@ export function DsarDetailDialog({
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-xs font-medium text-body uppercase tracking-wider">
-                  Created
-                </p>
+                <p className="text-xs font-medium text-body uppercase tracking-wider">Created</p>
                 <p className="text-sm text-ink mt-1">
-                  {new Date(detail.createdAt).toLocaleString("en-IN")}
+                  {new Date(detail.createdAt).toLocaleString('en-IN')}
                 </p>
               </div>
               {detail.completedAt && (
@@ -208,7 +183,7 @@ export function DsarDetailDialog({
                     Completed
                   </p>
                   <p className="text-sm text-ink mt-1">
-                    {new Date(detail.completedAt).toLocaleString("en-IN")}
+                    {new Date(detail.completedAt).toLocaleString('en-IN')}
                   </p>
                 </div>
               )}

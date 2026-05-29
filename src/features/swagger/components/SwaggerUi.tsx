@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import SwaggerUI from "swagger-ui-react";
-import "swagger-ui-react/swagger-ui.css";
+import SwaggerUI from 'swagger-ui-react';
+import 'swagger-ui-react/swagger-ui.css';
 
 interface SwaggerUiProps {
   url: string;
@@ -13,7 +13,7 @@ export function SwaggerUi({ url }: SwaggerUiProps) {
       <SwaggerUI
         url={url}
         persistAuthorization={true}
-        supportedSubmitMethods={["get", "post", "put", "patch", "delete"]}
+        supportedSubmitMethods={['get', 'post', 'put', 'patch', 'delete']}
       />
     </div>
   );

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Button } from "@src/shared/components/ui/button";
-import { Pencil, Trash2 } from "lucide-react";
-import { SubscriptionPlan } from "../../types";
+import { Button } from '@src/shared/components/ui/button';
+import { Pencil, Trash2 } from 'lucide-react';
+import { SubscriptionPlan } from '../../types';
 
 interface PlanActionsCellProps {
   plan: SubscriptionPlan;
@@ -10,11 +10,7 @@ interface PlanActionsCellProps {
   onEdit: (plan: SubscriptionPlan) => void;
 }
 
-export function PlanActionsCell({
-  plan,
-  onDelete,
-  onEdit,
-}: PlanActionsCellProps) {
+export function PlanActionsCell({ plan, onDelete, onEdit }: PlanActionsCellProps) {
   return (
     <div className="flex items-center gap-2 justify-end">
       <Button size="sm" variant="ghost" onClick={() => onEdit(plan)}>

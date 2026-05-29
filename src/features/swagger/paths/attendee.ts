@@ -1,135 +1,135 @@
 export const attendeePaths = {
-  "/meetings/{meetingId}/attendees": {
+  '/meetings/{meetingId}/attendees': {
     get: {
-      tags: ["Attendees"],
-      summary: "Get meeting attendees",
+      tags: ['Attendees'],
+      summary: 'Get meeting attendees',
       parameters: [
         {
-          name: "meetingId",
-          in: "path",
+          name: 'meetingId',
+          in: 'path',
           required: true,
-          schema: { type: "string" },
+          schema: { type: 'string' },
         },
       ],
       responses: {
-        "200": {
-          description: "List of attendees",
+        '200': {
+          description: 'List of attendees',
         },
       },
     },
     post: {
-      tags: ["Attendees"],
-      summary: "Add attendee to meeting",
+      tags: ['Attendees'],
+      summary: 'Add attendee to meeting',
       parameters: [
         {
-          name: "meetingId",
-          in: "path",
+          name: 'meetingId',
+          in: 'path',
           required: true,
-          schema: { type: "string" },
+          schema: { type: 'string' },
         },
       ],
       requestBody: {
         required: true,
         content: {
-          "application/json": {
+          'application/json': {
             schema: {
-              type: "object",
-              required: ["userId"],
+              type: 'object',
+              required: ['userId'],
               properties: {
-                userId: { type: "string" },
-                role: { type: "string" },
+                userId: { type: 'string' },
+                role: { type: 'string' },
               },
             },
           },
         },
       },
       responses: {
-        "201": {
-          description: "Attendee added",
+        '201': {
+          description: 'Attendee added',
         },
       },
     },
   },
-  "/meetings/{meetingId}/attendees/{userId}": {
+  '/meetings/{meetingId}/attendees/{userId}': {
     get: {
-      tags: ["Attendees"],
-      summary: "Get attendee by user ID",
+      tags: ['Attendees'],
+      summary: 'Get attendee by user ID',
       parameters: [
         {
-          name: "meetingId",
-          in: "path",
+          name: 'meetingId',
+          in: 'path',
           required: true,
-          schema: { type: "string" },
+          schema: { type: 'string' },
         },
         {
-          name: "userId",
-          in: "path",
+          name: 'userId',
+          in: 'path',
           required: true,
-          schema: { type: "string" },
+          schema: { type: 'string' },
         },
       ],
       responses: {
-        "200": {
-          description: "Attendee details",
+        '200': {
+          description: 'Attendee details',
         },
       },
     },
     patch: {
-      tags: ["Attendees"],
-      summary: "Update attendee",
+      tags: ['Attendees'],
+      summary: 'Update attendee',
       parameters: [
         {
-          name: "meetingId",
-          in: "path",
+          name: 'meetingId',
+          in: 'path',
           required: true,
-          schema: { type: "string" },
+          schema: { type: 'string' },
         },
         {
-          name: "userId",
-          in: "path",
+          name: 'userId',
+          in: 'path',
           required: true,
-          schema: { type: "string" },
+          schema: { type: 'string' },
         },
       ],
       requestBody: {
         content: {
-          "application/json": {
+          'application/json': {
             schema: {
-              type: "object",
+              type: 'object',
               properties: {
-                status: { type: "string" },
-                checkInTime: { type: "string", format: "date-time" },
+                status: { type: 'string' },
+                checkInTime: { type: 'string', format: 'date-time' },
               },
             },
           },
         },
       },
       responses: {
-        "200": {
-          description: "Attendee updated",
+        '200': {
+          description: 'Attendee updated',
         },
       },
     },
     delete: {
-      tags: ["Attendees"],
-      summary: "Remove attendee from meeting",
+      tags: ['Attendees'],
+      summary: 'Remove attendee from meeting',
       parameters: [
         {
-          name: "meetingId",
-          in: "path",
+          name: 'meetingId',
+          in: 'path',
           required: true,
-          schema: { type: "string" },
+          schema: { type: 'string' },
         },
         {
-          name: "userId",
-          in: "path",
+          name: 'userId',
+          in: 'path',
           required: true,
-          schema: { type: "string" },
+          schema: { type: 'string' },
         },
       ],
       responses: {
-        "204": {
-          description: "Attendee removed",
+        '204': {
+          description: 'Attendee removed',
         },
       },
     },

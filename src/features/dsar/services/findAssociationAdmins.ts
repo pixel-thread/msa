@@ -1,5 +1,5 @@
-import { prisma } from "@src/shared/lib/prisma";
-import { UserRole } from "@prisma/client";
+import { prisma } from '@src/shared/lib/prisma';
+import { UserRole } from '@prisma/client';
 
 export async function findAssociationAdmins(associationId: string) {
   return await prisma.user.findMany({
@@ -14,6 +14,6 @@ export async function findAssociationAdmins(associationId: string) {
       name: true,
       email: true,
     },
-    orderBy: { name: "asc" },
+    orderBy: { name: 'asc' },
   });
 }

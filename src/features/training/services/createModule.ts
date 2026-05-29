@@ -1,6 +1,6 @@
-import { prisma } from "@lib/prisma";
-import { CreateTrainingModuleInput } from "../validators/training";
-import { AuditAction, Prisma, UserRole } from "@prisma/client";
+import { prisma } from '@lib/prisma';
+import { CreateTrainingModuleInput } from '../validators/training';
+import { AuditAction, Prisma, UserRole } from '@prisma/client';
 
 interface CreateModuleProps {
   associationId: string;
@@ -8,11 +8,7 @@ interface CreateModuleProps {
   data: CreateTrainingModuleInput;
 }
 
-export async function createModule({
-  associationId,
-  actorId,
-  data,
-}: CreateModuleProps) {
+export async function createModule({ associationId, actorId, data }: CreateModuleProps) {
   return await prisma.$transaction(async (tx) => {
     const trainingModule = await tx.trainingModule.create({
       data: {
@@ -26,7 +22,7 @@ export async function createModule({
         associationId,
         actorId,
         action: AuditAction.TRAINING_MODULE_CREATE,
-        resourceType: "TrainingModule",
+        resourceType: 'TrainingModule',
         resourceId: trainingModule.id,
         newValues: data as Prisma.InputJsonValue,
       },
@@ -38,7 +34,7 @@ export async function createModule({
       const usersToAssign = await tx.user.findMany({
         where: {
           associationId,
-          status: "ACTIVE",
+          status: 'ACTIVE',
           role: { hasSome: targetRoles },
         },
         select: { id: true },
@@ -50,7 +46,7 @@ export async function createModule({
             moduleId: trainingModule.id,
             userId: user.id,
             assignedById: actorId,
-            status: "ASSIGNED",
+            status: 'ASSIGNED',
           })),
         });
       }

@@ -1,28 +1,24 @@
-"use client";
+'use client';
 
-import { useState, useRef } from "react";
-import { useMemberSearch } from "@src/features/payments/hooks/useMemberSearch";
-import { Input } from "@src/shared/components/ui/input";
-import { Button } from "@src/shared/components/ui/button";
-import { Search, X, User } from "lucide-react";
+import { useState, useRef } from 'react';
+import { useMemberSearch } from '@src/features/payments/hooks/useMemberSearch';
+import { Input } from '@src/shared/components/ui/input';
+import { Button } from '@src/shared/components/ui/button';
+import { Search, X, User } from 'lucide-react';
 
 interface MemberSearchProps {
   onSelect: (member: { id: string; name: string; email: string }) => void;
 }
 
 export function MemberSearch({ onSelect }: MemberSearchProps) {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const { results, isLoading } = useMemberSearch(query);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleSelect = (member: {
-    id: string;
-    name: string;
-    email: string;
-  }) => {
+  const handleSelect = (member: { id: string; name: string; email: string }) => {
     onSelect(member);
-    setQuery("");
+    setQuery('');
     setIsOpen(false);
     inputRef.current?.blur();
   };
@@ -47,7 +43,7 @@ export function MemberSearch({ onSelect }: MemberSearchProps) {
             variant="ghost"
             size="icon"
             onClick={() => {
-              setQuery("");
+              setQuery('');
               setIsOpen(false);
             }}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-ink"
@@ -81,15 +77,11 @@ export function MemberSearch({ onSelect }: MemberSearchProps) {
                       <User className="h-4 w-4 text-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-ink truncate">
-                        {member.name}
-                      </p>
+                      <p className="text-sm font-medium text-ink truncate">{member.name}</p>
                       <p className="text-xs text-muted-foreground truncate">
                         {member.email}
                         {member.membershipNumber && (
-                          <span className="ml-1">
-                            #{member.membershipNumber}
-                          </span>
+                          <span className="ml-1">#{member.membershipNumber}</span>
                         )}
                       </p>
                     </div>

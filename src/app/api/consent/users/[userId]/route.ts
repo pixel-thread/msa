@@ -1,14 +1,14 @@
-import { withAssociation, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@src/shared/utils";
-import { BadRequestError, NotFoundError } from "@src/shared/errors";
-import { UserRole } from "@prisma/client";
-import { ConsentService } from "@src/features/consent";
-import { z } from "zod";
-import { pageNumberValidation } from "@src/shared/validators";
-import { logger } from "@src/shared/logger/server";
+import { withAssociation, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@src/shared/utils';
+import { BadRequestError, NotFoundError } from '@src/shared/errors';
+import { UserRole } from '@prisma/client';
+import { ConsentService } from '@src/features/consent';
+import { z } from 'zod';
+import { pageNumberValidation } from '@src/shared/validators';
+import { logger } from '@src/shared/logger/server';
 
 const UserParamsSchema = z.object({
-  userId: z.uuid("Invalid user ID"),
+  userId: z.uuid('Invalid user ID'),
 });
 
 const UserQuerySchema = z.object({
@@ -24,7 +24,7 @@ export const GET = withAssociation(
         associationId: association.id,
         targetUserId: params?.userId,
       },
-      "GET /api/consent/users/[userId] - Request started",
+      'GET /api/consent/users/[userId] - Request started',
     );
 
     const user = await withRole(request, UserRole.DPO);
@@ -34,10 +34,10 @@ export const GET = withAssociation(
         traceId,
         userId: user.id,
       },
-      "GET /api/consent/users/[userId] - User authorized",
+      'GET /api/consent/users/[userId] - User authorized',
     );
 
-    if (!params) throw new BadRequestError("Invalid user ID");
+    if (!params) throw new BadRequestError('Invalid user ID');
     const page = query?.page || 1;
     const data = await ConsentService.getUserConsentHistoryById(
       params.userId,
@@ -46,7 +46,7 @@ export const GET = withAssociation(
     );
 
     if (data.records.length === 0) {
-      throw new NotFoundError("No consent records found for this user");
+      throw new NotFoundError('No consent records found for this user');
     }
 
     logger.info(
@@ -54,7 +54,7 @@ export const GET = withAssociation(
         traceId,
         count: data.records.length,
       },
-      "GET /api/consent/users/[userId] - Success",
+      'GET /api/consent/users/[userId] - Success',
     );
 
     return SuccessResponse({ data: data.records, meta: data.pagination });

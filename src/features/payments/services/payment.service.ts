@@ -1,4 +1,4 @@
-import { prisma } from "@src/shared/lib/prisma";
+import { prisma } from '@src/shared/lib/prisma';
 import {
   Prisma,
   PaymentStatus,
@@ -6,21 +6,17 @@ import {
   ContributionStatus,
   AuditAction,
   PaymentMethod,
-} from "@prisma/client";
-import { buildPagination } from "@src/shared/utils/build-pagination";
+} from '@prisma/client';
+import { buildPagination } from '@src/shared/utils/build-pagination';
 
-import { verifyPaymentSignature } from "./razorpay.service";
-import { getActiveProvider, getProviderById } from "./payment-provider.service";
-import { decrypt } from "@src/shared/lib/crypto";
-import { env } from "@src/env";
-import Razorpay from "razorpay";
-import {
-  BadRequestError,
-  NotFoundError,
-  PaymentError,
-} from "@src/shared/errors";
-import { logAction } from "@src/shared/services/audit-logs";
-import { PAGE_SIZE } from "@src/shared/constants";
+import { verifyPaymentSignature } from './razorpay.service';
+import { getActiveProvider, getProviderById } from './payment-provider.service';
+import { decrypt } from '@src/shared/lib/crypto';
+import { env } from '@src/env';
+import Razorpay from 'razorpay';
+import { BadRequestError, NotFoundError, PaymentError } from '@src/shared/errors';
+import { logAction } from '@src/shared/services/audit-logs';
+import { PAGE_SIZE } from '@src/shared/constants';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -108,7 +104,7 @@ export interface RazorpayOptions {
 
   hide_topbar?: boolean;
 
-  method?: "card" | "upi" | "netbanking" | "wallet" | "emi";
+  method?: 'card' | 'upi' | 'netbanking' | 'wallet' | 'emi';
 
   send_sms_hash?: boolean;
 
@@ -120,7 +116,7 @@ export interface RazorpayOptions {
 
   config?: {
     display: {
-      language: "en" | "ben" | "hi" | "mar" | "guj" | "tam" | "tel";
+      language: 'en' | 'ben' | 'hi' | 'mar' | 'guj' | 'tam' | 'tel';
     };
   };
 
@@ -143,7 +139,7 @@ export interface RazorpayOptions {
 export async function createPaymentOrder(input: CreateOrderInput) {
   const amountInPaise = Math.round(input.amount * 100);
 
-  const provider = await getActiveProvider(input.associationId, "RAZORPAY");
+  const provider = await getActiveProvider(input.associationId, 'RAZORPAY');
 
   let keyId: string;
   let keySecret: string;
@@ -152,13 +148,11 @@ export async function createPaymentOrder(input: CreateOrderInput) {
     keyId = provider.keyId;
     keySecret = decrypt(provider.encryptedKeySecret);
   } else {
-    keyId = env.RAZORPAY_KEY_ID ?? "";
-    keySecret = env.RAZORPAY_KEY_SECRET ?? "";
+    keyId = env.RAZORPAY_KEY_ID ?? '';
+    keySecret = env.RAZORPAY_KEY_SECRET ?? '';
 
     if (!keyId || !keySecret) {
-      throw new NotFoundError(
-        "No payment provider configured and no env vars set",
-      );
+      throw new NotFoundError('No payment provider configured and no env vars set');
     }
   }
 
@@ -172,7 +166,7 @@ export async function createPaymentOrder(input: CreateOrderInput) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     throw new PaymentError(
-      error?.error?.description || "Payment failed",
+      error?.error?.description || 'Payment failed',
       error?.error?.code,
       error?.statusCode,
     );
@@ -184,7 +178,7 @@ export async function createPaymentOrder(input: CreateOrderInput) {
       associationId: input.associationId,
       userId: input.userId,
       amount: input.amount,
-      currency: "INR",
+      currency: 'INR',
       gateway: PaymentGateway.RAZORPAY,
       status: PaymentStatus.PENDING,
       notes: input.notes,
@@ -197,7 +191,7 @@ export async function createPaymentOrder(input: CreateOrderInput) {
   try {
     razorpayOrder = await razorpayClient.orders.create({
       amount: amountInPaise,
-      currency: "INR",
+      currency: 'INR',
       receipt: transaction.id,
       notes: {
         transactionId: transaction.id,
@@ -208,7 +202,7 @@ export async function createPaymentOrder(input: CreateOrderInput) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     throw new PaymentError(
-      error?.error?.description || "Payment failed",
+      error?.error?.description || 'Payment failed',
       error?.error?.code,
       error?.statusCode,
     );
@@ -223,10 +217,10 @@ export async function createPaymentOrder(input: CreateOrderInput) {
   const options: RazorpayOptions = {
     name: env.NEXT_PUBLIC_ASSOCIATION_SLUG.toUpperCase(),
     transaction_id: transaction.id,
-    description: "Membership payment",
+    description: 'Membership payment',
     order_id: razorpayOrder.id,
     amount: amountInPaise,
-    currency: "INR",
+    currency: 'INR',
     key: keyId,
   };
 
@@ -251,8 +245,8 @@ export interface CreateTestOrderInput {
 export async function createTestPaymentOrder(input: CreateTestOrderInput) {
   const provider = await getProviderById(input.providerId, input.associationId);
 
-  if (!provider || provider.provider !== "RAZORPAY") {
-    throw new BadRequestError("Provider must be a Razorpay provider");
+  if (!provider || provider.provider !== 'RAZORPAY') {
+    throw new BadRequestError('Provider must be a Razorpay provider');
   }
 
   const fullProvider = await prisma.paymentProvider.findUnique({
@@ -260,7 +254,7 @@ export async function createTestPaymentOrder(input: CreateTestOrderInput) {
   });
 
   if (!fullProvider) {
-    throw new NotFoundError("Provider not found");
+    throw new NotFoundError('Provider not found');
   }
 
   const keySecret = decrypt(fullProvider.encryptedKeySecret);
@@ -274,7 +268,7 @@ export async function createTestPaymentOrder(input: CreateTestOrderInput) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     throw new PaymentError(
-      error?.error?.description || "Payment failed",
+      error?.error?.description || 'Payment failed',
       error?.error?.code,
       error?.statusCode,
     );
@@ -288,10 +282,10 @@ export async function createTestPaymentOrder(input: CreateTestOrderInput) {
       associationId: input.associationId,
       userId: input.userId,
       amount: testAmount,
-      currency: "INR",
+      currency: 'INR',
       gateway: PaymentGateway.RAZORPAY,
       status: PaymentStatus.PENDING,
-      notes: "Test payment",
+      notes: 'Test payment',
     },
   });
 
@@ -299,19 +293,19 @@ export async function createTestPaymentOrder(input: CreateTestOrderInput) {
   try {
     razorpayOrder = await razorpayClient.orders.create({
       amount: amountInPaise,
-      currency: "INR",
+      currency: 'INR',
       receipt: transaction.id,
       notes: {
         transactionId: transaction.id,
         userId: input.userId,
         associationId: input.associationId,
-        isTest: "true",
+        isTest: 'true',
       },
     });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     throw new PaymentError(
-      error?.error?.description || "Payment failed",
+      error?.error?.description || 'Payment failed',
       error?.error?.code,
       error?.statusCode,
     );
@@ -325,10 +319,10 @@ export async function createTestPaymentOrder(input: CreateTestOrderInput) {
   const options: RazorpayOptions = {
     name: env.NEXT_PUBLIC_ASSOCIATION_SLUG.toUpperCase(),
     transaction_id: transaction.id,
-    description: "Test payment (₹1)",
+    description: 'Test payment (₹1)',
     order_id: razorpayOrder.id,
     amount: amountInPaise,
-    currency: "INR",
+    currency: 'INR',
     key: provider.keyId,
   };
 
@@ -354,19 +348,14 @@ export async function verifyAndCompletePayment(input: VerifyAndCompleteInput) {
   });
 
   if (!transaction) {
-    throw new NotFoundError(
-      `No transaction found for Razorpay order: ${input.razorpayOrderId}`,
-    );
+    throw new NotFoundError(`No transaction found for Razorpay order: ${input.razorpayOrderId}`);
   }
 
   if (transaction.status === PaymentStatus.COMPLETED) {
     return transaction;
   }
 
-  const provider = await getActiveProvider(
-    transaction.associationId,
-    "RAZORPAY",
-  );
+  const provider = await getActiveProvider(transaction.associationId, 'RAZORPAY');
 
   let keySecret: string | undefined;
   if (provider) {
@@ -383,7 +372,7 @@ export async function verifyAndCompletePayment(input: VerifyAndCompleteInput) {
   );
 
   if (!isValid) {
-    throw new BadRequestError("Invalid Razorpay payment signature");
+    throw new BadRequestError('Invalid Razorpay payment signature');
   }
 
   return prisma.$transaction(async (tx) => {
@@ -396,7 +385,7 @@ export async function verifyAndCompletePayment(input: VerifyAndCompleteInput) {
         razorpayPaymentId: input.razorpayPaymentId,
         razorpaySignature: input.razorpaySignature,
         paidAt: now,
-        method: "ONLINE" as PaymentMethod,
+        method: 'ONLINE' as PaymentMethod,
       },
     });
 
@@ -411,7 +400,7 @@ export async function verifyAndCompletePayment(input: VerifyAndCompleteInput) {
       tx,
       transaction.id,
       Number(transaction.amount),
-      "Online payment via Razorpay",
+      'Online payment via Razorpay',
       transaction.userId,
     );
 
@@ -420,7 +409,7 @@ export async function verifyAndCompletePayment(input: VerifyAndCompleteInput) {
         associationId: transaction.associationId,
         actorId: transaction.userId,
         action: AuditAction.PAYMENT_COMPLETED,
-        resourceType: "PaymentTransaction",
+        resourceType: 'PaymentTransaction',
         resourceId: transaction.id,
         newValues: {
           razorpayPaymentId: input.razorpayPaymentId,
@@ -448,19 +437,14 @@ export async function verifyTestPayment(input: VerifyAndCompleteInput) {
   });
 
   if (!transaction) {
-    throw new NotFoundError(
-      `No transaction found for Razorpay order: ${input.razorpayOrderId}`,
-    );
+    throw new NotFoundError(`No transaction found for Razorpay order: ${input.razorpayOrderId}`);
   }
 
   if (transaction.status === PaymentStatus.COMPLETED) {
     return transaction;
   }
 
-  const provider = await getActiveProvider(
-    transaction.associationId,
-    "RAZORPAY",
-  );
+  const provider = await getActiveProvider(transaction.associationId, 'RAZORPAY');
 
   let keySecret: string | undefined;
   if (provider) {
@@ -477,7 +461,7 @@ export async function verifyTestPayment(input: VerifyAndCompleteInput) {
   );
 
   if (!isValid) {
-    throw new BadRequestError("Invalid Razorpay payment signature");
+    throw new BadRequestError('Invalid Razorpay payment signature');
   }
 
   const now = new Date();
@@ -489,10 +473,8 @@ export async function verifyTestPayment(input: VerifyAndCompleteInput) {
       razorpayPaymentId: input.razorpayPaymentId,
       razorpaySignature: input.razorpaySignature,
       paidAt: now,
-      method: "ONLINE" as PaymentMethod,
-      notes: transaction.notes
-        ? `${transaction.notes} (completed)`
-        : "Test payment (completed)",
+      method: 'ONLINE' as PaymentMethod,
+      notes: transaction.notes ? `${transaction.notes} (completed)` : 'Test payment (completed)',
     },
   });
 
@@ -501,7 +483,7 @@ export async function verifyTestPayment(input: VerifyAndCompleteInput) {
     associationId: transaction.associationId,
     actorId: transaction.userId,
     action: AuditAction.PAYMENT_COMPLETED,
-    resourceType: "PaymentTransaction",
+    resourceType: 'PaymentTransaction',
     resourceId: transaction.id,
     newValues: {
       razorpayPaymentId: input.razorpayPaymentId,
@@ -530,7 +512,7 @@ export async function recordManualPayment(input: RecordManualPaymentInput) {
         associationId: input.associationId,
         userId: input.userId,
         amount: input.amount,
-        currency: "INR",
+        currency: 'INR',
         gateway: PaymentGateway.MANUAL,
         status: PaymentStatus.COMPLETED,
         method: input.method,
@@ -545,12 +527,7 @@ export async function recordManualPayment(input: RecordManualPaymentInput) {
     });
 
     // Allocate to contribution periods
-    await allocatePaymentToContributions(
-      tx,
-      transaction.id,
-      input.userId,
-      input.amount,
-    );
+    await allocatePaymentToContributions(tx, transaction.id, input.userId, input.amount);
 
     // Create ledger entry
     await createLedgerEntry(
@@ -567,7 +544,7 @@ export async function recordManualPayment(input: RecordManualPaymentInput) {
         associationId: input.associationId,
         actorId: input.createdById,
         action: AuditAction.PAYMENT_CREATED,
-        resourceType: "PaymentTransaction",
+        resourceType: 'PaymentTransaction',
         resourceId: transaction.id,
         newValues: {
           amount: input.amount,
@@ -604,14 +581,10 @@ async function allocatePaymentToContributions(
     where: {
       userId,
       status: {
-        in: [
-          ContributionStatus.DUE,
-          ContributionStatus.PARTIAL,
-          ContributionStatus.OVERDUE,
-        ],
+        in: [ContributionStatus.DUE, ContributionStatus.PARTIAL, ContributionStatus.OVERDUE],
       },
     },
-    orderBy: [{ year: "asc" }, { month: "asc" }],
+    orderBy: [{ year: 'asc' }, { month: 'asc' }],
   });
 
   let remaining = totalAmount;
@@ -672,18 +645,18 @@ async function createLedgerEntry(
     data: {
       paymentTransactionId,
       description,
-      approvalStatus: "APPROVED",
+      approvalStatus: 'APPROVED',
       createdById,
       approvedById: createdById,
       lines: {
         create: [
           {
-            accountId: "BANK",
+            accountId: 'BANK',
             isDebit: true,
             amount,
           },
           {
-            accountId: "SUBSCRIPTION_INCOME",
+            accountId: 'SUBSCRIPTION_INCOME',
             isDebit: false,
             amount,
           },
@@ -697,10 +670,7 @@ async function createLedgerEntry(
 // 6. Mark Payment as Failed
 // ---------------------------------------------------------------------------
 
-export async function markPaymentFailed(
-  razorpayOrderId: string,
-  reason?: string,
-) {
+export async function markPaymentFailed(razorpayOrderId: string, reason?: string) {
   const transaction = await prisma.paymentTransaction.findUnique({
     where: { razorpayOrderId },
   });
@@ -712,9 +682,7 @@ export async function markPaymentFailed(
     data: {
       status: PaymentStatus.FAILED,
       failedAt: new Date(),
-      notes: reason
-        ? `${transaction.notes ?? ""}\nFailure: ${reason}`.trim()
-        : transaction.notes,
+      notes: reason ? `${transaction.notes ?? ''}\nFailure: ${reason}`.trim() : transaction.notes,
     },
   });
 
@@ -723,7 +691,7 @@ export async function markPaymentFailed(
     associationId: transaction.associationId,
     actorId: transaction.userId,
     action: AuditAction.PAYMENT_FAILED,
-    resourceType: "PaymentTransaction",
+    resourceType: 'PaymentTransaction',
     resourceId: transaction.id,
     newValues: { reason },
   });
@@ -764,7 +732,7 @@ export async function getUserPaymentHistory(userId: string, page = 1) {
           },
         },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
       skip,
       take: PAGE_SIZE,
     }),
@@ -784,20 +752,8 @@ export async function getUserPaymentHistory(userId: string, page = 1) {
 /**
  * List all transactions with advanced filtering for admin dashboard.
  */
-export async function getAllTransactions(
-  associationId: string,
-  filters: TransactionFilters,
-) {
-  const {
-    page = 1,
-    userId,
-    status,
-    method,
-    gateway,
-    search,
-    startDate,
-    endDate,
-  } = filters;
+export async function getAllTransactions(associationId: string, filters: TransactionFilters) {
+  const { page = 1, userId, status, method, gateway, search, startDate, endDate } = filters;
 
   const validPage = Math.max(1, page);
   const skip = (validPage - 1) * PAGE_SIZE;
@@ -833,12 +789,12 @@ export async function getAllTransactions(
 
   if (search) {
     where.OR = [
-      { referenceNumber: { contains: search, mode: "insensitive" } },
-      { receiptNumber: { contains: search, mode: "insensitive" } },
-      { notes: { contains: search, mode: "insensitive" } },
-      { user: { name: { contains: search, mode: "insensitive" } } },
-      { user: { email: { contains: search, mode: "insensitive" } } },
-      { user: { membershipNumber: { contains: search, mode: "insensitive" } } },
+      { referenceNumber: { contains: search, mode: 'insensitive' } },
+      { receiptNumber: { contains: search, mode: 'insensitive' } },
+      { notes: { contains: search, mode: 'insensitive' } },
+      { user: { name: { contains: search, mode: 'insensitive' } } },
+      { user: { email: { contains: search, mode: 'insensitive' } } },
+      { user: { membershipNumber: { contains: search, mode: 'insensitive' } } },
     ];
   }
 
@@ -848,7 +804,7 @@ export async function getAllTransactions(
       include: {
         user: { select: { name: true, email: true, membershipNumber: true } },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
       skip,
       take: PAGE_SIZE,
     }),
@@ -899,25 +855,17 @@ export async function getFinancialStats(associationId: string) {
       where: {
         associationId,
         status: {
-          in: [
-            ContributionStatus.DUE,
-            ContributionStatus.PARTIAL,
-            ContributionStatus.OVERDUE,
-          ],
+          in: [ContributionStatus.DUE, ContributionStatus.PARTIAL, ContributionStatus.OVERDUE],
         },
       },
       _sum: { dueAmount: true },
     }),
     prisma.contributionPeriod.groupBy({
-      by: ["userId"],
+      by: ['userId'],
       where: {
         associationId,
         status: {
-          in: [
-            ContributionStatus.DUE,
-            ContributionStatus.PARTIAL,
-            ContributionStatus.OVERDUE,
-          ],
+          in: [ContributionStatus.DUE, ContributionStatus.PARTIAL, ContributionStatus.OVERDUE],
         },
       },
     }),

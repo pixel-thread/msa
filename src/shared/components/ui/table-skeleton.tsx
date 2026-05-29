@@ -1,5 +1,5 @@
-import { Skeleton } from "@src/shared/components/ui/skeleton";
-import { TableCell, TableRow } from "@src/shared/components/ui/table";
+import { Skeleton } from '@src/shared/components/ui/skeleton';
+import { TableCell, TableRow } from '@src/shared/components/ui/table';
 
 type TableSkeletonProps = {
   columns: number;

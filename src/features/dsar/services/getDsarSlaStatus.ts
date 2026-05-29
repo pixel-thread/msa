@@ -1,5 +1,5 @@
-import { prisma } from "@src/shared/lib/prisma";
-import { DsarStatus } from "@prisma/client";
+import { prisma } from '@src/shared/lib/prisma';
+import { DsarStatus } from '@prisma/client';
 
 export async function getDsarSlaStatus(associationId: string) {
   const now = new Date();

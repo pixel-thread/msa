@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useUrlFilters } from "@src/shared/hooks";
-import { useQuery } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import { Card, CardContent } from "@src/shared/components/ui/card";
-import { formattedAmount } from "@src/shared/utils";
-import { DataTable } from "@src/shared/components/data-table";
-import { DataTableFilters } from "@src/shared/components/data-table-filters";
-import { useSubscriptionPaymentColumns } from "@src/features/subscriptions/hooks/useSubscriptionPaymentColumns";
-import { DataTablePagination } from "@src/shared/components/data-table-pagination";
-import { CreditCard, Clock, AlertCircle } from "lucide-react";
+import { useUrlFilters } from '@src/shared/hooks';
+import { useQuery } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import { Card, CardContent } from '@src/shared/components/ui/card';
+import { formattedAmount } from '@src/shared/utils';
+import { DataTable } from '@src/shared/components/data-table';
+import { DataTableFilters } from '@src/shared/components/data-table-filters';
+import { useSubscriptionPaymentColumns } from '@src/features/subscriptions/hooks/useSubscriptionPaymentColumns';
+import { DataTablePagination } from '@src/shared/components/data-table-pagination';
+import { CreditCard, Clock, AlertCircle } from 'lucide-react';
 
 interface PaymentAllocation {
   id: string;
@@ -59,14 +59,11 @@ interface PaginationMeta {
 }
 
 export function MySubscriptionPage() {
-  const { page, setPage } = useUrlFilters({ basePath: "/subscriptions/my" });
+  const { page, setPage } = useUrlFilters({ basePath: '/subscriptions/my' });
 
   const { data, isLoading } = useQuery({
-    queryKey: ["payment-history", page],
-    queryFn: () =>
-      http.get<PaymentHistoryResponse>(
-        `/payments/history?page=${page}&pageSize=20`,
-      ),
+    queryKey: ['payment-history', page],
+    queryFn: () => http.get<PaymentHistoryResponse>(`/payments/history?page=${page}&pageSize=20`),
   });
 
   const transactions = data?.data?.transactions ?? [];
@@ -103,9 +100,7 @@ export function MySubscriptionPage() {
               <div className="flex items-center gap-3">
                 <CreditCard className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Total Paid
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground">Total Paid</p>
                   <p className="text-lg font-medium text-ink mt-1">
                     {formattedAmount(summary.totalPaid)}
                   </p>
@@ -119,9 +114,7 @@ export function MySubscriptionPage() {
               <div className="flex items-center gap-3">
                 <Clock className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Pending
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground">Pending</p>
                   <p className="text-lg font-medium text-ink mt-1">
                     {formattedAmount(summary.totalPending || 0)}
                   </p>
@@ -135,9 +128,7 @@ export function MySubscriptionPage() {
               <div className="flex items-center gap-3">
                 <AlertCircle className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Total Dues
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground">Total Dues</p>
                   <p className="text-lg font-medium text-ink mt-1">
                     {formattedAmount(summary.totalDues || 0)}
                   </p>
@@ -152,9 +143,9 @@ export function MySubscriptionPage() {
         <DataTableFilters
           fields={[
             {
-              type: "search",
-              id: "search",
-              placeholder: "Search transactions...",
+              type: 'search',
+              id: 'search',
+              placeholder: 'Search transactions...',
             },
           ]}
           onFilterChange={() => {}}
@@ -162,11 +153,7 @@ export function MySubscriptionPage() {
 
         <DataTable columns={columns} data={transactions} loading={false} />
 
-        <DataTablePagination
-          meta={meta}
-          onPageChange={setPage}
-          label="transactions"
-        />
+        <DataTablePagination meta={meta} onPageChange={setPage} label="transactions" />
       </Card>
     </>
   );

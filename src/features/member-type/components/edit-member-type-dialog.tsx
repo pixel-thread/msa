@@ -1,6 +1,6 @@
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Dialog,
   DialogContent,
@@ -8,7 +8,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
+} from '@src/shared/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -16,14 +16,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
-import { Input } from "@src/shared/components/ui/input";
-import { Button } from "@src/shared/components/ui/button";
-import { useUpdateMemberType } from "@src/features/member-type/hooks/useUpdateMemberType";
+} from '@src/shared/components/ui/form';
+import { Input } from '@src/shared/components/ui/input';
+import { Button } from '@src/shared/components/ui/button';
+import { useUpdateMemberType } from '@src/features/member-type/hooks/useUpdateMemberType';
 import {
   UpdateMemberTypeInput,
   UpdateMemberTypeSchema,
-} from "@src/features/member-type/validators";
+} from '@src/features/member-type/validators';
 
 interface MemberType {
   id: string;
@@ -47,7 +47,7 @@ export function EditMemberTypeDialog({
   const form = useForm<UpdateMemberTypeInput>({
     resolver: zodResolver(UpdateMemberTypeSchema),
     defaultValues: {
-      description: "",
+      description: '',
       level: undefined,
     },
   });
@@ -55,7 +55,7 @@ export function EditMemberTypeDialog({
   useEffect(() => {
     if (open && memberType) {
       form.reset({
-        description: memberType.description ?? "",
+        description: memberType.description ?? '',
         level: memberType.level,
       });
     }
@@ -80,9 +80,7 @@ export function EditMemberTypeDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Edit Member Type</DialogTitle>
-          <DialogDescription>
-            Update member type level {memberType.level}
-          </DialogDescription>
+          <DialogDescription>Update member type level {memberType.level}</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -98,13 +96,9 @@ export function EditMemberTypeDialog({
                       type="number"
                       min={1}
                       {...field}
-                      value={field.value ?? ""}
+                      value={field.value ?? ''}
                       onChange={(e) =>
-                        field.onChange(
-                          e.target.value
-                            ? parseInt(e.target.value, 10)
-                            : undefined,
-                        )
+                        field.onChange(e.target.value ? parseInt(e.target.value, 10) : undefined)
                       }
                     />
                   </FormControl>
@@ -120,10 +114,7 @@ export function EditMemberTypeDialog({
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="e.g., Regular Member, Senior Member"
-                      {...field}
-                    />
+                    <Input placeholder="e.g., Regular Member, Senior Member" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -131,15 +122,11 @@ export function EditMemberTypeDialog({
             />
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={updateMemberType.isPending}>
-                {updateMemberType.isPending ? "Saving..." : "Save Changes"}
+                {updateMemberType.isPending ? 'Saving...' : 'Save Changes'}
               </Button>
             </DialogFooter>
           </form>

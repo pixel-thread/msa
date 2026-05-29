@@ -1,5 +1,5 @@
-import { prisma } from "@lib/prisma";
-import { NotFoundError } from "@src/shared/errors";
+import { prisma } from '@lib/prisma';
+import { NotFoundError } from '@src/shared/errors';
 
 interface MarkAnnouncementReadProps {
   announcementId: string;
@@ -17,7 +17,7 @@ export async function markAnnouncementRead({
   });
 
   if (!announcement) {
-    throw new NotFoundError("Announcement");
+    throw new NotFoundError('Announcement');
   }
 
   const readReceipt = await prisma.announcementRead.upsert({

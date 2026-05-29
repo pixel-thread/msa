@@ -1,37 +1,37 @@
 export const memberTypePaths = {
-  "/member-types": {
+  '/member-types': {
     get: {
-      tags: ["Member Types"],
-      summary: "List all member types",
-      description: "Retrieve all member types for the association",
+      tags: ['Member Types'],
+      summary: 'List all member types',
+      description: 'Retrieve all member types for the association',
       responses: {
-        "200": {
-          description: "List of member types",
+        '200': {
+          description: 'List of member types',
         },
       },
     },
     post: {
-      tags: ["Member Types"],
-      summary: "Create a member type",
-      description: "Create a new member type (requires PRESIDENT role)",
+      tags: ['Member Types'],
+      summary: 'Create a member type',
+      description: 'Create a new member type (requires PRESIDENT role)',
       requestBody: {
         required: true,
         content: {
-          "application/json": {
+          'application/json': {
             schema: {
-              type: "object",
-              required: ["description", "level"],
+              type: 'object',
+              required: ['description', 'level'],
               properties: {
                 description: {
-                  type: "string",
+                  type: 'string',
                   minLength: 1,
                   maxLength: 255,
-                  description: "Description of the member type",
+                  description: 'Description of the member type',
                 },
                 level: {
-                  type: "integer",
+                  type: 'integer',
                   minimum: 1,
-                  description: "Level/hierarchy of the member type",
+                  description: 'Level/hierarchy of the member type',
                 },
               },
             },
@@ -39,56 +39,56 @@ export const memberTypePaths = {
         },
       },
       responses: {
-        "201": {
-          description: "Member type created",
+        '201': {
+          description: 'Member type created',
         },
       },
     },
   },
-  "/member-types/{memberTypeId}": {
+  '/member-types/{memberTypeId}': {
     get: {
-      tags: ["Member Types"],
-      summary: "Get a member type by ID",
-      description: "Retrieve a specific member type",
+      tags: ['Member Types'],
+      summary: 'Get a member type by ID',
+      description: 'Retrieve a specific member type',
       parameters: [
         {
-          name: "memberTypeId",
-          in: "path",
+          name: 'memberTypeId',
+          in: 'path',
           required: true,
-          schema: { type: "string", format: "uuid" },
+          schema: { type: 'string', format: 'uuid' },
         },
       ],
       responses: {
-        "200": {
-          description: "Member type details",
+        '200': {
+          description: 'Member type details',
         },
       },
     },
     patch: {
-      tags: ["Member Types"],
-      summary: "Update a member type",
-      description: "Update a member type (requires PRESIDENT role)",
+      tags: ['Member Types'],
+      summary: 'Update a member type',
+      description: 'Update a member type (requires PRESIDENT role)',
       parameters: [
         {
-          name: "memberTypeId",
-          in: "path",
+          name: 'memberTypeId',
+          in: 'path',
           required: true,
-          schema: { type: "string", format: "uuid" },
+          schema: { type: 'string', format: 'uuid' },
         },
       ],
       requestBody: {
         content: {
-          "application/json": {
+          'application/json': {
             schema: {
-              type: "object",
+              type: 'object',
               properties: {
                 description: {
-                  type: "string",
+                  type: 'string',
                   minLength: 1,
                   maxLength: 255,
                 },
                 level: {
-                  type: "integer",
+                  type: 'integer',
                   minimum: 1,
                 },
               },
@@ -97,26 +97,26 @@ export const memberTypePaths = {
         },
       },
       responses: {
-        "200": {
-          description: "Member type updated",
+        '200': {
+          description: 'Member type updated',
         },
       },
     },
     delete: {
-      tags: ["Member Types"],
-      summary: "Delete a member type",
-      description: "Delete a member type (requires PRESIDENT role)",
+      tags: ['Member Types'],
+      summary: 'Delete a member type',
+      description: 'Delete a member type (requires PRESIDENT role)',
       parameters: [
         {
-          name: "memberTypeId",
-          in: "path",
+          name: 'memberTypeId',
+          in: 'path',
           required: true,
-          schema: { type: "string", format: "uuid" },
+          schema: { type: 'string', format: 'uuid' },
         },
       ],
       responses: {
-        "200": {
-          description: "Member type deleted",
+        '200': {
+          description: 'Member type deleted',
         },
       },
     },

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import {
   Clock,
   Users,
@@ -14,7 +14,7 @@ import {
   Download,
   Upload,
   X,
-} from "lucide-react";
+} from 'lucide-react';
 import {
   useTrainingModule,
   useModuleAssignedUsers,
@@ -25,33 +25,25 @@ import {
   useTrainingCompletionsColumns,
   useTrainingCertificates,
   useTrainingCertificatesColumns,
-} from "../hooks";
-import { Button } from "@src/shared/components/ui/button";
-import { Badge } from "@src/shared/components/ui/badge";
-import { DataTable } from "@src/shared/components/data-table";
-import { DataTableFilters } from "@src/shared/components/data-table-filters";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@src/shared/components/ui/tabs";
+} from '../hooks';
+import { Button } from '@src/shared/components/ui/button';
+import { Badge } from '@src/shared/components/ui/badge';
+import { DataTable } from '@src/shared/components/data-table';
+import { DataTableFilters } from '@src/shared/components/data-table-filters';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@src/shared/components/ui/tabs';
 import {
   CompleteAssignmentDialog,
   EditModuleDialog,
   AddSupplementDialog,
   AddCertificateDialog,
   RemoveCertificateAlertDialog,
-} from "../components";
-import {
-  useUploadCertificateTemplate,
-  useRemoveCertificateTemplate,
-} from "../hooks";
-import type { TrainingModuleListItem } from "../types";
-import { RemoveSupplementAlertDialog } from "../components/supplements/RemoveSupplementAlertDialog";
-import { RemoveModuleAlertDialog } from "../components/RemoveModuleAlertDialog";
-import { DataTablePagination } from "@src/shared/components/data-table-pagination";
-import { useUrlFilters } from "@hooks/use-url-filters";
+} from '../components';
+import { useUploadCertificateTemplate, useRemoveCertificateTemplate } from '../hooks';
+import type { TrainingModuleListItem } from '../types';
+import { RemoveSupplementAlertDialog } from '../components/supplements/RemoveSupplementAlertDialog';
+import { RemoveModuleAlertDialog } from '../components/RemoveModuleAlertDialog';
+import { DataTablePagination } from '@src/shared/components/data-table-pagination';
+import { useUrlFilters } from '@hooks/use-url-filters';
 
 export function TrainingDetailPage() {
   const router = useRouter();
@@ -59,15 +51,14 @@ export function TrainingDetailPage() {
 
   const moduleId = (params.moduleId as string) || (params.id as string);
 
-  const { module: trainingModule, isLoading: isModuleLoading } =
-    useTrainingModule(moduleId);
+  const { module: trainingModule, isLoading: isModuleLoading } = useTrainingModule(moduleId);
   const { setPage: setSupplementPage, page: supplemetPage } = useUrlFilters({
-    pageKey: "supplement",
+    pageKey: 'supplement',
     basePath: `/training/${moduleId}`,
   });
 
   const { setPage: setAssignUserPage, page: assignUserPage } = useUrlFilters({
-    pageKey: "user",
+    pageKey: 'user',
     basePath: `/training/${moduleId}`,
   });
 
@@ -115,8 +106,7 @@ export function TrainingDetailPage() {
       supplements: supplements || [],
     });
 
-  const { certificates, isLoading: isCertificatesLoading } =
-    useTrainingCertificates(moduleId);
+  const { certificates, isLoading: isCertificatesLoading } = useTrainingCertificates(moduleId);
 
   const { certificateColumns, certificateToDelete, setCertificateToDelete } =
     useTrainingCertificatesColumns({
@@ -128,11 +118,7 @@ export function TrainingDetailPage() {
   };
 
   if (isModuleLoading) {
-    return (
-      <div className="py-24 text-center text-body">
-        Loading training module details...
-      </div>
-    );
+    return <div className="py-24 text-center text-body">Loading training module details...</div>;
   }
 
   if (!trainingModule) {
@@ -140,10 +126,9 @@ export function TrainingDetailPage() {
       <div className="py-24 text-center">
         <h2 className="text-xl font-bold text-ink mb-2">Module Not Found</h2>
         <p className="text-body mb-6">
-          The training module you are trying to access does not exist or has
-          been removed.
+          The training module you are trying to access does not exist or has been removed.
         </p>
-        <Button onClick={() => router.push("/training")} className="">
+        <Button onClick={() => router.push('/training')} className="">
           Back to Portal
         </Button>
       </div>
@@ -155,12 +140,9 @@ export function TrainingDetailPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-ink">
-            {trainingModule.title}
-          </h1>
+          <h1 className="text-2xl font-bold text-ink">{trainingModule.title}</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            v{trainingModule.version} &middot;{" "}
-            {trainingModule.isActive ? "Active" : "Inactive"}
+            v{trainingModule.version} &middot; {trainingModule.isActive ? 'Active' : 'Inactive'}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -191,9 +173,7 @@ export function TrainingDetailPage() {
                 <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">
                   Overview
                 </h2>
-                <p className="text-sm text-body leading-relaxed">
-                  {trainingModule.description}
-                </p>
+                <p className="text-sm text-body leading-relaxed">{trainingModule.description}</p>
               </div>
             )}
             <div className="flex flex-wrap gap-4">
@@ -211,11 +191,7 @@ export function TrainingDetailPage() {
                   <span>Required for: </span>
                   <div className="flex flex-wrap gap-1">
                     {trainingModule.requiredForRoles.map((role: string) => (
-                      <Badge
-                        key={role}
-                        variant="secondary"
-                        className="text-[10px]"
-                      >
+                      <Badge key={role} variant="secondary" className="text-[10px]">
                         {role}
                       </Badge>
                     ))}
@@ -227,22 +203,18 @@ export function TrainingDetailPage() {
           <div className="flex flex-col gap-2 text-sm">
             <div className="flex items-center justify-between py-2 border-b border-hairline">
               <span className="text-muted-foreground">Assigned Users</span>
-              <span className="font-semibold text-ink">
-                {assignedUsers.length}
-              </span>
+              <span className="font-semibold text-ink">{assignedUsers.length}</span>
             </div>
             <div className="flex items-center justify-between py-2 border-b border-hairline">
               <span className="text-muted-foreground">Supplements</span>
-              <span className="font-semibold text-ink">
-                {supplements?.length}
-              </span>
+              <span className="font-semibold text-ink">{supplements?.length}</span>
             </div>
             <div className="flex items-center justify-between py-2">
               <span className="text-muted-foreground">Completion Rate</span>
               <span className="font-semibold text-ink">
                 {assignedUsers.length > 0
-                  ? `${Math.round((assignedUsers.filter((u) => u.status === "COMPLETED").length / assignedUsers.length) * 100)}%`
-                  : "—"}
+                  ? `${Math.round((assignedUsers.filter((u) => u.status === 'COMPLETED').length / assignedUsers.length) * 100)}%`
+                  : '—'}
               </span>
             </div>
           </div>
@@ -265,7 +237,7 @@ export function TrainingDetailPage() {
             <div className="flex items-center gap-2 min-w-0">
               <Award className="h-4 w-4 shrink-0 text-primary" />
               <span className="text-sm text-body truncate">
-                {trainingModule.certificateTemplate.name || "Template set"}
+                {trainingModule.certificateTemplate.name || 'Template set'}
               </span>
             </div>
             <div className="flex items-center gap-1">
@@ -299,9 +271,7 @@ export function TrainingDetailPage() {
           <div className="flex items-center justify-between border border-hairline bg-canvas px-3 py-2 mt-2">
             <div className="flex items-center gap-2 min-w-0">
               <Paperclip className="h-4 w-4 shrink-0 text-muted-foreground" />
-              <span className="text-sm text-body truncate">
-                {templateFile.name}
-              </span>
+              <span className="text-sm text-body truncate">{templateFile.name}</span>
               <span className="text-xs text-muted-foreground shrink-0">
                 ({(templateFile.size / 1024).toFixed(1)} KB)
               </span>
@@ -314,11 +284,8 @@ export function TrainingDetailPage() {
                 disabled={isUploadingTemplate}
                 onClick={() => {
                   const formData = new FormData();
-                  formData.append("file", templateFile);
-                  formData.append(
-                    "name",
-                    trainingModule.title + " Certificate",
-                  );
+                  formData.append('file', templateFile);
+                  formData.append('name', trainingModule.title + ' Certificate');
                   uploadTemplate(formData, {
                     onSuccess: (res) => {
                       if (res.success) setTemplateFile(null);
@@ -327,7 +294,7 @@ export function TrainingDetailPage() {
                 }}
                 className="h-8 text-xs"
               >
-                {isUploadingTemplate ? "Uploading..." : "Upload"}
+                {isUploadingTemplate ? 'Uploading...' : 'Upload'}
               </Button>
               <Button
                 type="button"
@@ -344,8 +311,8 @@ export function TrainingDetailPage() {
           <label className="flex cursor-pointer items-center justify-center gap-2 border border-dashed border-hairline bg-canvas px-3 py-4 text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors mt-2">
             <Upload className="h-4 w-4" />
             {trainingModule.certificateTemplate?.certificateUrl
-              ? "Replace template"
-              : "Upload certificate template"}
+              ? 'Replace template'
+              : 'Upload certificate template'}
             <input
               type="file"
               accept=".pdf,.png,.jpg,.jpeg"
@@ -380,8 +347,7 @@ export function TrainingDetailPage() {
         <TabsContent value="members" className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="text-sm text-muted-foreground">
-              {assignedUsers.length} user{assignedUsers.length !== 1 ? "s" : ""}{" "}
-              assigned
+              {assignedUsers.length} user{assignedUsers.length !== 1 ? 's' : ''} assigned
             </div>
             <Button
               onClick={() => router.push(`/training/${moduleId}/assign`)}
@@ -395,30 +361,23 @@ export function TrainingDetailPage() {
           <DataTableFilters
             fields={[
               {
-                type: "search",
-                id: "search",
-                placeholder: "Search assigned users...",
+                type: 'search',
+                id: 'search',
+                placeholder: 'Search assigned users...',
               },
             ]}
             onFilterChange={() => {}}
           />
-          <DataTable
-            loading={isAssignedLoading}
-            data={filteredUsers}
-            columns={memberColumns}
-          />
+          <DataTable loading={isAssignedLoading} data={filteredUsers} columns={memberColumns} />
 
-          <DataTablePagination
-            meta={assignedUserMeta}
-            onPageChange={setAssignUserPage}
-          />
+          <DataTablePagination meta={assignedUserMeta} onPageChange={setAssignUserPage} />
         </TabsContent>
 
         <TabsContent value="supplements" className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="text-sm text-muted-foreground">
               {supplements?.length} supplement
-              {supplements?.length !== 1 ? "s" : ""}
+              {supplements?.length !== 1 ? 's' : ''}
             </div>
             <Button
               onClick={() => setAddSupplementOpen(true)}
@@ -435,17 +394,12 @@ export function TrainingDetailPage() {
             columns={supplementColumns}
           />
 
-          <DataTablePagination
-            meta={supplementMeta}
-            onPageChange={setSupplementPage}
-          />
+          <DataTablePagination meta={supplementMeta} onPageChange={setSupplementPage} />
         </TabsContent>
 
         <TabsContent value="completions" className="space-y-4">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-muted-foreground">
-              Users who completed this module
-            </div>
+            <div className="text-sm text-muted-foreground">Users who completed this module</div>
             <Button
               variant="outline"
               className="h-10 border-hairline px-4 text-sm font-semibold flex items-center gap-2 hover:bg-canvas/50"
@@ -462,7 +416,7 @@ export function TrainingDetailPage() {
           <div className="flex items-center justify-between">
             <div className="text-sm text-muted-foreground">
               {certificates?.length} certificate
-              {certificates?.length !== 1 ? "s" : ""}
+              {certificates?.length !== 1 ? 's' : ''}
             </div>
             <Button
               onClick={() => setAddCertificateOpen(true)}
@@ -511,15 +465,13 @@ export function TrainingDetailPage() {
       <RemoveModuleAlertDialog
         isOpen={deleteModuleDialogOpen}
         onValueChange={(value) => setDeleteModuleDialogOpen(value)}
-        moduleId={moduleId || ""}
+        moduleId={moduleId || ''}
       />
 
       <RemoveSupplementAlertDialog
         isOpen={!!supplementToDelete}
-        moduleId={supplementToDelete?.id || ""}
-        onValueChange={(v) =>
-          setSupplementToDelete(!v ? supplementToDelete : null)
-        }
+        moduleId={supplementToDelete?.id || ''}
+        onValueChange={(v) => setSupplementToDelete(!v ? supplementToDelete : null)}
       />
 
       <AddCertificateDialog
@@ -531,10 +483,8 @@ export function TrainingDetailPage() {
       <RemoveCertificateAlertDialog
         isOpen={!!certificateToDelete}
         moduleId={moduleId}
-        certificateId={certificateToDelete?.id || ""}
-        onValueChange={(v) =>
-          setCertificateToDelete(!v ? certificateToDelete : null)
-        }
+        certificateId={certificateToDelete?.id || ''}
+        onValueChange={(v) => setCertificateToDelete(!v ? certificateToDelete : null)}
       />
     </div>
   );

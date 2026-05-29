@@ -1,30 +1,26 @@
-import { prisma } from "@lib/prisma";
-import { NotFoundError } from "@src/shared/errors";
-import { MeetingStatus } from "@prisma/client";
+import { prisma } from '@lib/prisma';
+import { NotFoundError } from '@src/shared/errors';
+import { MeetingStatus } from '@prisma/client';
 
 interface UpdateMeetingProps {
   meetingId: string;
   associationId: string;
   data: {
     title?: string;
-    type?: import("@prisma/client").MeetingType;
+    type?: import('@prisma/client').MeetingType;
     scheduledAt?: Date;
     venue?: string;
     status?: MeetingStatus;
   };
 }
 
-export async function updateMeeting({
-  meetingId,
-  associationId,
-  data,
-}: UpdateMeetingProps) {
+export async function updateMeeting({ meetingId, associationId, data }: UpdateMeetingProps) {
   const existing = await prisma.meeting.findFirst({
     where: { id: meetingId, associationId },
   });
 
   if (!existing) {
-    throw new NotFoundError("Meeting");
+    throw new NotFoundError('Meeting');
   }
 
   return await prisma.meeting.update({

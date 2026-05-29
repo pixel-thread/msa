@@ -1,9 +1,9 @@
-import { withAssociation, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@utils/responses";
-import { logger } from "@src/shared/logger/server";
-import { UserRole } from "@prisma/client";
-import { RecordManualPaymentSchema } from "@feature/payments/validators";
-import { recordManualPayment } from "@feature/payments/services/payment.service";
+import { withAssociation, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@utils/responses';
+import { logger } from '@src/shared/logger/server';
+import { UserRole } from '@prisma/client';
+import { RecordManualPaymentSchema } from '@feature/payments/validators';
+import { recordManualPayment } from '@feature/payments/services/payment.service';
 
 /**
  * POST /api/payments/record
@@ -19,20 +19,14 @@ import { recordManualPayment } from "@feature/payments/services/payment.service"
 export const POST = withAssociation(
   { body: RecordManualPaymentSchema },
   async (association, { body, traceId }, request) => {
-    logger.info(
-      { traceId, userId: body!.userId },
-      "POST /api/payments/record - Request started",
-    );
+    logger.info({ traceId, userId: body!.userId }, 'POST /api/payments/record - Request started');
 
     const user = await withRole(request, UserRole.FINANCE);
-    logger.info(
-      { traceId, userId: user.id },
-      "POST /api/payments/record - User authorized",
-    );
+    logger.info({ traceId, userId: user.id }, 'POST /api/payments/record - User authorized');
 
     logger.info(
       { traceId, targetUserId: body!.userId, amount: body!.amount },
-      "POST /api/payments/record - Recording manual payment",
+      'POST /api/payments/record - Recording manual payment',
     );
 
     const transaction = await recordManualPayment({
@@ -46,15 +40,12 @@ export const POST = withAssociation(
       createdById: user.id,
     });
 
-    logger.info(
-      { traceId, transactionId: transaction.id },
-      "POST /api/payments/record - Success",
-    );
+    logger.info({ traceId, transactionId: transaction.id }, 'POST /api/payments/record - Success');
 
     return SuccessResponse(
       {
         data: transaction,
-        message: "Payment recorded and allocated successfully",
+        message: 'Payment recorded and allocated successfully',
       },
       201,
     );

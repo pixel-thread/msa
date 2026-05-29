@@ -1,1 +1,1 @@
-export * from "./get-trace-id";
+export * from './get-trace-id';

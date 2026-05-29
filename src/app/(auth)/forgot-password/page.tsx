@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from 'react';
+import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-import { Button } from "@src/shared/components/ui/button";
-import { Input } from "@src/shared/components/ui/input";
+import { Button } from '@src/shared/components/ui/button';
+import { Input } from '@src/shared/components/ui/input';
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
-} from "@src/shared/components/ui/card";
-import { Alert, AlertDescription } from "@src/shared/components/ui/alert";
+} from '@src/shared/components/ui/card';
+import { Alert, AlertDescription } from '@src/shared/components/ui/alert';
 import {
   Form,
   FormControl,
@@ -22,12 +22,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
-import {
-  ForgotPasswordSchema,
-  type ForgotPasswordInput,
-} from "@src/features/auth/validators";
-import { useForgotPassword } from "@src/features/auth/hooks";
+} from '@src/shared/components/ui/form';
+import { ForgotPasswordSchema, type ForgotPasswordInput } from '@src/features/auth/validators';
+import { useForgotPassword } from '@src/features/auth/hooks';
 
 export default function ForgotPasswordPage() {
   const [isSuccess, setIsSuccess] = useState(false);
@@ -36,7 +33,7 @@ export default function ForgotPasswordPage() {
   const form = useForm<ForgotPasswordInput>({
     resolver: zodResolver(ForgotPasswordSchema),
     defaultValues: {
-      email: "",
+      email: '',
     },
   });
 
@@ -56,8 +53,8 @@ export default function ForgotPasswordPage() {
               Check your email
             </CardTitle>
             <CardDescription className="text-body text-base">
-              We've sent you a password reset link. Please check your inbox and
-              follow the instructions to reset your password.
+              We've sent you a password reset link. Please check your inbox and follow the
+              instructions to reset your password.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -81,8 +78,7 @@ export default function ForgotPasswordPage() {
             Forgot your password?
           </CardTitle>
           <CardDescription className="text-body text-base">
-            Enter your email address and we'll send you a link to reset your
-            password
+            Enter your email address and we'll send you a link to reset your password
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -91,8 +87,7 @@ export default function ForgotPasswordPage() {
               {forgotPasswordMutation.isError && (
                 <Alert variant="destructive">
                   <AlertDescription>
-                    {forgotPasswordMutation.error?.message ||
-                      "Failed to send reset email"}
+                    {forgotPasswordMutation.error?.message || 'Failed to send reset email'}
                   </AlertDescription>
                 </Alert>
               )}
@@ -102,9 +97,7 @@ export default function ForgotPasswordPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-body-strong text-sm font-medium">
-                      Email
-                    </FormLabel>
+                    <FormLabel className="text-body-strong text-sm font-medium">Email</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
@@ -123,9 +116,7 @@ export default function ForgotPasswordPage() {
                 className="h-11 w-full bg-primary px-5 text-base font-semibold text-on-primary hover:bg-primary-active disabled:bg-primary-disabled"
                 disabled={forgotPasswordMutation.isPending}
               >
-                {forgotPasswordMutation.isPending
-                  ? "Sending..."
-                  : "Send reset link"}
+                {forgotPasswordMutation.isPending ? 'Sending...' : 'Send reset link'}
               </Button>
 
               <div className="text-center">

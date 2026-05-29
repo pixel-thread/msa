@@ -5,8 +5,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
-import { Button } from "@src/shared/components/ui/button";
+} from '@src/shared/components/ui/dialog';
+import { Button } from '@src/shared/components/ui/button';
 
 interface Association {
   id: string;
@@ -37,27 +37,18 @@ export function DeactivateAssociationDialog({
         <DialogHeader>
           <DialogTitle>Deactivate Association</DialogTitle>
           <DialogDescription>
-            Are you sure you want to deactivate{" "}
-            <span className="font-medium">{association.name}</span> (
-            {association.slug})? This will disable the association and its
-            related services.
+            Are you sure you want to deactivate{' '}
+            <span className="font-medium">{association.name}</span> ({association.slug})? This will
+            disable the association and its related services.
           </DialogDescription>
         </DialogHeader>
 
         <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-          >
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button
-            variant="destructive"
-            onClick={onConfirm}
-            disabled={isDeactivating}
-          >
-            {isDeactivating ? "Deactivating..." : "Deactivate"}
+          <Button variant="destructive" onClick={onConfirm} disabled={isDeactivating}>
+            {isDeactivating ? 'Deactivating...' : 'Deactivate'}
           </Button>
         </DialogFooter>
       </DialogContent>

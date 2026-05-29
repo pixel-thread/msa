@@ -1,11 +1,11 @@
-import { withAssociation, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@src/shared/utils/responses";
-import { logger } from "@src/shared/logger/server";
-import { UserRole } from "@prisma/client";
-import { CollectionReportQuerySchema } from "@feature/payments/validators";
-import { prisma } from "@src/shared/lib/prisma";
-import { buildPagination } from "@src/shared/utils/build-pagination";
-import { PAGE_SIZE } from "@src/shared/constants";
+import { withAssociation, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@src/shared/utils/responses';
+import { logger } from '@src/shared/logger/server';
+import { UserRole } from '@prisma/client';
+import { CollectionReportQuerySchema } from '@feature/payments/validators';
+import { prisma } from '@src/shared/lib/prisma';
+import { buildPagination } from '@src/shared/utils/build-pagination';
+import { PAGE_SIZE } from '@src/shared/constants';
 
 /**
  * GET /api/payments/reports/collections
@@ -20,14 +20,11 @@ export const GET = withAssociation(
   async (association, { query, traceId }, request) => {
     logger.info(
       { traceId, year: query!.year, month: query!.month },
-      "GET /api/payments/reports/collections - Request started",
+      'GET /api/payments/reports/collections - Request started',
     );
 
     await withRole(request, UserRole.FINANCE);
-    logger.info(
-      { traceId },
-      "GET /api/payments/reports/collections - User authorized",
-    );
+    logger.info({ traceId }, 'GET /api/payments/reports/collections - User authorized');
 
     const [collections, total] = await prisma.$transaction([
       prisma.contributionPeriod.findMany({
@@ -50,7 +47,7 @@ export const GET = withAssociation(
             },
           },
         },
-        orderBy: { user: { name: "asc" } },
+        orderBy: { user: { name: 'asc' } },
         take: PAGE_SIZE,
         skip: (query!.page - 1) * PAGE_SIZE,
       }),
@@ -67,7 +64,7 @@ export const GET = withAssociation(
 
     logger.info(
       { traceId, count: collections.length, total },
-      "GET /api/payments/reports/collections - Success",
+      'GET /api/payments/reports/collections - Success',
     );
 
     return SuccessResponse({

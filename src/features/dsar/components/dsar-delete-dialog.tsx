@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Dialog,
@@ -7,8 +7,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
-import { Button } from "@src/shared/components/ui/button";
+} from '@src/shared/components/ui/dialog';
+import { Button } from '@src/shared/components/ui/button';
 
 interface DsarDeleteDialogProps {
   open: boolean;
@@ -29,25 +29,17 @@ export function DsarDeleteDialog({
         <DialogHeader>
           <DialogTitle>Delete DSAR Ticket</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete this DSAR ticket? This action cannot
-            be undone and will remove all associated responses.
+            Are you sure you want to delete this DSAR ticket? This action cannot be undone and will
+            remove all associated responses.
           </DialogDescription>
         </DialogHeader>
 
         <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-          >
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button
-            variant="destructive"
-            onClick={onConfirm}
-            disabled={isDeleting}
-          >
-            {isDeleting ? "Deleting..." : "Delete"}
+          <Button variant="destructive" onClick={onConfirm} disabled={isDeleting}>
+            {isDeleting ? 'Deleting...' : 'Delete'}
           </Button>
         </DialogFooter>
       </DialogContent>

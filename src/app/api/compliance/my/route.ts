@@ -1,27 +1,24 @@
-import { withAssociation } from "@src/shared/api";
-import { SuccessResponse } from "@src/shared/utils";
-import { buildPagination } from "@src/shared/utils/build-pagination";
-import { UnauthorizedError } from "@src/shared/errors";
-import { prisma } from "@src/shared/lib/prisma";
-import { PAGE_SIZE } from "@src/shared/constants";
-import { ComplaintQuerySchema } from "@src/features/compliance/validators";
-import { logger } from "@src/shared/logger/server";
+import { withAssociation } from '@src/shared/api';
+import { SuccessResponse } from '@src/shared/utils';
+import { buildPagination } from '@src/shared/utils/build-pagination';
+import { UnauthorizedError } from '@src/shared/errors';
+import { prisma } from '@src/shared/lib/prisma';
+import { PAGE_SIZE } from '@src/shared/constants';
+import { ComplaintQuerySchema } from '@src/features/compliance/validators';
+import { logger } from '@src/shared/logger/server';
 
 export const GET = withAssociation(
   { query: ComplaintQuerySchema },
   async (association, { query, traceId }, req) => {
-    const userId = req.headers.get("x-user-id");
+    const userId = req.headers.get('x-user-id');
     logger.info(
       { traceId, associationId: association.id, userId },
-      "GET /api/compliance/my - Request started",
+      'GET /api/compliance/my - Request started',
     );
 
     if (!userId) {
-      logger.error(
-        { traceId },
-        "GET /api/compliance/my - Unauthorized (missing x-user-id)",
-      );
-      throw new UnauthorizedError("Unauthorized");
+      logger.error({ traceId }, 'GET /api/compliance/my - Unauthorized (missing x-user-id)');
+      throw new UnauthorizedError('Unauthorized');
     }
 
     const where: Record<string, unknown> = {
@@ -50,7 +47,7 @@ export const GET = withAssociation(
 
     const complaints = await prisma.complaint.findMany({
       where,
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
       skip: ((query?.page ?? 1) - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
       include: {
@@ -62,10 +59,7 @@ export const GET = withAssociation(
 
     const total = await prisma.complaint.count({ where });
 
-    logger.info(
-      { traceId, count: complaints.length },
-      "GET /api/compliance/my - Success",
-    );
+    logger.info({ traceId, count: complaints.length }, 'GET /api/compliance/my - Success');
 
     return SuccessResponse({
       data: complaints,

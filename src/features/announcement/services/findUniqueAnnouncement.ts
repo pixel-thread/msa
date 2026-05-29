@@ -1,5 +1,5 @@
-import { prisma } from "@lib/prisma";
-import { NotFoundError } from "@src/shared/errors";
+import { prisma } from '@lib/prisma';
+import { NotFoundError } from '@src/shared/errors';
 
 interface FindUniqueAnnouncementProps {
   announcementId: string;
@@ -28,7 +28,7 @@ export async function findUniqueAnnouncement({
       },
       readReceipts: {
         take: 10,
-        orderBy: { readAt: "desc" },
+        orderBy: { readAt: 'desc' },
         include: {
           user: {
             select: { id: true, name: true, membershipNumber: true },
@@ -42,7 +42,7 @@ export async function findUniqueAnnouncement({
   });
 
   if (!announcement) {
-    throw new NotFoundError("Announcement");
+    throw new NotFoundError('Announcement');
   }
 
   return announcement;

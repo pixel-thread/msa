@@ -1,23 +1,18 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useLedgerSummary } from "../hooks/useLedgerSummary";
-import { useLedgerEntries } from "../hooks/useLedgerEntries";
-import { Card, CardContent } from "@src/shared/components/ui/card";
-import { DataTable } from "@src/shared/components/data-table";
-import { DataTableFilters } from "@src/shared/components/data-table-filters";
-import { useRecentLedgerEntryColumns } from "../hooks/useRecentLedgerEntryColumns";
-import {
-  ArrowRightIcon,
-  FileTextIcon,
-  CheckCircleIcon,
-  BanknoteIcon,
-} from "lucide-react";
-import { DataTablePagination } from "@src/shared/components/data-table-pagination";
-import { useUrlFilters } from "@src/shared/hooks";
+import Link from 'next/link';
+import { useLedgerSummary } from '../hooks/useLedgerSummary';
+import { useLedgerEntries } from '../hooks/useLedgerEntries';
+import { Card, CardContent } from '@src/shared/components/ui/card';
+import { DataTable } from '@src/shared/components/data-table';
+import { DataTableFilters } from '@src/shared/components/data-table-filters';
+import { useRecentLedgerEntryColumns } from '../hooks/useRecentLedgerEntryColumns';
+import { ArrowRightIcon, FileTextIcon, CheckCircleIcon, BanknoteIcon } from 'lucide-react';
+import { DataTablePagination } from '@src/shared/components/data-table-pagination';
+import { useUrlFilters } from '@src/shared/hooks';
 
 export default function LedgerDashboardPage() {
-  const { page, setPage } = useUrlFilters({ basePath: "/ledger" });
+  const { page, setPage } = useUrlFilters({ basePath: '/ledger' });
   const { summary, isLoading: summaryLoading } = useLedgerSummary();
   const {
     entries,
@@ -28,9 +23,7 @@ export default function LedgerDashboardPage() {
   });
 
   const totalAccounts = summary?.accounts?.length ?? 0;
-  const pendingEntries = entries.filter(
-    (e) => e.approvalStatus === "PENDING",
-  ).length;
+  const pendingEntries = entries.filter((e) => e.approvalStatus === 'PENDING').length;
 
   const { columns: entryColumns } = useRecentLedgerEntryColumns();
   return (
@@ -58,7 +51,7 @@ export default function LedgerDashboardPage() {
                   Total Entries
                 </p>
                 <p className="mt-0.5 text-2xl font-semibold text-ink">
-                  {summaryLoading ? "..." : (meta?.total.toLocaleString() ?? 0)}
+                  {summaryLoading ? '...' : (meta?.total.toLocaleString() ?? 0)}
                 </p>
               </div>
             </div>
@@ -76,7 +69,7 @@ export default function LedgerDashboardPage() {
                   Pending Approvals
                 </p>
                 <p className="mt-0.5 text-2xl font-semibold text-ink">
-                  {entriesLoading ? "..." : pendingEntries}
+                  {entriesLoading ? '...' : pendingEntries}
                 </p>
               </div>
             </div>
@@ -94,7 +87,7 @@ export default function LedgerDashboardPage() {
                   Accounts
                 </p>
                 <p className="mt-0.5 text-2xl font-semibold text-ink">
-                  {summaryLoading ? "..." : totalAccounts}
+                  {summaryLoading ? '...' : totalAccounts}
                 </p>
               </div>
             </div>
@@ -105,18 +98,14 @@ export default function LedgerDashboardPage() {
       <DataTableFilters
         fields={[
           {
-            type: "search",
-            id: "search",
-            placeholder: "Search entries...",
+            type: 'search',
+            id: 'search',
+            placeholder: 'Search entries...',
           },
         ]}
         onFilterChange={() => {}}
       />
-      <DataTable
-        columns={entryColumns}
-        data={entries}
-        loading={entriesLoading}
-      />
+      <DataTable columns={entryColumns} data={entries} loading={entriesLoading} />
       <DataTablePagination meta={meta} onPageChange={setPage} />
 
       <div className="grid gap-4 md:grid-cols-2">

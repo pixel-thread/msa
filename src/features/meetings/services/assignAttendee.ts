@@ -1,14 +1,10 @@
-import { prisma } from "@lib/prisma";
-import {
-  NotFoundError,
-  ConflictError,
-  ForbiddenError,
-} from "@src/shared/errors";
-import { $Enums, AttendeeRole } from "@prisma/client";
-import { ExpoNotificationService } from "@lib/expo";
-import { logger } from "@src/shared/logger/server";
-import { EXPO_ROUTES } from "@src/shared/constants/expo-route";
-import { createNotification } from "@src/shared/services/notification";
+import { prisma } from '@lib/prisma';
+import { NotFoundError, ConflictError, ForbiddenError } from '@src/shared/errors';
+import { $Enums, AttendeeRole } from '@prisma/client';
+import { ExpoNotificationService } from '@lib/expo';
+import { logger } from '@src/shared/logger/server';
+import { EXPO_ROUTES } from '@src/shared/constants/expo-route';
+import { createNotification } from '@src/shared/services/notification';
 
 interface AssignAttendeeProps {
   meetingId: string;
@@ -28,7 +24,7 @@ export async function assignAttendee({
   });
 
   if (!meeting) {
-    throw new NotFoundError("Meeting");
+    throw new NotFoundError('Meeting');
   }
 
   const user = await prisma.user.findFirst({
@@ -36,7 +32,7 @@ export async function assignAttendee({
   });
 
   if (!user) {
-    throw new ForbiddenError("User does not belong to this association");
+    throw new ForbiddenError('User does not belong to this association');
   }
 
   const existingAttendance = await prisma.meetingAttendee.findUnique({
@@ -49,7 +45,7 @@ export async function assignAttendee({
   });
 
   if (existingAttendance) {
-    throw new ConflictError("User is already assigned to this meeting");
+    throw new ConflictError('User is already assigned to this meeting');
   }
 
   const attendee = await prisma.meetingAttendee.create({
@@ -75,13 +71,13 @@ export async function assignAttendee({
     if (tokens.length > 0) {
       const payload = {
         userId: userId,
-        type: "GENERAL_MESSAGE" as $Enums.NotificationType,
+        type: 'GENERAL_MESSAGE' as $Enums.NotificationType,
         title: meeting.title,
         body: `You have been assigned to: ${meeting.title}`,
         route: EXPO_ROUTES.MEETINGS.MEETING_DETAIL(meeting.id),
         entityId: meetingId,
         createdAt: new Date().toISOString(),
-        meta: { id: meeting.id, type: "MEETING" },
+        meta: { id: meeting.id, type: 'MEETING' },
         associationId,
       };
 
@@ -91,17 +87,17 @@ export async function assignAttendee({
 
       const results = await ExpoNotificationService.sendPushNotifications(
         tokens.map((t) => t.token),
-        "New Meeting Assigned",
+        'New Meeting Assigned',
         `You have been assigned to: ${meeting.title}`,
         {
           id: notification.id,
           ...payload,
         },
       );
-      logger.debug({ results }, "Push notification results:");
+      logger.debug({ results }, 'Push notification results:');
     }
   } catch (error) {
-    logger.error({ error }, "Failed to send push notification:");
+    logger.error({ error }, 'Failed to send push notification:');
   }
 
   return attendee;

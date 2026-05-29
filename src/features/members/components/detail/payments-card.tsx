@@ -1,10 +1,5 @@
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@src/shared/components/ui/card";
-import { User } from "@prisma/client";
+import { Card, CardHeader, CardTitle, CardContent } from '@src/shared/components/ui/card';
+import { User } from '@prisma/client';
 
 interface PaymentsCardProps {
   member: User & {
@@ -26,9 +21,7 @@ export function PaymentsCard({ member }: PaymentsCardProps) {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm text-body">Total Payments</span>
-            <span className="text-sm font-medium text-ink">
-              {member._count?.payments || 0}
-            </span>
+            <span className="text-sm font-medium text-ink">{member._count?.payments || 0}</span>
           </div>
         </div>
       </CardContent>

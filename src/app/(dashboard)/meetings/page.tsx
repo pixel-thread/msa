@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useUrlFilters } from "@src/shared/hooks";
-import { DataTable } from "@src/shared/components/data-table";
-import { DataTableFilters } from "@src/shared/components/data-table-filters";
-import { Button } from "@src/shared/components/ui/button";
-import { Plus } from "lucide-react";
-import { useMeetings } from "@src/features/meetings/hooks";
-import { useMeetingTableColumns } from "@src/features/meetings/hooks/useMeetingTableColumns";
-import { CreateMeetingDialog } from "@src/features/meetings/components/CreateMeetingDialog";
-import { DataTablePagination } from "@src/shared/components/data-table-pagination";
+import { useState } from 'react';
+import { useUrlFilters } from '@src/shared/hooks';
+import { DataTable } from '@src/shared/components/data-table';
+import { DataTableFilters } from '@src/shared/components/data-table-filters';
+import { Button } from '@src/shared/components/ui/button';
+import { Plus } from 'lucide-react';
+import { useMeetings } from '@src/features/meetings/hooks';
+import { useMeetingTableColumns } from '@src/features/meetings/hooks/useMeetingTableColumns';
+import { CreateMeetingDialog } from '@src/features/meetings/components/CreateMeetingDialog';
+import { DataTablePagination } from '@src/shared/components/data-table-pagination';
 
 export default function MeetingsPage() {
-  const { page, setPage } = useUrlFilters({ basePath: "/meetings" });
+  const { page, setPage } = useUrlFilters({ basePath: '/meetings' });
 
   const [createOpen, setCreateOpen] = useState(false);
 
@@ -28,11 +28,9 @@ export default function MeetingsPage() {
           <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
             Meetings
           </h1>
-          <p className="mt-1 text-base text-body">
-            Manage and view all association meetings
-          </p>
+          <p className="mt-1 text-base text-body">Manage and view all association meetings</p>
         </div>
-        <Button onClick={() => setCreateOpen(true)} variant={"default"}>
+        <Button onClick={() => setCreateOpen(true)} variant={'default'}>
           <Plus className="mr-2 h-4 w-4" />
           Create Meeting
         </Button>
@@ -43,9 +41,9 @@ export default function MeetingsPage() {
       <DataTableFilters
         fields={[
           {
-            type: "search",
-            id: "search",
-            placeholder: "Search meetings...",
+            type: 'search',
+            id: 'search',
+            placeholder: 'Search meetings...',
           },
         ]}
         onFilterChange={() => {}}

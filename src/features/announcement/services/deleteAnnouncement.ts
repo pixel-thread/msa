@@ -1,5 +1,5 @@
-import { prisma } from "@lib/prisma";
-import { NotFoundError, ForbiddenError } from "@src/shared/errors";
+import { prisma } from '@lib/prisma';
+import { NotFoundError, ForbiddenError } from '@src/shared/errors';
 
 interface DeleteAnnouncementProps {
   announcementId: string;
@@ -17,11 +17,11 @@ export async function deleteAnnouncement({
   });
 
   if (!announcement) {
-    throw new NotFoundError("Announcement");
+    throw new NotFoundError('Announcement');
   }
 
   if (announcement.authorId !== authorId) {
-    throw new ForbiddenError("You can only delete your own announcements");
+    throw new ForbiddenError('You can only delete your own announcements');
   }
 
   await prisma.announcement.delete({

@@ -1,11 +1,7 @@
-import { prisma } from "@lib/prisma";
-import {
-  AnnouncementStatus,
-  AnnouncementPriority,
-  UserRole,
-} from "@prisma/client";
-import { NotFoundError } from "@src/shared/errors";
-import { sendAnnouncementNotifications } from "./sendAnnouncementNotifications";
+import { prisma } from '@lib/prisma';
+import { AnnouncementStatus, AnnouncementPriority, UserRole } from '@prisma/client';
+import { NotFoundError } from '@src/shared/errors';
+import { sendAnnouncementNotifications } from './sendAnnouncementNotifications';
 
 interface CreateAnnouncementProps {
   associationId: string;
@@ -36,7 +32,7 @@ export async function createAnnouncement({
   });
 
   if (!author) {
-    throw new NotFoundError("Author not found");
+    throw new NotFoundError('Author not found');
   }
 
   const announcement = await prisma.announcement.create({
@@ -61,10 +57,7 @@ export async function createAnnouncement({
     },
   });
 
-  if (
-    sendNotification &&
-    announcement.status === AnnouncementStatus.PUBLISHED
-  ) {
+  if (sendNotification && announcement.status === AnnouncementStatus.PUBLISHED) {
     await sendAnnouncementNotifications(announcement.id, associationId);
   }
 

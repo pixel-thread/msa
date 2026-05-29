@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import { toast } from "sonner";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import { toast } from 'sonner';
 
 interface RejectApplicationData {
   applicationId: string;
@@ -19,7 +19,7 @@ export function useRejectApplication() {
       if (response.success) {
         toast.success(response.message);
         queryClient.invalidateQueries({
-          queryKey: ["membership-applications"],
+          queryKey: ['membership-applications'],
         });
         return;
       }
@@ -27,7 +27,7 @@ export function useRejectApplication() {
       return;
     },
     onError: (error: { message?: string }) => {
-      toast.error(error.message || "Failed to reject application");
+      toast.error(error.message || 'Failed to reject application');
       return;
     },
   });

@@ -22,7 +22,7 @@
 
 ```typescript
 // src/features/meetings/validators/agenda-items.ts
-import { z } from "zod";
+import { z } from 'zod';
 
 export const CreateAgendaItemSchema = z.object({
   order: z.number().int().positive(),
@@ -34,19 +34,17 @@ export const UpdateAgendaItemSchema = CreateAgendaItemSchema.partial();
 
 export const AgendaOperationSchema = z.object({
   operations: z.array(
-    z.discriminatedUnion("type", [
-      z.object({ type: z.literal("CREATE"), data: CreateAgendaItemSchema }),
+    z.discriminatedUnion('type', [
+      z.object({ type: z.literal('CREATE'), data: CreateAgendaItemSchema }),
       z.object({
-        type: z.literal("UPDATE"),
+        type: z.literal('UPDATE'),
         id: z.string().uuid(),
         data: UpdateAgendaItemSchema,
       }),
-      z.object({ type: z.literal("DELETE"), id: z.string().uuid() }),
+      z.object({ type: z.literal('DELETE'), id: z.string().uuid() }),
       z.object({
-        type: z.literal("REORDER"),
-        mappings: z.array(
-          z.object({ id: z.string().uuid(), order: z.number().int() }),
-        ),
+        type: z.literal('REORDER'),
+        mappings: z.array(z.object({ id: z.string().uuid(), order: z.number().int() })),
       }),
     ]),
   ),
@@ -57,11 +55,11 @@ export const AgendaOperationSchema = z.object({
 
 ```typescript
 // src/features/meetings/validators/minutes.ts
-import { z } from "zod";
+import { z } from 'zod';
 
 export const CreateMeetingMinuteSchema = z.object({
-  agendaPoint: z.string().min(1, "Agenda point is required"),
-  decision: z.string().min(1, "Decision is required"),
+  agendaPoint: z.string().min(1, 'Agenda point is required'),
+  decision: z.string().min(1, 'Decision is required'),
   actionItems: z
     .array(
       z.object({
@@ -94,8 +92,8 @@ git commit -m "feat: add agenda and minutes validators"
 
 ```typescript
 // src/features/meetings/services/processAgendaOperations.ts
-import { prisma } from "@lib/prisma";
-import { NotFoundError } from "@src/shared/errors";
+import { prisma } from '@lib/prisma';
+import { NotFoundError } from '@src/shared/errors';
 
 interface ProcessAgendaOperationsProps {
   meetingId: string;
@@ -112,20 +110,20 @@ export async function processAgendaOperations({
     where: { id: meetingId, associationId },
   });
 
-  if (!meeting) throw new NotFoundError("Meeting");
+  if (!meeting) throw new NotFoundError('Meeting');
 
   return await prisma.$transaction(async (tx) => {
     for (const op of operations) {
-      if (op.type === "CREATE") {
+      if (op.type === 'CREATE') {
         await tx.agendaItem.create({ data: { ...op.data, meetingId } });
-      } else if (op.type === "UPDATE") {
+      } else if (op.type === 'UPDATE') {
         await tx.agendaItem.update({
           where: { id: op.id, meetingId },
           data: op.data,
         });
-      } else if (op.type === "DELETE") {
+      } else if (op.type === 'DELETE') {
         await tx.agendaItem.delete({ where: { id: op.id, meetingId } });
-      } else if (op.type === "REORDER") {
+      } else if (op.type === 'REORDER') {
         for (const mapping of op.mappings) {
           await tx.agendaItem.update({
             where: { id: mapping.id, meetingId },
@@ -136,7 +134,7 @@ export async function processAgendaOperations({
     }
     return await tx.agendaItem.findMany({
       where: { meetingId },
-      orderBy: { order: "asc" },
+      orderBy: { order: 'asc' },
     });
   });
 }
@@ -159,34 +157,25 @@ git commit -m "feat: implement agenda operations service"
 
 ```typescript
 // src/features/meetings/services/minutes.ts
-import { prisma } from "@lib/prisma";
-import { NotFoundError } from "@src/shared/errors";
+import { prisma } from '@lib/prisma';
+import { NotFoundError } from '@src/shared/errors';
 
-export async function createMeetingMinute({
-  meetingId,
-  associationId,
-  data,
-}: any) {
+export async function createMeetingMinute({ meetingId, associationId, data }: any) {
   const meeting = await prisma.meeting.findFirst({
     where: { id: meetingId, associationId },
   });
-  if (!meeting) throw new NotFoundError("Meeting");
+  if (!meeting) throw new NotFoundError('Meeting');
 
   return await prisma.meetingMinutes.create({
     data: { ...data, meetingId },
   });
 }
 
-export async function updateMeetingMinute({
-  meetingId,
-  minuteId,
-  associationId,
-  data,
-}: any) {
+export async function updateMeetingMinute({ meetingId, minuteId, associationId, data }: any) {
   const minute = await prisma.meetingMinutes.findFirst({
     where: { id: minuteId, meetingId, meeting: { associationId } },
   });
-  if (!minute) throw new NotFoundError("Meeting Minute");
+  if (!minute) throw new NotFoundError('Meeting Minute');
 
   return await prisma.meetingMinutes.update({
     where: { id: minuteId },
@@ -212,24 +201,20 @@ git commit -m "feat: implement meeting minutes services"
 
 ```typescript
 // src/app/api/meetings/[meetingId]/agenda/route.ts
-import { withAssociation } from "@src/shared/api/with-association";
-import { withRole } from "@src/shared/api/with-role";
-import { SuccessResponse } from "@src/shared/utils/responses";
-import { UserRole } from "@prisma/client";
-import { processAgendaOperations } from "@feature/meetings/services/processAgendaOperations";
-import { AgendaOperationSchema } from "@feature/meetings/validators/agenda-items";
-import { z } from "zod";
+import { withAssociation } from '@src/shared/api/with-association';
+import { withRole } from '@src/shared/api/with-role';
+import { SuccessResponse } from '@src/shared/utils/responses';
+import { UserRole } from '@prisma/client';
+import { processAgendaOperations } from '@feature/meetings/services/processAgendaOperations';
+import { AgendaOperationSchema } from '@feature/meetings/validators/agenda-items';
+import { z } from 'zod';
 
 const ParamsSchema = z.object({ meetingId: z.string().uuid() });
 
 export const PATCH = withAssociation(
   { params: ParamsSchema, body: AgendaOperationSchema },
   async (association, { params, body }, request) => {
-    await withRole(request, [
-      UserRole.SECRETARY,
-      UserRole.PRESIDENT,
-      UserRole.SUPER_ADMIN,
-    ]);
+    await withRole(request, [UserRole.SECRETARY, UserRole.PRESIDENT, UserRole.SUPER_ADMIN]);
 
     const items = await processAgendaOperations({
       meetingId: params.meetingId,
@@ -260,24 +245,20 @@ git commit -m "feat: add agenda operations api route"
 
 ```typescript
 // src/app/api/meetings/[meetingId]/minutes/route.ts
-import { withAssociation } from "@src/shared/api/with-association";
-import { withRole } from "@src/shared/api/with-role";
-import { SuccessResponse } from "@src/shared/utils/responses";
-import { UserRole } from "@prisma/client";
-import { createMeetingMinute } from "@feature/meetings/services/minutes";
-import { CreateMeetingMinuteSchema } from "@feature/meetings/validators/minutes";
-import { z } from "zod";
+import { withAssociation } from '@src/shared/api/with-association';
+import { withRole } from '@src/shared/api/with-role';
+import { SuccessResponse } from '@src/shared/utils/responses';
+import { UserRole } from '@prisma/client';
+import { createMeetingMinute } from '@feature/meetings/services/minutes';
+import { CreateMeetingMinuteSchema } from '@feature/meetings/validators/minutes';
+import { z } from 'zod';
 
 const ParamsSchema = z.object({ meetingId: z.string().uuid() });
 
 export const POST = withAssociation(
   { params: ParamsSchema, body: CreateMeetingMinuteSchema },
   async (association, { params, body }, request) => {
-    await withRole(request, [
-      UserRole.SECRETARY,
-      UserRole.PRESIDENT,
-      UserRole.SUPER_ADMIN,
-    ]);
+    await withRole(request, [UserRole.SECRETARY, UserRole.PRESIDENT, UserRole.SUPER_ADMIN]);
 
     const minute = await createMeetingMinute({
       meetingId: params.meetingId,
@@ -294,13 +275,13 @@ export const POST = withAssociation(
 
 ```typescript
 // src/app/api/meetings/[meetingId]/minutes/[minutesId]/route.ts
-import { withAssociation } from "@src/shared/api/with-association";
-import { withRole } from "@src/shared/api/with-role";
-import { SuccessResponse } from "@src/shared/utils/responses";
-import { UserRole } from "@prisma/client";
-import { updateMeetingMinute } from "@feature/meetings/services/minutes";
-import { UpdateMeetingMinuteSchema } from "@feature/meetings/validators/minutes";
-import { z } from "zod";
+import { withAssociation } from '@src/shared/api/with-association';
+import { withRole } from '@src/shared/api/with-role';
+import { SuccessResponse } from '@src/shared/utils/responses';
+import { UserRole } from '@prisma/client';
+import { updateMeetingMinute } from '@feature/meetings/services/minutes';
+import { UpdateMeetingMinuteSchema } from '@feature/meetings/validators/minutes';
+import { z } from 'zod';
 
 const ParamsSchema = z.object({
   meetingId: z.string().uuid(),
@@ -310,11 +291,7 @@ const ParamsSchema = z.object({
 export const PATCH = withAssociation(
   { params: ParamsSchema, body: UpdateMeetingMinuteSchema },
   async (association, { params, body }, request) => {
-    await withRole(request, [
-      UserRole.SECRETARY,
-      UserRole.PRESIDENT,
-      UserRole.SUPER_ADMIN,
-    ]);
+    await withRole(request, [UserRole.SECRETARY, UserRole.PRESIDENT, UserRole.SUPER_ADMIN]);
 
     const minute = await updateMeetingMinute({
       meetingId: params.meetingId,

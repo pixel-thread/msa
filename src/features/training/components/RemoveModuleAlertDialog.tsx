@@ -8,10 +8,10 @@ import {
   AlertDialogContent,
   AlertDialogMedia,
   AlertDialogTitle,
-} from "@components/ui/alert-dialog";
+} from '@components/ui/alert-dialog';
 
-import { Trash2 } from "lucide-react";
-import { useDeleteTrainingModule } from "../hooks";
+import { Trash2 } from 'lucide-react';
+import { useDeleteTrainingModule } from '../hooks';
 type RemoveModuleAlertDialogProps = {
   isOpen: boolean;
   onValueChange: (open: boolean) => void;
@@ -35,10 +35,7 @@ export const RemoveModuleAlertDialog = ({
     });
   };
   return (
-    <AlertDialog
-      open={isOpen}
-      onOpenChange={(open) => !open && onValueChange(false)}
-    >
+    <AlertDialog open={isOpen} onOpenChange={(open) => !open && onValueChange(false)}>
       <AlertDialogContent size="sm">
         <AlertDialogHeader>
           <AlertDialogMedia>
@@ -46,20 +43,17 @@ export const RemoveModuleAlertDialog = ({
           </AlertDialogMedia>
           <AlertDialogTitle>Delete Module</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete this training module? This action
-            cannot be undone.
+            Are you sure you want to delete this training module? This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => onValueChange(false)}>
-            Cancel
-          </AlertDialogCancel>
+          <AlertDialogCancel onClick={() => onValueChange(false)}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
             onClick={handleConfirmDeleteModule}
             disabled={isDeleting}
           >
-            {isDeleting ? "Deleting..." : "Delete"}
+            {isDeleting ? 'Deleting...' : 'Delete'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

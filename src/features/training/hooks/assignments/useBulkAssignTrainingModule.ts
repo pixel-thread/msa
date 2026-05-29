@@ -1,7 +1,7 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import { toast } from "sonner";
-import { trainingEndpoints, trainingQueryKeys } from "../../utils/constants";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import { toast } from 'sonner';
+import { trainingEndpoints, trainingQueryKeys } from '../../utils/constants';
 
 export function useBulkAssignTrainingModule(moduleId: string | null) {
   const queryClient = useQueryClient();
@@ -14,10 +14,10 @@ export function useBulkAssignTrainingModule(moduleId: string | null) {
         queryClient.invalidateQueries({
           queryKey: trainingQueryKeys.assignments.all(moduleId),
         });
-        toast.success("Users assigned successfully");
+        toast.success('Users assigned successfully');
         return res;
       }
-      toast.error(res.message || "Failed to assign users");
+      toast.error(res.message || 'Failed to assign users');
       return res;
     },
   });

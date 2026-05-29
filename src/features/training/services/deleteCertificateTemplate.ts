@@ -1,5 +1,5 @@
-import { prisma } from "@lib/prisma";
-import { AuditAction, Prisma } from "@prisma/client";
+import { prisma } from '@lib/prisma';
+import { AuditAction, Prisma } from '@prisma/client';
 
 interface DeleteCertificateTemplateProps {
   associationId: string;
@@ -25,7 +25,7 @@ export async function deleteCertificateTemplate({
     });
 
     if (!mod || !mod.certificateTemplateId) {
-      throw new Error("No certificate template found");
+      throw new Error('No certificate template found');
     }
 
     const template = await tx.trainingCertificateTemplate.findUnique({
@@ -34,7 +34,7 @@ export async function deleteCertificateTemplate({
     });
 
     if (!template) {
-      throw new Error("Certificate template not found");
+      throw new Error('Certificate template not found');
     }
 
     const storageKey = template.file?.storageKey;
@@ -58,7 +58,7 @@ export async function deleteCertificateTemplate({
         associationId,
         actorId,
         action: AuditAction.TRAINING_MODULE_UPDATE,
-        resourceType: "TrainingCertificateTemplate",
+        resourceType: 'TrainingCertificateTemplate',
         resourceId: template.id,
         oldValues: template as unknown as Prisma.InputJsonValue,
       },

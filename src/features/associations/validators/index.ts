@@ -1,7 +1,7 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-export { CreateAssociationSchema } from "@validator/associations";
-export type { CreateAssociationInput } from "@validator/associations";
+export { CreateAssociationSchema } from '@validator/associations';
+export type { CreateAssociationInput } from '@validator/associations';
 
 export const UpdateAssociationSchema = z.object({
   slug: z

@@ -377,8 +377,8 @@ Pages in `app/` are thin wrappers. All logic lives in feature modules.
 
 ```tsx
 // src/app/(dashboard)/training/page.tsx
-"use client";
-import { TrainingListPage } from "@feature/training/pages";
+'use client';
+import { TrainingListPage } from '@feature/training/pages';
 
 export default function TrainingPageRoute() {
   return <TrainingListPage />;
@@ -658,8 +658,8 @@ index.ts
 
 ```ts
 // index.ts
-export * from "./TrainingCard";
-export * from "./TrainingTable";
+export * from './TrainingCard';
+export * from './TrainingTable';
 ```
 
 ### Rule

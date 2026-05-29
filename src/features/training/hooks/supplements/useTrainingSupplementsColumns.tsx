@@ -1,16 +1,14 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Download, Trash2 } from "lucide-react";
-import { Badge } from "@src/shared/components/ui/badge";
-import { Button } from "@src/shared/components/ui/button";
-import { ColumnDef } from "@tanstack/react-table";
-import { formatDate } from "@src/shared/utils";
-import type { TrainingSupplementItem } from "../../types";
+import { useState } from 'react';
+import { Download, Trash2 } from 'lucide-react';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { ColumnDef } from '@tanstack/react-table';
+import { formatDate } from '@src/shared/utils';
+import type { TrainingSupplementItem } from '../../types';
 
-export function useTrainingSupplementsColumns(options: {
-  supplements: TrainingSupplementItem[];
-}) {
+export function useTrainingSupplementsColumns(options: { supplements: TrainingSupplementItem[] }) {
   const { supplements } = options;
 
   const [supplementToDelete, setSupplementToDelete] = useState<{
@@ -23,31 +21,29 @@ export function useTrainingSupplementsColumns(options: {
     setSupplementToDelete(
       supplement
         ? { id: supplement.id, title: supplement.title }
-        : { id: supplementId, title: "this supplement" },
+        : { id: supplementId, title: 'this supplement' },
     );
   };
 
   const supplementColumns: ColumnDef<TrainingSupplementItem>[] = [
     {
-      accessorKey: "title",
-      header: "Title",
+      accessorKey: 'title',
+      header: 'Title',
       cell: ({ row }) => {
         const s = row.original;
         return (
-          <a target="_blank" href={s.imageUrl || ""} className="flex flex-col">
+          <a target="_blank" href={s.imageUrl || ''} className="flex flex-col">
             <span className="text-sm font-semibold text-ink">{s.title}</span>
             {s.description && (
-              <span className="text-xs text-muted-foreground line-clamp-1">
-                {s.description}
-              </span>
+              <span className="text-xs text-muted-foreground line-clamp-1">{s.description}</span>
             )}
           </a>
         );
       },
     },
     {
-      accessorKey: "type",
-      header: "Type",
+      accessorKey: 'type',
+      header: 'Type',
       cell: ({ row }) => (
         <Badge variant="secondary" className="text-[10px]">
           {row.original.type}
@@ -55,8 +51,8 @@ export function useTrainingSupplementsColumns(options: {
       ),
     },
     {
-      accessorKey: "fileSize",
-      header: "Size",
+      accessorKey: 'fileSize',
+      header: 'Size',
       cell: ({ row }) => {
         const bytes = row.original.fileSize;
         if (bytes === null || bytes === undefined)
@@ -71,17 +67,15 @@ export function useTrainingSupplementsColumns(options: {
       },
     },
     {
-      accessorKey: "createdAt",
-      header: "Added",
+      accessorKey: 'createdAt',
+      header: 'Added',
       cell: ({ row }) => (
-        <span className="text-sm text-body">
-          {formatDate(row.original.createdAt)}
-        </span>
+        <span className="text-sm text-body">{formatDate(row.original.createdAt)}</span>
       ),
     },
     {
-      id: "actions",
-      header: "Actions",
+      id: 'actions',
+      header: 'Actions',
       cell: ({ row }) => {
         const s = row.original;
         return (

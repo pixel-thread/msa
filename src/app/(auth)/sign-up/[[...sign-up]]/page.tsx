@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { HugeiconsIcon } from "@hugeicons/react";
+import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { HugeiconsIcon } from '@hugeicons/react';
 import {
   UserIdVerificationIcon,
   BankIcon,
@@ -12,19 +12,19 @@ import {
   BookOpen01Icon,
   ArrowRight01Icon,
   CheckmarkCircle02Icon,
-} from "@hugeicons/core-free-icons";
+} from '@hugeicons/core-free-icons';
 
-import { Button } from "@src/shared/components/ui/button";
-import { Badge } from "@src/shared/components/ui/badge";
-import { Input } from "@src/shared/components/ui/input";
+import { Button } from '@src/shared/components/ui/button';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Input } from '@src/shared/components/ui/input';
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
-} from "@src/shared/components/ui/card";
-import { Alert, AlertDescription } from "@src/shared/components/ui/alert";
+} from '@src/shared/components/ui/card';
+import { Alert, AlertDescription } from '@src/shared/components/ui/alert';
 import {
   Form,
   FormControl,
@@ -32,48 +32,45 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
-import { Text } from "@src/shared/components/ui/text";
-import { PublicHeader } from "@src/shared/components/public-header";
-import { PublicFooter } from "@src/shared/components/public-footer";
+} from '@src/shared/components/ui/form';
+import { Text } from '@src/shared/components/ui/text';
+import { PublicHeader } from '@src/shared/components/public-header';
+import { PublicFooter } from '@src/shared/components/public-footer';
 import {
   MembershipApplicationSchema,
   type MembershipApplicationInput,
-} from "@src/features/membership-applications/validators";
-import { useSignUp } from "@src/features/auth/hooks";
-import { logger } from "@src/shared/logger";
-import { env } from "@src/env";
+} from '@src/features/membership-applications/validators';
+import { useSignUp } from '@src/features/auth/hooks';
+import { logger } from '@src/shared/logger';
+import { env } from '@src/env';
 
 const BENEFITS = [
   {
     icon: UserIdVerificationIcon,
-    title: "Digital Membership",
+    title: 'Digital Membership',
     description:
-      "Complete member lifecycle management with role-based access and automated renewals.",
+      'Complete member lifecycle management with role-based access and automated renewals.',
   },
   {
     icon: BankIcon,
-    title: "Financial Transparency",
+    title: 'Financial Transparency',
     description:
-      "Access to full double-entry accounting, cashbook, and automated financial reports.",
+      'Access to full double-entry accounting, cashbook, and automated financial reports.',
   },
   {
     icon: UserGroupIcon,
-    title: "Governance Participation",
-    description:
-      "Attend EC and general meetings, vote on agenda items, and access minutes.",
+    title: 'Governance Participation',
+    description: 'Attend EC and general meetings, vote on agenda items, and access minutes.',
   },
   {
     icon: ShieldBlockchainIcon,
-    title: "Data Protection",
-    description:
-      "Your personal data is protected under DPDP Act 2023 with AES-256 encryption.",
+    title: 'Data Protection',
+    description: 'Your personal data is protected under DPDP Act 2023 with AES-256 encryption.',
   },
   {
     icon: BookOpen01Icon,
-    title: "Compliance Training",
-    description:
-      "Access training modules, track completions, and maintain certification records.",
+    title: 'Compliance Training',
+    description: 'Access training modules, track completions, and maintain certification records.',
   },
 ];
 
@@ -83,18 +80,18 @@ export default function SignUpPage() {
   const form = useForm({
     resolver: zodResolver(MembershipApplicationSchema),
     defaultValues: {
-      email: "",
-      phone: "",
-      firstName: "",
-      lastName: "",
-      dateOfBirth: "",
+      email: '',
+      phone: '',
+      firstName: '',
+      lastName: '',
+      dateOfBirth: '',
       age: 18,
-      gender: "MALE",
-      address: "",
-      city: "",
-      state: "",
-      country: "IN",
-      postalCode: "",
+      gender: 'MALE',
+      address: '',
+      city: '',
+      state: '',
+      country: 'IN',
+      postalCode: '',
       associationSlug: env.NEXT_PUBLIC_ASSOCIATION_SLUG,
     },
   });
@@ -105,7 +102,7 @@ export default function SignUpPage() {
     } catch {}
   };
 
-  logger.debug("signUpMutation", form.formState.errors);
+  logger.debug('signUpMutation', form.formState.errors);
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <PublicHeader />
@@ -121,9 +118,9 @@ export default function SignUpPage() {
             </Text>
             <Text variant="body-md" color="muted" asChild>
               <p className="mb-10 leading-relaxed">
-                Become part of a trusted network of finance service
-                professionals. Manage your membership, access financial tools,
-                and participate in association governance — all in one place.
+                Become part of a trusted network of finance service professionals. Manage your
+                membership, access financial tools, and participate in association governance — all
+                in one place.
               </p>
             </Text>
 
@@ -183,20 +180,15 @@ export default function SignUpPage() {
               <CardTitle className="font-heading text-2xl font-bold tracking-wider uppercase">
                 Membership Application
               </CardTitle>
-              <CardDescription>
-                Fill in your details to apply for membership
-              </CardDescription>
+              <CardDescription>Fill in your details to apply for membership</CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-5"
-                >
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                   {signUpMutation.isError && (
                     <Alert variant="destructive">
                       <AlertDescription>
-                        {signUpMutation.error?.message || "Application failed"}
+                        {signUpMutation.error?.message || 'Application failed'}
                       </AlertDescription>
                     </Alert>
                   )}
@@ -238,11 +230,7 @@ export default function SignUpPage() {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input
-                            type="email"
-                            placeholder="Email address"
-                            {...field}
-                          />
+                          <Input type="email" placeholder="Email address" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -256,11 +244,7 @@ export default function SignUpPage() {
                       <FormItem>
                         <FormLabel>Phone</FormLabel>
                         <FormControl>
-                          <Input
-                            type="tel"
-                            placeholder="Phone number"
-                            {...field}
-                          />
+                          <Input type="tel" placeholder="Phone number" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -300,9 +284,7 @@ export default function SignUpPage() {
                               type="number"
                               placeholder="Age"
                               {...field}
-                              onChange={(e) =>
-                                field.onChange(parseInt(e.target.value, 10))
-                              }
+                              onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
                             />
                           </FormControl>
                           <FormMessage />
@@ -412,14 +394,12 @@ export default function SignUpPage() {
                     className="w-full"
                     disabled={signUpMutation.isPending}
                   >
-                    {signUpMutation.isPending
-                      ? "Submitting application..."
-                      : "Submit Application"}
+                    {signUpMutation.isPending ? 'Submitting application...' : 'Submit Application'}
                     <HugeiconsIcon icon={ArrowRight01Icon} />
                   </Button>
 
                   <p className="text-center text-sm text-muted-foreground">
-                    Already have an account?{" "}
+                    Already have an account?{' '}
                     <Link
                       href="/sign-in"
                       className="text-xs font-semibold tracking-widest uppercase text-primary underline underline-offset-4 hover:text-primary/80"

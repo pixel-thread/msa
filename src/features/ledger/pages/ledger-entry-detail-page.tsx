@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { useLedgerEntries } from "../hooks/useLedgerEntries";
-import { useLedgerAccounts } from "../hooks/useLedgerAccounts";
-import { useApproveEntry } from "../hooks/useApproveEntry";
-import { Card, CardContent } from "@src/shared/components/ui/card";
-import { Button } from "@src/shared/components/ui/button";
-import { Badge } from "@src/shared/components/ui/badge";
-import { DataTable } from "@src/shared/components/data-table";
-import { DataTableFilters } from "@src/shared/components/data-table-filters";
-import { useLedgerLineColumns } from "../hooks/useLedgerLineColumns";
-import { formatDate } from "@src/shared/utils/format";
-import { ArrowLeftIcon } from "lucide-react";
-import { toast } from "sonner";
+import { useMemo } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { useLedgerEntries } from '../hooks/useLedgerEntries';
+import { useLedgerAccounts } from '../hooks/useLedgerAccounts';
+import { useApproveEntry } from '../hooks/useApproveEntry';
+import { Card, CardContent } from '@src/shared/components/ui/card';
+import { Button } from '@src/shared/components/ui/button';
+import { Badge } from '@src/shared/components/ui/badge';
+import { DataTable } from '@src/shared/components/data-table';
+import { DataTableFilters } from '@src/shared/components/data-table-filters';
+import { useLedgerLineColumns } from '../hooks/useLedgerLineColumns';
+import { formatDate } from '@src/shared/utils/format';
+import { ArrowLeftIcon } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function LedgerEntryDetailPage() {
   const params = useParams();
@@ -47,10 +47,7 @@ export default function LedgerEntryDetailPage() {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4">
         <p className="text-lg text-muted-foreground">Entry not found</p>
-        <Button
-          variant="outline"
-          onClick={() => router.push("/ledger/entries")}
-        >
+        <Button variant="outline" onClick={() => router.push('/ledger/entries')}>
           <ArrowLeftIcon className="h-4 w-4 mr-2" />
           Back to Entries
         </Button>
@@ -68,7 +65,7 @@ export default function LedgerEntryDetailPage() {
   const handleApprove = () => {
     approveEntry.mutate(entry.id, {
       onSuccess: () => {
-        toast.success("Entry approved successfully");
+        toast.success('Entry approved successfully');
       },
     });
   };
@@ -76,20 +73,16 @@ export default function LedgerEntryDetailPage() {
   const { columns: lineColumns } = useLedgerLineColumns({ getAccountName });
 
   const statusVariant =
-    entry.approvalStatus === "APPROVED"
-      ? "default"
-      : entry.approvalStatus === "REJECTED"
-        ? "destructive"
-        : "secondary";
+    entry.approvalStatus === 'APPROVED'
+      ? 'default'
+      : entry.approvalStatus === 'REJECTED'
+        ? 'destructive'
+        : 'secondary';
 
   return (
     <>
       <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => router.push("/ledger/entries")}
-        >
+        <Button variant="ghost" size="icon" onClick={() => router.push('/ledger/entries')}>
           <ArrowLeftIcon className="h-5 w-5" />
         </Button>
         <div className="flex-1">
@@ -98,11 +91,7 @@ export default function LedgerEntryDetailPage() {
           </h1>
           <p className="mt-1 text-base text-body">{entry.description}</p>
         </div>
-        <Badge
-          variant={
-            statusVariant as "default" | "secondary" | "destructive" | "outline"
-          }
-        >
+        <Badge variant={statusVariant as 'default' | 'secondary' | 'destructive' | 'outline'}>
           {entry.approvalStatus}
         </Badge>
       </div>
@@ -113,9 +102,7 @@ export default function LedgerEntryDetailPage() {
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               Created
             </p>
-            <p className="mt-1 text-sm text-ink">
-              {formatDate(entry.createdAt)}
-            </p>
+            <p className="mt-1 text-sm text-ink">{formatDate(entry.createdAt)}</p>
           </CardContent>
         </Card>
         <Card className=" border-hairline bg-surface-card">
@@ -124,7 +111,7 @@ export default function LedgerEntryDetailPage() {
               Total Debits
             </p>
             <p className="mt-1 text-sm font-semibold text-ink">
-              ₹{totalDebits.toLocaleString("en-IN")}
+              ₹{totalDebits.toLocaleString('en-IN')}
             </p>
           </CardContent>
         </Card>
@@ -134,7 +121,7 @@ export default function LedgerEntryDetailPage() {
               Total Credits
             </p>
             <p className="mt-1 text-sm font-semibold text-ink">
-              ₹{totalCredits.toLocaleString("en-IN")}
+              ₹{totalCredits.toLocaleString('en-IN')}
             </p>
           </CardContent>
         </Card>
@@ -146,9 +133,9 @@ export default function LedgerEntryDetailPage() {
           <DataTableFilters
             fields={[
               {
-                type: "search",
-                id: "search",
-                placeholder: "Search lines...",
+                type: 'search',
+                id: 'search',
+                placeholder: 'Search lines...',
               },
             ]}
             onFilterChange={() => {}}
@@ -158,10 +145,10 @@ export default function LedgerEntryDetailPage() {
         </CardContent>
       </Card>
 
-      {entry.approvalStatus === "PENDING" && (
+      {entry.approvalStatus === 'PENDING' && (
         <div className="flex justify-end">
           <Button onClick={handleApprove} disabled={approveEntry.isPending}>
-            {approveEntry.isPending ? "Approving..." : "Approve Entry"}
+            {approveEntry.isPending ? 'Approving...' : 'Approve Entry'}
           </Button>
         </div>
       )}

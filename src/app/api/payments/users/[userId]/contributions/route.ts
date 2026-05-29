@@ -1,17 +1,17 @@
-import { withAssociation, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@src/shared/utils/responses";
-import { buildPagination } from "@src/shared/utils";
-import { logger } from "@src/shared/logger/server";
-import { UserRole } from "@prisma/client";
-import { prisma } from "@src/shared/lib/prisma";
-import { z } from "zod";
-import { NotFoundError, ValidationError } from "@src/shared/errors";
-import { getUserContributionSummary } from "@src/features/payments/services/contribution.service";
-import { pageNumberValidation } from "@src/shared/validators";
-import { PAGE_SIZE } from "@src/shared/constants";
+import { withAssociation, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@src/shared/utils/responses';
+import { buildPagination } from '@src/shared/utils';
+import { logger } from '@src/shared/logger/server';
+import { UserRole } from '@prisma/client';
+import { prisma } from '@src/shared/lib/prisma';
+import { z } from 'zod';
+import { NotFoundError, ValidationError } from '@src/shared/errors';
+import { getUserContributionSummary } from '@src/features/payments/services/contribution.service';
+import { pageNumberValidation } from '@src/shared/validators';
+import { PAGE_SIZE } from '@src/shared/constants';
 
 const UserContributionsParamsSchema = z.object({
-  userId: z.uuid("Invalid user ID"),
+  userId: z.uuid('Invalid user ID'),
 });
 const UserContributionsQuerySchema = z.object({
   page: pageNumberValidation,
@@ -29,17 +29,14 @@ export const GET = withAssociation(
   async (association, { params, query, traceId }, request) => {
     logger.info(
       { traceId, userId: params?.userId },
-      "GET /api/payments/users/[userId]/contributions - Request started",
+      'GET /api/payments/users/[userId]/contributions - Request started',
     );
 
     await withRole(request, UserRole.FINANCE);
-    logger.info(
-      { traceId },
-      "GET /api/payments/users/[userId]/contributions - User authorized",
-    );
+    logger.info({ traceId }, 'GET /api/payments/users/[userId]/contributions - User authorized');
 
     if (!params) {
-      throw new ValidationError("Missing user ID parameter");
+      throw new ValidationError('Missing user ID parameter');
     }
 
     const { userId } = params as { userId: string };
@@ -63,7 +60,7 @@ export const GET = withAssociation(
     });
 
     if (!user) {
-      throw new NotFoundError("User not found in this association");
+      throw new NotFoundError('User not found in this association');
     }
 
     const whereClause: Record<string, unknown> = {
@@ -76,28 +73,19 @@ export const GET = withAssociation(
         ? [
             ...(whereClause.AND as unknown[]),
             {
-              OR: [
-                { year: { gt: fromYear } },
-                { year: fromYear, month: { gte: fromMonth } },
-              ],
+              OR: [{ year: { gt: fromYear } }, { year: fromYear, month: { gte: fromMonth } }],
             },
           ]
         : [
             {
-              OR: [
-                { year: { gt: fromYear } },
-                { year: fromYear, month: { gte: fromMonth } },
-              ],
+              OR: [{ year: { gt: fromYear } }, { year: fromYear, month: { gte: fromMonth } }],
             },
           ];
     }
 
     if (toYear && toMonth) {
       const toClause = {
-        OR: [
-          { year: { lt: toYear } },
-          { year: toYear, month: { lte: toMonth } },
-        ],
+        OR: [{ year: { lt: toYear } }, { year: toYear, month: { lte: toMonth } }],
       };
       whereClause.AND = whereClause.AND
         ? [...(whereClause.AND as unknown[]), toClause]
@@ -108,7 +96,7 @@ export const GET = withAssociation(
 
     logger.info(
       { traceId, userId },
-      "GET /api/payments/users/[userId]/contributions - Fetching contributions",
+      'GET /api/payments/users/[userId]/contributions - Fetching contributions',
     );
 
     const [contributions, total, summary] = await Promise.all([
@@ -133,7 +121,7 @@ export const GET = withAssociation(
             },
           },
         },
-        orderBy: [{ year: "asc" }, { month: "asc" }],
+        orderBy: [{ year: 'asc' }, { month: 'asc' }],
       }),
       prisma.contributionPeriod.count({ where: whereClause }),
       getUserContributionSummary(userId),
@@ -141,7 +129,7 @@ export const GET = withAssociation(
 
     logger.info(
       { traceId, userId, count: contributions.length, total },
-      "GET /api/payments/users/[userId]/contributions - Success",
+      'GET /api/payments/users/[userId]/contributions - Success',
     );
 
     return SuccessResponse({

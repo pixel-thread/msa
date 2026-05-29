@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Button } from "@src/shared/components/ui/button";
-import { Input } from "@src/shared/components/ui/input";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Button } from '@src/shared/components/ui/button';
+import { Input } from '@src/shared/components/ui/input';
 import {
   Form,
   FormControl,
@@ -12,18 +12,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
+} from '@src/shared/components/ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@src/shared/components/ui/select";
-import { Switch } from "@src/shared/components/ui/switch";
-import { ProviderResponse } from "../types";
+} from '@src/shared/components/ui/select';
+import { Switch } from '@src/shared/components/ui/switch';
+import { ProviderResponse } from '../types';
 
-const PROVIDER_TYPES = ["RAZORPAY", "STRIPE", "PAYU", "CASHFREE"] as const;
+const PROVIDER_TYPES = ['RAZORPAY', 'STRIPE', 'PAYU', 'CASHFREE'] as const;
 
 interface ProviderFormProps {
   initialData?: ProviderResponse;
@@ -36,11 +36,7 @@ interface ProviderFormProps {
   }) => void;
 }
 
-export function ProviderForm({
-  initialData,
-  isPending,
-  onSubmit,
-}: ProviderFormProps) {
+export function ProviderForm({ initialData, isPending, onSubmit }: ProviderFormProps) {
   const isEdit = !!initialData;
 
   const formSchema = isEdit
@@ -50,9 +46,9 @@ export function ProviderForm({
         webhookSecret: z.string().optional(),
       })
     : z.object({
-        provider: z.string().min(1, "Provider type is required"),
-        keyId: z.string().min(1, "Key ID is required"),
-        keySecret: z.string().min(1, "Key secret is required"),
+        provider: z.string().min(1, 'Provider type is required'),
+        keyId: z.string().min(1, 'Key ID is required'),
+        keySecret: z.string().min(1, 'Key secret is required'),
         webhookSecret: z.string().optional(),
       });
 
@@ -61,10 +57,10 @@ export function ProviderForm({
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      ...(isEdit ? {} : { provider: "" }),
-      keyId: initialData?.keyId ?? "",
-      keySecret: "",
-      webhookSecret: "",
+      ...(isEdit ? {} : { provider: '' }),
+      keyId: initialData?.keyId ?? '',
+      keySecret: '',
+      webhookSecret: '',
       isActive: initialData?.isActive ?? true,
     } as FormData,
   });
@@ -132,9 +128,7 @@ export function ProviderForm({
               <FormControl>
                 <Input
                   {...field}
-                  placeholder={
-                    isEdit ? "Leave blank to keep current" : "Enter key ID"
-                  }
+                  placeholder={isEdit ? 'Leave blank to keep current' : 'Enter key ID'}
                 />
               </FormControl>
               <FormMessage />
@@ -152,9 +146,7 @@ export function ProviderForm({
                 <Input
                   {...field}
                   type="password"
-                  placeholder={
-                    isEdit ? "Leave blank to keep current" : "Enter key secret"
-                  }
+                  placeholder={isEdit ? 'Leave blank to keep current' : 'Enter key secret'}
                 />
               </FormControl>
               <FormMessage />
@@ -177,11 +169,7 @@ export function ProviderForm({
         />
 
         <Button type="submit" disabled={isPending}>
-          {isPending
-            ? "Saving..."
-            : isEdit
-              ? "Update Provider"
-              : "Add Provider"}
+          {isPending ? 'Saving...' : isEdit ? 'Update Provider' : 'Add Provider'}
         </Button>
       </form>
     </Form>

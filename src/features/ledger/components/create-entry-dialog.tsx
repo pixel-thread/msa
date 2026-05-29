@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -8,21 +8,21 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
-import { Button } from "@src/shared/components/ui/button";
-import { Input } from "@src/shared/components/ui/input";
-import { Label } from "@src/shared/components/ui/label";
+} from '@src/shared/components/ui/dialog';
+import { Button } from '@src/shared/components/ui/button';
+import { Input } from '@src/shared/components/ui/input';
+import { Label } from '@src/shared/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@src/shared/components/ui/select";
-import { Textarea } from "@src/shared/components/ui/textarea";
-import { useCreateEntry } from "../hooks/useCreateEntry";
-import { useLedgerAccounts } from "../hooks/useLedgerAccounts";
-import { Plus, X } from "lucide-react";
+} from '@src/shared/components/ui/select';
+import { Textarea } from '@src/shared/components/ui/textarea';
+import { useCreateEntry } from '../hooks/useCreateEntry';
+import { useLedgerAccounts } from '../hooks/useLedgerAccounts';
+import { Plus, X } from 'lucide-react';
 
 interface CreateEntryDialogProps {
   open: boolean;
@@ -34,19 +34,14 @@ interface LineInput {
   amount: string;
 }
 
-export function CreateEntryDialog({
-  open,
-  onOpenChange,
-}: CreateEntryDialogProps) {
+export function CreateEntryDialog({ open, onOpenChange }: CreateEntryDialogProps) {
   const { accounts } = useLedgerAccounts();
   const createEntry = useCreateEntry();
-  const [description, setDescription] = useState("");
-  const [lines, setLines] = useState<LineInput[]>([
-    { debitAccountId: "", amount: "" },
-  ]);
+  const [description, setDescription] = useState('');
+  const [lines, setLines] = useState<LineInput[]>([{ debitAccountId: '', amount: '' }]);
 
   const addLine = () => {
-    setLines([...lines, { debitAccountId: "", amount: "" }]);
+    setLines([...lines, { debitAccountId: '', amount: '' }]);
   };
 
   const removeLine = (index: number) => {
@@ -61,8 +56,8 @@ export function CreateEntryDialog({
   };
 
   const resetForm = () => {
-    setDescription("");
-    setLines([{ debitAccountId: "", amount: "" }]);
+    setDescription('');
+    setLines([{ debitAccountId: '', amount: '' }]);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -95,9 +90,7 @@ export function CreateEntryDialog({
       <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create Ledger Entry</DialogTitle>
-          <DialogDescription>
-            Create a new double-entry ledger transaction
-          </DialogDescription>
+          <DialogDescription>Create a new double-entry ledger transaction</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit}>
@@ -117,29 +110,19 @@ export function CreateEntryDialog({
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <Label>Ledger Lines</Label>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={addLine}
-                >
+                <Button type="button" variant="outline" size="sm" onClick={addLine}>
                   <Plus className="h-4 w-4 mr-1" />
                   Add Line
                 </Button>
               </div>
 
               {lines.map((line, index) => (
-                <div
-                  key={index}
-                  className="flex items-end gap-2 border border-hairline p-3"
-                >
+                <div key={index} className="flex items-end gap-2 border border-hairline p-3">
                   <div className="flex-1 space-y-1.5">
                     <Label className="text-xs">Account</Label>
                     <Select
                       value={line.debitAccountId}
-                      onValueChange={(v) =>
-                        updateLine(index, "debitAccountId", v)
-                      }
+                      onValueChange={(v) => updateLine(index, 'debitAccountId', v)}
                     >
                       <SelectTrigger className="h-9">
                         <SelectValue placeholder="Select account" />
@@ -161,9 +144,7 @@ export function CreateEntryDialog({
                       step="0.01"
                       min="0"
                       value={line.amount}
-                      onChange={(e) =>
-                        updateLine(index, "amount", e.target.value)
-                      }
+                      onChange={(e) => updateLine(index, 'amount', e.target.value)}
                       placeholder="0.00"
                       className="h-9"
                       required
@@ -196,11 +177,8 @@ export function CreateEntryDialog({
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={createEntry.isPending || !description.trim()}
-            >
-              {createEntry.isPending ? "Creating..." : "Create Entry"}
+            <Button type="submit" disabled={createEntry.isPending || !description.trim()}>
+              {createEntry.isPending ? 'Creating...' : 'Create Entry'}
             </Button>
           </DialogFooter>
         </form>

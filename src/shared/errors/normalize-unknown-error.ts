@@ -1,16 +1,16 @@
-import { ZodError } from "zod";
-import { env } from "@src/env";
-import { AppError } from "./classes/base";
+import { ZodError } from 'zod';
+import { env } from '@src/env';
+import { AppError } from './classes/base';
 import {
   BadRequestError,
   NotFoundError,
   PaymentError,
   UnauthorizedError,
   ValidationError,
-} from "./classes/http-errors";
-import { Prisma } from "@prisma/client";
-import { JWTClaimValidationFailed, JOSEError } from "jose/errors";
-import { logger } from "../logger/server";
+} from './classes/http-errors';
+import { Prisma } from '@prisma/client';
+import { JWTClaimValidationFailed, JOSEError } from 'jose/errors';
+import { logger } from '../logger/server';
 
 /**
  * Type guard to check if an error is a Prisma-specific error
@@ -35,27 +35,24 @@ const isJwtError = (error: unknown): error is JWTClaimValidationFailed => {
 };
 
 export function isSupabaseStorageError(error: unknown) {
-  if (typeof error !== "object" || error === null) return false;
+  if (typeof error !== 'object' || error === null) return false;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const err = error as any;
 
   return (
-    err.name === "StorageError" ||
-    err.name === "StorageUnknownError" ||
-    typeof err.statusCode === "string" ||
-    typeof err.error?.message === "string"
+    err.name === 'StorageError' ||
+    err.name === 'StorageUnknownError' ||
+    typeof err.statusCode === 'string' ||
+    typeof err.error?.message === 'string'
   );
 }
 
-export const normalizeUnknownError = (
-  error: unknown,
-  traceId?: string,
-): AppError => {
-  const isProd = env.NODE_ENV === "production";
+export const normalizeUnknownError = (error: unknown, traceId?: string): AppError => {
+  const isProd = env.NODE_ENV === 'production';
 
   if (isJwtError(error) || error instanceof UnauthorizedError) {
-    logger.error({ ...error, traceId }, "UnauthorizedError");
+    logger.error({ ...error, traceId }, 'UnauthorizedError');
     return new UnauthorizedError(error.message);
   }
 
@@ -64,8 +61,8 @@ export const normalizeUnknownError = (
   }
 
   if (isSupabaseStorageError(error)) {
-    logger.error({ error, traceId }, "Supabase storage error");
-    return new BadRequestError("Supabase storage error");
+    logger.error({ error, traceId }, 'Supabase storage error');
+    return new BadRequestError('Supabase storage error');
   }
 
   if (error instanceof ZodError) {
@@ -73,28 +70,23 @@ export const normalizeUnknownError = (
   }
 
   if (error instanceof PaymentError) {
-    logger.error({ ...error, traceId }, "PaymentError");
+    logger.error({ ...error, traceId }, 'PaymentError');
     return new PaymentError(error.message, error.code, error.statusCode);
   }
 
   if (isPrismaError(error)) {
-    logger.error({ error, traceId }, "Database error");
-    return new AppError(
-      "DATABASE_ERROR",
-      isProd ? "Database error" : error.message,
-      500,
-    );
+    logger.error({ error, traceId }, 'Database error');
+    return new AppError('DATABASE_ERROR', isProd ? 'Database error' : error.message, 500);
   }
 
   if (error instanceof AppError) {
     return error;
   }
 
-  const message =
-    error instanceof Error ? error.message : "An unexpected error occurred";
+  const message = error instanceof Error ? error.message : 'An unexpected error occurred';
 
-  const displayMessage = isProd ? "Internal Server Error" : message;
+  const displayMessage = isProd ? 'Internal Server Error' : message;
 
-  logger.error({ error, traceId }, "Internal Server Error");
-  return new AppError("INTERNAL_ERROR", displayMessage, 500);
+  logger.error({ error, traceId }, 'Internal Server Error');
+  return new AppError('INTERNAL_ERROR', displayMessage, 500);
 };

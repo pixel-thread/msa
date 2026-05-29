@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useState, useRef, useEffect } from "react";
-import { useMemberSearch } from "@src/features/payments/hooks/useMemberSearch";
-import { Input } from "@src/shared/components/ui/input";
-import { Search, X } from "lucide-react";
-import { cn } from "@src/shared/lib/utils";
+import { useState, useRef, useEffect } from 'react';
+import { useMemberSearch } from '@src/features/payments/hooks/useMemberSearch';
+import { Input } from '@src/shared/components/ui/input';
+import { Search, X } from 'lucide-react';
+import { cn } from '@src/shared/lib/utils';
 
 interface MemberComboboxProps {
   value?: string;
@@ -16,43 +16,40 @@ interface MemberComboboxProps {
 export function MemberCombobox({
   value,
   onValueChange,
-  placeholder = "Search member...",
+  placeholder = 'Search member...',
   disabled = false,
 }: MemberComboboxProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedName, setSelectedName] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedName, setSelectedName] = useState('');
   const { results, isLoading } = useMemberSearch(searchQuery);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setIsOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const handleSelect = (id: string) => {
     const member = results.find((m) => m.id === id);
     if (member) setSelectedName(member.name);
     onValueChange?.(id);
-    setSearchQuery("");
+    setSearchQuery('');
     setIsOpen(false);
   };
 
   const handleClear = () => {
-    setSelectedName("");
-    onValueChange?.("");
-    setSearchQuery("");
+    setSelectedName('');
+    onValueChange?.('');
+    setSearchQuery('');
   };
 
-  const displayValue = searchQuery || (value ? selectedName : "");
+  const displayValue = searchQuery || (value ? selectedName : '');
 
   return (
     <div ref={containerRef} className="relative">
@@ -83,13 +80,9 @@ export function MemberCombobox({
       {isOpen && (
         <div className="absolute z-50 mt-1 w-full border bg-popover shadow-md">
           {isLoading ? (
-            <div className="py-6 text-center text-sm text-muted-foreground">
-              Searching...
-            </div>
+            <div className="py-6 text-center text-sm text-muted-foreground">Searching...</div>
           ) : results.length === 0 && searchQuery.length >= 2 ? (
-            <div className="py-6 text-center text-sm text-muted-foreground">
-              No members found
-            </div>
+            <div className="py-6 text-center text-sm text-muted-foreground">No members found</div>
           ) : results.length === 0 ? (
             <div className="py-6 text-center text-sm text-muted-foreground">
               Type at least 2 characters to search
@@ -102,16 +95,14 @@ export function MemberCombobox({
                     type="button"
                     onClick={() => handleSelect(member.id)}
                     className={cn(
-                      "flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent",
-                      member.id === value && "bg-accent",
+                      'flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent',
+                      member.id === value && 'bg-accent',
                     )}
                   >
                     <span>{member.name}</span>
                     <span className="text-xs text-muted-foreground">
                       {member.email}
-                      {member.membershipNumber
-                        ? ` #${member.membershipNumber}`
-                        : ""}
+                      {member.membershipNumber ? ` #${member.membershipNumber}` : ''}
                     </span>
                   </button>
                 </li>

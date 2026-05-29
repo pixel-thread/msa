@@ -1,7 +1,7 @@
-import { prisma } from "@lib/prisma";
-import { CreateMemberTypeInput } from "../validators";
-import { AuditAction, Prisma } from "@prisma/client";
-import { ConflictError } from "@src/shared/errors";
+import { prisma } from '@lib/prisma';
+import { CreateMemberTypeInput } from '../validators';
+import { AuditAction, Prisma } from '@prisma/client';
+import { ConflictError } from '@src/shared/errors';
 
 interface CreateMemberTypeProps {
   associationId: string;
@@ -9,11 +9,7 @@ interface CreateMemberTypeProps {
   data: CreateMemberTypeInput;
 }
 
-export async function createMemberType({
-  associationId,
-  actorId,
-  data,
-}: CreateMemberTypeProps) {
+export async function createMemberType({ associationId, actorId, data }: CreateMemberTypeProps) {
   const existing = await prisma.memberType.findFirst({
     where: { associationId, level: data.level },
   });
@@ -38,7 +34,7 @@ export async function createMemberType({
         associationId,
         actorId,
         action: AuditAction.CREATE,
-        resourceType: "MemberType",
+        resourceType: 'MemberType',
         resourceId: memberType.id,
         newValues: data as Prisma.InputJsonValue,
       },

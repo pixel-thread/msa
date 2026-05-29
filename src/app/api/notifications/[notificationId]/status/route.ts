@@ -1,25 +1,22 @@
-import { UserRole } from "@prisma/client";
-import { withValidation, withRole } from "@src/shared/api";
-import { NotFoundError, UnauthorizedError } from "@src/shared/errors";
+import { UserRole } from '@prisma/client';
+import { withValidation, withRole } from '@src/shared/api';
+import { NotFoundError, UnauthorizedError } from '@src/shared/errors';
 import {
   findUniqueNotification,
   updateNotificationStatus,
-} from "@src/shared/services/notification";
-import { SuccessResponse } from "@src/shared/utils";
+} from '@src/shared/services/notification';
+import { SuccessResponse } from '@src/shared/utils';
 import {
   NotificationRouteParams,
   UpdateNotificationSchema,
-} from "@src/shared/validators/notification";
-import { logger } from "@src/shared/logger/server";
+} from '@src/shared/validators/notification';
+import { logger } from '@src/shared/logger/server';
 
 export const PATCH = withValidation(
   { body: UpdateNotificationSchema, params: NotificationRouteParams },
 
   async (req, _ctx, { params, body, traceId }) => {
-    logger.info(
-      { traceId },
-      "PATCH /api/notifications/[notificationId]/status - Request started",
-    );
+    logger.info({ traceId }, 'PATCH /api/notifications/[notificationId]/status - Request started');
 
     const user = await withRole(req, UserRole.MEMBER);
 
@@ -28,18 +25,18 @@ export const PATCH = withValidation(
         traceId,
         userId: user.id,
       },
-      "PATCH /api/notifications/[notificationId]/status - User authorized",
+      'PATCH /api/notifications/[notificationId]/status - User authorized',
     );
 
-    const userId = req.headers.get("x-user-id");
-    if (!userId) throw new UnauthorizedError("Unauthorized");
+    const userId = req.headers.get('x-user-id');
+    if (!userId) throw new UnauthorizedError('Unauthorized');
 
     const isNotificaitonExist = await findUniqueNotification({
       where: { id: params?.notificationId, userId },
     });
 
     if (!isNotificaitonExist) {
-      throw new NotFoundError("Notification not found.");
+      throw new NotFoundError('Notification not found.');
     }
 
     const payload = {
@@ -59,12 +56,12 @@ export const PATCH = withValidation(
         traceId,
         notificationId: params?.notificationId,
       },
-      "PATCH /api/notifications/[notificationId]/status - Success",
+      'PATCH /api/notifications/[notificationId]/status - Success',
     );
 
     return SuccessResponse({
       data: notification,
-      message: "Successfully updated notification status",
+      message: 'Successfully updated notification status',
     });
   },
 );

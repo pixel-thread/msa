@@ -1,19 +1,8 @@
-import z from "zod";
-import {
-  AnnouncementStatus,
-  AnnouncementPriority,
-  UserRole,
-} from "@prisma/client";
-import {
-  pageNumberValidation,
-  pageSizeValidation,
-} from "@src/shared/validators/common";
+import z from 'zod';
+import { AnnouncementStatus, AnnouncementPriority, UserRole } from '@prisma/client';
+import { pageNumberValidation, pageSizeValidation } from '@src/shared/validators/common';
 
-import {
-  MAX_IMAGE_SIZE,
-  ALLOWED_IMAGE_FORMATS,
-  ALLOWED_MIME_TYPES,
-} from "@src/shared/constants";
+import { MAX_IMAGE_SIZE, ALLOWED_IMAGE_FORMATS, ALLOWED_MIME_TYPES } from '@src/shared/constants';
 
 export const CreateAnnouncementSchema = z.object({
   title: z.string().min(1).max(200),
@@ -58,23 +47,23 @@ export type AnnouncementQuery = z.infer<typeof AnnouncementQuerySchema>;
 
 export const AnnouncementUploadFormData = z.object({
   file: z
-    .instanceof(File, { message: "File is required" })
-    .refine((f) => f.size < MAX_IMAGE_SIZE, { message: "File is too large" })
-    .refine((f) => f.type, { message: "File type is required" })
+    .instanceof(File, { message: 'File is required' })
+    .refine((f) => f.size < MAX_IMAGE_SIZE, { message: 'File is too large' })
+    .refine((f) => f.type, { message: 'File type is required' })
     .refine((file) => {
-      const extension = file.name.split(".").pop()?.toLowerCase();
+      const extension = file.name.split('.').pop()?.toLowerCase();
       return extension && ALLOWED_IMAGE_FORMATS.includes(extension as never);
-    }, "Invalid file extension")
+    }, 'Invalid file extension')
     .refine((f) => ALLOWED_MIME_TYPES.includes(f.type as never), {
-      message: "File type is not allowed",
+      message: 'File type is not allowed',
     })
-    .refine((f) => f.size > 0, { message: "File is empty" })
+    .refine((f) => f.size > 0, { message: 'File is empty' })
     .refine(
       (f) => /^[a-zA-Z0-9_]+(\.[a-zA-Z0-9_]+)?$/.test(f.name),
-      "File name contains special characters. only a-z, A-Z, 0-9 and _ are allowed",
+      'File name contains special characters. only a-z, A-Z, 0-9 and _ are allowed',
     )
-    .refine((f) => f.type.startsWith("image/"), {
-      message: "Only image files are allowed",
+    .refine((f) => f.type.startsWith('image/'), {
+      message: 'Only image files are allowed',
     }),
 });
 

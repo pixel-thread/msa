@@ -1,5 +1,5 @@
-import { getTraceId } from "@src/shared/utils";
-import type { NextRequest } from "next/server";
+import { getTraceId } from '@src/shared/utils';
+import type { NextRequest } from 'next/server';
 
 export interface TracingContext {
   traceId: string;

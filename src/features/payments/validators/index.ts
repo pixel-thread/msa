@@ -1,9 +1,6 @@
-import { z } from "zod";
-import { PaymentMethod, ContributionStatus } from "@prisma/client";
-import {
-  pageNumberValidation,
-  pageSizeValidation,
-} from "@src/shared/validators/common";
+import { z } from 'zod';
+import { PaymentMethod, ContributionStatus } from '@prisma/client';
+import { pageNumberValidation, pageSizeValidation } from '@src/shared/validators/common';
 
 // ---------------------------------------------------------------------------
 // Create Order (Razorpay)
@@ -18,9 +15,9 @@ export const CreateOrderSchema = z.object({
 // ---------------------------------------------------------------------------
 
 export const VerifyPaymentSchema = z.object({
-  razorpayOrderId: z.string().min(1, "Razorpay order ID is required"),
-  razorpayPaymentId: z.string().min(1, "Razorpay payment ID is required"),
-  razorpaySignature: z.string().min(1, "Razorpay signature is required"),
+  razorpayOrderId: z.string().min(1, 'Razorpay order ID is required'),
+  razorpayPaymentId: z.string().min(1, 'Razorpay payment ID is required'),
+  razorpaySignature: z.string().min(1, 'Razorpay signature is required'),
 });
 
 // ---------------------------------------------------------------------------
@@ -29,7 +26,7 @@ export const VerifyPaymentSchema = z.object({
 
 export const RecordManualPaymentSchema = z.object({
   userId: z.uuid(),
-  amount: z.number().positive("Amount must be positive"),
+  amount: z.number().positive('Amount must be positive'),
   method: z.enum(PaymentMethod),
   notes: z.string().optional(),
   receiptNumber: z.string().optional(),
@@ -51,7 +48,7 @@ export const GenerateContributionsSchema = z.object({
 
 export const WaiveContributionSchema = z.object({
   contributionPeriodId: z.uuid(),
-  reason: z.string().min(1, "Waiver reason is required"),
+  reason: z.string().min(1, 'Waiver reason is required'),
 });
 
 // ---------------------------------------------------------------------------
@@ -85,13 +82,9 @@ export const ContributionReportQuerySchema = z.object({
 
 export const GetTransactionsQuerySchema = z.object({
   userId: z.uuid().optional(),
-  status: z
-    .enum(["PENDING", "COMPLETED", "FAILED", "REFUNDED", "WAIVED"])
-    .optional(),
-  method: z
-    .enum(["CASH", "BANK_TRANSFER", "UPI", "CHEQUE", "ONLINE"])
-    .optional(),
-  gateway: z.enum(["RAZORPAY", "MANUAL"]).optional(),
+  status: z.enum(['PENDING', 'COMPLETED', 'FAILED', 'REFUNDED', 'WAIVED']).optional(),
+  method: z.enum(['CASH', 'BANK_TRANSFER', 'UPI', 'CHEQUE', 'ONLINE']).optional(),
+  gateway: z.enum(['RAZORPAY', 'MANUAL']).optional(),
   search: z.string().optional(),
   startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),
@@ -111,9 +104,9 @@ export const CollectionReportQuerySchema = z.object({
 // ---------------------------------------------------------------------------
 
 export const UpsertPaymentProviderSchema = z.object({
-  provider: z.enum(["RAZORPAY", "STRIPE", "PAYU", "CASHFREE"]),
-  keyId: z.string().min(1, "keyId is required"),
-  keySecret: z.string().min(1, "keySecret is required"),
+  provider: z.enum(['RAZORPAY', 'STRIPE', 'PAYU', 'CASHFREE']),
+  keyId: z.string().min(1, 'keyId is required'),
+  keySecret: z.string().min(1, 'keySecret is required'),
   webhookSecret: z.string().optional(),
   isActive: z.boolean().default(true),
 });
@@ -126,13 +119,13 @@ export const UpdatePaymentProviderSchema = z.object({
 });
 
 export const ProviderIdParamSchema = z.object({
-  providerId: z.uuid("Invalid provider ID"),
+  providerId: z.uuid('Invalid provider ID'),
 });
 
 export const UserPaymentsParamsSchema = z.object({
-  userId: z.uuid("Invalid user ID"),
+  userId: z.uuid('Invalid user ID'),
 });
 
 export const UserContributionsParamsSchema = z.object({
-  userId: z.uuid("Invalid user ID"),
+  userId: z.uuid('Invalid user ID'),
 });

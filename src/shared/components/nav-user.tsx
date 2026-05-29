@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
-import { Avatar, AvatarFallback } from "@src/shared/components/ui/avatar";
+import { Avatar, AvatarFallback } from '@src/shared/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,27 +12,22 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@src/shared/components/ui/dropdown-menu";
+} from '@src/shared/components/ui/dropdown-menu';
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@src/shared/components/ui/sidebar";
-import {
-  ChevronsUpDownIcon,
-  BadgeCheckIcon,
-  CreditCardIcon,
-  LogOutIcon,
-} from "lucide-react";
-import { useSignOut } from "@src/features/auth/hooks";
-import { toast } from "sonner";
+} from '@src/shared/components/ui/sidebar';
+import { ChevronsUpDownIcon, BadgeCheckIcon, CreditCardIcon, LogOutIcon } from 'lucide-react';
+import { useSignOut } from '@src/features/auth/hooks';
+import { toast } from 'sonner';
 
 const getInitials = (name: string) => {
   return name
-    .split(" ")
+    .split(' ')
     .map((n) => n[0])
-    .join("")
+    .join('')
     .toUpperCase()
     .slice(0, 2);
 };
@@ -84,7 +79,7 @@ export function NavUser({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-(--radix-dropdown-menu-trigger-width) min-w-56"
-            side={isMobile ? "bottom" : "right"}
+            side={isMobile ? 'bottom' : 'right'}
             align="end"
             sideOffset={4}
           >

@@ -1,6 +1,6 @@
-import { prisma } from "@lib/prisma";
-import { AuditAction, Prisma } from "@prisma/client";
-import { BadRequestError } from "@src/shared/errors";
+import { prisma } from '@lib/prisma';
+import { AuditAction, Prisma } from '@prisma/client';
+import { BadRequestError } from '@src/shared/errors';
 
 interface DeleteMemberTypeProps {
   associationId: string;
@@ -19,7 +19,7 @@ export async function deleteMemberType({
 
   if (usersCount > 0) {
     throw new BadRequestError(
-      "Cannot delete member type that has users assigned. Please reassign users first.",
+      'Cannot delete member type that has users assigned. Please reassign users first.',
     );
   }
 
@@ -29,7 +29,7 @@ export async function deleteMemberType({
 
   if (plansCount > 0) {
     throw new BadRequestError(
-      "Cannot delete member type that has subscription plans linked. Please update plans first.",
+      'Cannot delete member type that has subscription plans linked. Please update plans first.',
     );
   }
 
@@ -43,7 +43,7 @@ export async function deleteMemberType({
         associationId,
         actorId,
         action: AuditAction.DELETE,
-        resourceType: "MemberType",
+        resourceType: 'MemberType',
         resourceId: memberTypeId,
         oldValues: {
           description: memberType.description,

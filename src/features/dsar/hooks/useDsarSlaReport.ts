@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import type { ApiResponse } from "@src/shared/utils/http";
+import { useQuery } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import type { ApiResponse } from '@src/shared/utils/http';
 
 interface SlaReport {
   breached: number;
@@ -10,8 +10,8 @@ interface SlaReport {
 
 export function useDsarSlaReport() {
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["dsar-sla"],
-    queryFn: async () => http.get<SlaReport>("/dsar/sla-report"),
+    queryKey: ['dsar-sla'],
+    queryFn: async () => http.get<SlaReport>('/dsar/sla-report'),
   });
 
   return {

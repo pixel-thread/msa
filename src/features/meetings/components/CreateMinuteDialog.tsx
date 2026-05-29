@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Dialog,
   DialogContent,
@@ -10,16 +10,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
-import { Button } from "@src/shared/components/ui/button";
-import { Input } from "@src/shared/components/ui/input";
-import { Label } from "@src/shared/components/ui/label";
-import { Textarea } from "@src/shared/components/ui/textarea";
-import { Plus, Trash2 } from "lucide-react";
-import {
-  CreateMeetingMinuteSchema,
-  type CreateMeetingMinuteInput,
-} from "../validators/minutes";
+} from '@src/shared/components/ui/dialog';
+import { Button } from '@src/shared/components/ui/button';
+import { Input } from '@src/shared/components/ui/input';
+import { Label } from '@src/shared/components/ui/label';
+import { Textarea } from '@src/shared/components/ui/textarea';
+import { Plus, Trash2 } from 'lucide-react';
+import { CreateMeetingMinuteSchema, type CreateMeetingMinuteInput } from '../validators/minutes';
 
 interface ActionItemInput {
   assigneeId?: string;
@@ -47,24 +44,20 @@ export function CreateMinuteDialog({
   const form = useForm({
     resolver: zodResolver(CreateMeetingMinuteSchema),
     defaultValues: {
-      agendaPoint: "",
-      decision: "",
+      agendaPoint: '',
+      decision: '',
     },
   });
 
   const handleAddActionItem = () => {
-    setActionItems([...actionItems, { assigneeId: "", task: "", dueDate: "" }]);
+    setActionItems([...actionItems, { assigneeId: '', task: '', dueDate: '' }]);
   };
 
   const handleRemoveActionItem = (index: number) => {
     setActionItems(actionItems.filter((_, i) => i !== index));
   };
 
-  const handleActionItemChange = (
-    index: number,
-    field: string,
-    value: string,
-  ) => {
+  const handleActionItemChange = (index: number, field: string, value: string) => {
     const updated = [...actionItems];
     updated[index] = { ...updated[index], [field]: value };
     setActionItems(updated);
@@ -91,9 +84,7 @@ export function CreateMinuteDialog({
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Add Meeting Minute</DialogTitle>
-          <DialogDescription>
-            Record a decision or action item from the meeting.
-          </DialogDescription>
+          <DialogDescription>Record a decision or action item from the meeting.</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit}>
@@ -102,13 +93,11 @@ export function CreateMinuteDialog({
               <Label htmlFor="agendaPoint">Agenda Point *</Label>
               <Input
                 id="agendaPoint"
-                {...form.register("agendaPoint")}
+                {...form.register('agendaPoint')}
                 placeholder="e.g., Budget approval for Q2"
               />
               {form.formState.errors.agendaPoint && (
-                <p className="text-sm text-red-500">
-                  {form.formState.errors.agendaPoint.message}
-                </p>
+                <p className="text-sm text-red-500">{form.formState.errors.agendaPoint.message}</p>
               )}
             </div>
 
@@ -116,14 +105,12 @@ export function CreateMinuteDialog({
               <Label htmlFor="decision">Decision *</Label>
               <Textarea
                 id="decision"
-                {...form.register("decision")}
+                {...form.register('decision')}
                 placeholder="Describe the decision made..."
                 rows={3}
               />
               {form.formState.errors.decision && (
-                <p className="text-sm text-red-500">
-                  {form.formState.errors.decision.message}
-                </p>
+                <p className="text-sm text-red-500">{form.formState.errors.decision.message}</p>
               )}
             </div>
 
@@ -145,21 +132,12 @@ export function CreateMinuteDialog({
               {actionItems.length > 0 && (
                 <div className="space-y-3">
                   {actionItems.map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex items-start gap-2 border border-hairline p-3"
-                    >
+                    <div key={index} className="flex items-start gap-2 border border-hairline p-3">
                       <div className="flex-1 space-y-2">
                         <Input
                           placeholder="Task description *"
                           value={item.task}
-                          onChange={(e) =>
-                            handleActionItemChange(
-                              index,
-                              "task",
-                              e.target.value,
-                            )
-                          }
+                          onChange={(e) => handleActionItemChange(index, 'task', e.target.value)}
                           className="h-8"
                         />
                         <div className="flex gap-2">
@@ -167,31 +145,21 @@ export function CreateMinuteDialog({
                             placeholder="Assignee ID (optional)"
                             value={item.assigneeId}
                             onChange={(e) =>
-                              handleActionItemChange(
-                                index,
-                                "assigneeId",
-                                e.target.value,
-                              )
+                              handleActionItemChange(index, 'assigneeId', e.target.value)
                             }
                             className="h-8 flex-1"
                           />
                           <Input
                             type="date"
                             value={
-                              typeof item.dueDate === "string"
+                              typeof item.dueDate === 'string'
                                 ? item.dueDate
                                 : item.dueDate
-                                  ? new Date(item.dueDate)
-                                      .toISOString()
-                                      .split("T")[0]
-                                  : ""
+                                  ? new Date(item.dueDate).toISOString().split('T')[0]
+                                  : ''
                             }
                             onChange={(e) =>
-                              handleActionItemChange(
-                                index,
-                                "dueDate",
-                                e.target.value,
-                              )
+                              handleActionItemChange(index, 'dueDate', e.target.value)
                             }
                             className="h-8 w-[160px]"
                           />
@@ -226,7 +194,7 @@ export function CreateMinuteDialog({
               Cancel
             </Button>
             <Button type="submit" disabled={isPending}>
-              {isPending ? "Adding..." : "Add Minute"}
+              {isPending ? 'Adding...' : 'Add Minute'}
             </Button>
           </DialogFooter>
         </form>

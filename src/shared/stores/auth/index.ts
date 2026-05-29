@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { create } from "zustand";
-import http from "@src/shared/utils/http";
-import type { UserRole } from "@src/shared/lib/prisma/types";
-import { SHARED_ENDPOINTS } from "@src/shared/constants";
+import { create } from 'zustand';
+import http from '@src/shared/utils/http';
+import type { UserRole } from '@src/shared/lib/prisma/types';
+import { SHARED_ENDPOINTS } from '@src/shared/constants';
 
 export interface AuthUser {
   id: string;
@@ -61,10 +61,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true });
 
     try {
-      const res = await http.post<{ user: AuthUser }>(
-        SHARED_ENDPOINTS.AUTH.MFA_VERIFY,
-        { code },
-      );
+      const res = await http.post<{ user: AuthUser }>(SHARED_ENDPOINTS.AUTH.MFA_VERIFY, { code });
 
       if (!res.success) {
         throw new Error(res.message);
@@ -81,9 +78,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   resendMfaCode: async () => {
     try {
-      const res = await http.post<{ codeSent: boolean }>(
-        SHARED_ENDPOINTS.AUTH.MFA_RESEND,
-      );
+      const res = await http.post<{ codeSent: boolean }>(SHARED_ENDPOINTS.AUTH.MFA_RESEND);
       if (!res.success) {
         throw new Error(res.message);
       }
@@ -112,10 +107,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   enableMfa: async (code: string) => {
     set({ isLoading: true });
     try {
-      const res = await http.post<{ user: AuthUser }>(
-        SHARED_ENDPOINTS.AUTH.MFA_VERIFY,
-        { code },
-      );
+      const res = await http.post<{ user: AuthUser }>(SHARED_ENDPOINTS.AUTH.MFA_VERIFY, { code });
       if (!res.success) {
         throw new Error(res.message);
       }
@@ -131,12 +123,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   disableMfa: async (password: string) => {
     set({ isLoading: true });
     try {
-      const res = await http.post<{ user: AuthUser }>(
-        SHARED_ENDPOINTS.AUTH.MFA_DISABLE,
-        {
-          password,
-        },
-      );
+      const res = await http.post<{ user: AuthUser }>(SHARED_ENDPOINTS.AUTH.MFA_DISABLE, {
+        password,
+      });
       if (!res.success) {
         throw new Error(res.message);
       }

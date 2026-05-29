@@ -1,29 +1,26 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useUrlFilters } from "@src/shared/hooks";
+import { useState } from 'react';
+import { useUrlFilters } from '@src/shared/hooks';
 
-import { DataTable } from "@src/shared/components/data-table";
-import { DataTableFilters } from "@src/shared/components/data-table-filters";
-import { DataTablePagination } from "@src/shared/components/data-table-pagination";
-import { usePlans } from "@src/features/subscriptions/hooks/usePlans";
-import { usePlanTableColumns } from "@src/features/subscriptions/hooks/usePlanTableColumns";
-import { usePlanTableActions } from "@src/features/subscriptions/hooks/usePlanTableActions";
-import { CreatePlanDialog } from "@src/features/subscriptions/components/create-plan-dialog";
-import { EditPlanDialog } from "@src/features/subscriptions/components/edit-plan-dialog";
-import { DeletePlanDialog } from "@src/features/subscriptions/components/delete-plan-dialog";
-import { SubscriptionPlan } from "@src/features/subscriptions/types";
+import { DataTable } from '@src/shared/components/data-table';
+import { DataTableFilters } from '@src/shared/components/data-table-filters';
+import { DataTablePagination } from '@src/shared/components/data-table-pagination';
+import { usePlans } from '@src/features/subscriptions/hooks/usePlans';
+import { usePlanTableColumns } from '@src/features/subscriptions/hooks/usePlanTableColumns';
+import { usePlanTableActions } from '@src/features/subscriptions/hooks/usePlanTableActions';
+import { CreatePlanDialog } from '@src/features/subscriptions/components/create-plan-dialog';
+import { EditPlanDialog } from '@src/features/subscriptions/components/edit-plan-dialog';
+import { DeletePlanDialog } from '@src/features/subscriptions/components/delete-plan-dialog';
+import { SubscriptionPlan } from '@src/features/subscriptions/types';
 
 export default function PlansPage() {
-  const { page, setPage } = useUrlFilters({ basePath: "/subscriptions/plans" });
+  const { page, setPage } = useUrlFilters({ basePath: '/subscriptions/plans' });
   const [editingPlan, setEditingPlan] = useState<SubscriptionPlan | null>(null);
-  const [deletingPlan, setDeletingPlan] = useState<SubscriptionPlan | null>(
-    null,
-  );
+  const [deletingPlan, setDeletingPlan] = useState<SubscriptionPlan | null>(null);
 
   const { plans, meta, isLoading } = usePlans({ page });
-  const { onStatusChange, onDelete, onSetDefault, isPending } =
-    usePlanTableActions();
+  const { onStatusChange, onDelete, onSetDefault, isPending } = usePlanTableActions();
   const { columns } = usePlanTableColumns({
     onStatusChange,
     onSetDefault,
@@ -48,9 +45,7 @@ export default function PlansPage() {
           <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
             Subscription Plans
           </h1>
-          <p className="mt-1 text-base text-body">
-            Manage subscription plans for your association
-          </p>
+          <p className="mt-1 text-base text-body">Manage subscription plans for your association</p>
         </div>
         <CreatePlanDialog />
       </div>
@@ -58,9 +53,9 @@ export default function PlansPage() {
       <DataTableFilters
         fields={[
           {
-            type: "search",
-            id: "search",
-            placeholder: "Search plans...",
+            type: 'search',
+            id: 'search',
+            placeholder: 'Search plans...',
           },
         ]}
         onFilterChange={() => {}}

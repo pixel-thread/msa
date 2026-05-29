@@ -1,5 +1,5 @@
-import { prisma } from "@src/shared/lib/prisma";
-import { DsarStatus, AuditAction } from "@prisma/client";
+import { prisma } from '@src/shared/lib/prisma';
+import { DsarStatus, AuditAction } from '@prisma/client';
 
 interface RespondToDsarTicketProps {
   associationId: string;
@@ -39,8 +39,7 @@ export async function respondToDsarTicket({
       data: {
         status: data.status,
         rejectedReason: data.rejectedReason,
-        completedAt:
-          data.status === DsarStatus.COMPLETED ? new Date() : undefined,
+        completedAt: data.status === DsarStatus.COMPLETED ? new Date() : undefined,
       },
     });
 
@@ -50,7 +49,7 @@ export async function respondToDsarTicket({
           dsarTicketId: ticketId,
           responseType: data.responseType,
           storageKey: data.storageKey,
-          deliveryMethod: data.deliveryMethod || "secure_download",
+          deliveryMethod: data.deliveryMethod || 'secure_download',
           notes: data.notes,
         },
       });
@@ -61,7 +60,7 @@ export async function respondToDsarTicket({
         associationId,
         actorId,
         action: AuditAction.DSAR_RESPOND,
-        resourceType: "DsarTicket",
+        resourceType: 'DsarTicket',
         resourceId: ticketId,
         newValues: data as any,
       },

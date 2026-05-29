@@ -22,4 +22,4 @@ export type {
   Meeting,
   User,
   Association,
-} from "@prisma/client";
+} from '@prisma/client';

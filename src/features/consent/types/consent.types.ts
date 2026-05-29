@@ -1,4 +1,4 @@
-import { ConsentPurpose, ConsentStatus } from "@prisma/client";
+import { ConsentPurpose, ConsentStatus } from '@prisma/client';
 
 /**
  * Represents a user's current consent state for a specific purpose.
@@ -42,7 +42,7 @@ export interface ConsentSummaryReport {
 /**
  * Consent record as returned from the API (with user info and string dates).
  */
-export interface ConsentRecord extends Omit<ConsentReceiptRecord, "createdAt"> {
+export interface ConsentRecord extends Omit<ConsentReceiptRecord, 'createdAt'> {
   createdAt: string;
   user?: {
     name: string | null;

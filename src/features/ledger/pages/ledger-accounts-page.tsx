@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useLedgerAccounts } from "../hooks/useLedgerAccounts";
-import { DataTable } from "@src/shared/components/data-table";
-import { DataTableFilters } from "@src/shared/components/data-table-filters";
-import { Card, CardContent } from "@src/shared/components/ui/card";
-import { Button } from "@src/shared/components/ui/button";
-import { CreateAccountDialog } from "../components/create-account-dialog";
-import { useLedgerAccountColumns } from "../hooks/useLedgerAccountColumns";
-import { Plus, BanknoteIcon } from "lucide-react";
-import { DataTablePagination } from "@src/shared/components/data-table-pagination";
-import { useUrlFilters } from "@src/shared/hooks";
+import { useState } from 'react';
+import { useLedgerAccounts } from '../hooks/useLedgerAccounts';
+import { DataTable } from '@src/shared/components/data-table';
+import { DataTableFilters } from '@src/shared/components/data-table-filters';
+import { Card, CardContent } from '@src/shared/components/ui/card';
+import { Button } from '@src/shared/components/ui/button';
+import { CreateAccountDialog } from '../components/create-account-dialog';
+import { useLedgerAccountColumns } from '../hooks/useLedgerAccountColumns';
+import { Plus, BanknoteIcon } from 'lucide-react';
+import { DataTablePagination } from '@src/shared/components/data-table-pagination';
+import { useUrlFilters } from '@src/shared/hooks';
 
 export default function LedgerAccountsPage() {
-  const { page, setPage } = useUrlFilters({ basePath: "/ledger/accounts" });
+  const { page, setPage } = useUrlFilters({ basePath: '/ledger/accounts' });
   const { accounts, isLoading, meta } = useLedgerAccounts();
   const [createOpen, setCreateOpen] = useState(false);
   const { columns } = useLedgerAccountColumns();
@@ -46,9 +46,7 @@ export default function LedgerAccountsPage() {
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                   Total Accounts
                 </p>
-                <p className="mt-0.5 text-2xl font-semibold text-ink">
-                  {accounts.length}
-                </p>
+                <p className="mt-0.5 text-2xl font-semibold text-ink">{accounts.length}</p>
               </div>
             </div>
           </CardContent>
@@ -58,9 +56,9 @@ export default function LedgerAccountsPage() {
       <DataTableFilters
         fields={[
           {
-            type: "search",
-            id: "search",
-            placeholder: "Search accounts...",
+            type: 'search',
+            id: 'search',
+            placeholder: 'Search accounts...',
           },
         ]}
         onFilterChange={() => {}}

@@ -1,11 +1,6 @@
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@src/shared/components/ui/card";
-import { formatDate } from "@src/shared/utils";
-import { User } from "@prisma/client";
+import { Card, CardHeader, CardTitle, CardContent } from '@src/shared/components/ui/card';
+import { formatDate } from '@src/shared/utils';
+import { User } from '@prisma/client';
 
 interface AccountCardProps {
   member: User;
@@ -23,15 +18,11 @@ export function AccountCard({ member }: AccountCardProps) {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm text-body">Created</span>
-            <span className="text-sm text-ink">
-              {formatDate(member.createdAt)}
-            </span>
+            <span className="text-sm text-ink">{formatDate(member.createdAt)}</span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-sm text-body">Updated</span>
-            <span className="text-sm text-ink">
-              {formatDate(member.updatedAt)}
-            </span>
+            <span className="text-sm text-ink">{formatDate(member.updatedAt)}</span>
           </div>
         </div>
       </CardContent>

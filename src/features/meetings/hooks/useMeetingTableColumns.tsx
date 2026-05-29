@@ -1,6 +1,6 @@
-import { ColumnDef } from "@tanstack/react-table";
-import { formatDate } from "@src/shared/utils";
-import Link from "next/link";
+import { ColumnDef } from '@tanstack/react-table';
+import { formatDate } from '@src/shared/utils';
+import Link from 'next/link';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,13 +8,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@src/shared/components/ui/dropdown-menu";
-import { Button } from "@src/shared/components/ui/button";
-import { MoreHorizontal, Pencil, Trash2, Eye } from "lucide-react";
-import { useMeetings } from "../hooks";
-import type { Meeting } from "../types";
-import { getTypeBadge } from "@src/shared/utils/helper/get-type-badge";
-import { getStatusBadge } from "@src/shared/utils/helper/get-status-badge";
+} from '@src/shared/components/ui/dropdown-menu';
+import { Button } from '@src/shared/components/ui/button';
+import { MoreHorizontal, Pencil, Trash2, Eye } from 'lucide-react';
+import { useMeetings } from '../hooks';
+import type { Meeting } from '../types';
+import { getTypeBadge } from '@src/shared/utils/helper/get-type-badge';
+import { getStatusBadge } from '@src/shared/utils/helper/get-status-badge';
 
 export const useMeetingTableColumns = (): {
   columns: ColumnDef<Meeting>[];
@@ -25,8 +25,8 @@ export const useMeetingTableColumns = (): {
 
   const columns: ColumnDef<Meeting>[] = [
     {
-      accessorKey: "title",
-      header: "Title",
+      accessorKey: 'title',
+      header: 'Title',
       cell: ({ row }) => {
         const meeting = row.original;
         return (
@@ -40,45 +40,39 @@ export const useMeetingTableColumns = (): {
       },
     },
     {
-      accessorKey: "type",
-      header: "Type",
+      accessorKey: 'type',
+      header: 'Type',
       cell: ({ row }) => getTypeBadge(row.original.type),
     },
     {
-      accessorKey: "status",
-      header: "Status",
+      accessorKey: 'status',
+      header: 'Status',
       cell: ({ row }) => getStatusBadge(row.original.status),
     },
     {
-      accessorKey: "scheduledAt",
-      header: "Scheduled",
+      accessorKey: 'scheduledAt',
+      header: 'Scheduled',
       cell: ({ row }) => (
-        <span className="text-sm text-body">
-          {formatDate(row.original.scheduledAt)}
-        </span>
+        <span className="text-sm text-body">{formatDate(row.original.scheduledAt)}</span>
       ),
     },
     {
-      accessorKey: "venue",
-      header: "Venue",
+      accessorKey: 'venue',
+      header: 'Venue',
       cell: ({ row }) => (
-        <span className="text-sm text-body">
-          {row.original.venue || "Not set"}
-        </span>
+        <span className="text-sm text-body">{row.original.venue || 'Not set'}</span>
       ),
     },
     {
-      accessorKey: "_count",
-      header: "Attendees",
+      accessorKey: '_count',
+      header: 'Attendees',
       cell: ({ row }) => (
-        <span className="text-sm text-body">
-          {row.original._count?.attendees || 0}
-        </span>
+        <span className="text-sm text-body">{row.original._count?.attendees || 0}</span>
       ),
     },
     {
-      id: "actions",
-      header: "Actions",
+      id: 'actions',
+      header: 'Actions',
       cell: ({ row }) => {
         const meeting = row.original;
 
@@ -108,9 +102,7 @@ export const useMeetingTableColumns = (): {
               <DropdownMenuItem
                 className="text-destructive focus:text-destructive"
                 onClick={() => {
-                  if (
-                    confirm("Are you sure you want to delete this meeting?")
-                  ) {
+                  if (confirm('Are you sure you want to delete this meeting?')) {
                     deleteMeeting(meeting.id);
                   }
                 }}

@@ -1,7 +1,7 @@
-import { Expo, ExpoPushMessage, ExpoPushTicket } from "expo-server-sdk";
-import { prisma } from "./prisma";
-import { logger } from "@src/shared/logger/server";
-import { NotificationDataT } from "@sharedType/notification";
+import { Expo, ExpoPushMessage, ExpoPushTicket } from 'expo-server-sdk';
+import { prisma } from './prisma';
+import { logger } from '@src/shared/logger/server';
+import { NotificationDataT } from '@sharedType/notification';
 
 const expo = new Expo();
 
@@ -35,7 +35,7 @@ export class ExpoNotificationService {
       }
       messages.push({
         to: pushToken,
-        sound: "default",
+        sound: 'default',
         title,
         body,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -56,19 +56,17 @@ export class ExpoNotificationService {
           const ticket = ticketChunk[i];
           const token = chunk[i].to;
 
-          if (typeof token === "string" && ticket.status === "error") {
-            if (ticket.details?.error === "DeviceNotRegistered") {
-              logger.debug(
-                `Token ${token} is no longer registered. Removing from DB.`,
-              );
+          if (typeof token === 'string' && ticket.status === 'error') {
+            if (ticket.details?.error === 'DeviceNotRegistered') {
+              logger.debug(`Token ${token} is no longer registered. Removing from DB.`);
               await prisma.pushToken
                 .delete({ where: { token } })
-                .catch((e) => logger.error("Failed to delete token", e));
+                .catch((e) => logger.error('Failed to delete token', e));
             }
           }
         }
       } catch (error) {
-        logger.error({ error }, "Error sending push notification chunk:");
+        logger.error({ error }, 'Error sending push notification chunk:');
       }
     }
 

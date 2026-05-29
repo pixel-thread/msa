@@ -1,5 +1,5 @@
-import { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@src/shared/components/ui/badge";
+import { ColumnDef } from '@tanstack/react-table';
+import { Badge } from '@src/shared/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,16 +7,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@src/shared/components/ui/dropdown-menu";
-import { Button } from "@src/shared/components/ui/button";
-import {
-  MoreHorizontal,
-  Settings,
-  ToggleLeft,
-  ToggleRight,
-} from "lucide-react";
-import type { TrainingModuleListItem } from "../types";
-import Link from "next/link";
+} from '@src/shared/components/ui/dropdown-menu';
+import { Button } from '@src/shared/components/ui/button';
+import { MoreHorizontal, Settings, ToggleLeft, ToggleRight } from 'lucide-react';
+import type { TrainingModuleListItem } from '../types';
+import Link from 'next/link';
 
 export const useModuleTableColumns = (options: {
   onManage: (module: TrainingModuleListItem) => void;
@@ -26,37 +21,31 @@ export const useModuleTableColumns = (options: {
 
   const columns: ColumnDef<TrainingModuleListItem>[] = [
     {
-      accessorKey: "title",
-      header: "Title",
+      accessorKey: 'title',
+      header: 'Title',
       cell: ({ row }) => {
         const mod = row.original;
         return (
           <Link href={`/training/${mod.id}`} className="flex flex-col max-w-md">
             <span className="text-sm font-semibold text-ink">{mod.title}</span>
             {mod.description && (
-              <span className="text-xs text-muted-foreground truncate">
-                {mod.description}
-              </span>
+              <span className="text-xs text-muted-foreground truncate">{mod.description}</span>
             )}
           </Link>
         );
       },
     },
     {
-      accessorKey: "durationMinutes",
-      header: "Duration",
+      accessorKey: 'durationMinutes',
+      header: 'Duration',
       cell: ({ row }) => {
         const duration = row.original.durationMinutes;
-        return (
-          <span className="text-sm text-body">
-            {duration ? `${duration} mins` : "N/A"}
-          </span>
-        );
+        return <span className="text-sm text-body">{duration ? `${duration} mins` : 'N/A'}</span>;
       },
     },
     {
-      accessorKey: "requiredForRoles",
-      header: "Required Roles",
+      accessorKey: 'requiredForRoles',
+      header: 'Required Roles',
       cell: ({ row }) => {
         const roles = row.original.requiredForRoles || [];
         return (
@@ -71,27 +60,25 @@ export const useModuleTableColumns = (options: {
       },
     },
     {
-      accessorKey: "isActive",
-      header: "Status",
+      accessorKey: 'isActive',
+      header: 'Status',
       cell: ({ row }) => {
         const isActive = row.original.isActive;
         return (
-          <Badge variant={isActive ? "default" : "destructive"}>
-            {isActive ? "Active" : "Inactive"}
+          <Badge variant={isActive ? 'default' : 'destructive'}>
+            {isActive ? 'Active' : 'Inactive'}
           </Badge>
         );
       },
     },
     {
-      accessorKey: "version",
-      header: "Version",
-      cell: ({ row }) => (
-        <span className="text-sm text-body">v{row.original.version}</span>
-      ),
+      accessorKey: 'version',
+      header: 'Version',
+      cell: ({ row }) => <span className="text-sm text-body">v{row.original.version}</span>,
     },
     {
-      id: "actions",
-      header: "Actions",
+      id: 'actions',
+      header: 'Actions',
       cell: ({ row }) => {
         const mod = row.original;
 

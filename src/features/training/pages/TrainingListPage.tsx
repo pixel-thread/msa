@@ -1,35 +1,27 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useUrlFilters } from "@src/shared/hooks";
-import { DataTable } from "@src/shared/components/data-table";
-import { Button } from "@src/shared/components/ui/button";
-import { DataTableFilters } from "@src/shared/components/data-table-filters";
-import { Plus, Award } from "lucide-react";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useUrlFilters } from '@src/shared/hooks';
+import { DataTable } from '@src/shared/components/data-table';
+import { Button } from '@src/shared/components/ui/button';
+import { DataTableFilters } from '@src/shared/components/data-table-filters';
+import { Plus, Award } from 'lucide-react';
 
-import {
-  useTrainingModules,
-  useUpdateTrainingModule,
-  useModuleTableColumns,
-} from "../hooks";
-import { CreateModuleDialog } from "../components";
-import { DataTablePagination } from "@src/shared/components/data-table-pagination";
+import { useTrainingModules, useUpdateTrainingModule, useModuleTableColumns } from '../hooks';
+import { CreateModuleDialog } from '../components';
+import { DataTablePagination } from '@src/shared/components/data-table-pagination';
 
 export function TrainingListPage() {
   const router = useRouter();
 
   const { page, setPage, setFilters } = useUrlFilters({
-    basePath: "/training",
+    basePath: '/training',
   });
 
   const [createOpen, setCreateOpen] = useState(false);
 
-  const {
-    modules: allModules,
-    isLoading: isModulesLoading,
-    meta,
-  } = useTrainingModules({ page });
+  const { modules: allModules, isLoading: isModulesLoading, meta } = useTrainingModules({ page });
 
   const { updateModule } = useUpdateTrainingModule();
 
@@ -62,9 +54,9 @@ export function TrainingListPage() {
         <DataTableFilters
           fields={[
             {
-              type: "search",
-              id: "search",
-              placeholder: "Search training modules...",
+              type: 'search',
+              id: 'search',
+              placeholder: 'Search training modules...',
             },
           ]}
           onFilterChange={(f) => setFilters(f)}
@@ -73,7 +65,7 @@ export function TrainingListPage() {
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            onClick={() => router.push("/training/completions")}
+            onClick={() => router.push('/training/completions')}
             className="h-11 border-hairline px-4 text-sm font-semibold"
           >
             <Award className="mr-2 h-4 w-4" />
@@ -89,11 +81,7 @@ export function TrainingListPage() {
         </div>
       </div>
 
-      <DataTable
-        loading={isModulesLoading}
-        data={allModules}
-        columns={moduleColumns}
-      />
+      <DataTable loading={isModulesLoading} data={allModules} columns={moduleColumns} />
 
       <DataTablePagination meta={meta} onPageChange={setPage} />
 

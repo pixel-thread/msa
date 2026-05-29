@@ -1,12 +1,6 @@
-import type { ErrorEnvelope, SuccessEnvelope } from "@src/shared/types";
+import type { ErrorEnvelope, SuccessEnvelope } from '@src/shared/types';
 
-type QueryValue =
-  | string
-  | number
-  | boolean
-  | null
-  | undefined
-  | Array<string | number | boolean>;
+type QueryValue = string | number | boolean | null | undefined | Array<string | number | boolean>;
 
 export interface ApiClientOptions {
   baseUrl: string;
@@ -33,31 +27,26 @@ export class ApiClientError extends Error {
     public readonly traceId?: string,
   ) {
     super(message);
-    this.name = "ApiClientError";
+    this.name = 'ApiClientError';
   }
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null;
+  typeof value === 'object' && value !== null;
 
 const isErrorEnvelope = (value: unknown): value is ErrorEnvelope =>
-  isRecord(value) && value.success === false && "error" in value;
+  isRecord(value) && value.success === false && 'error' in value;
 
 const isSuccessEnvelope = <T>(value: unknown): value is SuccessEnvelope<T> =>
-  isRecord(value) && value.success === true && "data" in value;
+  isRecord(value) && value.success === true && 'data' in value;
 
-const ensureTrailingSlash = (value: string) =>
-  value.endsWith("/") ? value : `${value}/`;
+const ensureTrailingSlash = (value: string) => (value.endsWith('/') ? value : `${value}/`);
 
-const createUrl = (
-  baseUrl: string,
-  pathname: string,
-  query?: Record<string, QueryValue>,
-) => {
+const createUrl = (baseUrl: string, pathname: string, query?: Record<string, QueryValue>) => {
   const url = new URL(pathname, ensureTrailingSlash(baseUrl));
 
   for (const [key, value] of Object.entries(query ?? {})) {
-    if (value === undefined || value === null || value === "") {
+    if (value === undefined || value === null || value === '') {
       continue;
     }
 
@@ -79,9 +68,9 @@ const parseResponsePayload = async (response: Response) => {
     return null;
   }
 
-  const contentType = response.headers.get("content-type") ?? "";
+  const contentType = response.headers.get('content-type') ?? '';
 
-  if (contentType.includes("application/json")) {
+  if (contentType.includes('application/json')) {
     return (await response.json()) as unknown;
   }
 
@@ -92,19 +81,19 @@ const parseResponsePayload = async (response: Response) => {
 const getDefaultErrorCode = (status: number) => {
   switch (status) {
     case 400:
-      return "BAD_REQUEST";
+      return 'BAD_REQUEST';
     case 401:
-      return "UNAUTHENTICATED";
+      return 'UNAUTHENTICATED';
     case 403:
-      return "FORBIDDEN";
+      return 'FORBIDDEN';
     case 404:
-      return "NOT_FOUND";
+      return 'NOT_FOUND';
     case 409:
-      return "CONFLICT";
+      return 'CONFLICT';
     case 429:
-      return "RATE_LIMITED";
+      return 'RATE_LIMITED';
     default:
-      return "INTERNAL_ERROR";
+      return 'INTERNAL_ERROR';
   }
 };
 
@@ -119,16 +108,16 @@ export class ApiClient {
 
   private async buildHeaders(headers?: HeadersInit) {
     const result = new Headers(this.options.defaultHeaders);
-    result.set("accept", "application/json");
+    result.set('accept', 'application/json');
 
     const token = await this.options.getAuthToken?.();
     if (token) {
-      result.set("authorization", `Bearer ${token}`);
+      result.set('authorization', `Bearer ${token}`);
     }
 
     const traceId = this.options.getTraceId?.();
     if (traceId) {
-      result.set("x-correlation-id", traceId);
+      result.set('x-correlation-id', traceId);
     }
 
     for (const [key, value] of new Headers(headers).entries()) {
@@ -147,8 +136,8 @@ export class ApiClient {
     const headers = await this.buildHeaders(options.headers);
     const hasBody = options.body !== undefined;
 
-    if (hasBody && !headers.has("content-type")) {
-      headers.set("content-type", "application/json");
+    if (hasBody && !headers.has('content-type')) {
+      headers.set('content-type', 'application/json');
     }
 
     const response = await this.fetchImpl(url, {
@@ -168,18 +157,16 @@ export class ApiClient {
           response.status,
           payload.error.code,
           payload.error.details,
-          payload.error.traceId ??
-            response.headers.get("x-trace-id") ??
-            undefined,
+          payload.error.traceId ?? response.headers.get('x-trace-id') ?? undefined,
         );
       }
 
       throw new ApiClientError(
-        response.statusText || "Request failed",
+        response.statusText || 'Request failed',
         response.status,
         getDefaultErrorCode(response.status),
         payload,
-        response.headers.get("x-trace-id") ?? undefined,
+        response.headers.get('x-trace-id') ?? undefined,
       );
     }
 
@@ -190,19 +177,19 @@ export class ApiClient {
     return payload as TResponse;
   }
 
-  get<TResponse>(pathname: string, options?: Omit<RequestOptions, "body">) {
-    return this.request<TResponse>("GET", pathname, options);
+  get<TResponse>(pathname: string, options?: Omit<RequestOptions, 'body'>) {
+    return this.request<TResponse>('GET', pathname, options);
   }
 
   post<TResponse, TBody>(pathname: string, options?: RequestOptions<TBody>) {
-    return this.request<TResponse, TBody>("POST", pathname, options);
+    return this.request<TResponse, TBody>('POST', pathname, options);
   }
 
   patch<TResponse, TBody>(pathname: string, options?: RequestOptions<TBody>) {
-    return this.request<TResponse, TBody>("PATCH", pathname, options);
+    return this.request<TResponse, TBody>('PATCH', pathname, options);
   }
 
-  delete<TResponse>(pathname: string, options?: Omit<RequestOptions, "body">) {
-    return this.request<TResponse>("DELETE", pathname, options);
+  delete<TResponse>(pathname: string, options?: Omit<RequestOptions, 'body'>) {
+    return this.request<TResponse>('DELETE', pathname, options);
   }
 }

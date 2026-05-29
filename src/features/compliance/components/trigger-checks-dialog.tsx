@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -9,23 +9,23 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@src/shared/components/ui/dialog";
-import { Button } from "@src/shared/components/ui/button";
-import { Checkbox } from "@src/shared/components/ui/checkbox";
-import { Label } from "@src/shared/components/ui/label";
-import { Play } from "lucide-react";
-import { useTriggerComplianceCheck } from "../hooks/useTriggerComplianceCheck";
-import { ALL_CHECK_TYPES } from "../validators/compliance";
+} from '@src/shared/components/ui/dialog';
+import { Button } from '@src/shared/components/ui/button';
+import { Checkbox } from '@src/shared/components/ui/checkbox';
+import { Label } from '@src/shared/components/ui/label';
+import { Play } from 'lucide-react';
+import { useTriggerComplianceCheck } from '../hooks/useTriggerComplianceCheck';
+import { ALL_CHECK_TYPES } from '../validators/compliance';
 
 const checkTypeLabels: Record<string, string> = {
-  CONSENT_COVERAGE: "Consent Coverage",
-  DSAR_SLA_COMPLIANCE: "DSAR SLA Compliance",
-  DATA_RETENTION: "Data Retention",
-  PII_ENCRYPTION: "PII Encryption",
-  SUBSCRIPTION_EXPIRY: "Subscription Expiry",
-  MEMBER_DATA_COMPLETENESS: "Member Data Completeness",
-  PAYMENT_RECONCILIATION: "Payment Reconciliation",
-  AUDIT_LOG_INTEGRITY: "Audit Log Integrity",
+  CONSENT_COVERAGE: 'Consent Coverage',
+  DSAR_SLA_COMPLIANCE: 'DSAR SLA Compliance',
+  DATA_RETENTION: 'Data Retention',
+  PII_ENCRYPTION: 'PII Encryption',
+  SUBSCRIPTION_EXPIRY: 'Subscription Expiry',
+  MEMBER_DATA_COMPLETENESS: 'Member Data Completeness',
+  PAYMENT_RECONCILIATION: 'Payment Reconciliation',
+  AUDIT_LOG_INTEGRITY: 'Audit Log Integrity',
 };
 
 export function TriggerChecksDialog() {
@@ -67,8 +67,7 @@ export function TriggerChecksDialog() {
         <DialogHeader>
           <DialogTitle>Run Compliance Checks</DialogTitle>
           <DialogDescription>
-            Select the compliance checks to run. All checks run by default if
-            none are selected.
+            Select the compliance checks to run. All checks run by default if none are selected.
           </DialogDescription>
         </DialogHeader>
 
@@ -92,24 +91,20 @@ export function TriggerChecksDialog() {
                 onCheckedChange={() => toggleType(type)}
               />
               <Label htmlFor={type} className="text-sm cursor-pointer">
-                {checkTypeLabels[type] || type.replace(/_/g, " ")}
+                {checkTypeLabels[type] || type.replace(/_/g, ' ')}
               </Label>
             </div>
           ))}
         </div>
 
         <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setOpen(false)}
-          >
+          <Button type="button" variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
           <Button onClick={handleRun} disabled={triggerChecks.isPending}>
             {triggerChecks.isPending
-              ? "Running..."
-              : `Run${selectedTypes.length > 0 ? " Selected" : " All"}`}
+              ? 'Running...'
+              : `Run${selectedTypes.length > 0 ? ' Selected' : ' All'}`}
           </Button>
         </DialogFooter>
       </DialogContent>

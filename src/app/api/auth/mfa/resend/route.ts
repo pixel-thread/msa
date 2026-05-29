@@ -1,19 +1,15 @@
-import { prisma } from "@src/shared/lib/prisma";
-import { withValidation } from "@src/shared/api";
-import { generateOTP, hashToken } from "@src/shared/lib/password";
-import { sendVerificationEmail } from "@src/shared/lib/email";
-import { env } from "@src/env";
-import {
-  ForbiddenError,
-  NotFoundError,
-  UnauthorizedError,
-} from "@src/shared/errors";
-import { SuccessResponse } from "@src/shared/utils";
-import { logger } from "@src/shared/logger/server";
+import { prisma } from '@src/shared/lib/prisma';
+import { withValidation } from '@src/shared/api';
+import { generateOTP, hashToken } from '@src/shared/lib/password';
+import { sendVerificationEmail } from '@src/shared/lib/email';
+import { env } from '@src/env';
+import { ForbiddenError, NotFoundError, UnauthorizedError } from '@src/shared/errors';
+import { SuccessResponse } from '@src/shared/utils';
+import { logger } from '@src/shared/logger/server';
 
 export const POST = withValidation({}, async (request) => {
-  const userId = request.headers.get("x-user-id");
-  if (!userId) throw new UnauthorizedError("Unauthorized");
+  const userId = request.headers.get('x-user-id');
+  if (!userId) throw new UnauthorizedError('Unauthorized');
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -21,17 +17,17 @@ export const POST = withValidation({}, async (request) => {
   });
 
   if (!user) {
-    throw new NotFoundError("User not found");
+    throw new NotFoundError('User not found');
   }
 
   const lastCode = await prisma.verificationCode.findFirst({
     where: {
       userId,
-      type: "SETUP_MFA",
+      type: 'SETUP_MFA',
       expiresAt: { gt: new Date() },
       usedAt: null,
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: 'desc' },
   });
 
   if (lastCode) {
@@ -39,9 +35,7 @@ export const POST = withValidation({}, async (request) => {
     const cooldownMs = env.OTP_RESEND_COOLDOWN * 1000;
 
     if (timeSinceLastCode < cooldownMs) {
-      const remainingSeconds = Math.ceil(
-        (cooldownMs - timeSinceLastCode) / 1000,
-      );
+      const remainingSeconds = Math.ceil((cooldownMs - timeSinceLastCode) / 1000);
       throw new ForbiddenError(
         `Please wait ${remainingSeconds} seconds before requesting a new code`,
       );
@@ -58,21 +52,21 @@ export const POST = withValidation({}, async (request) => {
     data: {
       userId,
       code: hashedOTP,
-      type: "SETUP_MFA",
+      type: 'SETUP_MFA',
       expiresAt: otpExpiry,
     },
   });
 
-  if (env.NODE_ENV === "production") {
-    await sendVerificationEmail(user.email, otp, "SETUP_MFA");
+  if (env.NODE_ENV === 'production') {
+    await sendVerificationEmail(user.email, otp, 'SETUP_MFA');
   }
 
-  if (env.NODE_ENV === "development") {
-    logger.debug({ otp }, "OTP sent to ");
+  if (env.NODE_ENV === 'development') {
+    logger.debug({ otp }, 'OTP sent to ');
   }
 
   return SuccessResponse({
-    message: "Verification code sent to your email",
+    message: 'Verification code sent to your email',
     data: {
       codeSent: true,
     },

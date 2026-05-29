@@ -1,6 +1,6 @@
-import { prisma } from "@lib/prisma";
-import { CreateTrainingCertificateInput } from "../validators/training";
-import { AuditAction, Prisma } from "@prisma/client";
+import { prisma } from '@lib/prisma';
+import { CreateTrainingCertificateInput } from '../validators/training';
+import { AuditAction, Prisma } from '@prisma/client';
 
 interface CreateCertificateProps {
   associationId: string;
@@ -25,7 +25,7 @@ export async function createCertificate({
     });
 
     if (!trainingModule) {
-      throw new Error("Training module not found");
+      throw new Error('Training module not found');
     }
 
     const certificate = await tx.trainingCertificate.create({
@@ -47,7 +47,7 @@ export async function createCertificate({
         associationId,
         actorId,
         action: AuditAction.TRAINING_MODULE_UPDATE,
-        resourceType: "TrainingCertificate",
+        resourceType: 'TrainingCertificate',
         resourceId: certificate.id,
         newValues: { userId: data.userId, moduleId } as Prisma.InputJsonValue,
       },

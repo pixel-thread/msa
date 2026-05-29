@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Dialog,
@@ -7,12 +7,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
-import { Button } from "@src/shared/components/ui/button";
-import { AlertTriangle } from "lucide-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import { toast } from "sonner";
+} from '@src/shared/components/ui/dialog';
+import { Button } from '@src/shared/components/ui/button';
+import { AlertTriangle } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import { toast } from 'sonner';
 
 interface DeleteMeetingDialogProps {
   meeting: { id: string; title: string } | null;
@@ -36,13 +36,13 @@ export function DeleteMeetingDialog({
       return res;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["meetings"] });
-      toast.success("Meeting deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ['meetings'] });
+      toast.success('Meeting deleted successfully');
       onOpenChange(false);
       onSuccess?.();
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Failed to delete meeting");
+      toast.error(err.message || 'Failed to delete meeting');
     },
   });
 
@@ -63,9 +63,8 @@ export function DeleteMeetingDialog({
             <DialogTitle>Delete Meeting</DialogTitle>
           </div>
           <DialogDescription className="pt-2">
-            Are you sure you want to delete <strong>{meeting?.title}</strong>?
-            This action cannot be undone and will remove all associated
-            attendees, agenda items, and minutes.
+            Are you sure you want to delete <strong>{meeting?.title}</strong>? This action cannot be
+            undone and will remove all associated attendees, agenda items, and minutes.
           </DialogDescription>
         </DialogHeader>
 
@@ -77,12 +76,8 @@ export function DeleteMeetingDialog({
           >
             Cancel
           </Button>
-          <Button
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={deleteMutation.isPending}
-          >
-            {deleteMutation.isPending ? "Deleting..." : "Delete Meeting"}
+          <Button variant="destructive" onClick={handleDelete} disabled={deleteMutation.isPending}>
+            {deleteMutation.isPending ? 'Deleting...' : 'Delete Meeting'}
           </Button>
         </DialogFooter>
       </DialogContent>

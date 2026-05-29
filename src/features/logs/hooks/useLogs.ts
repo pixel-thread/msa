@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import type { LogEntry } from "../types";
+import { useQuery } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import type { LogEntry } from '../types';
 
 export interface UseLogsParams {
   page?: number;
@@ -49,9 +49,9 @@ export function useLogs(params: UseLogsParams = {}) {
   if (limit) queryParams.limit = String(limit);
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["logs", params],
+    queryKey: ['logs', params],
     queryFn: () =>
-      http.get<LogEntry[]>("/logs", {
+      http.get<LogEntry[]>('/logs', {
         params: queryParams,
       }),
   });

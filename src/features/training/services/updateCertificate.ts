@@ -1,6 +1,6 @@
-import { prisma } from "@lib/prisma";
-import { UpdateTrainingCertificateInput } from "../validators/training";
-import { AuditAction, Prisma } from "@prisma/client";
+import { prisma } from '@lib/prisma';
+import { UpdateTrainingCertificateInput } from '../validators/training';
+import { AuditAction, Prisma } from '@prisma/client';
 
 interface UpdateCertificateProps {
   associationId: string;
@@ -28,7 +28,7 @@ export async function updateCertificate({
     });
 
     if (!certificate) {
-      throw new Error("Training certificate not found");
+      throw new Error('Training certificate not found');
     }
 
     const oldStorageKey = certificate.file?.storageKey;
@@ -78,7 +78,7 @@ export async function updateCertificate({
         associationId,
         actorId,
         action: AuditAction.TRAINING_MODULE_UPDATE,
-        resourceType: "TrainingCertificate",
+        resourceType: 'TrainingCertificate',
         resourceId: certificateId,
         oldValues: certificate as unknown as Prisma.InputJsonValue,
         newValues: updated as unknown as Prisma.InputJsonValue,

@@ -1,2 +1,2 @@
-export * from "./compliance-checks";
-export * from "./create-complaint";
+export * from './compliance-checks';
+export * from './create-complaint';

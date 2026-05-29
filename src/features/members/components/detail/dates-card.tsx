@@ -1,12 +1,7 @@
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@src/shared/components/ui/card";
-import { Calendar } from "lucide-react";
-import { formatDate } from "@src/shared/utils";
-import { User } from "@prisma/client";
+import { Card, CardHeader, CardTitle, CardContent } from '@src/shared/components/ui/card';
+import { Calendar } from 'lucide-react';
+import { formatDate } from '@src/shared/utils';
+import { User } from '@prisma/client';
 
 interface DatesCardProps {
   member: User;
@@ -25,26 +20,20 @@ export function DatesCard({ member }: DatesCardProps) {
           <div className="flex items-start gap-3">
             <Calendar className="mt-0.5 h-4 w-4 text-muted-foreground" />
             <div>
-              <p className="text-xs font-medium text-muted-foreground">
-                Joined MFSA
-              </p>
+              <p className="text-xs font-medium text-muted-foreground">Joined MFSA</p>
               <p className="text-sm text-ink">
                 {member.dateOfJoiningAssociation
                   ? formatDate(member.dateOfJoiningAssociation)
-                  : "Not set"}
+                  : 'Not set'}
               </p>
             </div>
           </div>
           <div className="flex items-start gap-3">
             <Calendar className="mt-0.5 h-4 w-4 text-muted-foreground" />
             <div>
-              <p className="text-xs font-medium text-muted-foreground">
-                Joined Govt
-              </p>
+              <p className="text-xs font-medium text-muted-foreground">Joined Govt</p>
               <p className="text-sm text-ink">
-                {member.dateOfJoiningGovt
-                  ? formatDate(member.dateOfJoiningGovt)
-                  : "Not set"}
+                {member.dateOfJoiningGovt ? formatDate(member.dateOfJoiningGovt) : 'Not set'}
               </p>
             </div>
           </div>

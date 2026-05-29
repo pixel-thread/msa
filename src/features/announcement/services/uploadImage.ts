@@ -1,7 +1,7 @@
-import { env } from "@src/env";
-import { prisma } from "@lib/prisma";
-import { NotFoundError } from "@src/shared/errors";
-import { uploadToBucket } from "@src/shared/lib/supabase/storage";
+import { env } from '@src/env';
+import { prisma } from '@lib/prisma';
+import { NotFoundError } from '@src/shared/errors';
+import { uploadToBucket } from '@src/shared/lib/supabase/storage';
 
 interface UploadImageProps {
   announcementId: string;
@@ -22,7 +22,7 @@ export async function uploadAnnouncementImage({
   });
 
   if (!announcement) {
-    throw new NotFoundError("Announcement");
+    throw new NotFoundError('Announcement');
   }
 
   const oldFileId = announcement.imageFileId;
@@ -44,7 +44,7 @@ export async function uploadAnnouncementImage({
       originalName: file.name,
       storedName: uploadResult.key,
       mimeType: uploadResult.mimeType,
-      extension: file.name.split(".").pop() || null,
+      extension: file.name.split('.').pop() || null,
       sizeBytes: uploadResult.sizeBytes,
       bucket: env.STORAGE_BUCKET,
       storageKey: uploadResult.key,

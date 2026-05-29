@@ -1,30 +1,30 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { HugeiconsIcon } from '@hugeicons/react';
 import {
   Shield01Icon,
   BankIcon,
   UserGroupIcon,
   CheckmarkBadge01Icon,
   ArrowRight01Icon,
-} from "@hugeicons/core-free-icons";
+} from '@hugeicons/core-free-icons';
 
-import { Button } from "@src/shared/components/ui/button";
-import { Badge } from "@src/shared/components/ui/badge";
-import { Input } from "@src/shared/components/ui/input";
+import { Button } from '@src/shared/components/ui/button';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Input } from '@src/shared/components/ui/input';
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
-} from "@src/shared/components/ui/card";
-import { Alert, AlertDescription } from "@src/shared/components/ui/alert";
+} from '@src/shared/components/ui/card';
+import { Alert, AlertDescription } from '@src/shared/components/ui/alert';
 import {
   Form,
   FormControl,
@@ -32,44 +32,41 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
-import { Text } from "@src/shared/components/ui/text";
-import { PublicHeader } from "@src/shared/components/public-header";
+} from '@src/shared/components/ui/form';
+import { Text } from '@src/shared/components/ui/text';
+import { PublicHeader } from '@src/shared/components/public-header';
 import {
   SignInSchema,
   type SignInInput,
   VerifySignInSchema,
   type VerifySignInInput,
-} from "@src/features/auth/validators";
-import { useSignIn, useVerifyMfa } from "@src/features/auth/hooks";
-import { logger } from "@src/shared/logger";
-import { PublicFooter } from "@src/shared/components/public-footer";
-import { toast } from "sonner";
+} from '@src/features/auth/validators';
+import { useSignIn, useVerifyMfa } from '@src/features/auth/hooks';
+import { logger } from '@src/shared/logger';
+import { PublicFooter } from '@src/shared/components/public-footer';
+import { toast } from 'sonner';
 
 const BENEFITS = [
   {
     icon: Shield01Icon,
-    title: "DPDP Compliant",
+    title: 'DPDP Compliant',
     description:
       "Your data is protected under India's Data Protection Act with AES-256 encryption.",
   },
   {
     icon: BankIcon,
-    title: "Financial Ledger",
-    description:
-      "Full double-entry accounting with automated reports and audit trails.",
+    title: 'Financial Ledger',
+    description: 'Full double-entry accounting with automated reports and audit trails.',
   },
   {
     icon: UserGroupIcon,
-    title: "Meeting Governance",
-    description:
-      "Schedule, manage agendas, record minutes, and track attendance seamlessly.",
+    title: 'Meeting Governance',
+    description: 'Schedule, manage agendas, record minutes, and track attendance seamlessly.',
   },
   {
     icon: CheckmarkBadge01Icon,
-    title: "Role-Based Access",
-    description:
-      "Granular permissions across six roles with complete audit logging.",
+    title: 'Role-Based Access',
+    description: 'Granular permissions across six roles with complete audit logging.',
   },
 ];
 
@@ -80,8 +77,8 @@ export default function SignInPage() {
   const form = useForm<SignInInput>({
     resolver: zodResolver(SignInSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
   });
 
@@ -93,17 +90,12 @@ export default function SignInPage() {
         setMfaTempToken(result.data.tempToken || null);
       }
     } catch (e) {
-      logger.error("Sign in failed", { error: e });
+      logger.error('Sign in failed', { error: e });
     }
   };
 
   if (mfaTempToken) {
-    return (
-      <MfaVerify
-        onBack={() => setMfaTempToken(null)}
-        tempToken={mfaTempToken}
-      />
-    );
+    return <MfaVerify onBack={() => setMfaTempToken(null)} tempToken={mfaTempToken} />;
   }
 
   return (
@@ -118,9 +110,8 @@ export default function SignInPage() {
           </Text>
           <Text variant="body-md" color="muted" asChild>
             <p className="mb-10 leading-relaxed">
-              Access your association dashboard, manage subscriptions, view
-              financial records, and participate in governance — all from one
-              secure platform.
+              Access your association dashboard, manage subscriptions, view financial records, and
+              participate in governance — all from one secure platform.
             </p>
           </Text>
 
@@ -150,20 +141,15 @@ export default function SignInPage() {
             <CardTitle className="font-heading text-2xl font-bold tracking-wider uppercase">
               Sign In
             </CardTitle>
-            <CardDescription>
-              Enter your email and password to continue
-            </CardDescription>
+            <CardDescription>Enter your email and password to continue</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-5"
-              >
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                 {signInMutation.isError && (
                   <Alert variant="destructive">
                     <AlertDescription>
-                      {signInMutation.error?.message || "Sign in failed"}
+                      {signInMutation.error?.message || 'Sign in failed'}
                     </AlertDescription>
                   </Alert>
                 )}
@@ -175,11 +161,7 @@ export default function SignInPage() {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input
-                          type="email"
-                          placeholder="Email address"
-                          {...field}
-                        />
+                        <Input type="email" placeholder="Email address" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -193,11 +175,7 @@ export default function SignInPage() {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input
-                          type="password"
-                          placeholder="Password"
-                          {...field}
-                        />
+                        <Input type="password" placeholder="Password" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -219,12 +197,12 @@ export default function SignInPage() {
                   className="w-full"
                   disabled={signInMutation.isPending}
                 >
-                  {signInMutation.isPending ? "Signing in..." : "Sign In"}
+                  {signInMutation.isPending ? 'Signing in...' : 'Sign In'}
                   <HugeiconsIcon icon={ArrowRight01Icon} />
                 </Button>
 
                 <p className="text-center text-sm text-muted-foreground">
-                  Don&apos;t have an account?{" "}
+                  Don&apos;t have an account?{' '}
                   <Link
                     href="/sign-up"
                     className="text-xs font-semibold tracking-widest uppercase text-primary underline underline-offset-4 hover:text-primary/80"
@@ -241,20 +219,14 @@ export default function SignInPage() {
   );
 }
 
-function MfaVerify({
-  onBack,
-  tempToken,
-}: {
-  onBack: () => void;
-  tempToken: string;
-}) {
+function MfaVerify({ onBack, tempToken }: { onBack: () => void; tempToken: string }) {
   const router = useRouter();
   const verifyMfaMutation = useVerifyMfa();
 
   const form = useForm<VerifySignInInput>({
     resolver: zodResolver(VerifySignInSchema),
     defaultValues: {
-      code: "",
+      code: '',
       mfa_temp_token: tempToken,
     },
   });
@@ -270,7 +242,7 @@ function MfaVerify({
           toast.error(data.message);
         },
       });
-      router.push("/dashboard");
+      router.push('/dashboard');
     } catch {}
   };
 
@@ -283,21 +255,15 @@ function MfaVerify({
             <CardTitle className="font-heading text-2xl font-bold tracking-wider uppercase">
               Two-Factor Authentication
             </CardTitle>
-            <CardDescription>
-              Enter the 6-digit code sent to your email
-            </CardDescription>
+            <CardDescription>Enter the 6-digit code sent to your email</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-5"
-              >
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                 {verifyMfaMutation.isError && (
                   <Alert variant="destructive">
                     <AlertDescription>
-                      {verifyMfaMutation.error?.message ||
-                        "Verification failed"}
+                      {verifyMfaMutation.error?.message || 'Verification failed'}
                     </AlertDescription>
                   </Alert>
                 )}
@@ -316,9 +282,7 @@ function MfaVerify({
                           placeholder="000000"
                           {...field}
                           onChange={(e) =>
-                            field.onChange(
-                              e.target.value.replace(/\D/g, "").slice(0, 6),
-                            )
+                            field.onChange(e.target.value.replace(/\D/g, '').slice(0, 6))
                           }
                         />
                       </FormControl>
@@ -331,12 +295,9 @@ function MfaVerify({
                   type="submit"
                   variant="default"
                   className="w-full"
-                  disabled={
-                    verifyMfaMutation.isPending ||
-                    form.getValues("code").length !== 6
-                  }
+                  disabled={verifyMfaMutation.isPending || form.getValues('code').length !== 6}
                 >
-                  {verifyMfaMutation.isPending ? "Verifying..." : "Verify"}
+                  {verifyMfaMutation.isPending ? 'Verifying...' : 'Verify'}
                 </Button>
 
                 <div className="flex flex-col gap-2 text-center">
@@ -357,9 +318,7 @@ function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <PublicHeader />
-      <div className="flex flex-1 h-full flex-col md:flex-row pt-16">
-        {children}
-      </div>
+      <div className="flex flex-1 h-full flex-col md:flex-row pt-16">{children}</div>
       <PublicFooter />
     </div>
   );

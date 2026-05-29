@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
+import { useQuery } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
 
 interface MemberType {
   id: string;
@@ -13,8 +13,8 @@ interface MemberType {
 
 export function useMemberTypesList() {
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["member-types-list"],
-    queryFn: async () => http.get<MemberType[]>("/member-types"),
+    queryKey: ['member-types-list'],
+    queryFn: async () => http.get<MemberType[]>('/member-types'),
     select: (data) => data.data,
   });
 

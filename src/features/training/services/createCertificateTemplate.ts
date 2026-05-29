@@ -1,6 +1,6 @@
-import { prisma } from "@lib/prisma";
-import { AuditAction, Prisma } from "@prisma/client";
-import { NotFoundError } from "@src/shared/errors";
+import { prisma } from '@lib/prisma';
+import { AuditAction, Prisma } from '@prisma/client';
+import { NotFoundError } from '@src/shared/errors';
 
 interface CreateCertificateTemplateProps {
   associationId: string;
@@ -35,7 +35,7 @@ export async function createCertificateTemplate({
     });
 
     if (!mod) {
-      throw new NotFoundError("Training module not found");
+      throw new NotFoundError('Training module not found');
     }
 
     if (mod.certificateTemplateId) {
@@ -69,7 +69,7 @@ export async function createCertificateTemplate({
         associationId,
         actorId,
         action: AuditAction.TRAINING_MODULE_UPDATE,
-        resourceType: "TrainingCertificateTemplate",
+        resourceType: 'TrainingCertificateTemplate',
         resourceId: template.id,
         newValues: { moduleId, name } as Prisma.InputJsonValue,
       },

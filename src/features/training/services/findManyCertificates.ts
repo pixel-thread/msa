@@ -1,14 +1,11 @@
-import { prisma } from "@lib/prisma";
+import { prisma } from '@lib/prisma';
 
 interface FindManyCertificatesProps {
   associationId: string;
   moduleId: string;
 }
 
-export async function findManyCertificates({
-  associationId,
-  moduleId,
-}: FindManyCertificatesProps) {
+export async function findManyCertificates({ associationId, moduleId }: FindManyCertificatesProps) {
   return await prisma.trainingCertificate.findMany({
     where: {
       moduleId,
@@ -23,6 +20,6 @@ export async function findManyCertificates({
         },
       },
     },
-    orderBy: { issuedAt: "desc" },
+    orderBy: { issuedAt: 'desc' },
   });
 }

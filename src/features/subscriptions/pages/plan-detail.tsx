@@ -1,20 +1,15 @@
-"use client";
+'use client';
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter } from 'next/navigation';
 
-import { usePlans } from "@src/features/subscriptions/hooks/usePlans";
-import { Button } from "@src/shared/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@src/shared/components/ui/card";
-import { Badge } from "@src/shared/components/ui/badge";
-import { Separator } from "@src/shared/components/ui/separator";
-import { DataTable } from "@src/shared/components/data-table";
-import { formatDate } from "@src/shared/utils";
-import { usePlanVersionColumns } from "../hooks/usePlanVersionColumns";
+import { usePlans } from '@src/features/subscriptions/hooks/usePlans';
+import { Button } from '@src/shared/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '@src/shared/components/ui/card';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Separator } from '@src/shared/components/ui/separator';
+import { DataTable } from '@src/shared/components/data-table';
+import { formatDate } from '@src/shared/utils';
+import { usePlanVersionColumns } from '../hooks/usePlanVersionColumns';
 
 export function PlanDetailPage() {
   const params = useParams();
@@ -48,15 +43,13 @@ export function PlanDetailPage() {
   }
 
   const amount = plan.activeVersion?.amount ?? 0;
-  const currency = plan.activeVersion?.currency ?? "INR";
-  const billingCycle = plan.activeVersion?.billingCycle ?? "MONTHLY";
-  const features = plan.activeVersion?.features as
-    | Record<string, unknown>
-    | undefined;
+  const currency = plan.activeVersion?.currency ?? 'INR';
+  const billingCycle = plan.activeVersion?.billingCycle ?? 'MONTHLY';
+  const features = plan.activeVersion?.features as Record<string, unknown> | undefined;
   const effectiveFrom = plan.activeVersion?.effectiveFrom ?? plan.createdAt;
 
-  const formattedAmount = new Intl.NumberFormat("en-IN", {
-    style: "currency",
+  const formattedAmount = new Intl.NumberFormat('en-IN', {
+    style: 'currency',
     currency,
     maximumFractionDigits: 0,
   }).format(amount);
@@ -70,11 +63,8 @@ export function PlanDetailPage() {
           </h1>
           <p className="mt-1 text-base text-body">Subscription plan details</p>
         </div>
-        <Badge
-          variant={plan.isActive ? "default" : "secondary"}
-          className="ml-2"
-        >
-          {plan.isActive ? "Active" : "Inactive"}
+        <Badge variant={plan.isActive ? 'default' : 'secondary'} className="ml-2">
+          {plan.isActive ? 'Active' : 'Inactive'}
         </Badge>
       </div>
 
@@ -90,9 +80,7 @@ export function PlanDetailPage() {
               {plan.description && (
                 <>
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground">
-                      Description
-                    </p>
+                    <p className="text-xs font-medium text-muted-foreground">Description</p>
                     <p className="text-sm text-ink mt-1">{plan.description}</p>
                   </div>
                   <Separator className="bg-hairline" />
@@ -101,37 +89,23 @@ export function PlanDetailPage() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Amount
-                  </p>
-                  <p className="text-lg font-medium text-ink mt-1">
-                    {formattedAmount}
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground">Amount</p>
+                  <p className="text-lg font-medium text-ink mt-1">{formattedAmount}</p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Billing Cycle
-                  </p>
-                  <p className="text-sm text-ink mt-1 capitalize">
-                    {billingCycle.toLowerCase()}
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground">Billing Cycle</p>
+                  <p className="text-sm text-ink mt-1 capitalize">{billingCycle.toLowerCase()}</p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Currency
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground">Currency</p>
                   <p className="text-sm text-ink mt-1">{currency}</p>
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Effective From
-                  </p>
-                  <p className="text-sm text-ink mt-1">
-                    {formatDate(effectiveFrom)}
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground">Effective From</p>
+                  <p className="text-sm text-ink mt-1">{formatDate(effectiveFrom)}</p>
                 </div>
               </div>
             </div>
@@ -150,15 +124,12 @@ export function PlanDetailPage() {
                 <ul className="space-y-2">
                   {Object.entries(features).map(([key, value]) => (
                     <li key={key} className="text-sm text-ink">
-                      <span className="font-medium">{key}:</span>{" "}
-                      {String(value)}
+                      <span className="font-medium">{key}:</span> {String(value)}
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="text-sm text-muted-foreground">
-                  No features defined
-                </p>
+                <p className="text-sm text-muted-foreground">No features defined</p>
               )}
             </CardContent>
           </Card>
@@ -172,20 +143,12 @@ export function PlanDetailPage() {
             <CardContent>
               <div className="space-y-3">
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Created
-                  </p>
-                  <p className="text-sm text-ink mt-1">
-                    {formatDate(plan.createdAt)}
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground">Created</p>
+                  <p className="text-sm text-ink mt-1">{formatDate(plan.createdAt)}</p>
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Last Updated
-                  </p>
-                  <p className="text-sm text-ink mt-1">
-                    {formatDate(plan.updatedAt)}
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground">Last Updated</p>
+                  <p className="text-sm text-ink mt-1">{formatDate(plan.updatedAt)}</p>
                 </div>
               </div>
             </CardContent>
@@ -195,10 +158,7 @@ export function PlanDetailPage() {
 
       <div className="mt-8">
         <h2 className="text-lg font-semibold text-ink mb-4">Version History</h2>
-        <DataTable
-          data={plan.versions ?? []}
-          columns={usePlanVersionColumns().columns}
-        />
+        <DataTable data={plan.versions ?? []} columns={usePlanVersionColumns().columns} />
       </div>
     </>
   );

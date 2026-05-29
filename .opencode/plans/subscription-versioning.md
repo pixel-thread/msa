@@ -131,7 +131,7 @@ Run `npx prisma migrate dev` after schema changes. Then create a data backfill m
 
 ```typescript
 // scripts/backfill-plan-versions.ts
-import { prisma } from "@src/shared/lib/prisma";
+import { prisma } from '@src/shared/lib/prisma';
 
 async function backfill() {
   const plans = await prisma.subscriptionPlan.findMany();
@@ -178,7 +178,7 @@ export const POST = withAssociation(
     await withRole(request, UserRole.SUPER_ADMIN);
 
     if (!body) {
-      throw new ValidationError("Invalid request body");
+      throw new ValidationError('Invalid request body');
     }
 
     const plan = await prisma.subscriptionPlan.create({
@@ -223,7 +223,7 @@ const UpdatePlanSchema = z.object({
   description: z.string().optional(),
   amount: z.number().nonnegative().optional(),
   currency: z.string().optional(),
-  billingCycle: z.enum(["MONTHLY", "YEARLY"]).optional(),
+  billingCycle: z.enum(['MONTHLY', 'YEARLY']).optional(),
   features: z.record(z.string(), z.any()).optional(),
   isActive: z.boolean().optional(),
   memberTypeId: z.uuid().optional().nullable(),
@@ -235,12 +235,12 @@ export const PATCH = withAssociation(
     await withRole(request, UserRole.SUPER_ADMIN);
 
     if (!body) {
-      throw new ValidationError("Invalid request body");
+      throw new ValidationError('Invalid request body');
     }
 
     const { planId } = (await params) as { planId: string };
 
-    const priceFields = ["amount", "currency", "billingCycle", "features"];
+    const priceFields = ['amount', 'currency', 'billingCycle', 'features'];
     const hasPriceChange = priceFields.some(
       (field) => body[field as keyof typeof body] !== undefined,
     );
@@ -252,7 +252,7 @@ export const PATCH = withAssociation(
       });
 
       if (!currentVersion) {
-        throw new NotFoundError("No active version found for this plan");
+        throw new NotFoundError('No active version found for this plan');
       }
 
       // Deactivate current version and create new one
@@ -334,7 +334,7 @@ export const GET = withAssociation({}, async (association, _, request) => {
         take: 1,
       },
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: 'desc' },
   });
 
   // Flatten active version for easier frontend consumption
@@ -344,9 +344,7 @@ export const GET = withAssociation({}, async (association, _, request) => {
     versions: undefined,
   }));
 
-  const result = user.memberTypeId
-    ? plansWithActiveVersion
-    : plansWithActiveVersion[0] || null;
+  const result = user.memberTypeId ? plansWithActiveVersion : plansWithActiveVersion[0] || null;
 
   return SuccessResponse({ data: result });
 });
@@ -365,7 +363,7 @@ export const POST = withAssociation(
     const user = await withRole(request, UserRole.MEMBER);
 
     if (!body) {
-      throw new ValidationError("Invalid request body");
+      throw new ValidationError('Invalid request body');
     }
 
     const plan = await prisma.subscriptionPlan.findUnique({
@@ -383,7 +381,7 @@ export const POST = withAssociation(
     });
 
     if (!plan || plan.versions.length === 0) {
-      throw new NotFoundError("Plan not found or has no active version");
+      throw new NotFoundError('Plan not found or has no active version');
     }
 
     const activeVersion = plan.versions[0];
@@ -392,13 +390,13 @@ export const POST = withAssociation(
       where: { userId: user.id },
     });
 
-    if (existing && existing.status === "ACTIVE") {
-      throw new ConflictError("User already has an active subscription");
+    if (existing && existing.status === 'ACTIVE') {
+      throw new ConflictError('User already has an active subscription');
     }
 
     const startDate = new Date();
     const endDate = new Date();
-    if (activeVersion.billingCycle === "YEARLY") {
+    if (activeVersion.billingCycle === 'YEARLY') {
       endDate.setFullYear(endDate.getFullYear() + 1);
     } else {
       endDate.setMonth(endDate.getMonth() + 1);
@@ -409,7 +407,7 @@ export const POST = withAssociation(
       update: {
         planId: plan.id,
         planVersionId: activeVersion.id,
-        status: "ACTIVE",
+        status: 'ACTIVE',
         startDate,
         endDate,
         waivedAt: null,
@@ -420,7 +418,7 @@ export const POST = withAssociation(
         userId: user.id,
         planId: plan.id,
         planVersionId: activeVersion.id,
-        status: "ACTIVE",
+        status: 'ACTIVE',
         startDate,
         endDate,
       },
@@ -432,7 +430,7 @@ export const POST = withAssociation(
         subscriptionId: subscription.id,
         planVersionId: activeVersion.id,
         amountCharged: activeVersion.amount,
-        status: "PENDING",
+        status: 'PENDING',
         periodStart: startDate,
         periodEnd: endDate,
         dueDate: startDate,
@@ -457,7 +455,7 @@ export const GET = withAssociation(
     const page = query?.page || 1;
     await withRole(request, UserRole.MEMBER);
 
-    const userId = request.headers.get("x-user-id")!;
+    const userId = request.headers.get('x-user-id')!;
 
     const [subscriptions, total] = await prisma.$transaction([
       prisma.subscription.findMany({
@@ -466,7 +464,7 @@ export const GET = withAssociation(
           plan: true,
           planVersion: true,
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
         take: PAGE_SIZE,
         skip: (page - 1) * PAGE_SIZE,
       }),
@@ -486,17 +484,13 @@ export const GET = withAssociation(
 **File:** `src/app/api/subscriptions/upgrade/route.ts` (new file)
 
 ```typescript
-import { withAssociation } from "@src/shared/api/with-association";
-import { withRole } from "@src/shared/api/with-role";
-import { SuccessResponse } from "@utils/responses";
-import { UserRole } from "@prisma/client";
-import { prisma } from "@src/shared/lib/prisma";
-import { z } from "zod";
-import {
-  NotFoundError,
-  ConflictError,
-  ValidationError,
-} from "@src/shared/errors";
+import { withAssociation } from '@src/shared/api/with-association';
+import { withRole } from '@src/shared/api/with-role';
+import { SuccessResponse } from '@utils/responses';
+import { UserRole } from '@prisma/client';
+import { prisma } from '@src/shared/lib/prisma';
+import { z } from 'zod';
+import { NotFoundError, ConflictError, ValidationError } from '@src/shared/errors';
 
 const UpgradeSchema = z.object({
   planId: z.uuid(),
@@ -508,7 +502,7 @@ export const POST = withAssociation(
     const user = await withRole(request, UserRole.MEMBER);
 
     if (!body) {
-      throw new ValidationError("Invalid request body");
+      throw new ValidationError('Invalid request body');
     }
 
     const subscription = await prisma.subscription.findUnique({
@@ -517,11 +511,11 @@ export const POST = withAssociation(
     });
 
     if (!subscription) {
-      throw new NotFoundError("No active subscription found");
+      throw new NotFoundError('No active subscription found');
     }
 
-    if (subscription.status !== "ACTIVE") {
-      throw new ConflictError("Subscription is not active");
+    if (subscription.status !== 'ACTIVE') {
+      throw new ConflictError('Subscription is not active');
     }
 
     // Get the latest active version for this plan
@@ -530,20 +524,20 @@ export const POST = withAssociation(
         planId: body.planId,
         effectiveTo: null,
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
     });
 
     if (!latestVersion) {
-      throw new NotFoundError("No active version found for this plan");
+      throw new NotFoundError('No active version found for this plan');
     }
 
     if (subscription.planVersionId === latestVersion.id) {
-      throw new ConflictError("Already on the latest version");
+      throw new ConflictError('Already on the latest version');
     }
 
     const startDate = new Date();
     const endDate = new Date();
-    if (latestVersion.billingCycle === "YEARLY") {
+    if (latestVersion.billingCycle === 'YEARLY') {
       endDate.setFullYear(endDate.getFullYear() + 1);
     } else {
       endDate.setMonth(endDate.getMonth() + 1);
@@ -568,7 +562,7 @@ export const POST = withAssociation(
         subscriptionId: subscription.id,
         planVersionId: latestVersion.id,
         amountCharged: latestVersion.amount,
-        status: "PENDING",
+        status: 'PENDING',
         periodStart: startDate,
         periodEnd: endDate,
         dueDate: startDate,
@@ -587,7 +581,7 @@ export const POST = withAssociation(
 ### 4.1 Update Types (`src/features/subscriptions/types/index.ts`)
 
 ```typescript
-type BillCycle = "MONTHLY" | "YEARLY";
+type BillCycle = 'MONTHLY' | 'YEARLY';
 
 export type SubscriptionPlanVersion = {
   id: string;
@@ -638,9 +632,7 @@ export type Subscription = {
 export const UpgradeSubscriptionSchema = z.object({
   planId: z.uuid(),
 });
-export type UpgradeSubscriptionInput = z.infer<
-  typeof UpgradeSubscriptionSchema
->;
+export type UpgradeSubscriptionInput = z.infer<typeof UpgradeSubscriptionSchema>;
 ```
 
 ---

@@ -24,26 +24,26 @@ module.exports = {
     extend: {
       colors: {
         // Core semantic tokens (static values, no dark mode variants needed)
-        primary: "#0052ff",
-        "primary-foreground": "#ffffff",
-        destructive: "#cf202f",
-        "destructive-foreground": "#ffffff",
-        "semantic-up": "#05b169",
-        "semantic-down": "#cf202f",
-        "accent-yellow": "#f4b000",
+        primary: '#0052ff',
+        'primary-foreground': '#ffffff',
+        destructive: '#cf202f',
+        'destructive-foreground': '#ffffff',
+        'semantic-up': '#05b169',
+        'semantic-down': '#cf202f',
+        'accent-yellow': '#f4b000',
 
         // Backgrounds (use React Native Appearance API for dark mode)
-        background: { light: "#ffffff", dark: "#0a0b0d" },
-        foreground: { light: "#0a0b0d", dark: "#ffffff" },
-        card: { light: "#ffffff", dark: "#16181c" },
-        "card-foreground": { light: "#0a0b0d", dark: "#ffffff" },
-        popover: { light: "#ffffff", dark: "#16181c" },
-        "popover-foreground": { light: "#0a0b0d", dark: "#ffffff" },
-        muted: { light: "#f7f7f7", dark: "#16181c" },
-        "muted-foreground": { light: "#7c828a", dark: "#a8acb3" },
-        border: { light: "#dee1e6", dark: "#2b2d31" },
-        input: { light: "#dee1e6", dark: "#2b2d31" },
-        ring: "#0052ff", // same in both modes
+        background: { light: '#ffffff', dark: '#0a0b0d' },
+        foreground: { light: '#0a0b0d', dark: '#ffffff' },
+        card: { light: '#ffffff', dark: '#16181c' },
+        'card-foreground': { light: '#0a0b0d', dark: '#ffffff' },
+        popover: { light: '#ffffff', dark: '#16181c' },
+        'popover-foreground': { light: '#0a0b0d', dark: '#ffffff' },
+        muted: { light: '#f7f7f7', dark: '#16181c' },
+        'muted-foreground': { light: '#7c828a', dark: '#a8acb3' },
+        border: { light: '#dee1e6', dark: '#2b2d31' },
+        input: { light: '#dee1e6', dark: '#2b2d31' },
+        ring: '#0052ff', // same in both modes
       },
     },
   },
@@ -54,32 +54,32 @@ module.exports = {
 
 ```ts
 // tamagui.config.ts
-import { createTokens } from "tamagui";
+import { createTokens } from 'tamagui';
 
 export const tokens = createTokens({
   color: {
-    primary: "#0052ff",
-    primaryForeground: "#ffffff",
-    primaryActive: "#003ecc",
-    primaryDisabled: { light: "#a8b8cc", dark: "#3a4a5c" },
-    background: { light: "#ffffff", dark: "#0a0b0d" },
-    foreground: { light: "#0a0b0d", dark: "#ffffff" },
-    card: { light: "#ffffff", dark: "#16181c" },
-    cardForeground: { light: "#0a0b0d", dark: "#ffffff" },
-    popover: { light: "#ffffff", dark: "#16181c" },
-    popoverForeground: { light: "#0a0b0d", dark: "#ffffff" },
-    muted: { light: "#f7f7f7", dark: "#16181c" },
-    mutedForeground: { light: "#7c828a", dark: "#a8acb3" },
-    border: { light: "#dee1e6", dark: "#2b2d31" },
-    hairline: { light: "#dee1e6", dark: "#2b2d31" },
-    ink: { light: "#0a0b0d", dark: "#ffffff" },
-    body: { light: "#5b616e", dark: "#a8acb3" },
-    mutedSoft: { light: "#a8acb3", dark: "#5b616e" },
-    canvas: { light: "#ffffff", dark: "#0a0b0d" },
-    surfaceCard: { light: "#ffffff", dark: "#16181c" },
-    semanticUp: "#05b169",
-    semanticDown: "#cf202f",
-    accentYellow: "#f4b000",
+    primary: '#0052ff',
+    primaryForeground: '#ffffff',
+    primaryActive: '#003ecc',
+    primaryDisabled: { light: '#a8b8cc', dark: '#3a4a5c' },
+    background: { light: '#ffffff', dark: '#0a0b0d' },
+    foreground: { light: '#0a0b0d', dark: '#ffffff' },
+    card: { light: '#ffffff', dark: '#16181c' },
+    cardForeground: { light: '#0a0b0d', dark: '#ffffff' },
+    popover: { light: '#ffffff', dark: '#16181c' },
+    popoverForeground: { light: '#0a0b0d', dark: '#ffffff' },
+    muted: { light: '#f7f7f7', dark: '#16181c' },
+    mutedForeground: { light: '#7c828a', dark: '#a8acb3' },
+    border: { light: '#dee1e6', dark: '#2b2d31' },
+    hairline: { light: '#dee1e6', dark: '#2b2d31' },
+    ink: { light: '#0a0b0d', dark: '#ffffff' },
+    body: { light: '#5b616e', dark: '#a8acb3' },
+    mutedSoft: { light: '#a8acb3', dark: '#5b616e' },
+    canvas: { light: '#ffffff', dark: '#0a0b0d' },
+    surfaceCard: { light: '#ffffff', dark: '#16181c' },
+    semanticUp: '#05b169',
+    semanticDown: '#cf202f',
+    accentYellow: '#f4b000',
   },
 });
 ```
@@ -123,17 +123,13 @@ theme: {
 
 ```ts
 // app/_layout.tsx
-import { useFonts } from "expo-font";
-import {
-  Roboto_400Regular,
-  Roboto_500Medium,
-  Roboto_700Bold,
-} from "@expo-google-fonts/roboto";
+import { useFonts } from 'expo-font';
+import { Roboto_400Regular, Roboto_500Medium, Roboto_700Bold } from '@expo-google-fonts/roboto';
 import {
   JetBrainsMono_400Regular,
   JetBrainsMono_500Medium,
   JetBrainsMono_700Bold,
-} from "@expo-google-fonts/jetbrains-mono";
+} from '@expo-google-fonts/jetbrains-mono';
 
 // Load fonts, apply via provider context or styled-components theme
 ```
@@ -194,20 +190,10 @@ NativeWind allows using same Tailwind classes in RN:
 
 ```tsx
 // Tamagui — uses styled components with theme tokens
-import { Button, Text, YStack } from "tamagui";
+import { Button, Text, YStack } from 'tamagui';
 
-<Button
-  backgroundColor="$primary"
-  color="$primaryForeground"
-  height={40}
-  paddingHorizontal={24}
->
-  <Text
-    fontSize={12}
-    fontWeight="600"
-    letterSpacing={1}
-    textTransform="uppercase"
-  >
+<Button backgroundColor="$primary" color="$primaryForeground" height={40} paddingHorizontal={24}>
+  <Text fontSize={12} fontWeight="600" letterSpacing={1} textTransform="uppercase">
     Submit
   </Text>
 </Button>;
@@ -292,7 +278,7 @@ const backgroundColor = isDark ? '#0a0b0d' : '#ffffff';
 
 ```tsx
 // app/(dashboard)/_layout.tsx
-import { Drawer } from "expo-router/drawer";
+import { Drawer } from 'expo-router/drawer';
 
 export default function DashboardLayout() {
   return (
@@ -314,15 +300,8 @@ export default function DashboardLayout() {
 
 ```ts
 // Use @expo-google-fonts/* packages for parity with web
-import {
-  Roboto_400Regular,
-  Roboto_500Medium,
-  Roboto_700Bold,
-} from "@expo-google-fonts/roboto";
-import {
-  JetBrainsMono_400Regular,
-  JetBrainsMono_700Bold,
-} from "@expo-google-fonts/jetbrains-mono";
+import { Roboto_400Regular, Roboto_500Medium, Roboto_700Bold } from '@expo-google-fonts/roboto';
+import { JetBrainsMono_400Regular, JetBrainsMono_700Bold } from '@expo-google-fonts/jetbrains-mono';
 ```
 
 ### Bare React Native

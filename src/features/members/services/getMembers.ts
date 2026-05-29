@@ -1,7 +1,7 @@
-import { prisma } from "@src/shared/lib/prisma";
-import type { AssociationDetails } from "@src/shared/api";
-import { Prisma } from "@prisma/client";
-import { buildPagination } from "@src/shared/utils/build-pagination";
+import { prisma } from '@src/shared/lib/prisma';
+import type { AssociationDetails } from '@src/shared/api';
+import { Prisma } from '@prisma/client';
+import { buildPagination } from '@src/shared/utils/build-pagination';
 
 type Props = {
   where: Prisma.UserWhereInput;
@@ -14,9 +14,9 @@ export async function getMembers({ where, page = 1, search }: Props) {
 
   if (search) {
     where.OR = [
-      { name: { contains: search, mode: "insensitive" } },
-      { email: { contains: search, mode: "insensitive" } },
-      { membershipNumber: { contains: search, mode: "insensitive" } },
+      { name: { contains: search, mode: 'insensitive' } },
+      { email: { contains: search, mode: 'insensitive' } },
+      { membershipNumber: { contains: search, mode: 'insensitive' } },
     ];
   }
   const skip = (page - 1) * pageSize;
@@ -41,7 +41,7 @@ export async function getMembers({ where, page = 1, search }: Props) {
       },
 
       orderBy: {
-        createdAt: "desc",
+        createdAt: 'desc',
       },
     }),
 
@@ -67,7 +67,7 @@ export async function getMemberCount(associationId: string) {
   });
 
   const active = await prisma.user.count({
-    where: { associationId, status: "ACTIVE" },
+    where: { associationId, status: 'ACTIVE' },
   });
 
   return { total, active };

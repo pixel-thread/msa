@@ -1,8 +1,8 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const CreateMemberTypeSchema = z.object({
-  description: z.string().min(1, "Description is required").max(255),
-  level: z.number().int().positive("Level must be a positive integer"),
+  description: z.string().min(1, 'Description is required').max(255),
+  level: z.number().int().positive('Level must be a positive integer'),
 });
 
 export const UpdateMemberTypeSchema = z.object({
@@ -11,7 +11,7 @@ export const UpdateMemberTypeSchema = z.object({
 });
 
 export const MemberTypeParamsSchema = z.object({
-  memberTypeId: z.uuid("Invalid member type ID"),
+  memberTypeId: z.uuid('Invalid member type ID'),
 });
 
 export type CreateMemberTypeInput = z.infer<typeof CreateMemberTypeSchema>;

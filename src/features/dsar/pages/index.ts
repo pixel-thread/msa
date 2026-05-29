@@ -1,1 +1,1 @@
-export { default as DsarAdminPage } from "./dsar-admin";
+export { default as DsarAdminPage } from './dsar-admin';

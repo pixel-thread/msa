@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import type { Announcement } from "../types";
+import { useQuery } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import type { Announcement } from '../types';
 
 export interface AnnouncementDetail extends Announcement {
   readReceipts: {
@@ -16,13 +16,11 @@ export interface AnnouncementDetail extends Announcement {
 
 export function useAnnouncement(announcementId: string) {
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["announcement", announcementId],
+    queryKey: ['announcement', announcementId],
     queryFn: async () => {
-      const res = await http.get<AnnouncementDetail>(
-        `/announcements/${announcementId}`,
-      );
+      const res = await http.get<AnnouncementDetail>(`/announcements/${announcementId}`);
       if (!res.success || !res.data) {
-        throw new Error(res.message || "Failed to fetch announcement");
+        throw new Error(res.message || 'Failed to fetch announcement');
       }
       return res.data;
     },

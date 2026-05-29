@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Button } from "@src/shared/components/ui/button";
-import { Eye, Pen, Trash2, UserPlus } from "lucide-react";
-import type { DsarTicketRecord } from "../../types";
+import { Button } from '@src/shared/components/ui/button';
+import { Eye, Pen, Trash2, UserPlus } from 'lucide-react';
+import type { DsarTicketRecord } from '../../types';
 
 interface DsarActionsCellProps {
   record: DsarTicketRecord;

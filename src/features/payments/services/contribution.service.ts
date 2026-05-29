@@ -1,5 +1,5 @@
-import { prisma } from "@src/shared/lib/prisma";
-import { ContributionStatus, UserStatus } from "@prisma/client";
+import { prisma } from '@src/shared/lib/prisma';
+import { ContributionStatus, UserStatus } from '@prisma/client';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -50,7 +50,7 @@ export async function generateMonthlyContributions(
       associationId,
       status: UserStatus.ACTIVE,
       subscription: {
-        status: "ACTIVE",
+        status: 'ACTIVE',
       },
     },
     include: {
@@ -107,9 +107,7 @@ export async function generateMonthlyContributions(
 /**
  * Mark all DUE contributions whose dueDate has passed as OVERDUE.
  */
-export async function markOverdueContributions(
-  associationId: string,
-): Promise<number> {
+export async function markOverdueContributions(associationId: string): Promise<number> {
   const now = new Date();
 
   const result = await prisma.contributionPeriod.updateMany({
@@ -135,23 +133,17 @@ export async function getOutstandingContributions(userId: string) {
     where: {
       userId,
       status: {
-        in: [
-          ContributionStatus.DUE,
-          ContributionStatus.PARTIAL,
-          ContributionStatus.OVERDUE,
-        ],
+        in: [ContributionStatus.DUE, ContributionStatus.PARTIAL, ContributionStatus.OVERDUE],
       },
     },
-    orderBy: [{ year: "asc" }, { month: "asc" }],
+    orderBy: [{ year: 'asc' }, { month: 'asc' }],
   });
 }
 
 /**
  * Get a user's contribution summary (for member/finance reports).
  */
-export async function getUserContributionSummary(
-  userId: string,
-): Promise<ContributionSummary> {
+export async function getUserContributionSummary(userId: string): Promise<ContributionSummary> {
   const contributions = await prisma.contributionPeriod.findMany({
     where: { userId },
   });
@@ -200,10 +192,7 @@ export async function getUserContributionSummary(
 /**
  * Waive a contribution period (e.g. for hardship, honorary members, etc.).
  */
-export async function waiveContribution(
-  contributionPeriodId: string,
-  reason: string,
-) {
+export async function waiveContribution(contributionPeriodId: string, reason: string) {
   return prisma.contributionPeriod.update({
     where: { id: contributionPeriodId },
     data: {
@@ -259,6 +248,6 @@ export async function getUserContributions(
         },
       },
     },
-    orderBy: [{ year: "asc" }, { month: "asc" }],
+    orderBy: [{ year: 'asc' }, { month: 'asc' }],
   });
 }

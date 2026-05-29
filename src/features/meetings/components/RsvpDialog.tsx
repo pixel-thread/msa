@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Dialog,
@@ -7,10 +7,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
-import { Button } from "@src/shared/components/ui/button";
-import { Textarea } from "@src/shared/components/ui/textarea";
-import { useRsvp } from "../hooks";
+} from '@src/shared/components/ui/dialog';
+import { Button } from '@src/shared/components/ui/button';
+import { Textarea } from '@src/shared/components/ui/textarea';
+import { useRsvp } from '../hooks';
 
 interface RsvpDialogProps {
   onOpenChange: (open: boolean) => void;
@@ -27,19 +27,17 @@ export function RsvpDialog({ onOpenChange }: RsvpDialogProps) {
   } = useRsvp();
   const note = rsvpForm.note;
   const status = rsvpForm.status;
-  const isDecline = status === "DECLINED";
+  const isDecline = status === 'DECLINED';
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>
-            {isDecline ? "Decline Invitation" : "Confirm Attendance"}
-          </DialogTitle>
+          <DialogTitle>{isDecline ? 'Decline Invitation' : 'Confirm Attendance'}</DialogTitle>
           <DialogDescription>
             {isDecline
-              ? "Please provide a reason for declining the meeting."
-              : "You are about to confirm your attendance for this meeting."}
+              ? 'Please provide a reason for declining the meeting.'
+              : 'You are about to confirm your attendance for this meeting.'}
           </DialogDescription>
         </DialogHeader>
 
@@ -55,7 +53,7 @@ export function RsvpDialog({ onOpenChange }: RsvpDialogProps) {
                 onChange={(e) => {
                   const value = e.target.value;
                   setRsvpForm({
-                    status: isDecline ? "DECLINED" : "ACCEPTED",
+                    status: isDecline ? 'DECLINED' : 'ACCEPTED',
                     note: value,
                   });
                 }}
@@ -67,19 +65,15 @@ export function RsvpDialog({ onOpenChange }: RsvpDialogProps) {
         )}
 
         <DialogFooter className="gap-2">
-          <Button
-            variant="outline"
-            onClick={closeRsvpDialog}
-            disabled={isPending}
-          >
+          <Button variant="outline" onClick={closeRsvpDialog} disabled={isPending}>
             Cancel
           </Button>
           <Button
-            variant={isDecline ? "destructive" : "default"}
+            variant={isDecline ? 'destructive' : 'default'}
             onClick={submitRsvp}
             disabled={(isDecline && !note?.trim()) || isPending}
           >
-            {isDecline ? "Submit Decline" : "Confirm Attendance"}
+            {isDecline ? 'Submit Decline' : 'Confirm Attendance'}
           </Button>
         </DialogFooter>
       </DialogContent>

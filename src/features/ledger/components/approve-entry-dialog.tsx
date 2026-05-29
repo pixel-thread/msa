@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Dialog,
@@ -7,9 +7,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
-import { Button } from "@src/shared/components/ui/button";
-import { useApproveEntry } from "../hooks/useApproveEntry";
+} from '@src/shared/components/ui/dialog';
+import { Button } from '@src/shared/components/ui/button';
+import { useApproveEntry } from '../hooks/useApproveEntry';
 
 interface ApproveEntryDialogProps {
   entryId: string | null;
@@ -40,9 +40,7 @@ export function ApproveEntryDialog({
       <DialogContent className="sm:max-w-[450px]">
         <DialogHeader>
           <DialogTitle>Approve Entry</DialogTitle>
-          <DialogDescription>
-            Are you sure you want to approve this ledger entry?
-          </DialogDescription>
+          <DialogDescription>Are you sure you want to approve this ledger entry?</DialogDescription>
         </DialogHeader>
 
         <div className=" border border-hairline bg-surface-soft p-4">
@@ -52,19 +50,11 @@ export function ApproveEntryDialog({
         </div>
 
         <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-          >
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button
-            type="button"
-            onClick={handleApprove}
-            disabled={approveEntry.isPending}
-          >
-            {approveEntry.isPending ? "Approving..." : "Approve"}
+          <Button type="button" onClick={handleApprove} disabled={approveEntry.isPending}>
+            {approveEntry.isPending ? 'Approving...' : 'Approve'}
           </Button>
         </DialogFooter>
       </DialogContent>

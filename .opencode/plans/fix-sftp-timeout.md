@@ -38,7 +38,7 @@ This matches the existing pattern used for `OTP_LENGTH`, `OTP_MAX_ATTEMPTS`, etc
 **Lines 15-21** — change:
 
 ```typescript
-logger.debug("[Storage] SFTP connecting...", {
+logger.debug('[Storage] SFTP connecting...', {
   host: env.SFTP_HOST,
   port: env.SFTP_PORT,
   username: env.SFTP_USERNAME,
@@ -50,7 +50,7 @@ logger.debug("[Storage] SFTP connecting...", {
 to:
 
 ```typescript
-logger.debug("[Storage] SFTP connecting...", {
+logger.debug('[Storage] SFTP connecting...', {
   host: env.SFTP_HOST,
   port: env.SFTP_PORT,
   username: env.SFTP_USERNAME,

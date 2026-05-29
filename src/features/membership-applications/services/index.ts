@@ -1,9 +1,9 @@
-import { ApplicationStatus, Prisma, UserRole } from "@prisma/client";
-import { prisma } from "@src/shared/lib/prisma";
-import { generateRandomPassword, hashPassword } from "@src/shared/lib/password";
-import { ConflictError, NotFoundError } from "@src/shared/errors";
-import { buildPagination } from "@src/shared/utils/build-pagination";
-import { PAGE_SIZE } from "@src/shared/constants";
+import { ApplicationStatus, Prisma, UserRole } from '@prisma/client';
+import { prisma } from '@src/shared/lib/prisma';
+import { generateRandomPassword, hashPassword } from '@src/shared/lib/password';
+import { ConflictError, NotFoundError } from '@src/shared/errors';
+import { buildPagination } from '@src/shared/utils/build-pagination';
+import { PAGE_SIZE } from '@src/shared/constants';
 
 type CreateApplicationProps = {
   email: string;
@@ -21,9 +21,7 @@ type CreateApplicationProps = {
   postalCode?: string;
 };
 
-export async function createMembershipApplication(
-  data: CreateApplicationProps,
-) {
+export async function createMembershipApplication(data: CreateApplicationProps) {
   const existing = await prisma.membershipApplication.findFirst({
     where: {
       OR: [
@@ -41,12 +39,10 @@ export async function createMembershipApplication(
 
   if (existing) {
     if (existing.email === data.email) {
-      throw new ConflictError(
-        "An application with this email already exists for this association",
-      );
+      throw new ConflictError('An application with this email already exists for this association');
     }
     throw new ConflictError(
-      "An application with this phone number already exists for this association",
+      'An application with this phone number already exists for this association',
     );
   }
 
@@ -74,10 +70,7 @@ type GetApplicationsProps = {
   page?: number;
 };
 
-export async function getMembershipApplications({
-  where = {},
-  page = 1,
-}: GetApplicationsProps) {
+export async function getMembershipApplications({ where = {}, page = 1 }: GetApplicationsProps) {
   const pageSize = PAGE_SIZE;
   const skip = (page - 1) * pageSize;
 
@@ -86,7 +79,7 @@ export async function getMembershipApplications({
       where,
       skip,
       take: pageSize,
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
     }),
     prisma.membershipApplication.count({ where }),
   ]);
@@ -123,17 +116,15 @@ export async function approveMembershipApplication({
   });
 
   if (!application) {
-    throw new NotFoundError("Membership application not found");
+    throw new NotFoundError('Membership application not found');
   }
 
   if (application.status === ApplicationStatus.APPROVED) {
-    throw new ConflictError("Application has already been approved");
+    throw new ConflictError('Application has already been approved');
   }
 
   if (application.status === ApplicationStatus.REJECTED) {
-    throw new ConflictError(
-      "Application has been rejected and cannot be approved",
-    );
+    throw new ConflictError('Application has been rejected and cannot be approved');
   }
 
   const association = await prisma.association.findFirst({
@@ -142,7 +133,7 @@ export async function approveMembershipApplication({
   });
 
   if (!association) {
-    throw new NotFoundError("Association not found");
+    throw new NotFoundError('Association not found');
   }
 
   const existingUser = await prisma.user.findFirst({
@@ -153,9 +144,7 @@ export async function approveMembershipApplication({
   });
 
   if (existingUser) {
-    throw new ConflictError(
-      "A user with this email already exists in the association",
-    );
+    throw new ConflictError('A user with this email already exists in the association');
   }
 
   const randomPassword = generateRandomPassword();
@@ -169,7 +158,7 @@ export async function approveMembershipApplication({
       mobile: application.phone,
       associationId: association.id,
       role: [role],
-      status: "ACTIVE",
+      status: 'ACTIVE',
       memberTypeId,
       dateOfJoiningGovt: dateOfJoiningGovt || new Date(),
       dateOfJoiningAssociation: new Date(),
@@ -216,13 +205,11 @@ export async function rejectMembershipApplication({
   });
 
   if (!application) {
-    throw new NotFoundError("Membership application not found");
+    throw new NotFoundError('Membership application not found');
   }
 
   if (application.status !== ApplicationStatus.PENDING) {
-    throw new ConflictError(
-      "Application can only be rejected if it is pending",
-    );
+    throw new ConflictError('Application can only be rejected if it is pending');
   }
 
   return prisma.membershipApplication.update({

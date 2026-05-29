@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   DropdownMenu,
@@ -7,19 +7,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@src/shared/components/ui/dropdown-menu";
-import { Button } from "@src/shared/components/ui/button";
-import { ChevronDown } from "lucide-react";
-import { ROLES } from "@src/features/members/utils/constants";
-import { User } from "@prisma/client";
+} from '@src/shared/components/ui/dropdown-menu';
+import { Button } from '@src/shared/components/ui/button';
+import { ChevronDown } from 'lucide-react';
+import { ROLES } from '@src/features/members/utils/constants';
+import { User } from '@prisma/client';
 
 interface RoleCellProps {
   member: User;
-  onRoleChange: (
-    memberId: string,
-    role: string,
-    action: "add" | "remove",
-  ) => void;
+  onRoleChange: (memberId: string, role: string, action: 'add' | 'remove') => void;
 }
 
 export function RoleCell({ member, onRoleChange }: RoleCellProps) {
@@ -28,14 +24,8 @@ export function RoleCell({ member, onRoleChange }: RoleCellProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-8 w-40 justify-between border-hairline"
-        >
-          <span className="truncate">
-            {roles.length > 0 ? roles.join(", ") : "No role"}
-          </span>
+        <Button variant="outline" size="sm" className="h-8 w-40 justify-between border-hairline">
+          <span className="truncate">{roles.length > 0 ? roles.join(', ') : 'No role'}</span>
           <ChevronDown className="ml-1 h-3 w-3 shrink-0 opacity-50" />
         </Button>
       </DropdownMenuTrigger>
@@ -47,7 +37,7 @@ export function RoleCell({ member, onRoleChange }: RoleCellProps) {
             key={role}
             checked={roles.includes(role)}
             onCheckedChange={(checked) => {
-              onRoleChange(member.id, role, checked ? "add" : "remove");
+              onRoleChange(member.id, role, checked ? 'add' : 'remove');
             }}
           >
             {role}

@@ -1,7 +1,7 @@
-import { AuditAction } from "@prisma/client";
-import { NotFoundError } from "@src/shared/errors";
-import { prisma } from "@src/shared/lib/prisma";
-import { logAction } from "@src/shared/services/audit-logs";
+import { AuditAction } from '@prisma/client';
+import { NotFoundError } from '@src/shared/errors';
+import { prisma } from '@src/shared/lib/prisma';
+import { logAction } from '@src/shared/services/audit-logs';
 
 export async function deleteModule(params: {
   associationId: string;
@@ -15,7 +15,7 @@ export async function deleteModule(params: {
   });
 
   if (!existing) {
-    throw new NotFoundError("Training module not found");
+    throw new NotFoundError('Training module not found');
   }
 
   await prisma.trainingModule.delete({
@@ -25,7 +25,7 @@ export async function deleteModule(params: {
   await logAction({
     actorId,
     action: AuditAction.DELETE,
-    resourceType: "TrainingModule",
+    resourceType: 'TrainingModule',
     resourceId: moduleId,
     associationId,
   });

@@ -1,10 +1,10 @@
-import { UserRole, UserStatus } from "@prisma/client";
-import { withAssociation, withRole } from "@src/shared/api";
-import { NotFoundError, UnauthorizedError } from "@src/shared/errors";
-import { prisma } from "@src/shared/lib/prisma";
-import { SuccessResponse } from "@src/shared/utils";
-import z from "zod";
-import { logger } from "@src/shared/logger/server";
+import { UserRole, UserStatus } from '@prisma/client';
+import { withAssociation, withRole } from '@src/shared/api';
+import { NotFoundError, UnauthorizedError } from '@src/shared/errors';
+import { prisma } from '@src/shared/lib/prisma';
+import { SuccessResponse } from '@src/shared/utils';
+import z from 'zod';
+import { logger } from '@src/shared/logger/server';
 
 const UpdateUserStatusSchema = z.object({
   status: z.enum(UserStatus),
@@ -22,7 +22,7 @@ export const PATCH = withAssociation(
         traceId,
         associationId: association.id,
       },
-      "PATCH /api/members/[memberId]/status - Request started",
+      'PATCH /api/members/[memberId]/status - Request started',
     );
 
     const user = await withRole(req, UserRole.PRESIDENT);
@@ -32,19 +32,18 @@ export const PATCH = withAssociation(
         traceId,
         userId: user.id,
       },
-      "PATCH /api/members/[memberId]/status - User authorized",
+      'PATCH /api/members/[memberId]/status - User authorized',
     );
 
     const memberId = params?.memberId;
 
-    if (!memberId) throw new UnauthorizedError("Unauthorized");
+    if (!memberId) throw new UnauthorizedError('Unauthorized');
 
     const target = await prisma.user.findUnique({
       where: { id: memberId, associationId: association.id },
     });
 
-    if (!target)
-      throw new NotFoundError("User does not exist in the association");
+    if (!target) throw new NotFoundError('User does not exist in the association');
 
     const updatedUser = await prisma.user.update({
       where: { id: memberId },
@@ -58,12 +57,12 @@ export const PATCH = withAssociation(
         memberId,
         status: body?.status,
       },
-      "PATCH /api/members/[memberId]/status - Success",
+      'PATCH /api/members/[memberId]/status - Success',
     );
 
     return SuccessResponse({
       data: updatedUser,
-      message: "User status updated successfully",
+      message: 'User status updated successfully',
     });
   },
 );

@@ -1,7 +1,7 @@
-import React from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import z from "zod";
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import z from 'zod';
 import {
   Dialog,
   DialogContent,
@@ -9,7 +9,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
+} from '@src/shared/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -17,32 +17,28 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
+} from '@src/shared/components/ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@src/shared/components/ui/select";
-import { Button } from "@src/shared/components/ui/button";
-import { Calendar } from "@src/shared/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@src/shared/components/ui/popover";
-import { cn } from "@src/shared/lib/utils";
-import { formatDate } from "@src/shared/utils/format";
-import { CalendarIcon } from "lucide-react";
-import { useMemberTypes } from "@src/features/members/hooks/useMemberTypes";
-import { useApproveMember } from "@src/features/members/hooks/useApproveMember";
-import { useRejectMember } from "@src/features/members/hooks/useRejectMember";
-import { ROLES } from "../utils/constants";
-import { MemberListItem } from "../types";
+} from '@src/shared/components/ui/select';
+import { Button } from '@src/shared/components/ui/button';
+import { Calendar } from '@src/shared/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@src/shared/components/ui/popover';
+import { cn } from '@src/shared/lib/utils';
+import { formatDate } from '@src/shared/utils/format';
+import { CalendarIcon } from 'lucide-react';
+import { useMemberTypes } from '@src/features/members/hooks/useMemberTypes';
+import { useApproveMember } from '@src/features/members/hooks/useApproveMember';
+import { useRejectMember } from '@src/features/members/hooks/useRejectMember';
+import { ROLES } from '../utils/constants';
+import { MemberListItem } from '../types';
 
 const MemberReviewSchema = z.object({
-  memberTypeId: z.string().min(1, "Member type is required"),
+  memberTypeId: z.string().min(1, 'Member type is required'),
   role: z.string(),
   dateOfJoiningGovt: z.date().optional(),
 });
@@ -55,11 +51,7 @@ interface MemberReviewDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function MemberReviewDialog({
-  member,
-  open,
-  onOpenChange,
-}: MemberReviewDialogProps) {
+export function MemberReviewDialog({ member, open, onOpenChange }: MemberReviewDialogProps) {
   const { memberTypes } = useMemberTypes();
   const approveMember = useApproveMember();
   const rejectMember = useRejectMember();
@@ -67,8 +59,8 @@ export function MemberReviewDialog({
   const form = useForm<MemberReviewForm>({
     resolver: zodResolver(MemberReviewSchema),
     defaultValues: {
-      memberTypeId: "",
-      role: "MEMBER",
+      memberTypeId: '',
+      role: 'MEMBER',
     },
   });
 
@@ -88,9 +80,9 @@ export function MemberReviewDialog({
 
   const handleReject = () => {
     if (!member) return;
-    const reason = prompt("Please provide a reason for rejection:");
+    const reason = prompt('Please provide a reason for rejection:');
     if (!reason || reason.trim().length < 10) {
-      alert("Rejection reason must be at least 10 characters");
+      alert('Rejection reason must be at least 10 characters');
       return;
     }
     rejectMember.mutate(
@@ -102,8 +94,8 @@ export function MemberReviewDialog({
   React.useEffect(() => {
     if (open) {
       form.reset({
-        memberTypeId: "",
-        role: "MEMBER",
+        memberTypeId: '',
+        role: 'MEMBER',
         dateOfJoiningGovt: undefined,
       });
     }
@@ -183,8 +175,8 @@ export function MemberReviewDialog({
                         <Button
                           variant="outline"
                           className={cn(
-                            "pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground",
+                            'pl-3 text-left font-normal',
+                            !field.value && 'text-muted-foreground',
                           )}
                         >
                           {field.value ? (
@@ -219,7 +211,7 @@ export function MemberReviewDialog({
                 Reject
               </Button>
               <Button type="submit" disabled={approveMember.isPending}>
-                {approveMember.isPending ? "Approving..." : "Approve"}
+                {approveMember.isPending ? 'Approving...' : 'Approve'}
               </Button>
             </DialogFooter>
           </form>

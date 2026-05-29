@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import { toast } from "sonner";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import { toast } from 'sonner';
 
 interface UpdatePlanData {
   planId: string;
@@ -8,7 +8,7 @@ interface UpdatePlanData {
   description?: string;
   amount?: number;
   currency?: string;
-  billingCycle?: "MONTHLY" | "YEARLY";
+  billingCycle?: 'MONTHLY' | 'YEARLY';
   features?: Record<string, unknown>;
   isActive?: boolean;
   effectiveFrom?: string;
@@ -24,14 +24,14 @@ export function useUpdatePlan() {
       http.patch(`/subscriptions/plans/${planId}`, data),
     onSuccess: (data) => {
       if (data.success) {
-        toast.success("Plan updated successfully");
-        queryClient.invalidateQueries({ queryKey: ["subscription-plans"] });
+        toast.success('Plan updated successfully');
+        queryClient.invalidateQueries({ queryKey: ['subscription-plans'] });
         return;
       }
       toast.error(data.message);
     },
     onError: () => {
-      toast.error("Failed to update plan");
+      toast.error('Failed to update plan');
     },
   });
 }

@@ -1,9 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import { toast } from "sonner";
-import type { Meeting, Member, Attendee } from "../types";
-import type { CreateMeetingInput } from "../validators";
-import type { PaginationMeta } from "@src/shared/types/api.types";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import { toast } from 'sonner';
+import type { Meeting, Member, Attendee } from '../types';
+import type { CreateMeetingInput } from '../validators';
+import type { PaginationMeta } from '@src/shared/types/api.types';
 
 interface UseMeetingsOptions {
   page?: number;
@@ -14,17 +14,16 @@ export function useMeetings(options: UseMeetingsOptions = {}) {
   const queryClient = useQueryClient();
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["meetings", page],
+    queryKey: ['meetings', page],
     queryFn: async () => http.get<Meeting[]>(`/meetings?page=${page}`),
   });
 
   const createMeetingMutation = useMutation({
-    mutationFn: (data: CreateMeetingInput) =>
-      http.post<Meeting>("/meetings", data),
+    mutationFn: (data: CreateMeetingInput) => http.post<Meeting>('/meetings', data),
     onSuccess: (data) => {
       if (data.success) {
-        queryClient.invalidateQueries({ queryKey: ["meetings"] });
-        toast.success("Meeting created successfully");
+        queryClient.invalidateQueries({ queryKey: ['meetings'] });
+        toast.success('Meeting created successfully');
         return data;
       }
       toast.error(data.message);
@@ -39,11 +38,11 @@ export function useMeetings(options: UseMeetingsOptions = {}) {
       return res;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["meetings"] });
-      toast.success("Meeting deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ['meetings'] });
+      toast.success('Meeting deleted successfully');
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Failed to delete meeting");
+      toast.error(err.message || 'Failed to delete meeting');
     },
   });
 
@@ -56,7 +55,7 @@ export function useMeetings(options: UseMeetingsOptions = {}) {
     deleteMeeting: deleteMeetingMutation.mutate,
     isCreating: createMeetingMutation.isPending,
     isDeleting: deleteMeetingMutation.isPending,
-    refetch: () => queryClient.invalidateQueries({ queryKey: ["meetings"] }),
+    refetch: () => queryClient.invalidateQueries({ queryKey: ['meetings'] }),
   };
 }
 
@@ -64,10 +63,9 @@ export function useMeetingAttendees(meetingId: string | null) {
   const queryClient = useQueryClient();
 
   const { data, isLoading, isFetching, refetch } = useQuery({
-    queryKey: ["meeting-attendees", meetingId],
+    queryKey: ['meeting-attendees', meetingId],
     enabled: !!meetingId,
-    queryFn: async () =>
-      http.get<Attendee[]>(`/meetings/${meetingId}/attendees`),
+    queryFn: async () => http.get<Attendee[]>(`/meetings/${meetingId}/attendees`),
     select: (data) => data.data,
   });
 
@@ -88,38 +86,33 @@ export function useMeetingAttendees(meetingId: string | null) {
     onSuccess: (data) => {
       if (data.success) {
         refetch();
-        queryClient.invalidateQueries({ queryKey: ["meetings"] });
-        toast.success("Attendee added successfully");
+        queryClient.invalidateQueries({ queryKey: ['meetings'] });
+        toast.success('Attendee added successfully');
         return data;
       }
       toast.error(data.message);
       return data;
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Failed to add attendee");
+      toast.error(err.message || 'Failed to add attendee');
     },
   });
 
   const removeAttendeeMutation = useMutation({
-    mutationFn: async ({
-      meetingId,
-      userId,
-    }: {
-      meetingId: string;
-      userId: string;
-    }) => http.delete(`/meetings/${meetingId}/attendees/${userId}`),
+    mutationFn: async ({ meetingId, userId }: { meetingId: string; userId: string }) =>
+      http.delete(`/meetings/${meetingId}/attendees/${userId}`),
     onSuccess: (data) => {
       if (data.success) {
         refetch();
-        queryClient.invalidateQueries({ queryKey: ["meetings"] });
-        toast.success("Attendee removed successfully");
+        queryClient.invalidateQueries({ queryKey: ['meetings'] });
+        toast.success('Attendee removed successfully');
         return data;
       }
       toast.error(data.message);
       return data;
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Failed to remove attendee");
+      toast.error(err.message || 'Failed to remove attendee');
     },
   });
 

@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useParams, useRouter } from "next/navigation";
-import { useUrlFilters } from "@src/shared/hooks";
-import { ArrowLeft, Award } from "lucide-react";
+import { useParams, useRouter } from 'next/navigation';
+import { useUrlFilters } from '@src/shared/hooks';
+import { ArrowLeft, Award } from 'lucide-react';
 
-import { Button } from "@src/shared/components/ui/button";
-import { DataTablePagination } from "@src/shared/components/data-table-pagination";
-import { DataTable } from "@src/shared/components/data-table";
-import { DataTableFilters } from "@src/shared/components/data-table-filters";
-import { useTrainingModule } from "../hooks/useTrainingModules";
-import { useTrainingCompletions } from "../hooks/completions/useTrainingCompletions";
-import { useTrainingCompletionsColumns } from "../hooks/completions/useTrainingCompletionsColumns";
+import { Button } from '@src/shared/components/ui/button';
+import { DataTablePagination } from '@src/shared/components/data-table-pagination';
+import { DataTable } from '@src/shared/components/data-table';
+import { DataTableFilters } from '@src/shared/components/data-table-filters';
+import { useTrainingModule } from '../hooks/useTrainingModules';
+import { useTrainingCompletions } from '../hooks/completions/useTrainingCompletions';
+import { useTrainingCompletionsColumns } from '../hooks/completions/useTrainingCompletionsColumns';
 
 export function TrainingCompletionsPage() {
   const router = useRouter();
@@ -20,8 +20,7 @@ export function TrainingCompletionsPage() {
     basePath: `/training/${moduleId}/completions`,
   });
 
-  const { module: trainingModule, isLoading: isModuleLoading } =
-    useTrainingModule(moduleId);
+  const { module: trainingModule, isLoading: isModuleLoading } = useTrainingModule(moduleId);
 
   const {
     completions,
@@ -32,11 +31,7 @@ export function TrainingCompletionsPage() {
   const { columns } = useTrainingCompletionsColumns();
 
   if (isModuleLoading) {
-    return (
-      <div className="py-24 text-center text-body">
-        Loading completion details...
-      </div>
-    );
+    return <div className="py-24 text-center text-body">Loading completion details...</div>;
   }
 
   if (!trainingModule) {
@@ -44,10 +39,9 @@ export function TrainingCompletionsPage() {
       <div className="py-24 text-center">
         <h2 className="text-xl font-bold text-ink mb-2">Module Not Found</h2>
         <p className="text-body mb-6">
-          The training module you are trying to access does not exist or has
-          been removed.
+          The training module you are trying to access does not exist or has been removed.
         </p>
-        <Button onClick={() => router.push("/training")} className="">
+        <Button onClick={() => router.push('/training')} className="">
           Back to Portal
         </Button>
       </div>
@@ -61,10 +55,8 @@ export function TrainingCompletionsPage() {
         <div>
           <h1 className="text-2xl font-bold text-ink">Completions</h1>
           <p className="text-sm text-muted-foreground">
-            Users who completed{" "}
-            <span className="font-semibold text-ink">
-              {trainingModule.title}
-            </span>
+            Users who completed{' '}
+            <span className="font-semibold text-ink">{trainingModule.title}</span>
           </p>
         </div>
       </div>
@@ -76,9 +68,7 @@ export function TrainingCompletionsPage() {
             <Award className="h-4 w-4" />
             Total Completions
           </div>
-          <p className="text-2xl font-bold text-ink">
-            {meta ? meta.total : completions.length}
-          </p>
+          <p className="text-2xl font-bold text-ink">{meta ? meta.total : completions.length}</p>
         </div>
       </div>
 
@@ -86,25 +76,17 @@ export function TrainingCompletionsPage() {
       <DataTableFilters
         fields={[
           {
-            type: "search",
-            id: "search",
-            placeholder: "Search completions...",
+            type: 'search',
+            id: 'search',
+            placeholder: 'Search completions...',
           },
         ]}
         onFilterChange={() => {}}
       />
 
-      <DataTable
-        loading={isCompletionsLoading}
-        data={completions}
-        columns={columns}
-      />
+      <DataTable loading={isCompletionsLoading} data={completions} columns={columns} />
 
-      <DataTablePagination
-        meta={meta}
-        onPageChange={setPage}
-        label="completions"
-      />
+      <DataTablePagination meta={meta} onPageChange={setPage} label="completions" />
     </div>
   );
 }

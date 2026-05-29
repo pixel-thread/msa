@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useFieldArray } from "react-hook-form";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { Plus, Trash } from "@phosphor-icons/react";
+import { useFieldArray } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { Plus, Trash } from '@phosphor-icons/react';
 
 import {
   Dialog,
@@ -12,16 +12,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@src/shared/components/ui/dialog";
-import { Button } from "@src/shared/components/ui/button";
-import { Input } from "@src/shared/components/ui/input";
+} from '@src/shared/components/ui/dialog';
+import { Button } from '@src/shared/components/ui/button';
+import { Input } from '@src/shared/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@src/shared/components/ui/select";
+} from '@src/shared/components/ui/select';
 import {
   Form,
   FormControl,
@@ -29,7 +29,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
+} from '@src/shared/components/ui/form';
 import {
   FieldSet,
   FieldLegend,
@@ -37,10 +37,10 @@ import {
   FieldContent,
   FieldLabel as ShadFieldLabel,
   Field,
-} from "@src/shared/components/ui/field";
-import { useMeetings } from "../hooks";
-import { CreateMeetingSchema, type CreateMeetingInput } from "../validators";
-import { zodResolver } from "@hookform/resolvers/zod";
+} from '@src/shared/components/ui/field';
+import { useMeetings } from '../hooks';
+import { CreateMeetingSchema, type CreateMeetingInput } from '../validators';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 export function CreateMeetingDialog({
   open,
@@ -52,11 +52,11 @@ export function CreateMeetingDialog({
   const form = useForm({
     resolver: zodResolver(CreateMeetingSchema),
     defaultValues: {
-      title: "",
-      type: "GENERAL_MEETING",
+      title: '',
+      type: 'GENERAL_MEETING',
       scheduledAt: new Date(),
-      venue: "",
-      agendaItems: [{ title: "", description: "" }],
+      venue: '',
+      agendaItems: [{ title: '', description: '' }],
     },
   });
 
@@ -64,7 +64,7 @@ export function CreateMeetingDialog({
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "agendaItems",
+    name: 'agendaItems',
   });
 
   const onSubmit: SubmitHandler<CreateMeetingInput> = (values) => {
@@ -85,11 +85,11 @@ export function CreateMeetingDialog({
         if (data.success) {
           onOpenChange(false);
           form.reset({
-            title: "",
-            type: "GENERAL_MEETING",
+            title: '',
+            type: 'GENERAL_MEETING',
             scheduledAt: new Date(),
-            venue: "",
-            agendaItems: [{ title: "Agenda 1", description: "" }],
+            venue: '',
+            agendaItems: [{ title: 'Agenda 1', description: '' }],
           });
         }
       },
@@ -101,9 +101,7 @@ export function CreateMeetingDialog({
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create New Meeting</DialogTitle>
-          <DialogDescription>
-            Create a new meeting for your association.
-          </DialogDescription>
+          <DialogDescription>Create a new meeting for your association.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -133,9 +131,7 @@ export function CreateMeetingDialog({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="GENERAL_MEETING">
-                          General Meeting
-                        </SelectItem>
+                        <SelectItem value="GENERAL_MEETING">General Meeting</SelectItem>
                         <SelectItem value="EC_MEETING">EC Meeting</SelectItem>
                       </SelectContent>
                     </Select>
@@ -155,9 +151,7 @@ export function CreateMeetingDialog({
                     <Input
                       type="datetime-local"
                       value={
-                        field.value instanceof Date
-                          ? field.value.toISOString().slice(0, 16)
-                          : ""
+                        field.value instanceof Date ? field.value.toISOString().slice(0, 16) : ''
                       }
                       onChange={(e) => field.onChange(new Date(e.target.value))}
                     />
@@ -197,10 +191,7 @@ export function CreateMeetingDialog({
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
-                                <Input
-                                  placeholder="Agenda item title"
-                                  {...field}
-                                />
+                                <Input placeholder="Agenda item title" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -212,10 +203,7 @@ export function CreateMeetingDialog({
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
-                                <Input
-                                  placeholder="Description (optional)"
-                                  {...field}
-                                />
+                                <Input placeholder="Description (optional)" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -242,7 +230,7 @@ export function CreateMeetingDialog({
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => append({ title: "", description: "" })}
+                onClick={() => append({ title: '', description: '' })}
                 className="gap-1 mt-2"
               >
                 <Plus className="h-3 w-3" />
@@ -251,15 +239,11 @@ export function CreateMeetingDialog({
             </FieldSet>
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={isPending}>
-                {isPending ? "Creating..." : "Create Meeting"}
+                {isPending ? 'Creating...' : 'Create Meeting'}
               </Button>
             </DialogFooter>
           </form>

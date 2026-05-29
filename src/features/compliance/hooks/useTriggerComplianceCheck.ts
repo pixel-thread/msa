@@ -1,25 +1,25 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import { toast } from "sonner";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import { toast } from 'sonner';
 
 export function useTriggerComplianceCheck() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (checkTypes?: string[]) =>
-      http.post("/compliance/checks", checkTypes ? { checkTypes } : {}),
+      http.post('/compliance/checks', checkTypes ? { checkTypes } : {}),
     onSuccess: (response) => {
       if (response.success) {
-        toast.success("Compliance checks completed successfully");
-        queryClient.invalidateQueries({ queryKey: ["compliance-checks"] });
-        queryClient.invalidateQueries({ queryKey: ["compliance-evidence"] });
+        toast.success('Compliance checks completed successfully');
+        queryClient.invalidateQueries({ queryKey: ['compliance-checks'] });
+        queryClient.invalidateQueries({ queryKey: ['compliance-evidence'] });
         return;
       }
       toast.error(response.message);
       return;
     },
     onError: () => {
-      toast.error("Failed to run compliance checks");
+      toast.error('Failed to run compliance checks');
     },
   });
 }

@@ -1,5 +1,5 @@
-import { prisma } from "@src/shared/lib/prisma";
-import { DsarRequestType, DsarStatus, AuditAction } from "@prisma/client";
+import { prisma } from '@src/shared/lib/prisma';
+import { DsarRequestType, DsarStatus, AuditAction } from '@prisma/client';
 
 interface SubmitDsarTicketProps {
   associationId: string;
@@ -22,11 +22,7 @@ interface SubmitDsarTicketProps {
  * @param {SubmitDsarTicketProps} props - The association ID, user ID, and ticket data.
  * @returns {Promise<DsarTicket>} The created DSAR ticket.
  */
-export async function submitDsarTicket({
-  associationId,
-  userId,
-  data,
-}: SubmitDsarTicketProps) {
+export async function submitDsarTicket({ associationId, userId, data }: SubmitDsarTicketProps) {
   const year = new Date().getFullYear();
   const random = Math.random().toString(36).substring(2, 7).toUpperCase();
   const ticketNumber = `DSAR-${year}-${random}`;
@@ -49,7 +45,7 @@ export async function submitDsarTicket({
         associationId,
         actorId: userId,
         action: AuditAction.DSAR_SUBMIT,
-        resourceType: "DsarTicket",
+        resourceType: 'DsarTicket',
         resourceId: ticket.id,
         newValues: ticket as any,
       },

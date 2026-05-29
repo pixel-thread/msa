@@ -1,16 +1,13 @@
-import Razorpay from "razorpay";
-import * as crypto from "crypto";
-import { NotFoundError } from "@src/shared/errors";
-import { env } from "@src/env";
+import Razorpay from 'razorpay';
+import * as crypto from 'crypto';
+import { NotFoundError } from '@src/shared/errors';
+import { env } from '@src/env';
 
 // ---------------------------------------------------------------------------
 // Razorpay SDK factory (replaces singleton for multi-tenant support)
 // ---------------------------------------------------------------------------
 
-export const createRazorpayClient = (
-  keyId: string,
-  keySecret: string,
-): Razorpay => {
+export const createRazorpayClient = (keyId: string, keySecret: string): Razorpay => {
   return new Razorpay({ key_id: keyId, key_secret: keySecret });
 };
 
@@ -19,9 +16,7 @@ const getRazorpayInstance = (): Razorpay => {
   const keySecret = env.RAZORPAY_KEY_SECRET;
 
   if (!keyId || !keySecret) {
-    throw new Error(
-      "RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET must be set in environment variables",
-    );
+    throw new Error('RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET must be set in environment variables');
   }
 
   return createRazorpayClient(keyId, keySecret);
@@ -74,7 +69,7 @@ export async function createRazorpayOrder(
 
   const order = await razorpay.orders.create({
     amount: params.amountInPaise,
-    currency: params.currency ?? "INR",
+    currency: params.currency ?? 'INR',
     receipt: params.receipt,
     notes: params.notes ?? {},
   });
@@ -88,22 +83,16 @@ export async function createRazorpayOrder(
  * This MUST be called on the server before trusting any callback from the
  * client-side Razorpay checkout.
  */
-export function verifyPaymentSignature(
-  params: VerifySignatureParams,
-  keySecret?: string,
-): boolean {
+export function verifyPaymentSignature(params: VerifySignatureParams, keySecret?: string): boolean {
   const secret = keySecret ?? env.RAZORPAY_KEY_SECRET;
 
   if (!secret) {
-    throw new Error("RAZORPAY_KEY_SECRET is not configured");
+    throw new Error('RAZORPAY_KEY_SECRET is not configured');
   }
 
   const body = `${params.razorpayOrderId}|${params.razorpayPaymentId}`;
 
-  const expectedSignature = crypto
-    .createHmac("sha256", secret)
-    .update(body)
-    .digest("hex");
+  const expectedSignature = crypto.createHmac('sha256', secret).update(body).digest('hex');
 
   return crypto.timingSafeEqual(
     Buffer.from(expectedSignature),
@@ -122,19 +111,13 @@ export function verifyWebhookSignature(
   const secret = webhookSecret ?? env.RAZORPAY_WEBHOOK_SECRET;
 
   if (!secret) {
-    throw new Error("RAZORPAY_WEBHOOK_SECRET is not configured");
+    throw new Error('RAZORPAY_WEBHOOK_SECRET is not configured');
   }
 
-  const expectedSignature = crypto
-    .createHmac("sha256", secret)
-    .update(rawBody)
-    .digest("hex");
+  const expectedSignature = crypto.createHmac('sha256', secret).update(rawBody).digest('hex');
 
   try {
-    return crypto.timingSafeEqual(
-      Buffer.from(expectedSignature),
-      Buffer.from(signature),
-    );
+    return crypto.timingSafeEqual(Buffer.from(expectedSignature), Buffer.from(signature));
   } catch {
     return false;
   }
@@ -151,10 +134,7 @@ export async function fetchPaymentDetails(razorpayPaymentId: string) {
 /**
  * Issue a full or partial refund on a Razorpay payment.
  */
-export async function initiateRefund(
-  razorpayPaymentId: string,
-  amountInPaise?: number,
-) {
+export async function initiateRefund(razorpayPaymentId: string, amountInPaise?: number) {
   const razorpay = getRazorpayInstance();
   return razorpay.payments.refund(razorpayPaymentId, {
     amount: amountInPaise,
@@ -162,12 +142,12 @@ export async function initiateRefund(
 }
 
 export async function getRazorpayClientForAssociation(associationId: string) {
-  const { getActiveProvider } = await import("./payment-provider.service");
-  const { decrypt } = await import("@src/shared/lib/crypto");
+  const { getActiveProvider } = await import('./payment-provider.service');
+  const { decrypt } = await import('@src/shared/lib/crypto');
 
-  const provider = await getActiveProvider(associationId, "RAZORPAY");
+  const provider = await getActiveProvider(associationId, 'RAZORPAY');
   if (!provider) {
-    throw new NotFoundError("No payment provider configured for association");
+    throw new NotFoundError('No payment provider configured for association');
   }
 
   const keySecret = decrypt(provider.encryptedKeySecret);

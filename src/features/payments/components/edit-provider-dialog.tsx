@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
 import {
   useProviderDetail,
   useUpdateProvider,
-} from "@src/features/payments/hooks/usePaymentProviders";
-import { ProviderForm } from "@src/features/payments/components/provider-form";
+} from '@src/features/payments/hooks/usePaymentProviders';
+import { ProviderForm } from '@src/features/payments/components/provider-form';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
-import { toast } from "sonner";
-import { useQueryClient } from "@tanstack/react-query";
+} from '@src/shared/components/ui/dialog';
+import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface EditProviderDialogProps {
   open: boolean;
@@ -21,11 +21,7 @@ interface EditProviderDialogProps {
   providerId: string;
 }
 
-export function EditProviderDialog({
-  open,
-  onOpenChange,
-  providerId,
-}: EditProviderDialogProps) {
+export function EditProviderDialog({ open, onOpenChange, providerId }: EditProviderDialogProps) {
   const queryClient = useQueryClient();
   const { provider, isLoading } = useProviderDetail(providerId);
   const updateProvider = useUpdateProvider(providerId);
@@ -39,15 +35,15 @@ export function EditProviderDialog({
     updateProvider.mutate(data, {
       onSuccess: (response) => {
         if (response.success) {
-          toast.success(response.message || "Provider updated successfully");
-          queryClient.invalidateQueries({ queryKey: ["payment-providers"] });
+          toast.success(response.message || 'Provider updated successfully');
+          queryClient.invalidateQueries({ queryKey: ['payment-providers'] });
           onOpenChange(false);
         } else {
-          toast.error(response.message || "Failed to update provider");
+          toast.error(response.message || 'Failed to update provider');
         }
       },
       onError: () => {
-        toast.error("Failed to update provider");
+        toast.error('Failed to update provider');
       },
     });
   };
@@ -57,9 +53,7 @@ export function EditProviderDialog({
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>Edit Provider</DialogTitle>
-          <DialogDescription>
-            Update payment provider configuration
-          </DialogDescription>
+          <DialogDescription>Update payment provider configuration</DialogDescription>
         </DialogHeader>
         {isLoading ? (
           <div className="flex items-center justify-center py-8">

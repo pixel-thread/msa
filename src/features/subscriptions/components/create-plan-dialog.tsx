@@ -1,7 +1,7 @@
-"use client";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+'use client';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@src/shared/components/ui/dialog";
+} from '@src/shared/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -18,25 +18,22 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
+} from '@src/shared/components/ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@src/shared/components/ui/select";
-import { Button } from "@src/shared/components/ui/button";
-import { Input } from "@src/shared/components/ui/input";
-import { Plus } from "lucide-react";
-import { useCreatePlan } from "@src/features/subscriptions/hooks/useCreatePlan";
-import { useMemberTypes } from "@src/features/members/hooks/useMemberTypes";
-import { BILLING_CYCLES } from "../utils/constants";
-import {
-  CreateSubscriptionPlanInput,
-  CreateSubscriptionPlanSchema,
-} from "../validators";
-import { logger } from "@src/shared/logger";
+} from '@src/shared/components/ui/select';
+import { Button } from '@src/shared/components/ui/button';
+import { Input } from '@src/shared/components/ui/input';
+import { Plus } from 'lucide-react';
+import { useCreatePlan } from '@src/features/subscriptions/hooks/useCreatePlan';
+import { useMemberTypes } from '@src/features/members/hooks/useMemberTypes';
+import { BILLING_CYCLES } from '../utils/constants';
+import { CreateSubscriptionPlanInput, CreateSubscriptionPlanSchema } from '../validators';
+import { logger } from '@src/shared/logger';
 
 export function CreatePlanDialog() {
   const [open, setOpen] = useState(false);
@@ -46,15 +43,15 @@ export function CreatePlanDialog() {
   const form = useForm({
     resolver: zodResolver(CreateSubscriptionPlanSchema),
     defaultValues: {
-      name: "",
-      description: "",
+      name: '',
+      description: '',
       amount: 0,
-      currency: "INR",
-      billingCycle: "YEARLY",
+      currency: 'INR',
+      billingCycle: 'YEARLY',
       features: {},
-      memberTypeId: "",
+      memberTypeId: '',
       isActive: true,
-      effectiveFrom: "",
+      effectiveFrom: '',
     },
   });
 
@@ -77,7 +74,7 @@ export function CreatePlanDialog() {
     );
   };
 
-  logger.debug("Create Subscription Plan Dialog", {
+  logger.debug('Create Subscription Plan Dialog', {
     error: form.formState.errors,
   });
 
@@ -142,9 +139,9 @@ export function CreatePlanDialog() {
                       value={
                         field.value instanceof Date
                           ? field.value.toISOString().slice(0, 16)
-                          : typeof field.value === "string"
+                          : typeof field.value === 'string'
                             ? field.value.slice(0, 16)
-                            : ""
+                            : ''
                       }
                       onChange={(e) => field.onChange(e.target.value)}
                       onBlur={field.onBlur}
@@ -170,9 +167,9 @@ export function CreatePlanDialog() {
                       value={
                         field.value instanceof Date
                           ? field.value.toISOString().slice(0, 16)
-                          : typeof field.value === "string"
+                          : typeof field.value === 'string'
                             ? field.value.slice(0, 16)
-                            : ""
+                            : ''
                       }
                       onChange={(e) => field.onChange(e.target.value)}
                       onBlur={field.onBlur}
@@ -246,7 +243,7 @@ export function CreatePlanDialog() {
                       {memberTypes.map((type) => (
                         <SelectItem key={type.id} value={type.id}>
                           Level {type.level}
-                          {type.description ? ` - ${type.description}` : ""}
+                          {type.description ? ` - ${type.description}` : ''}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -257,15 +254,11 @@ export function CreatePlanDialog() {
             />
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setOpen(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={createPlan.isPending}>
-                {createPlan.isPending ? "Creating..." : "Create Plan"}
+                {createPlan.isPending ? 'Creating...' : 'Create Plan'}
               </Button>
             </DialogFooter>
           </form>

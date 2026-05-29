@@ -1,11 +1,11 @@
-import { withAssociation, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@src/shared/utils/responses";
-import { UserRole, UserStatus } from "@prisma/client";
-import { getMembers } from "@src/features/members/services/getMembers";
-import z from "zod";
-import { hasHighRoleAccess } from "@src/shared/utils/has-high-role";
-import { pageNumberValidation } from "@src/shared/validators/common";
-import { logger } from "@src/shared/logger/server";
+import { withAssociation, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@src/shared/utils/responses';
+import { UserRole, UserStatus } from '@prisma/client';
+import { getMembers } from '@src/features/members/services/getMembers';
+import z from 'zod';
+import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
+import { pageNumberValidation } from '@src/shared/validators/common';
+import { logger } from '@src/shared/logger/server';
 
 const QuerySchema = z.object({
   page: pageNumberValidation,
@@ -20,7 +20,7 @@ export const GET = withAssociation(
         traceId,
         associationId: association.id,
       },
-      "GET /api/members - Request started",
+      'GET /api/members - Request started',
     );
 
     const user = await withRole(request, UserRole.SECRETARY);
@@ -30,7 +30,7 @@ export const GET = withAssociation(
         traceId,
         userId: user.id,
       },
-      "GET /api/members - User authorized",
+      'GET /api/members - User authorized',
     );
 
     const page = query?.page;
@@ -51,7 +51,7 @@ export const GET = withAssociation(
       });
     } else if (!hasHighRoleAccess(user.role)) {
       members = await getMembers({
-        where: { ...baseWhere, status: "ACTIVE" },
+        where: { ...baseWhere, status: 'ACTIVE' },
         page,
       });
     } else {
@@ -66,7 +66,7 @@ export const GET = withAssociation(
         traceId,
         count: members.data.length,
       },
-      "GET /api/members - Success",
+      'GET /api/members - Success',
     );
 
     return SuccessResponse({

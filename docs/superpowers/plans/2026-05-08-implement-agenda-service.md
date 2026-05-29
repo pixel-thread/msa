@@ -20,14 +20,14 @@
 
 ```typescript
 // src/features/meetings/services/processAgendaOperations.ts
-import { prisma } from "@lib/prisma";
-import { NotFoundError } from "@src/shared/errors";
-import { AgendaOperationInput } from "../validators/agenda-items";
+import { prisma } from '@lib/prisma';
+import { NotFoundError } from '@src/shared/errors';
+import { AgendaOperationInput } from '../validators/agenda-items';
 
 interface ProcessAgendaOperationsProps {
   meetingId: string;
   associationId: string;
-  operations: AgendaOperationInput["operations"];
+  operations: AgendaOperationInput['operations'];
 }
 
 export async function processAgendaOperations({
@@ -39,7 +39,7 @@ export async function processAgendaOperations({
     where: { id: meetingId, associationId },
   });
 
-  if (!meeting) throw new NotFoundError("Meeting");
+  if (!meeting) throw new NotFoundError('Meeting');
 
   // Implementation for operations will be added in steps
   return [];
@@ -50,21 +50,21 @@ export async function processAgendaOperations({
 
 ```typescript
 // scripts/verify-agenda-ops.ts
-import { processAgendaOperations } from "../src/features/meetings/services/processAgendaOperations";
+import { processAgendaOperations } from '../src/features/meetings/services/processAgendaOperations';
 
 async function main() {
   try {
     await processAgendaOperations({
-      meetingId: "non-existent-id",
-      associationId: "any-association",
+      meetingId: 'non-existent-id',
+      associationId: 'any-association',
       operations: [],
     });
-    console.log("FAIL: Should have thrown NotFoundError");
+    console.log('FAIL: Should have thrown NotFoundError');
   } catch (error: any) {
-    if (error.name === "NotFoundError" || error.code === "NOT_FOUND") {
-      console.log("PASS: Threw correct error");
+    if (error.name === 'NotFoundError' || error.code === 'NOT_FOUND') {
+      console.log('PASS: Threw correct error');
     } else {
-      console.log("FAIL: Threw unexpected error", error);
+      console.log('FAIL: Threw unexpected error', error);
     }
   }
 }
@@ -94,14 +94,14 @@ git commit -m "feat: initial agenda operations service with validation"
 
 ```typescript
 // src/features/meetings/services/processAgendaOperations.ts
-import { prisma } from "@lib/prisma";
-import { NotFoundError } from "@src/shared/errors";
-import { AgendaOperationInput } from "../validators/agenda-items";
+import { prisma } from '@lib/prisma';
+import { NotFoundError } from '@src/shared/errors';
+import { AgendaOperationInput } from '../validators/agenda-items';
 
 interface ProcessAgendaOperationsProps {
   meetingId: string;
   associationId: string;
-  operations: AgendaOperationInput["operations"];
+  operations: AgendaOperationInput['operations'];
 }
 
 export async function processAgendaOperations({
@@ -113,12 +113,12 @@ export async function processAgendaOperations({
     where: { id: meetingId, associationId },
   });
 
-  if (!meeting) throw new NotFoundError("Meeting");
+  if (!meeting) throw new NotFoundError('Meeting');
 
   return await prisma.$transaction(async (tx) => {
     for (const op of operations) {
       switch (op.type) {
-        case "CREATE":
+        case 'CREATE':
           await tx.agendaItem.create({
             data: {
               ...op.data,
@@ -126,18 +126,18 @@ export async function processAgendaOperations({
             },
           });
           break;
-        case "UPDATE":
+        case 'UPDATE':
           await tx.agendaItem.update({
             where: { id: op.id, meetingId },
             data: op.data,
           });
           break;
-        case "DELETE":
+        case 'DELETE':
           await tx.agendaItem.delete({
             where: { id: op.id, meetingId },
           });
           break;
-        case "REORDER":
+        case 'REORDER':
           for (const mapping of op.mappings) {
             await tx.agendaItem.update({
               where: { id: mapping.id, meetingId },
@@ -149,7 +149,7 @@ export async function processAgendaOperations({
     }
     return await tx.agendaItem.findMany({
       where: { meetingId },
-      orderBy: { order: "asc" },
+      orderBy: { order: 'asc' },
     });
   });
 }
@@ -172,7 +172,7 @@ git commit -m "feat: implement agenda operations in transaction"
 
 ```typescript
 // src/features/meetings/services/index.ts
-export * from "./processAgendaOperations";
+export * from './processAgendaOperations';
 // ... other exports
 ```
 

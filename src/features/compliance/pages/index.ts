@@ -1,1 +1,1 @@
-export { default as ComplianceAdminPage } from "./compliance-admin";
+export { default as ComplianceAdminPage } from './compliance-admin';

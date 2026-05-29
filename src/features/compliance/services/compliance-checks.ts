@@ -1,4 +1,4 @@
-import { prisma } from "@src/shared/lib/prisma";
+import { prisma } from '@src/shared/lib/prisma';
 import {
   ConsentStatus,
   ConsentPurpose,
@@ -6,8 +6,8 @@ import {
   UserStatus,
   PaymentStatus,
   ComplianceCheckStatus,
-} from "@prisma/client";
-import type { ComplianceCheckResult, ComplianceEvidence } from "../types";
+} from '@prisma/client';
+import type { ComplianceCheckResult, ComplianceEvidence } from '../types';
 
 export async function runComplianceCheck(
   associationId: string,
@@ -28,7 +28,7 @@ export async function runComplianceCheck(
   if (!checker) {
     return {
       checkType,
-      status: "SKIPPED",
+      status: 'SKIPPED',
       score: 0,
       message: `Unknown check type: ${checkType}`,
       checkedAt: new Date(),
@@ -38,9 +38,7 @@ export async function runComplianceCheck(
   return checker();
 }
 
-async function checkConsentCoverage(
-  associationId: string,
-): Promise<ComplianceCheckResult> {
+async function checkConsentCoverage(associationId: string): Promise<ComplianceCheckResult> {
   const purposes = [
     ConsentPurpose.PAYMENTS,
     ConsentPurpose.COMMUNICATIONS,
@@ -55,10 +53,10 @@ async function checkConsentCoverage(
 
   if (totalMembers === 0) {
     return {
-      checkType: "CONSENT_COVERAGE",
-      status: "WARNING",
+      checkType: 'CONSENT_COVERAGE',
+      status: 'WARNING',
       score: 100,
-      message: "No active members to check",
+      message: 'No active members to check',
       details: { totalMembers: 0 },
       checkedAt: new Date(),
     };
@@ -81,33 +79,30 @@ async function checkConsentCoverage(
     }),
   );
 
-  const avgCoverage =
-    coverageByPurpose.reduce((sum, p) => sum + p.coverage, 0) / purposes.length;
+  const avgCoverage = coverageByPurpose.reduce((sum, p) => sum + p.coverage, 0) / purposes.length;
 
-  let status: ComplianceCheckStatus = "PASSED";
-  if (avgCoverage < 50) status = "FAILED";
-  else if (avgCoverage < 80) status = "WARNING";
+  let status: ComplianceCheckStatus = 'PASSED';
+  if (avgCoverage < 50) status = 'FAILED';
+  else if (avgCoverage < 80) status = 'WARNING';
 
   return {
-    checkType: "CONSENT_COVERAGE",
+    checkType: 'CONSENT_COVERAGE',
     status,
     score: Math.round(avgCoverage),
     message: `Average consent coverage: ${avgCoverage.toFixed(1)}%`,
     details: { totalMembers, coverageByPurpose },
     recommendations:
-      status !== "PASSED"
+      status !== 'PASSED'
         ? [
-            "Send reminder communications to members about consent requirements",
-            "Review consent collection process during onboarding",
+            'Send reminder communications to members about consent requirements',
+            'Review consent collection process during onboarding',
           ]
         : [],
     checkedAt: new Date(),
   };
 }
 
-async function checkDsarSlaCompliance(
-  associationId: string,
-): Promise<ComplianceCheckResult> {
+async function checkDsarSlaCompliance(associationId: string): Promise<ComplianceCheckResult> {
   const now = new Date();
   const threeDaysFromNow = new Date();
   threeDaysFromNow.setDate(now.getDate() + 3);
@@ -143,33 +138,29 @@ async function checkDsarSlaCompliance(
 
   const complianceScore = total > 0 ? ((total - breached) / total) * 100 : 100;
 
-  let status: ComplianceCheckStatus = "PASSED";
-  if (breached > 0) status = "FAILED";
-  else if (atRisk > 0) status = "WARNING";
+  let status: ComplianceCheckStatus = 'PASSED';
+  if (breached > 0) status = 'FAILED';
+  else if (atRisk > 0) status = 'WARNING';
 
   return {
-    checkType: "DSAR_SLA_COMPLIANCE",
+    checkType: 'DSAR_SLA_COMPLIANCE',
     status,
     score: Math.round(complianceScore),
     message:
-      breached > 0
-        ? `${breached} breached, ${atRisk} at risk`
-        : "All DSAR tickets within SLA",
+      breached > 0 ? `${breached} breached, ${atRisk} at risk` : 'All DSAR tickets within SLA',
     details: { total, breached, atRisk, completed, rejected },
     recommendations:
       breached > 0 || atRisk > 0
         ? [
-            "Prioritize DSAR tickets approaching deadline",
-            "Review DSAR response process for bottlenecks",
+            'Prioritize DSAR tickets approaching deadline',
+            'Review DSAR response process for bottlenecks',
           ]
         : [],
     checkedAt: new Date(),
   };
 }
 
-async function checkDataRetention(
-  associationId: string,
-): Promise<ComplianceCheckResult> {
+async function checkDataRetention(associationId: string): Promise<ComplianceCheckResult> {
   const now = new Date();
   const sevenYearsAgo = new Date();
   sevenYearsAgo.setFullYear(now.getFullYear() - 7);
@@ -195,32 +186,27 @@ async function checkDataRetention(
 
   const score = total > 0 ? ((total - expiredActive) / total) * 100 : 100;
 
-  let status: ComplianceCheckStatus = "PASSED";
-  if (expiredActive > 0) status = "WARNING";
+  let status: ComplianceCheckStatus = 'PASSED';
+  if (expiredActive > 0) status = 'WARNING';
 
   return {
-    checkType: "DATA_RETENTION",
+    checkType: 'DATA_RETENTION',
     status,
     score: Math.round(score),
     message:
       expiredActive > 0
         ? `${expiredActive} users past retention date`
-        : "All user data within retention period",
+        : 'All user data within retention period',
     details: { total, anonymizedCount, expiredActive },
     recommendations:
       expiredActive > 0
-        ? [
-            "Run anonymization cron job",
-            "Review data retention policy enforcement",
-          ]
+        ? ['Run anonymization cron job', 'Review data retention policy enforcement']
         : [],
     checkedAt: new Date(),
   };
 }
 
-async function checkPiiEncryption(
-  associationId: string,
-): Promise<ComplianceCheckResult> {
+async function checkPiiEncryption(associationId: string): Promise<ComplianceCheckResult> {
   const sampleUsers = await prisma.user.findMany({
     where: { associationId },
     select: {
@@ -231,7 +217,7 @@ async function checkPiiEncryption(
       designation: true,
     },
     take: 10,
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: 'desc' },
   });
 
   const issues: string[] = [];
@@ -249,61 +235,56 @@ async function checkPiiEncryption(
     where: { associationId },
   });
 
-  let status: ComplianceCheckStatus = "PASSED";
+  let status: ComplianceCheckStatus = 'PASSED';
   let score = 100;
-  let message = "PII fields appear to be encrypted";
+  let message = 'PII fields appear to be encrypted';
 
   if (issues.length > 0) {
-    status = "WARNING";
+    status = 'WARNING';
     score = 80;
-    message = "Potential unencrypted PII detected";
+    message = 'Potential unencrypted PII detected';
   }
 
   if (totalMembers === 0) {
-    status = "SKIPPED";
+    status = 'SKIPPED';
     score = 100;
-    message = "No members to check";
+    message = 'No members to check';
   }
 
   return {
-    checkType: "PII_ENCRYPTION",
+    checkType: 'PII_ENCRYPTION',
     status,
     score,
     message,
     details: { totalMembers, checkedSamples: sampleUsers.length, issues },
     recommendations:
       issues.length > 0
-        ? [
-            "Verify encryption middleware is active",
-            "Check FIELD_ENCRYPTION_KEY configuration",
-          ]
+        ? ['Verify encryption middleware is active', 'Check FIELD_ENCRYPTION_KEY configuration']
         : [],
     checkedAt: new Date(),
   };
 }
 
-async function checkSubscriptionExpiry(
-  associationId: string,
-): Promise<ComplianceCheckResult> {
+async function checkSubscriptionExpiry(associationId: string): Promise<ComplianceCheckResult> {
   const now = new Date();
 
   const [totalActive, expired, upcomingExpire, total] = await Promise.all([
     prisma.subscription.count({
       where: {
         user: { associationId },
-        status: "ACTIVE",
+        status: 'ACTIVE',
       },
     }),
     prisma.subscription.count({
       where: {
         user: { associationId },
-        status: "EXPIRED",
+        status: 'EXPIRED',
       },
     }),
     prisma.subscription.count({
       where: {
         user: { associationId },
-        status: "ACTIVE",
+        status: 'ACTIVE',
         endDate: {
           gte: now,
           lte: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000),
@@ -317,27 +298,23 @@ async function checkSubscriptionExpiry(
 
   const score = total > 0 ? (totalActive / total) * 100 : 100;
 
-  let status: ComplianceCheckStatus = "PASSED";
-  if (expired > totalActive * 0.2) status = "FAILED";
-  else if (upcomingExpire > 0) status = "WARNING";
+  let status: ComplianceCheckStatus = 'PASSED';
+  if (expired > totalActive * 0.2) status = 'FAILED';
+  else if (upcomingExpire > 0) status = 'WARNING';
 
   return {
-    checkType: "SUBSCRIPTION_EXPIRY",
+    checkType: 'SUBSCRIPTION_EXPIRY',
     status,
     score: Math.round(score),
     message: `${totalActive} active, ${upcomingExpire} expiring within 30 days`,
     details: { total, totalActive, expired, upcomingExpire },
     recommendations:
-      upcomingExpire > 0
-        ? ["Send renewal reminders to members with expiring subscriptions"]
-        : [],
+      upcomingExpire > 0 ? ['Send renewal reminders to members with expiring subscriptions'] : [],
     checkedAt: new Date(),
   };
 }
 
-async function checkMemberDataCompleteness(
-  associationId: string,
-): Promise<ComplianceCheckResult> {
+async function checkMemberDataCompleteness(associationId: string): Promise<ComplianceCheckResult> {
   const users = await prisma.user.findMany({
     where: { associationId, status: UserStatus.ACTIVE },
     select: {
@@ -356,10 +333,10 @@ async function checkMemberDataCompleteness(
 
   if (total === 0) {
     return {
-      checkType: "MEMBER_DATA_COMPLETENESS",
-      status: "WARNING",
+      checkType: 'MEMBER_DATA_COMPLETENESS',
+      status: 'WARNING',
       score: 100,
-      message: "No active members to check",
+      message: 'No active members to check',
       details: { totalMembers: 0 },
       checkedAt: new Date(),
     };
@@ -371,8 +348,7 @@ async function checkMemberDataCompleteness(
     mobile: users.filter((u) => u.mobile).length,
     designation: users.filter((u) => u.designation).length,
     dateOfJoiningGovt: users.filter((u) => u.dateOfJoiningGovt).length,
-    dateOfJoiningAssociation: users.filter((u) => u.dateOfJoiningAssociation)
-      .length,
+    dateOfJoiningAssociation: users.filter((u) => u.dateOfJoiningAssociation).length,
     membershipNumber: users.filter((u) => u.membershipNumber).length,
   };
 
@@ -380,31 +356,27 @@ async function checkMemberDataCompleteness(
     Object.values(completeness).reduce((sum, c) => sum + c, 0) /
     (Object.keys(completeness).length * total);
 
-  let status: ComplianceCheckStatus = "PASSED";
-  if (avgScore < 70) status = "FAILED";
-  else if (avgScore < 85) status = "WARNING";
+  let status: ComplianceCheckStatus = 'PASSED';
+  if (avgScore < 70) status = 'FAILED';
+  else if (avgScore < 85) status = 'WARNING';
 
   const missingFields = Object.entries(completeness)
     .filter(([, count]) => count / total < 0.8)
     .map(([field]) => field);
 
   return {
-    checkType: "MEMBER_DATA_COMPLETENESS",
+    checkType: 'MEMBER_DATA_COMPLETENESS',
     status,
     score: Math.round(avgScore * 100),
     message: `Average field completeness: ${(avgScore * 100).toFixed(1)}%`,
     details: { totalMembers: total, completeness },
     recommendations:
-      missingFields.length > 0
-        ? [`Complete missing data for: ${missingFields.join(", ")}`]
-        : [],
+      missingFields.length > 0 ? [`Complete missing data for: ${missingFields.join(', ')}`] : [],
     checkedAt: new Date(),
   };
 }
 
-async function checkPaymentReconciliation(
-  associationId: string,
-): Promise<ComplianceCheckResult> {
+async function checkPaymentReconciliation(associationId: string): Promise<ComplianceCheckResult> {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -440,30 +412,26 @@ async function checkPaymentReconciliation(
 
   const successRate = total > 0 ? (completed / total) * 100 : 100;
 
-  let status: ComplianceCheckStatus = "PASSED";
-  if (successRate < 70) status = "FAILED";
-  else if (successRate < 85) status = "WARNING";
+  let status: ComplianceCheckStatus = 'PASSED';
+  if (successRate < 70) status = 'FAILED';
+  else if (successRate < 85) status = 'WARNING';
 
   return {
-    checkType: "PAYMENT_RECONCILIATION",
+    checkType: 'PAYMENT_RECONCILIATION',
     status,
     score: Math.round(successRate),
     message: `${successRate.toFixed(1)}% payment success rate`,
-    details: { total, completed, pending, failed, period: "30d" },
+    details: { total, completed, pending, failed, period: '30d' },
     recommendations:
-      successRate < 85
-        ? ["Review failed payment reasons", "Contact affected members"]
-        : [],
+      successRate < 85 ? ['Review failed payment reasons', 'Contact affected members'] : [],
     checkedAt: new Date(),
   };
 }
 
-async function checkAuditLogIntegrity(
-  associationId: string,
-): Promise<ComplianceCheckResult> {
+async function checkAuditLogIntegrity(associationId: string): Promise<ComplianceCheckResult> {
   const recentLogs = await prisma.auditLog.findMany({
     where: { associationId },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: 'desc' },
     take: 100,
   });
 
@@ -472,17 +440,15 @@ async function checkAuditLogIntegrity(
 
   const integrityScore =
     recentLogs.length > 0
-      ? ((recentLogs.length - logsWithNullTrace - logsWithNullActor) /
-          recentLogs.length) *
-        100
+      ? ((recentLogs.length - logsWithNullTrace - logsWithNullActor) / recentLogs.length) * 100
       : 100;
 
-  let status: ComplianceCheckStatus = "PASSED";
-  if (integrityScore < 80) status = "FAILED";
-  else if (integrityScore < 95) status = "WARNING";
+  let status: ComplianceCheckStatus = 'PASSED';
+  if (integrityScore < 80) status = 'FAILED';
+  else if (integrityScore < 95) status = 'WARNING';
 
   return {
-    checkType: "AUDIT_LOG_INTEGRITY",
+    checkType: 'AUDIT_LOG_INTEGRITY',
     status,
     score: Math.round(integrityScore),
     message: `Audit log integrity score: ${integrityScore.toFixed(1)}%`,
@@ -491,10 +457,7 @@ async function checkAuditLogIntegrity(
       missingTraceIds: logsWithNullTrace,
       missingActorIds: logsWithNullActor,
     },
-    recommendations:
-      logsWithNullTrace > 0
-        ? ["Ensure traceId is set in all API handlers"]
-        : [],
+    recommendations: logsWithNullTrace > 0 ? ['Ensure traceId is set in all API handlers'] : [],
     checkedAt: new Date(),
   };
 }
@@ -506,14 +469,13 @@ export async function generateComplianceEvidence(
   const now = new Date();
   const from = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
 
-  const [consentData, dsarData, memberData, paymentData, auditData] =
-    await Promise.all([
-      getConsentEvidence(associationId, from, now, days),
-      getDsarEvidence(associationId, from, now),
-      getMemberEvidence(associationId),
-      getPaymentEvidence(associationId, from, now),
-      getAuditEvidence(associationId, from, now),
-    ]);
+  const [consentData, dsarData, memberData, paymentData, auditData] = await Promise.all([
+    getConsentEvidence(associationId, from, now, days),
+    getDsarEvidence(associationId, from, now),
+    getMemberEvidence(associationId),
+    getPaymentEvidence(associationId, from, now),
+    getAuditEvidence(associationId, from, now),
+  ]);
 
   return {
     generatedAt: now,
@@ -529,12 +491,7 @@ export async function generateComplianceEvidence(
   };
 }
 
-async function getConsentEvidence(
-  associationId: string,
-  from: Date,
-  to: Date,
-  days: number,
-) {
+async function getConsentEvidence(associationId: string, from: Date, to: Date, days: number) {
   const records = await prisma.consentReceipt.findMany({
     where: { associationId, createdAt: { gte: from, lte: to } },
     select: { purpose: true, status: true },
@@ -550,7 +507,7 @@ async function getConsentEvidence(
   );
 
   return {
-    type: "consent_records",
+    type: 'consent_records',
     description: `Consent records by purpose and status (last ${days} days)`,
     count: records.length,
     metadata: grouped,
@@ -572,8 +529,8 @@ async function getDsarEvidence(associationId: string, from: Date, to: Date) {
   );
 
   return {
-    type: "dsar_tickets",
-    description: "DSAR tickets by status",
+    type: 'dsar_tickets',
+    description: 'DSAR tickets by status',
     count: tickets.length,
     metadata: grouped,
   };
@@ -589,8 +546,8 @@ async function getMemberEvidence(associationId: string) {
   ]);
 
   return {
-    type: "member_summary",
-    description: "Member statistics",
+    type: 'member_summary',
+    description: 'Member statistics',
     count: total,
     metadata: { active, withSubscription },
   };
@@ -598,7 +555,7 @@ async function getMemberEvidence(associationId: string) {
 
 async function getPaymentEvidence(associationId: string, from: Date, to: Date) {
   const payments = await prisma.paymentTransaction.groupBy({
-    by: ["status"],
+    by: ['status'],
     where: { associationId, createdAt: { gte: from, lte: to } },
     _count: { id: true },
   });
@@ -612,8 +569,8 @@ async function getPaymentEvidence(associationId: string, from: Date, to: Date) {
   );
 
   return {
-    type: "payment_transactions",
-    description: "Payment transactions by status",
+    type: 'payment_transactions',
+    description: 'Payment transactions by status',
     count: payments.reduce((sum, p) => sum + p._count.id, 0),
     metadata: grouped,
   };
@@ -621,7 +578,7 @@ async function getPaymentEvidence(associationId: string, from: Date, to: Date) {
 
 async function getAuditEvidence(associationId: string, from: Date, to: Date) {
   const logs = await prisma.auditLog.groupBy({
-    by: ["action"],
+    by: ['action'],
     where: { associationId, createdAt: { gte: from, lte: to } },
     _count: { id: true },
   });
@@ -635,8 +592,8 @@ async function getAuditEvidence(associationId: string, from: Date, to: Date) {
   );
 
   return {
-    type: "audit_logs",
-    description: "Audit logs by action type",
+    type: 'audit_logs',
+    description: 'Audit logs by action type',
     count: logs.reduce((sum, l) => sum + l._count.id, 0),
     metadata: grouped,
   };

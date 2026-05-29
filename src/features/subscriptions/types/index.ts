@@ -1,4 +1,4 @@
-type BillCycle = "MONTHLY" | "YEARLY";
+type BillCycle = 'MONTHLY' | 'YEARLY';
 
 export type SubscriptionPlanVersion = {
   id: string;

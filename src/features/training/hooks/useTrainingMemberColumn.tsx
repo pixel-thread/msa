@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useState, useMemo } from "react";
-import { CheckCircle, Award } from "lucide-react";
-import { Badge } from "@src/shared/components/ui/badge";
-import { Button } from "@src/shared/components/ui/button";
-import { ColumnDef } from "@tanstack/react-table";
-import { formatDate } from "@src/shared/utils";
-import type { AssignedUserWithCompletion } from "../types";
+import { useState, useMemo } from 'react';
+import { CheckCircle, Award } from 'lucide-react';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { ColumnDef } from '@tanstack/react-table';
+import { formatDate } from '@src/shared/utils';
+import type { AssignedUserWithCompletion } from '../types';
 
 export function useTrainingMemberColumn(options: {
   assignedUsers: AssignedUserWithCompletion[];
@@ -14,15 +14,14 @@ export function useTrainingMemberColumn(options: {
   completeAssignment: (data: {
     userId: string;
     scorePercent?: number;
-    certificateOption?: "none" | "global" | "custom";
+    certificateOption?: 'none' | 'global' | 'custom';
     certificateFile?: File | null;
   }) => void;
 }) {
   const { assignedUsers, completeAssignment } = options;
 
-  const [search, setSearch] = useState("");
-  const [selectedUser, setSelectedUser] =
-    useState<AssignedUserWithCompletion | null>(null);
+  const [search, setSearch] = useState('');
+  const [selectedUser, setSelectedUser] = useState<AssignedUserWithCompletion | null>(null);
   const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
 
   const filteredUsers = useMemo(() => {
@@ -30,15 +29,14 @@ export function useTrainingMemberColumn(options: {
     if (!query) return assignedUsers;
     return assignedUsers.filter(
       (u) =>
-        u.user?.name?.toLowerCase().includes(query) ||
-        u.user?.email?.toLowerCase().includes(query),
+        u.user?.name?.toLowerCase().includes(query) || u.user?.email?.toLowerCase().includes(query),
     );
   }, [assignedUsers, search]);
 
   const handleComplete = (data: {
     userId: string;
     scorePercent?: number;
-    certificateOption?: "none" | "global" | "custom";
+    certificateOption?: 'none' | 'global' | 'custom';
     certificateFile?: File | null;
   }) => {
     completeAssignment(data);
@@ -46,32 +44,30 @@ export function useTrainingMemberColumn(options: {
 
   const memberColumns: ColumnDef<AssignedUserWithCompletion>[] = [
     {
-      accessorKey: "user.name",
-      header: "Member",
+      accessorKey: 'user.name',
+      header: 'Member',
       cell: ({ row }) => {
         const u = row.original.user;
         return (
           <div className="flex flex-col">
-            <span className="text-sm font-semibold text-ink">
-              {u?.name || "Unknown User"}
-            </span>
+            <span className="text-sm font-semibold text-ink">{u?.name || 'Unknown User'}</span>
             <span className="text-xs text-muted-foreground">{u?.email}</span>
           </div>
         );
       },
     },
     {
-      accessorKey: "status",
-      header: "Status",
+      accessorKey: 'status',
+      header: 'Status',
       cell: ({ row }) => {
         const status = row.original.status;
-        const isCompleted = status === "COMPLETED";
+        const isCompleted = status === 'COMPLETED';
         return (
           <Badge
             className={
               isCompleted
-                ? "bg-semantic-up/10 text-semantic-up border-semantic-up/20"
-                : "bg-surface-soft text-body border-hairline"
+                ? 'bg-semantic-up/10 text-semantic-up border-semantic-up/20'
+                : 'bg-surface-soft text-body border-hairline'
             }
           >
             {isCompleted ? (
@@ -87,8 +83,8 @@ export function useTrainingMemberColumn(options: {
       },
     },
     {
-      accessorKey: "completion.scorePercent",
-      header: "Points",
+      accessorKey: 'completion.scorePercent',
+      header: 'Points',
       cell: ({ row }) => {
         const score = row.original.completion?.scorePercent;
         return (
@@ -106,39 +102,35 @@ export function useTrainingMemberColumn(options: {
       },
     },
     {
-      accessorKey: "assignedAt",
-      header: "Assigned",
+      accessorKey: 'assignedAt',
+      header: 'Assigned',
       cell: ({ row }) => {
         const assignedAt = row.original.assignedAt;
         return (
-          <span className="text-sm text-body">
-            {assignedAt ? formatDate(assignedAt) : "N/A"}
-          </span>
+          <span className="text-sm text-body">{assignedAt ? formatDate(assignedAt) : 'N/A'}</span>
         );
       },
     },
     {
-      accessorKey: "completion.completedAt",
-      header: "Completed",
+      accessorKey: 'completion.completedAt',
+      header: 'Completed',
       cell: ({ row }) => {
         const completedAt = row.original.completion?.completedAt;
         return (
-          <span className="text-sm text-body">
-            {completedAt ? formatDate(completedAt) : "—"}
-          </span>
+          <span className="text-sm text-body">{completedAt ? formatDate(completedAt) : '—'}</span>
         );
       },
     },
     {
-      id: "actions",
-      header: "Actions",
+      id: 'actions',
+      header: 'Actions',
       cell: ({ row }) => {
         const assignment = row.original;
-        const isCompleted = assignment.status === "COMPLETED";
+        const isCompleted = assignment.status === 'COMPLETED';
 
         return (
           <Button
-            variant={isCompleted ? "outline" : "default"}
+            variant={isCompleted ? 'outline' : 'default'}
             size="sm"
             disabled={isCompleted}
             onClick={() => {

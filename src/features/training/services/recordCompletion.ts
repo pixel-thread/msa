@@ -1,9 +1,6 @@
-import { prisma } from "@lib/prisma";
-import {
-  RecordCompletionInput,
-  AdminRecordCompletionInput,
-} from "../validators/training";
-import { AuditAction, Prisma } from "@prisma/client";
+import { prisma } from '@lib/prisma';
+import { RecordCompletionInput, AdminRecordCompletionInput } from '../validators/training';
+import { AuditAction, Prisma } from '@prisma/client';
 
 interface RecordCompletionProps {
   associationId: string;
@@ -41,7 +38,7 @@ export async function recordCompletion({
         associationId,
         actorId: userId,
         action: AuditAction.TRAINING_COMPLETE,
-        resourceType: "TrainingCompletion",
+        resourceType: 'TrainingCompletion',
         resourceId: completion.id,
         newValues: { ...data, moduleId } as Prisma.InputJsonValue,
       },
@@ -91,7 +88,7 @@ export async function adminRecordCompletion({
         associationId,
         actorId,
         action: AuditAction.TRAINING_COMPLETE,
-        resourceType: "TrainingCompletion",
+        resourceType: 'TrainingCompletion',
         resourceId: completion.id,
         newValues: { userId, moduleId, scorePercent } as Prisma.InputJsonValue,
       },

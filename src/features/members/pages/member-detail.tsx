@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter } from 'next/navigation';
 
-import { useMember } from "@src/features/members/hooks/useMember";
-import { Button } from "@src/shared/components/ui/button";
-import { PersonalInfoCard } from "@src/features/members/components/detail/personal-info-card";
-import { StatusCard } from "@src/features/members/components/detail/status-card";
-import { DatesCard } from "@src/features/members/components/detail/dates-card";
-import { PaymentsCard } from "@src/features/members/components/detail/payments-card";
-import { ActivityCard } from "@src/features/members/components/detail/activity-card";
-import { AccountCard } from "@src/features/members/components/detail/account-card";
+import { useMember } from '@src/features/members/hooks/useMember';
+import { Button } from '@src/shared/components/ui/button';
+import { PersonalInfoCard } from '@src/features/members/components/detail/personal-info-card';
+import { StatusCard } from '@src/features/members/components/detail/status-card';
+import { DatesCard } from '@src/features/members/components/detail/dates-card';
+import { PaymentsCard } from '@src/features/members/components/detail/payments-card';
+import { ActivityCard } from '@src/features/members/components/detail/activity-card';
+import { AccountCard } from '@src/features/members/components/detail/account-card';
 
 export function MemberDetailPage() {
   const params = useParams();
@@ -48,9 +48,7 @@ export function MemberDetailPage() {
           <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
             {member.name}
           </h1>
-          <p className="mt-1 text-base text-body">
-            Member details and activity
-          </p>
+          <p className="mt-1 text-base text-body">Member details and activity</p>
         </div>
       </div>
 

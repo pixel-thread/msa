@@ -1,10 +1,10 @@
-"use client";
-import { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@src/shared/components/ui/badge";
-import { formatDate, formattedAmount } from "@src/shared/utils";
-import { getMonthName } from "@src/shared/utils/helper/get-month-name";
-import { getMethodBadge } from "@src/shared/utils/helper/get-method-badge";
-import { getStatusBadge } from "@src/shared/utils/helper/get-status-badge";
+'use client';
+import { ColumnDef } from '@tanstack/react-table';
+import { Badge } from '@src/shared/components/ui/badge';
+import { formatDate, formattedAmount } from '@src/shared/utils';
+import { getMonthName } from '@src/shared/utils/helper/get-month-name';
+import { getMethodBadge } from '@src/shared/utils/helper/get-method-badge';
+import { getStatusBadge } from '@src/shared/utils/helper/get-status-badge';
 
 interface PaymentAllocation {
   id: string;
@@ -39,24 +39,20 @@ interface PaymentTransaction {
 export function useSubscriptionPaymentColumns() {
   const columns: ColumnDef<PaymentTransaction>[] = [
     {
-      accessorKey: "paymentDate",
-      header: "Date",
+      accessorKey: 'paymentDate',
+      header: 'Date',
       cell: ({ row }) => (
         <div className="flex flex-col">
-          <span className="text-sm font-medium">
-            {formatDate(row.original.paymentDate)}
-          </span>
+          <span className="text-sm font-medium">{formatDate(row.original.paymentDate)}</span>
           {row.original.notes && (
-            <span className="text-xs text-muted-foreground line-clamp-1">
-              {row.original.notes}
-            </span>
+            <span className="text-xs text-muted-foreground line-clamp-1">{row.original.notes}</span>
           )}
         </div>
       ),
     },
     {
-      accessorKey: "amount",
-      header: "Amount",
+      accessorKey: 'amount',
+      header: 'Amount',
       cell: ({ row }) => (
         <span className="text-sm font-medium text-ink">
           {formattedAmount(row.original.amount, row.original.currency)}
@@ -64,18 +60,18 @@ export function useSubscriptionPaymentColumns() {
       ),
     },
     {
-      accessorKey: "status",
-      header: "Status",
+      accessorKey: 'status',
+      header: 'Status',
       cell: ({ row }) => getStatusBadge(row.original.status),
     },
     {
-      accessorKey: "method",
-      header: "Method",
+      accessorKey: 'method',
+      header: 'Method',
       cell: ({ row }) => getMethodBadge(row.original.method),
     },
     {
-      accessorKey: "gateway",
-      header: "Gateway",
+      accessorKey: 'gateway',
+      header: 'Gateway',
       cell: ({ row }) => (
         <Badge variant="outline" className="capitalize">
           {row.original.gateway.toLowerCase()}
@@ -83,16 +79,15 @@ export function useSubscriptionPaymentColumns() {
       ),
     },
     {
-      id: "allocations",
-      header: "Allocations",
+      id: 'allocations',
+      header: 'Allocations',
       cell: ({ row }) => {
         const allocations = row.original.allocations;
         return allocations.length > 0 ? (
           <div className="flex flex-wrap gap-1">
             {allocations.map((alloc) => (
               <Badge key={alloc.id} variant="secondary" className="text-xs">
-                {getMonthName(alloc.contributionPeriod.month)}{" "}
-                {alloc.contributionPeriod.year}
+                {getMonthName(alloc.contributionPeriod.month)} {alloc.contributionPeriod.year}
               </Badge>
             ))}
           </div>
@@ -102,14 +97,14 @@ export function useSubscriptionPaymentColumns() {
       },
     },
     {
-      id: "reference",
+      id: 'reference',
       header: () => <span className="text-right">Reference</span>,
       cell: ({ row }) => (
         <span className="text-xs text-muted-foreground block text-right">
           {row.original.referenceNumber ||
             row.original.receiptNumber ||
             row.original.razorpayPaymentId ||
-            "-"}
+            '-'}
         </span>
       ),
     },

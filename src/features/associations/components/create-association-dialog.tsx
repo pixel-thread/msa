@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Dialog,
   DialogContent,
@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@src/shared/components/ui/dialog";
+} from '@src/shared/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -17,16 +17,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
-import { Input } from "@src/shared/components/ui/input";
-import { Textarea } from "@src/shared/components/ui/textarea";
-import { Button } from "@src/shared/components/ui/button";
-import { Plus } from "lucide-react";
-import { useCreateAssociation } from "@src/features/associations/hooks/useCreateAssociation";
+} from '@src/shared/components/ui/form';
+import { Input } from '@src/shared/components/ui/input';
+import { Textarea } from '@src/shared/components/ui/textarea';
+import { Button } from '@src/shared/components/ui/button';
+import { Plus } from 'lucide-react';
+import { useCreateAssociation } from '@src/features/associations/hooks/useCreateAssociation';
 import {
   CreateAssociationInput,
   CreateAssociationSchema,
-} from "@src/features/associations/validators";
+} from '@src/features/associations/validators';
 
 export function CreateAssociationDialog() {
   const [open, setOpen] = useState(false);
@@ -35,14 +35,14 @@ export function CreateAssociationDialog() {
   const form = useForm({
     resolver: zodResolver(CreateAssociationSchema),
     defaultValues: {
-      slug: "",
-      name: "",
-      description: "",
-      state: "",
-      country: "IN",
-      contactEmail: "",
-      primaryColor: "",
-      secondaryColor: "",
+      slug: '',
+      name: '',
+      description: '',
+      state: '',
+      country: 'IN',
+      contactEmail: '',
+      primaryColor: '',
+      secondaryColor: '',
     },
   });
 
@@ -66,9 +66,7 @@ export function CreateAssociationDialog() {
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Create Association</DialogTitle>
-          <DialogDescription>
-            Add a new association to the platform
-          </DialogDescription>
+          <DialogDescription>Add a new association to the platform</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -109,10 +107,7 @@ export function CreateAssociationDialog() {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Brief description of the association"
-                      {...field}
-                    />
+                    <Textarea placeholder="Brief description of the association" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -160,11 +155,7 @@ export function CreateAssociationDialog() {
                 <FormItem>
                   <FormLabel>Contact Email</FormLabel>
                   <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="admin@association.org"
-                      {...field}
-                    />
+                    <Input type="email" placeholder="admin@association.org" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -183,14 +174,10 @@ export function CreateAssociationDialog() {
                         <div
                           className="h-9 w-9 border shrink-0"
                           style={{
-                            backgroundColor: field.value || "#1f2937",
+                            backgroundColor: field.value || '#1f2937',
                           }}
                         />
-                        <Input
-                          placeholder="#1f2937"
-                          className="font-mono"
-                          {...field}
-                        />
+                        <Input placeholder="#1f2937" className="font-mono" {...field} />
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -208,14 +195,10 @@ export function CreateAssociationDialog() {
                         <div
                           className="h-9 w-9 border shrink-0"
                           style={{
-                            backgroundColor: field.value || "#3b82f6",
+                            backgroundColor: field.value || '#3b82f6',
                           }}
                         />
-                        <Input
-                          placeholder="#3b82f6"
-                          className="font-mono"
-                          {...field}
-                        />
+                        <Input placeholder="#3b82f6" className="font-mono" {...field} />
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -225,15 +208,11 @@ export function CreateAssociationDialog() {
             </div>
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setOpen(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={createAssociation.isPending}>
-                {createAssociation.isPending ? "Creating..." : "Create"}
+                {createAssociation.isPending ? 'Creating...' : 'Create'}
               </Button>
             </DialogFooter>
           </form>

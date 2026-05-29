@@ -5,9 +5,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
-import { Button } from "@src/shared/components/ui/button";
-import type { Announcement } from "@src/features/announcement/types";
+} from '@src/shared/components/ui/dialog';
+import { Button } from '@src/shared/components/ui/button';
+import type { Announcement } from '@src/features/announcement/types';
 
 interface DeleteAnnouncementDialogProps {
   announcement: Announcement | null;
@@ -32,25 +32,17 @@ export function DeleteAnnouncementDialog({
         <DialogHeader>
           <DialogTitle>Delete Announcement</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete &quot;{announcement.title}&quot;?
-            This action cannot be undone.
+            Are you sure you want to delete &quot;{announcement.title}&quot;? This action cannot be
+            undone.
           </DialogDescription>
         </DialogHeader>
 
         <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-          >
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button
-            variant="destructive"
-            onClick={onConfirm}
-            disabled={isDeleting}
-          >
-            {isDeleting ? "Deleting..." : "Delete"}
+          <Button variant="destructive" onClick={onConfirm} disabled={isDeleting}>
+            {isDeleting ? 'Deleting...' : 'Delete'}
           </Button>
         </DialogFooter>
       </DialogContent>

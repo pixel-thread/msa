@@ -1,6 +1,6 @@
-import { prisma } from "@lib/prisma";
-import { PAGE_SIZE } from "@src/shared/constants";
-import { AuditAction, Prisma } from "@prisma/client";
+import { prisma } from '@lib/prisma';
+import { PAGE_SIZE } from '@src/shared/constants';
+import { AuditAction, Prisma } from '@prisma/client';
 
 interface GetTrainingAssignmentsProps {
   associationId: string;
@@ -34,7 +34,7 @@ export async function getTrainingAssignments({
           },
         },
       },
-      orderBy: { assignedAt: "desc" },
+      orderBy: { assignedAt: 'desc' },
     }),
     prisma.trainingAssignment.count({
       where: {
@@ -66,7 +66,7 @@ export async function assignTraining({
     });
 
     if (!trainingModule) {
-      throw new Error("Training module not found");
+      throw new Error('Training module not found');
     }
 
     const user = await tx.user.findFirst({
@@ -74,7 +74,7 @@ export async function assignTraining({
     });
 
     if (!user) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
 
     const hasMatchingRole = trainingModule.requiredForRoles.some((role) =>
@@ -82,9 +82,7 @@ export async function assignTraining({
     );
 
     if (!hasMatchingRole) {
-      throw new Error(
-        "User's role does not match the required roles for this training module",
-      );
+      throw new Error("User's role does not match the required roles for this training module");
     }
 
     const existingAssignment = await tx.trainingAssignment.findUnique({
@@ -100,7 +98,7 @@ export async function assignTraining({
         moduleId,
         userId,
         assignedById,
-        status: "ASSIGNED",
+        status: 'ASSIGNED',
       },
     });
 
@@ -109,7 +107,7 @@ export async function assignTraining({
         associationId,
         actorId: assignedById,
         action: AuditAction.TRAINING_ASSIGN,
-        resourceType: "TrainingAssignment",
+        resourceType: 'TrainingAssignment',
         resourceId: assignment.id,
         newValues: { moduleId, userId } as Prisma.InputJsonValue,
       },
@@ -138,7 +136,7 @@ export async function bulkAssignTraining({
     });
 
     if (!trainingModule) {
-      throw new Error("Training module not found");
+      throw new Error('Training module not found');
     }
 
     const users = await tx.user.findMany({
@@ -149,14 +147,14 @@ export async function bulkAssignTraining({
     });
 
     if (users.length === 0) {
-      throw new Error("No valid users found");
+      throw new Error('No valid users found');
     }
 
     const validAssignments: {
       moduleId: string;
       userId: string;
       assignedById: string;
-      status: "ASSIGNED";
+      status: 'ASSIGNED';
     }[] = [];
     const skippedUsers: string[] = [];
 
@@ -170,7 +168,7 @@ export async function bulkAssignTraining({
           moduleId,
           userId: user.id,
           assignedById,
-          status: "ASSIGNED",
+          status: 'ASSIGNED',
         });
       } else {
         skippedUsers.push(user.id);
@@ -189,9 +187,7 @@ export async function bulkAssignTraining({
       });
 
       const existingUserIds = new Set(existingAssignments.map((a) => a.userId));
-      const newAssignments = validAssignments.filter(
-        (a) => !existingUserIds.has(a.userId),
-      );
+      const newAssignments = validAssignments.filter((a) => !existingUserIds.has(a.userId));
 
       if (newAssignments.length > 0) {
         createdAssignments = await tx.trainingAssignment.createManyAndReturn({
@@ -203,7 +199,7 @@ export async function bulkAssignTraining({
             associationId,
             actorId: assignedById,
             action: AuditAction.TRAINING_ASSIGN,
-            resourceType: "TrainingAssignment",
+            resourceType: 'TrainingAssignment',
             resourceId: moduleId,
             newValues: {
               assignedUserIds: validAssignments.map((a) => a.userId),
@@ -244,7 +240,7 @@ export async function removeTrainingAssignment({
     });
 
     if (!assignment) {
-      throw new Error("Training assignment not found");
+      throw new Error('Training assignment not found');
     }
 
     await tx.trainingAssignment.delete({
@@ -256,13 +252,13 @@ export async function removeTrainingAssignment({
         associationId,
         actorId: removedById,
         action: AuditAction.TRAINING_UNASSIGN,
-        resourceType: "TrainingAssignment",
+        resourceType: 'TrainingAssignment',
         resourceId: assignment.id,
         newValues: { moduleId, userId } as Prisma.InputJsonValue,
       },
     });
 
-    return { success: true, message: "Training assignment removed" };
+    return { success: true, message: 'Training assignment removed' };
   });
 }
 
@@ -295,9 +291,7 @@ export async function bulkRemoveTrainingAssignment({
 
     const deletedIds = existingAssignments.map((a) => a.id);
     const deletedUserIds = existingAssignments.map((a) => a.userId);
-    const notFoundUserIds = userIds.filter(
-      (id) => !deletedUserIds.includes(id),
-    );
+    const notFoundUserIds = userIds.filter((id) => !deletedUserIds.includes(id));
 
     await tx.trainingAssignment.deleteMany({
       where: { id: { in: deletedIds } },
@@ -308,7 +302,7 @@ export async function bulkRemoveTrainingAssignment({
         associationId,
         actorId: removedById,
         action: AuditAction.TRAINING_UNASSIGN,
-        resourceType: "TrainingAssignment",
+        resourceType: 'TrainingAssignment',
         resourceId: moduleId,
         newValues: {
           removedUserIds: deletedUserIds,

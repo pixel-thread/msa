@@ -4,10 +4,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@src/shared/components/ui/dialog";
-import { Badge } from "@src/shared/components/ui/badge";
-import { formatDate } from "@src/shared/utils";
-import type { LogEntry } from "../types";
+} from '@src/shared/components/ui/dialog';
+import { Badge } from '@src/shared/components/ui/badge';
+import { formatDate } from '@src/shared/utils';
+import type { LogEntry } from '../types';
 
 interface LogDetailsDialogProps {
   entry: LogEntry | null;
@@ -15,21 +15,14 @@ interface LogDetailsDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const levelBadgeVariant: Record<
-  string,
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  error: "destructive",
-  warn: "secondary",
-  info: "default",
-  debug: "outline",
+const levelBadgeVariant: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+  error: 'destructive',
+  warn: 'secondary',
+  info: 'default',
+  debug: 'outline',
 };
 
-export function LogDetailsDialog({
-  entry,
-  open,
-  onOpenChange,
-}: LogDetailsDialogProps) {
+export function LogDetailsDialog({ entry, open, onOpenChange }: LogDetailsDialogProps) {
   if (!entry) return null;
 
   return (
@@ -43,7 +36,7 @@ export function LogDetailsDialog({
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium">Level:</span>
-            <Badge variant={levelBadgeVariant[entry.type] ?? "outline"}>
+            <Badge variant={levelBadgeVariant[entry.type] ?? 'outline'}>
               {entry.type.toUpperCase()}
             </Badge>
           </div>
@@ -57,9 +50,7 @@ export function LogDetailsDialog({
 
           <div>
             <span className="text-sm font-medium">Source:</span>
-            <p className="mt-1 text-sm">
-              {entry.isBackend ? "Backend" : "Client"}
-            </p>
+            <p className="mt-1 text-sm">{entry.isBackend ? 'Backend' : 'Client'}</p>
           </div>
 
           <div>
@@ -69,9 +60,7 @@ export function LogDetailsDialog({
 
           <div>
             <span className="text-sm font-medium">ID:</span>
-            <p className="mt-1 text-sm font-mono text-muted-foreground">
-              {entry.id}
-            </p>
+            <p className="mt-1 text-sm font-mono text-muted-foreground">{entry.id}</p>
           </div>
 
           {entry.content && Object.keys(entry.content).length > 0 && (

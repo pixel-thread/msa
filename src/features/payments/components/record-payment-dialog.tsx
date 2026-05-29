@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { z } from "zod";
-import http from "@src/shared/utils/http";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { z } from 'zod';
+import http from '@src/shared/utils/http';
 import {
   Dialog,
   DialogContent,
@@ -12,7 +12,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
+} from '@src/shared/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -20,20 +20,20 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
-import { Button } from "@src/shared/components/ui/button";
-import { Input } from "@src/shared/components/ui/input";
+} from '@src/shared/components/ui/form';
+import { Button } from '@src/shared/components/ui/button';
+import { Input } from '@src/shared/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@src/shared/components/ui/select";
-import { Textarea } from "@src/shared/components/ui/textarea";
-import { toast } from "sonner";
-import { RecordManualPaymentSchema } from "@src/features/payments/validators";
-import { MemberCombobox } from "@src/shared/components/members/member-combobox";
+} from '@src/shared/components/ui/select';
+import { Textarea } from '@src/shared/components/ui/textarea';
+import { toast } from 'sonner';
+import { RecordManualPaymentSchema } from '@src/features/payments/validators';
+import { MemberCombobox } from '@src/shared/components/members/member-combobox';
 
 type RecordManualPaymentInput = z.infer<typeof RecordManualPaymentSchema>;
 
@@ -42,38 +42,34 @@ interface RecordPaymentDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function RecordPaymentDialog({
-  open,
-  onOpenChange,
-}: RecordPaymentDialogProps) {
+export function RecordPaymentDialog({ open, onOpenChange }: RecordPaymentDialogProps) {
   const queryClient = useQueryClient();
 
   const form = useForm<RecordManualPaymentInput>({
     resolver: zodResolver(RecordManualPaymentSchema),
     defaultValues: {
-      userId: "",
+      userId: '',
       amount: 0,
-      notes: "",
-      receiptNumber: "",
-      referenceNumber: "",
+      notes: '',
+      receiptNumber: '',
+      referenceNumber: '',
     },
   });
 
   const recordPayment = useMutation({
-    mutationFn: (data: RecordManualPaymentInput) =>
-      http.post("/payments/record", data),
+    mutationFn: (data: RecordManualPaymentInput) => http.post('/payments/record', data),
     onSuccess: (response) => {
       if (response.success) {
-        toast.success("Payment recorded successfully");
-        queryClient.invalidateQueries({ queryKey: ["all-payments"] });
+        toast.success('Payment recorded successfully');
+        queryClient.invalidateQueries({ queryKey: ['all-payments'] });
         form.reset();
         onOpenChange(false);
       } else {
-        toast.error(response.message || "Failed to record payment");
+        toast.error(response.message || 'Failed to record payment');
       }
     },
     onError: () => {
-      toast.error("Failed to record payment");
+      toast.error('Failed to record payment');
     },
   });
 
@@ -87,16 +83,12 @@ export function RecordPaymentDialog({
         <DialogHeader>
           <DialogTitle>Record Manual Payment</DialogTitle>
           <DialogDescription>
-            Record an offline payment made via cash, UPI, bank transfer, or
-            cheque.
+            Record an offline payment made via cash, UPI, bank transfer, or cheque.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="grid gap-4 py-4"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
             <FormField
               control={form.control}
               name="userId"
@@ -127,9 +119,7 @@ export function RecordPaymentDialog({
                       step="0.01"
                       min="0"
                       {...field}
-                      onChange={(e) =>
-                        field.onChange(e.target.valueAsNumber || 0)
-                      }
+                      onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
                       placeholder="0.00"
                     />
                   </FormControl>
@@ -152,9 +142,7 @@ export function RecordPaymentDialog({
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="CASH">Cash</SelectItem>
-                      <SelectItem value="BANK_TRANSFER">
-                        Bank Transfer
-                      </SelectItem>
+                      <SelectItem value="BANK_TRANSFER">Bank Transfer</SelectItem>
                       <SelectItem value="UPI">UPI</SelectItem>
                       <SelectItem value="CHEQUE">Cheque</SelectItem>
                     </SelectContent>
@@ -199,11 +187,7 @@ export function RecordPaymentDialog({
                 <FormItem>
                   <FormLabel>Notes</FormLabel>
                   <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder="Optional notes about this payment"
-                      rows={3}
-                    />
+                    <Textarea {...field} placeholder="Optional notes about this payment" rows={3} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -222,7 +206,7 @@ export function RecordPaymentDialog({
                 Cancel
               </Button>
               <Button type="submit" disabled={recordPayment.isPending}>
-                {recordPayment.isPending ? "Recording..." : "Record Payment"}
+                {recordPayment.isPending ? 'Recording...' : 'Record Payment'}
               </Button>
             </DialogFooter>
           </form>

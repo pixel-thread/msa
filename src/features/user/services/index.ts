@@ -1,6 +1,6 @@
-import { Prisma } from "@prisma/client";
-import { PAGE_SIZE } from "@src/shared/constants";
-import { prisma } from "@src/shared/lib/prisma";
+import { Prisma } from '@prisma/client';
+import { PAGE_SIZE } from '@src/shared/constants';
+import { prisma } from '@src/shared/lib/prisma';
 
 type Props = {
   where: Prisma.UserWhereUniqueInput;
@@ -43,15 +43,12 @@ type GetUserInvoicesProps = {
   page?: number;
 };
 
-export async function getUserInvoices({
-  where,
-  page = 1,
-}: GetUserInvoicesProps) {
+export async function getUserInvoices({ where, page = 1 }: GetUserInvoicesProps) {
   return await prisma.$transaction([
     prisma.paymentTransaction.findMany({
       where,
       orderBy: {
-        createdAt: "desc",
+        createdAt: 'desc',
       },
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,

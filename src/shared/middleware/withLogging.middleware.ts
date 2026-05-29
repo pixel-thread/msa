@@ -1,6 +1,6 @@
-import type { MiddlewareFn } from "./chain";
-import { normalizeUnknownError } from "../errors";
-import { AppErrorResponse, getTraceId } from "../utils";
+import type { MiddlewareFn } from './chain';
+import { normalizeUnknownError } from '../errors';
+import { AppErrorResponse, getTraceId } from '../utils';
 
 export const withLogging: MiddlewareFn = async (req, next, _event) => {
   try {

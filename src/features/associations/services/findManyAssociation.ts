@@ -1,18 +1,14 @@
-import { prisma } from "@lib/prisma";
-import { Prisma } from "@prisma/client";
-import { PAGE_SIZE } from "@src/shared/constants";
-import { buildPagination } from "@src/shared/utils";
+import { prisma } from '@lib/prisma';
+import { Prisma } from '@prisma/client';
+import { PAGE_SIZE } from '@src/shared/constants';
+import { buildPagination } from '@src/shared/utils';
 
 type FindManyProps = {
   where?: Prisma.AssociationWhereInput;
   orderBy?: Prisma.AssociationOrderByWithRelationInput;
   page?: number;
 };
-export async function findManyAssociation({
-  page = 1,
-  where,
-  orderBy,
-}: FindManyProps) {
+export async function findManyAssociation({ page = 1, where, orderBy }: FindManyProps) {
   const [associations, total] = await prisma.$transaction([
     prisma.association.findMany({
       where,

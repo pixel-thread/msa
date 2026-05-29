@@ -1,8 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import { toast } from "sonner";
-import { trainingEndpoints, trainingQueryKeys } from "../utils/constants";
-import type { AssignedUserWithCompletion } from "../types";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import { toast } from 'sonner';
+import { trainingEndpoints, trainingQueryKeys } from '../utils/constants';
+import type { AssignedUserWithCompletion } from '../types';
 
 export function useModuleAssignedUsers(moduleId: string | null, page?: number) {
   const queryClient = useQueryClient();
@@ -10,9 +10,7 @@ export function useModuleAssignedUsers(moduleId: string | null, page?: number) {
   const { data, isLoading, refetch } = useQuery({
     queryKey: trainingQueryKeys.assignedUsers.all(moduleId, page),
     queryFn: async () =>
-      http.get<AssignedUserWithCompletion[]>(
-        trainingEndpoints.assignedUsers.list(moduleId!, page),
-      ),
+      http.get<AssignedUserWithCompletion[]>(trainingEndpoints.assignedUsers.list(moduleId!, page)),
     enabled: !!moduleId,
   });
 
@@ -25,28 +23,22 @@ export function useModuleAssignedUsers(moduleId: string | null, page?: number) {
     }: {
       userId: string;
       scorePercent?: number;
-      certificateOption?: "none" | "global" | "custom";
+      certificateOption?: 'none' | 'global' | 'custom';
       certificateFile?: File | null;
     }) => {
       const metadata = {
         scorePercent,
-        certificateOption: certificateOption || "none",
+        certificateOption: certificateOption || 'none',
       };
 
-      if (certificateOption === "custom" && certificateFile) {
+      if (certificateOption === 'custom' && certificateFile) {
         const formData = new FormData();
-        formData.append("file", certificateFile);
-        formData.append("metadata", JSON.stringify(metadata));
-        return http.post(
-          trainingEndpoints.assignedUsers.complete(moduleId!, userId),
-          formData,
-        );
+        formData.append('file', certificateFile);
+        formData.append('metadata', JSON.stringify(metadata));
+        return http.post(trainingEndpoints.assignedUsers.complete(moduleId!, userId), formData);
       }
 
-      return http.post(
-        trainingEndpoints.assignedUsers.complete(moduleId!, userId),
-        metadata,
-      );
+      return http.post(trainingEndpoints.assignedUsers.complete(moduleId!, userId), metadata);
     },
     onSuccess: (res) => {
       if (res.success) {
@@ -59,10 +51,10 @@ export function useModuleAssignedUsers(moduleId: string | null, page?: number) {
         queryClient.invalidateQueries({
           queryKey: trainingQueryKeys.completions.my,
         });
-        toast.success("User marked as completed successfully");
+        toast.success('User marked as completed successfully');
         return res;
       }
-      toast.error(res.message || "Failed to mark as completed");
+      toast.error(res.message || 'Failed to mark as completed');
       return res;
     },
   });

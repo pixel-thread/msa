@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { DataTable } from "@src/shared/components/data-table";
-import { DataTableFilters } from "@src/shared/components/data-table-filters";
-import { useMemberTypesList } from "@src/features/member-type/hooks/useMemberTypesList";
-import { useDeleteMemberType } from "@src/features/member-type/hooks/useDeleteMemberType";
-import { useMemberTypeColumns } from "@src/features/member-type/hooks/useMemberTypeColumns";
-import { CreateMemberTypeDialog } from "@src/features/member-type/components/create-member-type-dialog";
-import { EditMemberTypeDialog } from "@src/features/member-type/components/edit-member-type-dialog";
-import { DeleteMemberTypeDialog } from "@src/features/member-type/components/delete-member-type-dialog";
+import { useState } from 'react';
+import { DataTable } from '@src/shared/components/data-table';
+import { DataTableFilters } from '@src/shared/components/data-table-filters';
+import { useMemberTypesList } from '@src/features/member-type/hooks/useMemberTypesList';
+import { useDeleteMemberType } from '@src/features/member-type/hooks/useDeleteMemberType';
+import { useMemberTypeColumns } from '@src/features/member-type/hooks/useMemberTypeColumns';
+import { CreateMemberTypeDialog } from '@src/features/member-type/components/create-member-type-dialog';
+import { EditMemberTypeDialog } from '@src/features/member-type/components/edit-member-type-dialog';
+import { DeleteMemberTypeDialog } from '@src/features/member-type/components/delete-member-type-dialog';
 
 interface MemberType {
   id: string;
@@ -21,11 +21,8 @@ interface MemberType {
 }
 
 export default function MemberTypesPage() {
-  const [editingMemberType, setEditingMemberType] = useState<MemberType | null>(
-    null,
-  );
-  const [deletingMemberType, setDeletingMemberType] =
-    useState<MemberType | null>(null);
+  const [editingMemberType, setEditingMemberType] = useState<MemberType | null>(null);
+  const [deletingMemberType, setDeletingMemberType] = useState<MemberType | null>(null);
 
   const { memberTypes, isLoading } = useMemberTypesList();
   const deleteMemberType = useDeleteMemberType();
@@ -50,9 +47,7 @@ export default function MemberTypesPage() {
           <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
             Member Types
           </h1>
-          <p className="mt-1 text-base text-body">
-            Manage member type levels for your association
-          </p>
+          <p className="mt-1 text-base text-body">Manage member type levels for your association</p>
         </div>
         <CreateMemberTypeDialog />
       </div>
@@ -60,9 +55,9 @@ export default function MemberTypesPage() {
       <DataTableFilters
         fields={[
           {
-            type: "search",
-            id: "search",
-            placeholder: "Search member types...",
+            type: 'search',
+            id: 'search',
+            placeholder: 'Search member types...',
           },
         ]}
         onFilterChange={() => {}}

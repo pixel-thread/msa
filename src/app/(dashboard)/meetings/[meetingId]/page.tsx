@@ -1,24 +1,19 @@
-"use client";
+'use client';
 
-import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 
 import {
   useMeetingDetail,
   type AgendaItem,
   type Attendee,
-} from "@src/features/meetings/hooks/useMeetingDetail";
-import { useMeetingAttendees } from "@src/features/meetings/hooks";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@src/shared/components/ui/card";
-import { Badge } from "@src/shared/components/ui/badge";
-import { Button } from "@src/shared/components/ui/button";
-import { Separator } from "@src/shared/components/ui/separator";
-import { formatDate } from "@src/shared/utils";
+} from '@src/features/meetings/hooks/useMeetingDetail';
+import { useMeetingAttendees } from '@src/features/meetings/hooks';
+import { Card, CardHeader, CardTitle, CardContent } from '@src/shared/components/ui/card';
+import { Badge } from '@src/shared/components/ui/badge';
+import { Button } from '@src/shared/components/ui/button';
+import { Separator } from '@src/shared/components/ui/separator';
+import { formatDate } from '@src/shared/utils';
 import {
   Calendar,
   MapPin,
@@ -28,23 +23,23 @@ import {
   Pencil,
   Trash2,
   ClipboardList,
-} from "lucide-react";
-import { EditMeetingDialog } from "@src/features/meetings/components/EditMeetingDialog";
-import { DeleteMeetingDialog } from "@src/features/meetings/components/DeleteMeetingDialog";
-import { ManageAttendeesDialog } from "@src/features/meetings/components/ManageAttendeesDialog";
-import type { AssignAttendeeInput } from "@src/features/meetings/validators";
-import { useMembers } from "@src/features/members/hooks/useMembers";
-import Link from "next/link";
-import { getTypeBadge } from "@src/shared/utils/helper/get-type-badge";
-import { getStatusBadge } from "@src/shared/utils/helper/get-status-badge";
-import { getRsvpBadge } from "@src/shared/utils/helper/get-rsvp-badge";
+} from 'lucide-react';
+import { EditMeetingDialog } from '@src/features/meetings/components/EditMeetingDialog';
+import { DeleteMeetingDialog } from '@src/features/meetings/components/DeleteMeetingDialog';
+import { ManageAttendeesDialog } from '@src/features/meetings/components/ManageAttendeesDialog';
+import type { AssignAttendeeInput } from '@src/features/meetings/validators';
+import { useMembers } from '@src/features/members/hooks/useMembers';
+import Link from 'next/link';
+import { getTypeBadge } from '@src/shared/utils/helper/get-type-badge';
+import { getStatusBadge } from '@src/shared/utils/helper/get-status-badge';
+import { getRsvpBadge } from '@src/shared/utils/helper/get-rsvp-badge';
 
 export default function MeetingDetailPage() {
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
   const meetingId = params.meetingId as string;
-  const [editOpen, setEditOpen] = useState(searchParams.get("edit") === "true");
+  const [editOpen, setEditOpen] = useState(searchParams.get('edit') === 'true');
   const [manageAttendeesOpen, setManageAttendeesOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
@@ -96,9 +91,7 @@ export default function MeetingDetailPage() {
               {getStatusBadge(meeting.status)}
               {getTypeBadge(meeting.type)}
             </div>
-            <p className="mt-1 text-base text-body">
-              Meeting details and agenda
-            </p>
+            <p className="mt-1 text-base text-body">Meeting details and agenda</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -151,48 +144,32 @@ export default function MeetingDetailPage() {
                 <div className="flex items-start gap-3">
                   <Calendar className="mt-0.5 h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground">
-                      Scheduled
-                    </p>
-                    <p className="text-sm text-ink">
-                      {formatDate(meeting.scheduledAt)}
-                    </p>
+                    <p className="text-xs font-medium text-muted-foreground">Scheduled</p>
+                    <p className="text-sm text-ink">{formatDate(meeting.scheduledAt)}</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
                   <MapPin className="mt-0.5 h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground">
-                      Venue
-                    </p>
-                    <p className="text-sm text-ink">
-                      {meeting.venue || "Not set"}
-                    </p>
+                    <p className="text-xs font-medium text-muted-foreground">Venue</p>
+                    <p className="text-sm text-ink">{meeting.venue || 'Not set'}</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
                   <Users className="mt-0.5 h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground">
-                      Attendees
-                    </p>
-                    <p className="text-sm text-ink">
-                      {meeting.attendees?.length || 0}
-                    </p>
+                    <p className="text-xs font-medium text-muted-foreground">Attendees</p>
+                    <p className="text-sm text-ink">{meeting.attendees?.length || 0}</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
                   <FileText className="mt-0.5 h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground">
-                      Organizer
-                    </p>
-                    <p className="text-sm text-ink">
-                      {meeting.createdBy?.name || "Unknown"}
-                    </p>
+                    <p className="text-xs font-medium text-muted-foreground">Organizer</p>
+                    <p className="text-sm text-ink">{meeting.createdBy?.name || 'Unknown'}</p>
                   </div>
                 </div>
               </div>
@@ -201,12 +178,8 @@ export default function MeetingDetailPage() {
                 <>
                   <Separator className="bg-hairline" />
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground">
-                      Description
-                    </p>
-                    <p className="mt-1 text-sm text-ink">
-                      {meeting.description}
-                    </p>
+                    <p className="text-xs font-medium text-muted-foreground">Description</p>
+                    <p className="mt-1 text-sm text-ink">{meeting.description}</p>
                   </div>
                 </>
               )}
@@ -229,9 +202,7 @@ export default function MeetingDetailPage() {
                       {index + 1}
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-ink">
-                        {item.title}
-                      </p>
+                      <p className="text-sm font-medium text-ink">{item.title}</p>
                       {item.duration && (
                         <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
                           <Clock className="h-3 w-3" />
@@ -264,12 +235,8 @@ export default function MeetingDetailPage() {
                   className="flex items-center justify-between border border-hairline p-3"
                 >
                   <div>
-                    <p className="text-sm font-medium text-ink">
-                      {attendee.user.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {attendee.user.email}
-                    </p>
+                    <p className="text-sm font-medium text-ink">{attendee.user.name}</p>
+                    <p className="text-xs text-muted-foreground">{attendee.user.email}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="text-xs">
@@ -281,9 +248,7 @@ export default function MeetingDetailPage() {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">
-              No attendees assigned
-            </p>
+            <p className="text-sm text-muted-foreground">No attendees assigned</p>
           )}
         </CardContent>
       </Card>
@@ -295,8 +260,8 @@ export default function MeetingDetailPage() {
           setEditOpen(open);
           if (!open) {
             const url = new URL(window.location.href);
-            url.searchParams.delete("edit");
-            window.history.replaceState({}, "", url.toString());
+            url.searchParams.delete('edit');
+            window.history.replaceState({}, '', url.toString());
           }
         }}
       />
@@ -317,7 +282,7 @@ export default function MeetingDetailPage() {
         meeting={meeting}
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        onSuccess={() => router.push("/meetings")}
+        onSuccess={() => router.push('/meetings')}
       />
     </>
   );

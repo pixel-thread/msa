@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { HugeiconsIcon } from "@hugeicons/react";
+import Link from 'next/link';
+import { HugeiconsIcon } from '@hugeicons/react';
 import {
   UserIdVerificationIcon,
   BankIcon,
@@ -16,135 +16,135 @@ import {
   PhoneCheckIcon,
   MapPinIcon,
   StarIcon,
-} from "@hugeicons/core-free-icons";
+} from '@hugeicons/core-free-icons';
 
-import { Button } from "@src/shared/components/ui/button";
-import { Badge } from "@src/shared/components/ui/badge";
+import { Button } from '@src/shared/components/ui/button';
+import { Badge } from '@src/shared/components/ui/badge';
 import {
   Card,
   CardHeader,
   CardContent,
   CardTitle,
   CardDescription,
-} from "@src/shared/components/ui/card";
-import { Input } from "@src/shared/components/ui/input";
-import { Textarea } from "@src/shared/components/ui/textarea";
-import { Text } from "@src/shared/components/ui/text";
+} from '@src/shared/components/ui/card';
+import { Input } from '@src/shared/components/ui/input';
+import { Textarea } from '@src/shared/components/ui/textarea';
+import { Text } from '@src/shared/components/ui/text';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
-} from "@src/shared/components/ui/carousel";
-import { Avatar, AvatarFallback } from "@src/shared/components/ui/avatar";
-import { PublicHeader } from "@src/shared/components/public-header";
-import { PublicFooter } from "@src/shared/components/public-footer";
-import { useQuery } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import { Association } from "@sharedType/association";
+} from '@src/shared/components/ui/carousel';
+import { Avatar, AvatarFallback } from '@src/shared/components/ui/avatar';
+import { PublicHeader } from '@src/shared/components/public-header';
+import { PublicFooter } from '@src/shared/components/public-footer';
+import { useQuery } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import { Association } from '@sharedType/association';
 
 const FEATURES = [
   {
     icon: UserIdVerificationIcon,
-    title: "Digital Membership",
+    title: 'Digital Membership',
     description:
-      "End-to-end member lifecycle management with role-based access, onboarding workflows, and automated renewals.",
+      'End-to-end member lifecycle management with role-based access, onboarding workflows, and automated renewals.',
   },
   {
     icon: BankIcon,
-    title: "Financial Ledger",
+    title: 'Financial Ledger',
     description:
-      "Full double-entry accounting system with cashbook, general ledger, receivables, and auto-generated financial reports.",
+      'Full double-entry accounting system with cashbook, general ledger, receivables, and auto-generated financial reports.',
   },
   {
     icon: UserGroupIcon,
-    title: "Meeting Governance",
+    title: 'Meeting Governance',
     description:
-      "Schedule EC and general meetings, assign attendees, manage agenda items, record minutes, and issue formal notices.",
+      'Schedule EC and general meetings, assign attendees, manage agenda items, record minutes, and issue formal notices.',
   },
   {
     icon: Payment01Icon,
-    title: "Subscription Engine",
+    title: 'Subscription Engine',
     description:
-      "Configurable subscription plans with automated billing, payment tracking, receipt generation, and waiver management.",
+      'Configurable subscription plans with automated billing, payment tracking, receipt generation, and waiver management.',
   },
   {
     icon: ShieldBlockchainIcon,
-    title: "DPDP Act Compliance",
+    title: 'DPDP Act Compliance',
     description:
-      "Built-in consent management, DSAR ticketing with 21-day SLA, data retention enforcement, and full audit trails.",
+      'Built-in consent management, DSAR ticketing with 21-day SLA, data retention enforcement, and full audit trails.',
   },
   {
     icon: BookOpen01Icon,
-    title: "Training Modules",
+    title: 'Training Modules',
     description:
-      "Create and assign compliance training, track completions, and maintain certification records for all members.",
+      'Create and assign compliance training, track completions, and maintain certification records for all members.',
   },
 ];
 
 const STATS = [
-  { value: "500+", label: "Active Members" },
-  { value: "3", label: "Associations" },
-  { value: "15+", label: "Years of Service" },
-  { value: "99.9%", label: "Uptime" },
+  { value: '500+', label: 'Active Members' },
+  { value: '3', label: 'Associations' },
+  { value: '15+', label: 'Years of Service' },
+  { value: '99.9%', label: 'Uptime' },
 ];
 
 const STEPS = [
   {
-    number: "01",
-    title: "Sign Up",
+    number: '01',
+    title: 'Sign Up',
     description:
-      "Create your account with email and password. Enable MFA for an extra layer of security.",
+      'Create your account with email and password. Enable MFA for an extra layer of security.',
   },
   {
-    number: "02",
-    title: "Complete Profile",
+    number: '02',
+    title: 'Complete Profile',
     description:
-      "Fill in your membership details, designation, and joining dates. Your data is encrypted at rest.",
+      'Fill in your membership details, designation, and joining dates. Your data is encrypted at rest.',
   },
   {
-    number: "03",
-    title: "Get Started",
+    number: '03',
+    title: 'Get Started',
     description:
-      "Access your dashboard, manage subscriptions, view meetings, and participate in governance.",
+      'Access your dashboard, manage subscriptions, view meetings, and participate in governance.',
   },
 ];
 
 const TESTIMONIALS = [
   {
     quote:
-      "MFSA Connect transformed how we manage our association. The financial ledger alone saved us countless hours of manual bookkeeping.",
-    name: "Rajesh Sharma",
-    designation: "Secretary, MFSA",
-    initials: "RS",
+      'MFSA Connect transformed how we manage our association. The financial ledger alone saved us countless hours of manual bookkeeping.',
+    name: 'Rajesh Sharma',
+    designation: 'Secretary, MFSA',
+    initials: 'RS',
   },
   {
     quote:
-      "The meeting governance module is a game-changer. Scheduling, agenda management, and minutes recording are now seamless.",
-    name: "Priya Das",
-    designation: "President, MPSA",
-    initials: "PD",
+      'The meeting governance module is a game-changer. Scheduling, agenda management, and minutes recording are now seamless.',
+    name: 'Priya Das',
+    designation: 'President, MPSA',
+    initials: 'PD',
   },
   {
     quote:
-      "Knowing our member data is DPDP-compliant gives us peace of mind. The consent management and DSAR workflows are exceptional.",
-    name: "Anil Verma",
-    designation: "Finance Officer, MFSA",
-    initials: "AV",
+      'Knowing our member data is DPDP-compliant gives us peace of mind. The consent management and DSAR workflows are exceptional.',
+    name: 'Anil Verma',
+    designation: 'Finance Officer, MFSA',
+    initials: 'AV',
   },
 ];
 const HERO_DESCRIPTION = [
-  "A unified DPDP Compliant platform for Meghalaya Finance Service Association.",
+  'A unified DPDP Compliant platform for Meghalaya Finance Service Association.',
 
-  "Manage memberships, meetings, finances, compliances and trainings with robust security features.",
+  'Manage memberships, meetings, finances, compliances and trainings with robust security features.',
 
-  "Designed to allow other service Association to adopt the platform and onboard activities on plug and play mode.",
+  'Designed to allow other service Association to adopt the platform and onboard activities on plug and play mode.',
 ];
 export default function Home() {
   const {} = useQuery({
-    queryKey: ["associations", "current"],
-    queryFn: () => http.get<Association>("/associations/current"),
+    queryKey: ['associations', 'current'],
+    queryFn: () => http.get<Association>('/associations/current'),
     staleTime: 60_000,
   });
   return (
@@ -159,10 +159,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-[image:radial-gradient(var(--border)_0.5px,transparent_0.5px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,black_20%,transparent_70%)]" />
         <div className="relative mx-auto flex w-full max-w-7xl flex-col items-center gap-16 px-6 py-24 lg:flex-row lg:py-32">
           <div className="max-w-xl text-center lg:w-3/5 lg:text-left">
-            <Badge
-              variant="default"
-              className="mb-5 justify-center lg:justify-start"
-            >
+            <Badge variant="default" className="mb-5 justify-center lg:justify-start">
               MFSA Connect Platform
             </Badge>
             <Text variant="display-lg" asChild className="mb-6">
@@ -174,10 +171,7 @@ export default function Home() {
             </Text>
             <ul className="mb-8 space-y-4">
               {HERO_DESCRIPTION.map((description, index) => (
-                <li
-                  key={index}
-                  className="flex items-start gap-3 lg:items-center"
-                >
+                <li key={index} className="flex items-start gap-3 lg:items-center">
                   <HugeiconsIcon
                     icon={CheckmarkCircle02Icon}
                     className="mt-0.5 size-5 shrink-0 text-primary lg:mt-0"
@@ -223,11 +217,7 @@ export default function Home() {
                 <Text variant="display-md" color="primary" asChild>
                   <p className="mb-1">{stat.value}</p>
                 </Text>
-                <Text
-                  variant="caption-strong"
-                  color="muted"
-                  transform="uppercase"
-                >
+                <Text variant="caption-strong" color="muted" transform="uppercase">
                   {stat.label}
                 </Text>
               </div>
@@ -248,8 +238,8 @@ export default function Home() {
             </Text>
             <Text variant="body-md" color="muted" asChild>
               <p className="mx-auto max-w-2xl">
-                From membership management to financial accounting and DPDP
-                compliance, MFSA Connect provides a complete governance toolkit.
+                From membership management to financial accounting and DPDP compliance, MFSA Connect
+                provides a complete governance toolkit.
               </p>
             </Text>
           </div>
@@ -287,41 +277,30 @@ export default function Home() {
               </Text>
               <Text variant="body-md" color="body" asChild>
                 <p className="mb-4 leading-relaxed">
-                  The Meghalaya Finance Service Association (MFSA) is a
-                  government-affiliated body representing finance service
-                  professionals across the state of Meghalaya, North-East India.
+                  The Meghalaya Finance Service Association (MFSA) is a government-affiliated body
+                  representing finance service professionals across the state of Meghalaya,
+                  North-East India.
                 </p>
               </Text>
               <Text variant="body-md" color="body" asChild>
                 <p className="mb-6 leading-relaxed">
-                  MFSA Connect is our digital transformation initiative —
-                  designed to bring transparency, efficiency, and
-                  enterprise-grade security to association governance. The
-                  platform serves multiple associations including MPSA, with
-                  full data isolation and compliance with the Digital Personal
-                  Data Protection (DPDP) Act 2023.
+                  MFSA Connect is our digital transformation initiative — designed to bring
+                  transparency, efficiency, and enterprise-grade security to association governance.
+                  The platform serves multiple associations including MPSA, with full data isolation
+                  and compliance with the Digital Personal Data Protection (DPDP) Act 2023.
                 </p>
               </Text>
               <div className="flex flex-wrap gap-6">
                 <div className="flex items-center gap-2">
-                  <HugeiconsIcon
-                    icon={CheckmarkCircle02Icon}
-                    className="size-4 text-semantic-up"
-                  />
+                  <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-4 text-semantic-up" />
                   <Text variant="body-sm">DPDP Act 2023 Compliant</Text>
                 </div>
                 <div className="flex items-center gap-2">
-                  <HugeiconsIcon
-                    icon={CheckmarkCircle02Icon}
-                    className="size-4 text-semantic-up"
-                  />
+                  <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-4 text-semantic-up" />
                   <Text variant="body-sm">AES-256-GCM Encryption</Text>
                 </div>
                 <div className="flex items-center gap-2">
-                  <HugeiconsIcon
-                    icon={CheckmarkCircle02Icon}
-                    className="size-4 text-semantic-up"
-                  />
+                  <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-4 text-semantic-up" />
                   <Text variant="body-sm">Multi-Association Support</Text>
                 </div>
               </div>
@@ -333,11 +312,7 @@ export default function Home() {
                   <Text variant="display-sm" color="primary" asChild>
                     <p className="mb-2">15+</p>
                   </Text>
-                  <Text
-                    variant="caption-strong"
-                    transform="uppercase"
-                    color="muted"
-                  >
+                  <Text variant="caption-strong" transform="uppercase" color="muted">
                     Years Experience
                   </Text>
                 </CardContent>
@@ -347,11 +322,7 @@ export default function Home() {
                   <Text variant="display-sm" color="primary" asChild>
                     <p className="mb-2">500+</p>
                   </Text>
-                  <Text
-                    variant="caption-strong"
-                    transform="uppercase"
-                    color="muted"
-                  >
+                  <Text variant="caption-strong" transform="uppercase" color="muted">
                     Active Members
                   </Text>
                 </CardContent>
@@ -361,11 +332,7 @@ export default function Home() {
                   <Text variant="display-sm" color="primary" asChild>
                     <p className="mb-2">3</p>
                   </Text>
-                  <Text
-                    variant="caption-strong"
-                    transform="uppercase"
-                    color="muted"
-                  >
+                  <Text variant="caption-strong" transform="uppercase" color="muted">
                     Associations
                   </Text>
                 </CardContent>
@@ -375,11 +342,7 @@ export default function Home() {
                   <Text variant="display-sm" color="primary" asChild>
                     <p className="mb-2">100%</p>
                   </Text>
-                  <Text
-                    variant="caption-strong"
-                    transform="uppercase"
-                    color="muted"
-                  >
+                  <Text variant="caption-strong" transform="uppercase" color="muted">
                     Data Protection
                   </Text>
                 </CardContent>
@@ -401,8 +364,8 @@ export default function Home() {
             </Text>
             <Text variant="body-md" color="muted" asChild>
               <p className="mx-auto max-w-2xl">
-                Join your association in three simple steps and unlock the full
-                power of digital governance.
+                Join your association in three simple steps and unlock the full power of digital
+                governance.
               </p>
             </Text>
           </div>
@@ -439,8 +402,7 @@ export default function Home() {
             </Text>
             <Text variant="body-md" color="muted" asChild>
               <p className="mx-auto max-w-2xl">
-                Hear from the administrators and members who use MFSA Connect
-                every day.
+                Hear from the administrators and members who use MFSA Connect every day.
               </p>
             </Text>
           </div>
@@ -499,8 +461,8 @@ export default function Home() {
             </Text>
             <Text variant="body-md" color="muted" asChild>
               <p className="mx-auto max-w-2xl">
-                Every feature is designed with security and regulatory
-                compliance at its core. Your data is protected at every layer.
+                Every feature is designed with security and regulatory compliance at its core. Your
+                data is protected at every layer.
               </p>
             </Text>
           </div>
@@ -509,39 +471,39 @@ export default function Home() {
             {[
               {
                 icon: ShieldBlockchainIcon,
-                title: "DPDP Act 2023",
+                title: 'DPDP Act 2023',
                 description:
                   "Full compliance with India's Digital Personal Data Protection Act — consent receipts, DSAR workflows, and 7-year retention enforcement.",
               },
               {
                 icon: BankIcon,
-                title: "AES-256-GCM Encryption",
+                title: 'AES-256-GCM Encryption',
                 description:
-                  "All personally identifiable information is encrypted at rest using AES-256-GCM before it touches the database.",
+                  'All personally identifiable information is encrypted at rest using AES-256-GCM before it touches the database.',
               },
               {
                 icon: UserIdVerificationIcon,
-                title: "Role-Based Access Control",
+                title: 'Role-Based Access Control',
                 description:
-                  "Granular permissions across six roles — super_admin, president, secretary, finance, DPO, and member.",
+                  'Granular permissions across six roles — super_admin, president, secretary, finance, DPO, and member.',
               },
               {
                 icon: CheckmarkBadge01Icon,
-                title: "Complete Audit Trail",
+                title: 'Complete Audit Trail',
                 description:
-                  "Every mutation is logged with actor, timestamp, and association scope in an immutable audit trail.",
+                  'Every mutation is logged with actor, timestamp, and association scope in an immutable audit trail.',
               },
               {
                 icon: Payment01Icon,
-                title: "Rate Limiting & MFA",
+                title: 'Rate Limiting & MFA',
                 description:
-                  "Redis-backed rate limiting and email-based multi-factor authentication protect against abuse.",
+                  'Redis-backed rate limiting and email-based multi-factor authentication protect against abuse.',
               },
               {
                 icon: BookOpen01Icon,
-                title: "Data Retention & Anonymization",
+                title: 'Data Retention & Anonymization',
                 description:
-                  "Automatic data anonymization after 7-year retention period. Daily cron enforcement at 02:00.",
+                  'Automatic data anonymization after 7-year retention period. Daily cron enforcement at 02:00.',
               },
             ].map((item) => (
               <Card key={item.title} size="sm">
@@ -564,15 +526,10 @@ export default function Home() {
           <Text variant="display-md" color="on-primary" asChild>
             <h2 className="mb-6">Ready to Transform Your Association?</h2>
           </Text>
-          <Text
-            variant="title-md"
-            color="on-primary"
-            className="mb-10 opacity-80"
-            asChild
-          >
+          <Text variant="title-md" color="on-primary" className="mb-10 opacity-80" asChild>
             <p className="mx-auto max-w-2xl">
-              Join hundreds of finance service professionals already using MFSA
-              Connect for secure, compliant association governance.
+              Join hundreds of finance service professionals already using MFSA Connect for secure,
+              compliant association governance.
             </p>
           </Text>
           <div className="flex flex-wrap justify-center gap-4">
@@ -611,8 +568,8 @@ export default function Home() {
             </Text>
             <Text variant="body-md" color="muted" asChild>
               <p className="mx-auto max-w-2xl">
-                Have questions or want to learn more? Reach out to our team and
-                we will get back to you promptly.
+                Have questions or want to learn more? Reach out to our team and we will get back to
+                you promptly.
               </p>
             </Text>
           </div>
@@ -699,10 +656,7 @@ export default function Home() {
                 >
                   Message
                 </label>
-                <Textarea
-                  id="message"
-                  placeholder="Tell us more about your inquiry..."
-                />
+                <Textarea id="message" placeholder="Tell us more about your inquiry..." />
               </div>
               <Button variant="default" className="w-full">
                 Send Message

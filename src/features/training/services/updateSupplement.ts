@@ -1,6 +1,6 @@
-import { prisma } from "@lib/prisma";
-import { UpdateSupplementInput } from "../validators/training";
-import { AuditAction, Prisma } from "@prisma/client";
+import { prisma } from '@lib/prisma';
+import { UpdateSupplementInput } from '../validators/training';
+import { AuditAction, Prisma } from '@prisma/client';
 
 interface UpdateSupplementProps {
   associationId: string;
@@ -28,7 +28,7 @@ export async function updateSupplement({
     });
 
     if (!supplement) {
-      throw new Error("Training supplement not found");
+      throw new Error('Training supplement not found');
     }
 
     const oldStorageKey = supplement.file?.storageKey;
@@ -52,7 +52,7 @@ export async function updateSupplement({
         associationId,
         actorId,
         action: AuditAction.TRAINING_MODULE_UPDATE,
-        resourceType: "TrainingSupplement",
+        resourceType: 'TrainingSupplement',
         resourceId: supplementId,
         oldValues: supplement as unknown as Prisma.InputJsonValue,
         newValues: updated as unknown as Prisma.InputJsonValue,

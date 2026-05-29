@@ -1,15 +1,11 @@
-import { withAssociation, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@src/shared/utils/responses";
-import {
-  ConflictError,
-  NotFoundError,
-  ValidationError,
-} from "@src/shared/errors";
-import { prisma } from "@src/shared/lib/prisma";
-import { UserRole } from "@prisma/client";
-import { NextRequest } from "next/server";
-import z from "zod";
-import { logger } from "@src/shared/logger/server";
+import { withAssociation, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@src/shared/utils/responses';
+import { ConflictError, NotFoundError, ValidationError } from '@src/shared/errors';
+import { prisma } from '@src/shared/lib/prisma';
+import { UserRole } from '@prisma/client';
+import { NextRequest } from 'next/server';
+import z from 'zod';
+import { logger } from '@src/shared/logger/server';
 
 const BodySchema = z.object({
   memberId: z.string(),
@@ -27,20 +23,20 @@ export const POST = withAssociation(
         targetMemberId: body?.memberId,
         associationId: params?.associationId,
       },
-      "POST /api/associations/[associationId]/members - Request started",
+      'POST /api/associations/[associationId]/members - Request started',
     );
     const user = await withRole(request as NextRequest, UserRole.PRESIDENT);
     logger.info(
       { traceId, userId: user.id, roles: user.role },
-      "POST /api/associations/[associationId]/members - User authorized",
+      'POST /api/associations/[associationId]/members - User authorized',
     );
 
     if (!body?.memberId) {
       logger.error(
         { traceId },
-        "POST /api/associations/[associationId]/members - memberId is required",
+        'POST /api/associations/[associationId]/members - memberId is required',
       );
-      throw new ValidationError("memberId is required");
+      throw new ValidationError('memberId is required');
     }
 
     const existingMember = await prisma.user.findUnique({
@@ -50,9 +46,9 @@ export const POST = withAssociation(
     if (!existingMember) {
       logger.error(
         { traceId, targetMemberId: body.memberId },
-        "POST /api/associations/[associationId]/members - Member not found",
+        'POST /api/associations/[associationId]/members - Member not found',
       );
-      throw new NotFoundError("Member not found");
+      throw new NotFoundError('Member not found');
     }
 
     if (existingMember.associationId === params?.associationId) {
@@ -62,9 +58,9 @@ export const POST = withAssociation(
           targetMemberId: body.memberId,
           associationId: params?.associationId,
         },
-        "POST /api/associations/[associationId]/members - Member already in this association",
+        'POST /api/associations/[associationId]/members - Member already in this association',
       );
-      throw new ConflictError("Member already in this association");
+      throw new ConflictError('Member already in this association');
     }
 
     const updatedMember = await prisma.user.update({
@@ -83,7 +79,7 @@ export const POST = withAssociation(
 
     logger.info(
       { traceId, targetMemberId: body.memberId, associationId: association.id },
-      "POST /api/associations/[associationId]/members - Success",
+      'POST /api/associations/[associationId]/members - Success',
     );
 
     return SuccessResponse({ data: updatedMember }, 201);

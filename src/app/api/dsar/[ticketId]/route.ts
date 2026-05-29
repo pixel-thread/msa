@@ -1,13 +1,10 @@
-import { withAssociation, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@src/shared/utils";
-import { NotFoundError } from "@src/shared/errors";
-import { UserRole } from "@prisma/client";
-import {
-  findUniqueDsarTicket,
-  deleteDsarTicket,
-} from "@src/features/dsar/services";
-import { z } from "zod";
-import { logger } from "@src/shared/logger/server";
+import { withAssociation, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@src/shared/utils';
+import { NotFoundError } from '@src/shared/errors';
+import { UserRole } from '@prisma/client';
+import { findUniqueDsarTicket, deleteDsarTicket } from '@src/features/dsar/services';
+import { z } from 'zod';
+import { logger } from '@src/shared/logger/server';
 
 const ParamsSchema = z.object({
   ticketId: z.uuid(),
@@ -37,16 +34,16 @@ export const GET = withAssociation(
         associationId: association.id,
         ticketId: params?.ticketId,
       },
-      "GET /api/dsar/[ticketId] - Request started",
+      'GET /api/dsar/[ticketId] - Request started',
     );
 
-    const userId = request.headers.get("x-user-id")!;
+    const userId = request.headers.get('x-user-id')!;
     const ticketId = params!.ticketId;
 
     const ticket = await findUniqueDsarTicket(ticketId, association.id);
 
     if (!ticket) {
-      throw new NotFoundError("DSAR ticket not found");
+      throw new NotFoundError('DSAR ticket not found');
     }
 
     const isOwner = ticket.userId === userId;
@@ -59,7 +56,7 @@ export const GET = withAssociation(
           traceId,
           userId: user.id,
         },
-        "GET /api/dsar/[ticketId] - User authorized (DPO)",
+        'GET /api/dsar/[ticketId] - User authorized (DPO)',
       );
     } else {
       logger.info(
@@ -67,11 +64,11 @@ export const GET = withAssociation(
           traceId,
           userId,
         },
-        "GET /api/dsar/[ticketId] - User authorized (Owner)",
+        'GET /api/dsar/[ticketId] - User authorized (Owner)',
       );
     }
 
-    logger.info({ traceId }, "GET /api/dsar/[ticketId] - Success");
+    logger.info({ traceId }, 'GET /api/dsar/[ticketId] - Success');
 
     return SuccessResponse({ data: ticket });
   },
@@ -86,10 +83,10 @@ export const DELETE = withAssociation(
         associationId: association.id,
         ticketId: params?.ticketId,
       },
-      "DELETE /api/dsar/[ticketId] - Request started",
+      'DELETE /api/dsar/[ticketId] - Request started',
     );
 
-    const actorId = request.headers.get("x-user-id")!;
+    const actorId = request.headers.get('x-user-id')!;
     const user = await withRole(request, UserRole.DPO);
 
     logger.info(
@@ -97,12 +94,12 @@ export const DELETE = withAssociation(
         traceId,
         userId: user.id,
       },
-      "DELETE /api/dsar/[ticketId] - User authorized",
+      'DELETE /api/dsar/[ticketId] - User authorized',
     );
 
     const ticket = await findUniqueDsarTicket(params!.ticketId, association.id);
     if (!ticket) {
-      throw new NotFoundError("DSAR ticket not found");
+      throw new NotFoundError('DSAR ticket not found');
     }
 
     await deleteDsarTicket({
@@ -111,11 +108,11 @@ export const DELETE = withAssociation(
       actorId,
     });
 
-    logger.info({ traceId }, "DELETE /api/dsar/[ticketId] - Success");
+    logger.info({ traceId }, 'DELETE /api/dsar/[ticketId] - Success');
 
     return SuccessResponse({
       data: null,
-      message: "DSAR ticket deleted successfully",
+      message: 'DSAR ticket deleted successfully',
     });
   },
 );

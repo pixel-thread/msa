@@ -1,25 +1,25 @@
-import { withAssociation, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@utils/responses";
-import { buildPagination } from "@src/shared/utils";
-import { ForbiddenError, BadRequestError } from "@src/shared/errors";
-import { UserRole } from "@prisma/client";
+import { withAssociation, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@utils/responses';
+import { buildPagination } from '@src/shared/utils';
+import { ForbiddenError, BadRequestError } from '@src/shared/errors';
+import { UserRole } from '@prisma/client';
 import {
   assignTraining,
   bulkAssignTraining,
   removeTrainingAssignment,
   bulkRemoveTrainingAssignment,
   getTrainingAssignments,
-} from "@feature/training/services";
+} from '@feature/training/services';
 import {
   AssignTrainingSchema,
   BulkAssignTrainingSchema,
-} from "@feature/training/validators/training";
-import { pageNumberValidation } from "@src/shared/validators";
-import { z } from "zod";
-import { logger } from "@src/shared/logger/server";
+} from '@feature/training/validators/training';
+import { pageNumberValidation } from '@src/shared/validators';
+import { z } from 'zod';
+import { logger } from '@src/shared/logger/server';
 
 const TrainingParamsSchema = z.object({
-  moduleId: z.uuid("Invalid module ID"),
+  moduleId: z.uuid('Invalid module ID'),
 });
 
 const TrainingQuerySchema = z.object({
@@ -27,32 +27,27 @@ const TrainingQuerySchema = z.object({
 });
 
 const RemoveAssignSchema = z.object({
-  userId: z.uuid("Invalid user ID"),
+  userId: z.uuid('Invalid user ID'),
 });
 
 const BulkRemoveAssignSchema = z.object({
-  userIds: z
-    .array(z.uuid("Invalid user ID"))
-    .min(1, "At least one user is required"),
+  userIds: z.array(z.uuid('Invalid user ID')).min(1, 'At least one user is required'),
 });
 
 export const GET = withAssociation(
   { params: TrainingParamsSchema, query: TrainingQuerySchema },
   async (association, { params, query, traceId }, request) => {
     if (!params) {
-      throw new ForbiddenError("Invalid module ID");
+      throw new ForbiddenError('Invalid module ID');
     }
 
     logger.info(
       { traceId, associationId: association.id },
-      "GET /training/modules/{moduleId}/assign - Request started",
+      'GET /training/modules/{moduleId}/assign - Request started',
     );
 
     await withRole(request, UserRole.SECRETARY);
-    logger.info(
-      { traceId },
-      "GET /training/modules/{moduleId}/assign - User authorized",
-    );
+    logger.info({ traceId }, 'GET /training/modules/{moduleId}/assign - User authorized');
 
     const { moduleId } = params;
     const page = query?.page || 1;
@@ -63,10 +58,7 @@ export const GET = withAssociation(
       page,
     });
 
-    logger.info(
-      { traceId },
-      "GET /training/modules/{moduleId}/assign - Success",
-    );
+    logger.info({ traceId }, 'GET /training/modules/{moduleId}/assign - Success');
     return SuccessResponse({
       data: result.data,
       meta: buildPagination(result.total, page),
@@ -78,22 +70,22 @@ export const POST = withAssociation(
   { params: TrainingParamsSchema, body: AssignTrainingSchema },
   async (association, { params, body, traceId }, request) => {
     if (!params) {
-      throw new ForbiddenError("Invalid module ID");
+      throw new ForbiddenError('Invalid module ID');
     }
     if (!body) {
-      throw new ForbiddenError("Invalid request body");
+      throw new ForbiddenError('Invalid request body');
     }
 
     logger.info(
       { traceId, associationId: association.id },
-      "POST /training/modules/{moduleId}/assign - Request started",
+      'POST /training/modules/{moduleId}/assign - Request started',
     );
 
     const { moduleId } = params;
     const user = await withRole(request, UserRole.DPO);
     logger.info(
       { traceId, userId: user.id },
-      "POST /training/modules/{moduleId}/assign - User authorized",
+      'POST /training/modules/{moduleId}/assign - User authorized',
     );
 
     try {
@@ -106,14 +98,14 @@ export const POST = withAssociation(
 
       logger.info(
         { traceId, userId: body.userId },
-        "POST /training/modules/{moduleId}/assign - Success",
+        'POST /training/modules/{moduleId}/assign - Success',
       );
       return SuccessResponse({ data: assignment }, 201);
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestError(error.message);
       }
-      throw new BadRequestError("Failed to assign training");
+      throw new BadRequestError('Failed to assign training');
     }
   },
 );
@@ -122,22 +114,22 @@ export const PUT = withAssociation(
   { params: TrainingParamsSchema, body: BulkAssignTrainingSchema },
   async (association, { params, body, traceId }, request) => {
     if (!params) {
-      throw new ForbiddenError("Invalid module ID");
+      throw new ForbiddenError('Invalid module ID');
     }
     if (!body) {
-      throw new ForbiddenError("Invalid request body");
+      throw new ForbiddenError('Invalid request body');
     }
 
     logger.info(
       { traceId, associationId: association.id },
-      "PUT /training/modules/{moduleId}/assign - Request started",
+      'PUT /training/modules/{moduleId}/assign - Request started',
     );
 
     const { moduleId } = params;
     const user = await withRole(request, UserRole.DPO);
     logger.info(
       { traceId, userId: user.id },
-      "PUT /training/modules/{moduleId}/assign - User authorized",
+      'PUT /training/modules/{moduleId}/assign - User authorized',
     );
 
     try {
@@ -150,14 +142,14 @@ export const PUT = withAssociation(
 
       logger.info(
         { traceId, userCount: body.userIds.length },
-        "PUT /training/modules/{moduleId}/assign - Success",
+        'PUT /training/modules/{moduleId}/assign - Success',
       );
       return SuccessResponse({ data: result }, 201);
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestError(error.message);
       }
-      throw new BadRequestError("Failed to bulk assign training");
+      throw new BadRequestError('Failed to bulk assign training');
     }
   },
 );
@@ -166,22 +158,22 @@ export const DELETE = withAssociation(
   { params: TrainingParamsSchema, body: RemoveAssignSchema },
   async (association, { params, body, traceId }, request) => {
     if (!params) {
-      throw new ForbiddenError("Invalid module ID");
+      throw new ForbiddenError('Invalid module ID');
     }
     if (!body) {
-      throw new ForbiddenError("Invalid request body");
+      throw new ForbiddenError('Invalid request body');
     }
 
     logger.info(
       { traceId, associationId: association.id },
-      "DELETE /training/modules/{moduleId}/assign - Request started",
+      'DELETE /training/modules/{moduleId}/assign - Request started',
     );
 
     const { moduleId } = params;
     const user = await withRole(request, UserRole.DPO);
     logger.info(
       { traceId, userId: user.id },
-      "DELETE /training/modules/{moduleId}/assign - User authorized",
+      'DELETE /training/modules/{moduleId}/assign - User authorized',
     );
 
     try {
@@ -194,14 +186,14 @@ export const DELETE = withAssociation(
 
       logger.info(
         { traceId, userId: body.userId },
-        "DELETE /training/modules/{moduleId}/assign - Success",
+        'DELETE /training/modules/{moduleId}/assign - Success',
       );
       return SuccessResponse({ data: result });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestError(error.message);
       }
-      throw new BadRequestError("Failed to remove training assignment");
+      throw new BadRequestError('Failed to remove training assignment');
     }
   },
 );
@@ -210,22 +202,22 @@ export const PATCH = withAssociation(
   { params: TrainingParamsSchema, body: BulkRemoveAssignSchema },
   async (association, { params, body, traceId }, request) => {
     if (!params) {
-      throw new ForbiddenError("Invalid module ID");
+      throw new ForbiddenError('Invalid module ID');
     }
     if (!body) {
-      throw new ForbiddenError("Invalid request body");
+      throw new ForbiddenError('Invalid request body');
     }
 
     logger.info(
       { traceId, associationId: association.id },
-      "PATCH /training/modules/{moduleId}/assign - Request started",
+      'PATCH /training/modules/{moduleId}/assign - Request started',
     );
 
     const { moduleId } = params;
     const user = await withRole(request, UserRole.DPO);
     logger.info(
       { traceId, userId: user.id },
-      "PATCH /training/modules/{moduleId}/assign - User authorized",
+      'PATCH /training/modules/{moduleId}/assign - User authorized',
     );
 
     try {
@@ -238,14 +230,14 @@ export const PATCH = withAssociation(
 
       logger.info(
         { traceId, userCount: body.userIds.length },
-        "PATCH /training/modules/{moduleId}/assign - Success",
+        'PATCH /training/modules/{moduleId}/assign - Success',
       );
       return SuccessResponse({ data: result });
     } catch (error) {
       if (error instanceof Error) {
         throw new BadRequestError(error.message);
       }
-      throw new BadRequestError("Failed to bulk remove training assignments");
+      throw new BadRequestError('Failed to bulk remove training assignments');
     }
   },
 );

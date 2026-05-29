@@ -1,6 +1,6 @@
-import { prisma } from "@lib/prisma";
-import { PAGE_SIZE } from "@src/shared/constants";
-import { AuditAction, Prisma, TrainingAssignmentStatus } from "@prisma/client";
+import { prisma } from '@lib/prisma';
+import { PAGE_SIZE } from '@src/shared/constants';
+import { AuditAction, Prisma, TrainingAssignmentStatus } from '@prisma/client';
 
 interface CompleteAssignmentProps {
   associationId: string;
@@ -8,7 +8,7 @@ interface CompleteAssignmentProps {
   userId: string;
   actorId: string;
   scorePercent?: number;
-  certificateOption?: "none" | "global" | "custom";
+  certificateOption?: 'none' | 'global' | 'custom';
   certificateUrl?: string;
   certificateFileId?: string;
   certificateNumber?: string;
@@ -20,7 +20,7 @@ export async function completeAssignment({
   userId,
   actorId,
   scorePercent,
-  certificateOption = "none",
+  certificateOption = 'none',
   certificateUrl,
   certificateFileId,
   certificateNumber,
@@ -45,7 +45,7 @@ export async function completeAssignment({
     });
 
     if (assignment.module.associationId !== associationId) {
-      throw new Error("Module does not belong to this association");
+      throw new Error('Module does not belong to this association');
     }
 
     const updatedAssignment = await tx.trainingAssignment.update({
@@ -73,15 +73,12 @@ export async function completeAssignment({
     let certUrl = certificateUrl;
     let certFileId = certificateFileId;
 
-    if (
-      certificateOption === "global" &&
-      assignment.module.certificateTemplate?.certificateUrl
-    ) {
+    if (certificateOption === 'global' && assignment.module.certificateTemplate?.certificateUrl) {
       certUrl = assignment.module.certificateTemplate.certificateUrl;
       certFileId = assignment.module.certificateTemplate.fileId || undefined;
     }
 
-    if (certificateOption !== "none" && certUrl) {
+    if (certificateOption !== 'none' && certUrl) {
       await tx.trainingCertificate.upsert({
         where: { userId_moduleId: { userId, moduleId } },
         create: {
@@ -104,7 +101,7 @@ export async function completeAssignment({
         associationId,
         actorId,
         action: AuditAction.TRAINING_COMPLETE,
-        resourceType: "TrainingCompletion",
+        resourceType: 'TrainingCompletion',
         resourceId: completion.id,
         newValues: {
           userId,
@@ -154,7 +151,7 @@ export async function getAssignedUsers({
           },
         },
       },
-      orderBy: { assignedAt: "desc" },
+      orderBy: { assignedAt: 'desc' },
     }),
     prisma.trainingAssignment.count({
       where: {
@@ -188,12 +185,8 @@ export async function getAssignedUsers({
       completion: completionMap.has(assignment.userId)
         ? {
             id: completionMap.get(assignment.userId)!.id,
-            scorePercent:
-              completionMap.get(assignment.userId)!.scorePercent?.toNumber() ??
-              null,
-            completedAt: completionMap
-              .get(assignment.userId)!
-              .completedAt.toISOString(),
+            scorePercent: completionMap.get(assignment.userId)!.scorePercent?.toNumber() ?? null,
+            completedAt: completionMap.get(assignment.userId)!.completedAt.toISOString(),
           }
         : null,
     })),

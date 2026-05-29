@@ -1,5 +1,5 @@
-import type { AppError } from "@src/shared/errors";
-import { ErrorResponse } from "./error-response";
+import type { AppError } from '@src/shared/errors';
+import { ErrorResponse } from './error-response';
 
 export function AppErrorResponse(error: AppError, traceId: string) {
   return ErrorResponse({

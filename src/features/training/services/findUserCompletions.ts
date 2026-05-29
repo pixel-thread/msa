@@ -1,6 +1,6 @@
-import { prisma } from "@lib/prisma";
-import { PAGE_SIZE } from "@src/shared/constants";
-import { buildPagination } from "@src/shared/utils/build-pagination";
+import { prisma } from '@lib/prisma';
+import { PAGE_SIZE } from '@src/shared/constants';
+import { buildPagination } from '@src/shared/utils/build-pagination';
 
 interface FindUserCompletionsProps {
   userId: string;
@@ -25,7 +25,7 @@ export async function findUserCompletions({
       },
       take: PAGE_SIZE,
       skip: (page - 1) * PAGE_SIZE,
-      orderBy: { completedAt: "desc" },
+      orderBy: { completedAt: 'desc' },
     }),
 
     prisma.trainingCompletion.count({
@@ -33,7 +33,7 @@ export async function findUserCompletions({
         userId,
         module: { associationId },
       },
-      orderBy: { completedAt: "desc" },
+      orderBy: { completedAt: 'desc' },
     }),
   ]);
   return {

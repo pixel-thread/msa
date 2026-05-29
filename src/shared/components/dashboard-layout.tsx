@@ -1,18 +1,14 @@
-"use client";
+'use client';
 
-import * as React from "react";
+import * as React from 'react';
 
-import { AppSidebar } from "@src/shared/components/app-sidebar";
-import { Separator } from "@src/shared/components/ui/separator";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@src/shared/components/ui/sidebar";
-import { useTheme } from "../providers/theme-provider";
-import { Button } from "./ui/button";
-import { MoonIcon, SunIcon } from "lucide-react";
-import { Ternary } from "./Ternary";
+import { AppSidebar } from '@src/shared/components/app-sidebar';
+import { Separator } from '@src/shared/components/ui/separator';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@src/shared/components/ui/sidebar';
+import { useTheme } from '../providers/theme-provider';
+import { Button } from './ui/button';
+import { MoonIcon, SunIcon } from 'lucide-react';
+import { Ternary } from './Ternary';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -27,7 +23,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   }, []);
 
   const toggleTheme = () => {
-    setTheme(themeMode === "light" ? "dark" : "light");
+    setTheme(themeMode === 'light' ? 'dark' : 'light');
   };
 
   return (
@@ -43,12 +39,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 className="mr-2 data-vertical:h-4 data-vertical:self-auto"
               />
             </div>
-            <Button variant={"ghost"} onClick={() => toggleTheme()}>
+            <Button variant={'ghost'} onClick={() => toggleTheme()}>
               <Ternary
                 condition={mounted}
                 ifTrue={
                   <Ternary
-                    condition={themeMode === "light"}
+                    condition={themeMode === 'light'}
                     ifTrue={<MoonIcon />}
                     ifFalse={<SunIcon />}
                   />
@@ -58,9 +54,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </Button>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-6 bg-canvas p-6 min-w-0">
-          {children}
-        </div>
+        <div className="flex flex-1 flex-col gap-6 bg-canvas p-6 min-w-0">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

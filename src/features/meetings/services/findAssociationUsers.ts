@@ -1,5 +1,5 @@
-import { prisma } from "@lib/prisma";
-import { UserStatus } from "@prisma/client";
+import { prisma } from '@lib/prisma';
+import { UserStatus } from '@prisma/client';
 
 interface FindAssociationUsersProps {
   associationId: string;
@@ -24,9 +24,9 @@ export async function findAssociationUsers({
 
   if (search) {
     where.OR = [
-      { name: { contains: search, mode: "insensitive" } },
-      { email: { contains: search, mode: "insensitive" } },
-      { membershipNumber: { contains: search, mode: "insensitive" } },
+      { name: { contains: search, mode: 'insensitive' } },
+      { email: { contains: search, mode: 'insensitive' } },
+      { membershipNumber: { contains: search, mode: 'insensitive' } },
     ];
   }
 
@@ -48,7 +48,7 @@ export async function findAssociationUsers({
         membershipNumber: true,
         role: true,
       },
-      orderBy: { name: "asc" },
+      orderBy: { name: 'asc' },
       skip: (page - 1) * limit,
       take: limit,
     }),

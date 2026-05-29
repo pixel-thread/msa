@@ -1,6 +1,6 @@
-import { prisma } from "@lib/prisma";
-import { PAGE_SIZE } from "@src/shared/constants";
-import { buildPagination } from "@src/shared/utils/build-pagination";
+import { prisma } from '@lib/prisma';
+import { PAGE_SIZE } from '@src/shared/constants';
+import { buildPagination } from '@src/shared/utils/build-pagination';
 
 interface FindUserAssignmentsProps {
   userId: string;
@@ -20,7 +20,7 @@ export async function findUserAssignments({
         module: { associationId },
       },
       include: { module: true },
-      orderBy: { assignedAt: "desc" },
+      orderBy: { assignedAt: 'desc' },
       take: PAGE_SIZE,
       skip: (page - 1) * PAGE_SIZE,
     }),

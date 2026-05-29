@@ -1,11 +1,11 @@
-import { UserRole } from "@prisma/client";
-import { findUniqueAssociation } from "@src/features/associations/services/findUniqueAssociation";
-import { updateAssociation } from "@src/features/associations/services/updateAssociation";
-import { withValidation, withRole } from "@src/shared/api";
-import { UnauthorizedError } from "@src/shared/errors";
-import { SuccessResponse } from "@src/shared/utils";
-import z from "zod";
-import { logger } from "@src/shared/logger/server";
+import { UserRole } from '@prisma/client';
+import { findUniqueAssociation } from '@src/features/associations/services/findUniqueAssociation';
+import { updateAssociation } from '@src/features/associations/services/updateAssociation';
+import { withValidation, withRole } from '@src/shared/api';
+import { UnauthorizedError } from '@src/shared/errors';
+import { SuccessResponse } from '@src/shared/utils';
+import z from 'zod';
+import { logger } from '@src/shared/logger/server';
 
 const ParamsSchema = z.object({
   associationId: z.string().uuid(),
@@ -16,31 +16,31 @@ export const POST = withValidation(
   async (req, _ctx, { params, traceId }) => {
     logger.info(
       { traceId, associationId: params?.associationId },
-      "POST /api/associations/[associationId]/deactivate - Request started",
+      'POST /api/associations/[associationId]/deactivate - Request started',
     );
     const user = await withRole(req, UserRole.SUPER_ADMIN);
     logger.info(
       { traceId, userId: user.id, roles: user.role },
-      "POST /api/associations/[associationId]/deactivate - User authorized",
+      'POST /api/associations/[associationId]/deactivate - User authorized',
     );
 
-    const userId = req.headers.get("x-user-id");
+    const userId = req.headers.get('x-user-id');
 
     if (!userId) {
       logger.error(
         { traceId },
-        "POST /api/associations/[associationId]/deactivate - Unauthorized (missing x-user-id header)",
+        'POST /api/associations/[associationId]/deactivate - Unauthorized (missing x-user-id header)',
       );
-      throw new UnauthorizedError("Unauthorized");
+      throw new UnauthorizedError('Unauthorized');
     }
 
     const associationId = params?.associationId;
     if (!associationId) {
       logger.error(
         { traceId },
-        "POST /api/associations/[associationId]/deactivate - Association ID is required",
+        'POST /api/associations/[associationId]/deactivate - Association ID is required',
       );
-      throw new UnauthorizedError("Association ID is required");
+      throw new UnauthorizedError('Association ID is required');
     }
 
     const isAssociationExist = await findUniqueAssociation({
@@ -50,9 +50,9 @@ export const POST = withValidation(
     if (!isAssociationExist) {
       logger.error(
         { traceId, associationId },
-        "POST /api/associations/[associationId]/deactivate - Association not found",
+        'POST /api/associations/[associationId]/deactivate - Association not found',
       );
-      throw new Error("Association not found");
+      throw new Error('Association not found');
     }
 
     const updatedAssociation = await updateAssociation({
@@ -62,12 +62,12 @@ export const POST = withValidation(
 
     logger.info(
       { traceId, associationId },
-      "POST /api/associations/[associationId]/deactivate - Success",
+      'POST /api/associations/[associationId]/deactivate - Success',
     );
 
     return SuccessResponse({
       data: updatedAssociation,
-      message: "Association deactivated successfully",
+      message: 'Association deactivated successfully',
     });
   },
 );

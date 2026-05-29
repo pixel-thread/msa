@@ -1,5 +1,5 @@
-import { logger } from "@src/shared/logger/server";
-import { redis } from "./redis";
+import { logger } from '@src/shared/logger/server';
+import { redis } from './redis';
 
 export interface CacheClient {
   get<T>(key: string): Promise<T | null>;
@@ -32,7 +32,7 @@ export const cacheClient: CacheClient = {
           key,
           error,
         },
-        "Cache get failed",
+        'Cache get failed',
       );
 
       return null;
@@ -56,7 +56,7 @@ export const cacheClient: CacheClient = {
           key,
           ...serializeError(error),
         },
-        "Cache set failed",
+        'Cache set failed',
       );
     }
   },
@@ -70,14 +70,14 @@ export const cacheClient: CacheClient = {
           key,
           ...serializeError(error),
         },
-        "Cache del failed",
+        'Cache del failed',
       );
     }
   },
 
   async delPattern(pattern: string): Promise<void> {
     try {
-      let cursor = "0";
+      let cursor = '0';
 
       do {
         const [nextCursor, keys] = await redis.scan(cursor, {
@@ -90,14 +90,14 @@ export const cacheClient: CacheClient = {
         if (keys.length > 0) {
           await redis.del(...keys);
         }
-      } while (cursor !== "0");
+      } while (cursor !== '0');
     } catch (error) {
       logger.error(
         {
           pattern,
           ...serializeError(error),
         },
-        "Cache delPattern failed",
+        'Cache delPattern failed',
       );
     }
   },

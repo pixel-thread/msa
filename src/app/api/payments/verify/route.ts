@@ -1,8 +1,8 @@
-import { withAssociation } from "@src/shared/api";
-import { SuccessResponse } from "@utils/responses";
-import { logger } from "@src/shared/logger/server";
-import { VerifyPaymentSchema } from "@feature/payments/validators";
-import { verifyAndCompletePayment } from "@feature/payments/services/payment.service";
+import { withAssociation } from '@src/shared/api';
+import { SuccessResponse } from '@utils/responses';
+import { logger } from '@src/shared/logger/server';
+import { VerifyPaymentSchema } from '@feature/payments/validators';
+import { verifyAndCompletePayment } from '@feature/payments/services/payment.service';
 
 /**
  * POST /api/payments/verify
@@ -22,12 +22,12 @@ export const POST = withAssociation(
   async (_association, { body, traceId }) => {
     logger.info(
       { traceId, razorpayOrderId: body!.razorpayOrderId },
-      "POST /api/payments/verify - Request started",
+      'POST /api/payments/verify - Request started',
     );
 
     logger.info(
       { traceId, razorpayOrderId: body!.razorpayOrderId },
-      "POST /api/payments/verify - Verifying payment",
+      'POST /api/payments/verify - Verifying payment',
     );
 
     const result = await verifyAndCompletePayment({
@@ -38,13 +38,13 @@ export const POST = withAssociation(
 
     logger.info(
       { traceId, razorpayOrderId: body!.razorpayOrderId },
-      "POST /api/payments/verify - Success",
+      'POST /api/payments/verify - Success',
     );
 
     return SuccessResponse(
       {
         data: result,
-        message: "Payment verified and completed successfully",
+        message: 'Payment verified and completed successfully',
       },
       200,
     );

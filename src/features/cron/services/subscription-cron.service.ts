@@ -1,6 +1,6 @@
-import { prisma } from "@src/shared/lib/prisma";
-import { AuditAction } from "@prisma/client";
-import { logAction } from "@src/shared/services/audit-logs";
+import { prisma } from '@src/shared/lib/prisma';
+import { AuditAction } from '@prisma/client';
+import { logAction } from '@src/shared/services/audit-logs';
 
 export interface SubscriptionExpiryResult {
   associationId: string;
@@ -24,17 +24,17 @@ export async function expireOverdueSubscriptions(
     if (!association) {
       return {
         associationId,
-        associationSlug: "unknown",
+        associationSlug: 'unknown',
         expired: 0,
         failed: 0,
-        error: "Association not found",
+        error: 'Association not found',
       };
     }
 
     const expiredSubscriptions = await prisma.subscription.findMany({
       where: {
         user: { associationId },
-        status: "ACTIVE",
+        status: 'ACTIVE',
         endDate: { lt: now },
       },
       select: { id: true, userId: true, planVersionId: true },
@@ -55,15 +55,15 @@ export async function expireOverdueSubscriptions(
         id: { in: expiredSubscriptions.map((s) => s.id) },
       },
       data: {
-        status: "EXPIRED",
+        status: 'EXPIRED',
       },
     });
 
     await logAction({
       associationId,
-      actorId: "",
+      actorId: '',
       action: AuditAction.SUBSCRIPTION_CHANGE,
-      resourceType: "SUBSCRIPTION_OVERDUE",
+      resourceType: 'SUBSCRIPTION_OVERDUE',
     });
 
     return {
@@ -75,17 +75,15 @@ export async function expireOverdueSubscriptions(
   } catch (error) {
     return {
       associationId,
-      associationSlug: "unknown",
+      associationSlug: 'unknown',
       expired: 0,
       failed: 0,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
 
-export async function runSubscriptionExpiryCron(): Promise<
-  SubscriptionExpiryResult[]
-> {
+export async function runSubscriptionExpiryCron(): Promise<SubscriptionExpiryResult[]> {
   const associations = await prisma.association.findMany({
     where: { isActive: true },
     select: { id: true },

@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-import { Button } from "@src/shared/components/ui/button";
-import { Input } from "@src/shared/components/ui/input";
+import { Button } from '@src/shared/components/ui/button';
+import { Input } from '@src/shared/components/ui/input';
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
-} from "@src/shared/components/ui/card";
-import { Alert, AlertDescription } from "@src/shared/components/ui/alert";
+} from '@src/shared/components/ui/card';
+import { Alert, AlertDescription } from '@src/shared/components/ui/alert';
 import {
   Form,
   FormControl,
@@ -23,12 +23,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
-import {
-  ChangePasswordSchema,
-  type ChangePasswordInput,
-} from "@src/features/auth/validators";
-import { useChangePassword } from "@src/features/auth/hooks";
+} from '@src/shared/components/ui/form';
+import { ChangePasswordSchema, type ChangePasswordInput } from '@src/features/auth/validators';
+import { useChangePassword } from '@src/features/auth/hooks';
 
 export default function ChangePasswordPage() {
   const router = useRouter();
@@ -38,9 +35,9 @@ export default function ChangePasswordPage() {
   const form = useForm<ChangePasswordInput>({
     resolver: zodResolver(ChangePasswordSchema),
     defaultValues: {
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
     },
   });
 
@@ -60,14 +57,14 @@ export default function ChangePasswordPage() {
               Password Changed
             </CardTitle>
             <CardDescription className="text-body text-base">
-              Your password has been changed successfully. Please sign in again
-              with your new password.
+              Your password has been changed successfully. Please sign in again with your new
+              password.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Button
               className="h-11 w-full bg-primary px-5 text-base font-semibold text-on-primary hover:bg-primary-active"
-              onClick={() => router.push("/sign-in")}
+              onClick={() => router.push('/sign-in')}
             >
               Go to sign in
             </Button>
@@ -94,8 +91,7 @@ export default function ChangePasswordPage() {
               {changePasswordMutation.isError && (
                 <Alert variant="destructive">
                   <AlertDescription>
-                    {changePasswordMutation.error?.message ||
-                      "Password change failed"}
+                    {changePasswordMutation.error?.message || 'Password change failed'}
                   </AlertDescription>
                 </Alert>
               )}
@@ -168,13 +164,11 @@ export default function ChangePasswordPage() {
                 className="h-11 w-full bg-primary px-5 text-base font-semibold text-on-primary hover:bg-primary-active disabled:bg-primary-disabled"
                 disabled={changePasswordMutation.isPending}
               >
-                {changePasswordMutation.isPending
-                  ? "Changing..."
-                  : "Change password"}
+                {changePasswordMutation.isPending ? 'Changing...' : 'Change password'}
               </Button>
 
               <div className="text-center">
-                <Button variant={"link"} onClick={() => router.back()}>
+                <Button variant={'link'} onClick={() => router.back()}>
                   Go Back
                 </Button>
               </div>

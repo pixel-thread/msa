@@ -1,33 +1,25 @@
-"use client";
+'use client';
 
-import { useState, useCallback } from "react";
-import { DataTable } from "@src/shared/components/data-table";
-import { DataTableFilters } from "@src/shared/components/data-table-filters";
-import {
-  useConsentRecords,
-  useDeleteConsentReceipt,
-  useConsentColumns,
-} from "../hooks";
-import { ConsentDetailDialog } from "../components/consent-detail-dialog";
-import { EditConsentDialog } from "../components/edit-consent-dialog";
-import { DeleteConsentDialog } from "../components/delete-consent-dialog";
-import { ConsentReportCards } from "../components/consent-report-cards";
-import { DataTablePagination } from "@src/shared/components/data-table-pagination";
-import { ConsentPurpose, ConsentStatus } from "@prisma/client";
-import type { ConsentRecord } from "../types/consent.types";
+import { useState, useCallback } from 'react';
+import { DataTable } from '@src/shared/components/data-table';
+import { DataTableFilters } from '@src/shared/components/data-table-filters';
+import { useConsentRecords, useDeleteConsentReceipt, useConsentColumns } from '../hooks';
+import { ConsentDetailDialog } from '../components/consent-detail-dialog';
+import { EditConsentDialog } from '../components/edit-consent-dialog';
+import { DeleteConsentDialog } from '../components/delete-consent-dialog';
+import { ConsentReportCards } from '../components/consent-report-cards';
+import { DataTablePagination } from '@src/shared/components/data-table-pagination';
+import { ConsentPurpose, ConsentStatus } from '@prisma/client';
+import type { ConsentRecord } from '../types/consent.types';
 
 export default function ConsentAdminPage() {
   const [page, setPage] = useState(1);
-  const [purposeFilter, setPurposeFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [search, setSearch] = useState("");
+  const [purposeFilter, setPurposeFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [search, setSearch] = useState('');
   const [detailRecord, setDetailRecord] = useState<ConsentRecord | null>(null);
-  const [editingRecord, setEditingRecord] = useState<ConsentRecord | null>(
-    null,
-  );
-  const [deletingRecord, setDeletingRecord] = useState<ConsentRecord | null>(
-    null,
-  );
+  const [editingRecord, setEditingRecord] = useState<ConsentRecord | null>(null);
+  const [deletingRecord, setDeletingRecord] = useState<ConsentRecord | null>(null);
 
   const { records, meta, isLoading } = useConsentRecords({
     page,
@@ -71,26 +63,26 @@ export default function ConsentAdminPage() {
       <DataTableFilters
         fields={[
           {
-            type: "search",
-            id: "search",
-            placeholder: "Search by name or email...",
+            type: 'search',
+            id: 'search',
+            placeholder: 'Search by name or email...',
           },
           {
-            type: "select",
-            id: "purpose",
-            label: "Purpose",
+            type: 'select',
+            id: 'purpose',
+            label: 'Purpose',
             options: Object.values(ConsentPurpose).map((p) => ({
               value: p,
               label: p.charAt(0) + p.slice(1).toLowerCase(),
             })),
           },
           {
-            type: "select",
-            id: "status",
-            label: "Status",
+            type: 'select',
+            id: 'status',
+            label: 'Status',
             options: [
-              { value: ConsentStatus.GRANTED, label: "Granted" },
-              { value: ConsentStatus.WITHDRAWN, label: "Withdrawn" },
+              { value: ConsentStatus.GRANTED, label: 'Granted' },
+              { value: ConsentStatus.WITHDRAWN, label: 'Withdrawn' },
             ],
           },
         ]}

@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@src/shared/components/ui/collapsible";
+} from '@src/shared/components/ui/collapsible';
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -17,8 +17,8 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@src/shared/components/ui/sidebar";
-import { ChevronRightIcon } from "lucide-react";
+} from '@src/shared/components/ui/sidebar';
+import { ChevronRightIcon } from 'lucide-react';
 
 export function NavMain({
   items,
@@ -42,8 +42,7 @@ export function NavMain({
       <SidebarMenu>
         {items.map((item) => {
           const hasSubItems = item.items && item.items.length > 0;
-          const isActive =
-            pathname === item.url || pathname?.startsWith(item.url + "/");
+          const isActive = pathname === item.url || pathname?.startsWith(item.url + '/');
 
           if (!hasSubItems) {
             return (

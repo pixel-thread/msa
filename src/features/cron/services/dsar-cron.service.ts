@@ -1,6 +1,6 @@
-import { prisma } from "@src/shared/lib/prisma";
-import { DsarStatus, AuditAction } from "@prisma/client";
-import { logAction } from "@src/shared/services/audit-logs";
+import { prisma } from '@src/shared/lib/prisma';
+import { DsarStatus, AuditAction } from '@prisma/client';
+import { logAction } from '@src/shared/services/audit-logs';
 
 export interface DsarSlaResult {
   associationId: string;
@@ -12,9 +12,7 @@ export interface DsarSlaResult {
   error?: string;
 }
 
-export async function checkDsarDeadlines(
-  associationId: string,
-): Promise<DsarSlaResult> {
+export async function checkDsarDeadlines(associationId: string): Promise<DsarSlaResult> {
   try {
     const now = new Date();
     const threeDaysFromNow = new Date();
@@ -28,12 +26,12 @@ export async function checkDsarDeadlines(
     if (!association) {
       return {
         associationId,
-        associationSlug: "unknown",
+        associationSlug: 'unknown',
         total: 0,
         breached: 0,
         atRisk: 0,
         processed: false,
-        error: "Association not found",
+        error: 'Association not found',
       };
     }
 
@@ -67,10 +65,10 @@ export async function checkDsarDeadlines(
 
     if (breached > 0 || atRisk > 0) {
       await logAction({
-        actorId: "",
+        actorId: '',
         associationId,
         action: AuditAction.DSAR_RESPOND,
-        resourceType: "DsarTicket",
+        resourceType: 'DsarTicket',
       });
     }
 
@@ -85,12 +83,12 @@ export async function checkDsarDeadlines(
   } catch (error) {
     return {
       associationId,
-      associationSlug: "unknown",
+      associationSlug: 'unknown',
       total: 0,
       breached: 0,
       atRisk: 0,
       processed: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
@@ -101,9 +99,7 @@ export async function runDsarSlaCron(): Promise<DsarSlaResult[]> {
     select: { id: true },
   });
 
-  const results = await Promise.all(
-    associations.map((assoc) => checkDsarDeadlines(assoc.id)),
-  );
+  const results = await Promise.all(associations.map((assoc) => checkDsarDeadlines(assoc.id)));
 
   return results;
 }

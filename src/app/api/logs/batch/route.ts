@@ -1,8 +1,8 @@
-import { withValidation } from "@src/shared/api";
-import { LogBatchSchema } from "@src/shared/validators/logs";
-import { createLogsBatch } from "@src/shared/services/logs";
-import { SuccessResponse } from "@src/shared/utils";
-import { Prisma } from "@prisma/client";
+import { withValidation } from '@src/shared/api';
+import { LogBatchSchema } from '@src/shared/validators/logs';
+import { createLogsBatch } from '@src/shared/services/logs';
+import { SuccessResponse } from '@src/shared/utils';
+import { Prisma } from '@prisma/client';
 
 export const POST = withValidation(
   { body: LogBatchSchema },
@@ -15,9 +15,7 @@ export const POST = withValidation(
       data: logs.map((l) => ({
         type: l.level,
         message: l.message,
-        content: JSON.parse(
-          JSON.stringify({ ...l.context, traceId }),
-        ) as Prisma.InputJsonValue,
+        content: JSON.parse(JSON.stringify({ ...l.context, traceId })) as Prisma.InputJsonValue,
         isBackend: false,
       })),
     });
@@ -27,9 +25,6 @@ export const POST = withValidation(
     //   "POST /api/logs/batch - Success",
     // );
 
-    return SuccessResponse(
-      { data: null, message: "Logs ingested successfully" },
-      201,
-    );
+    return SuccessResponse({ data: null, message: 'Logs ingested successfully' }, 201);
   },
 );

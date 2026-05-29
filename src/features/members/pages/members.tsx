@@ -1,20 +1,19 @@
-"use client";
+'use client';
 
-import { useUrlFilters } from "@src/shared/hooks";
+import { useUrlFilters } from '@src/shared/hooks';
 
-import { DataTable } from "@src/shared/components/data-table";
-import { DataTableFilters } from "@src/shared/components/data-table-filters";
-import { DataTablePagination } from "@src/shared/components/data-table-pagination";
-import { useMembers } from "@src/features/members/hooks/useMembers";
-import { useMemberTableColumns } from "@src/features/members/hooks/useMemberTableColumns";
-import { useMemberTableActions } from "@src/features/members/hooks/useMemberTableActions";
+import { DataTable } from '@src/shared/components/data-table';
+import { DataTableFilters } from '@src/shared/components/data-table-filters';
+import { DataTablePagination } from '@src/shared/components/data-table-pagination';
+import { useMembers } from '@src/features/members/hooks/useMembers';
+import { useMemberTableColumns } from '@src/features/members/hooks/useMemberTableColumns';
+import { useMemberTableActions } from '@src/features/members/hooks/useMemberTableActions';
 
 export default function MembersPage() {
-  const { page, setPage } = useUrlFilters({ basePath: "/members" });
+  const { page, setPage } = useUrlFilters({ basePath: '/members' });
 
   const { members, meta, isLoading } = useMembers({ page });
-  const { onRoleChange, onStatusChange, onAssociationChange } =
-    useMemberTableActions();
+  const { onRoleChange, onStatusChange, onAssociationChange } = useMemberTableActions();
   const { columns } = useMemberTableColumns({
     onRoleChange,
     onStatusChange,
@@ -25,21 +24,17 @@ export default function MembersPage() {
     <>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Members
-          </h1>
-          <p className="mt-1 text-base text-body">
-            Manage and view all association members
-          </p>
+          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">Members</h1>
+          <p className="mt-1 text-base text-body">Manage and view all association members</p>
         </div>
       </div>
 
       <DataTableFilters
         fields={[
           {
-            type: "search",
-            id: "search",
-            placeholder: "Search members...",
+            type: 'search',
+            id: 'search',
+            placeholder: 'Search members...',
           },
         ]}
         onFilterChange={() => {}}

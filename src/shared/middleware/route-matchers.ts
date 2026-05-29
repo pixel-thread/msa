@@ -1,18 +1,13 @@
-import {
-  ADMIN_ROUTES,
-  API_PUBLIC_ROUTES,
-  AUTH_ROUTES,
-  PUBLIC_ROUTES,
-} from "../constants/routes";
+import { ADMIN_ROUTES, API_PUBLIC_ROUTES, AUTH_ROUTES, PUBLIC_ROUTES } from '../constants/routes';
 
 function createMatcher(patterns: readonly string[]) {
   return (pathname: string): boolean => {
     return patterns.some((pattern) => {
-      if (pattern.endsWith("(.*)")) {
+      if (pattern.endsWith('(.*)')) {
         const base = pattern.slice(0, -3);
         return pathname.startsWith(base);
       }
-      return pathname === pattern || pathname.startsWith(pattern + "/");
+      return pathname === pattern || pathname.startsWith(pattern + '/');
     });
   };
 }

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Button } from "@src/shared/components/ui/button";
-import { Pencil, Power } from "lucide-react";
-import { Association } from "../../types/association";
+import { Button } from '@src/shared/components/ui/button';
+import { Pencil, Power } from 'lucide-react';
+import { Association } from '../../types/association';
 
 interface AssociationActionsCellProps {
   association: Association;
@@ -21,11 +21,7 @@ export function AssociationActionsCell({
         <Pencil className="h-4 w-4" />
       </Button>
       {association.isActive && (
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => onDeactivate(association)}
-        >
+        <Button size="sm" variant="ghost" onClick={() => onDeactivate(association)}>
           <Power className="h-4 w-4" />
         </Button>
       )}

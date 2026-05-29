@@ -19,16 +19,16 @@
 - [ ] **Step 1: Implement the POST handler**
 
 ```typescript
-import { withAssociation } from "@src/shared/api/with-association";
-import { withRole } from "@src/shared/api/with-role";
-import { SuccessResponse } from "@src/shared/utils/responses";
-import { UserRole } from "@prisma/client";
-import { createMeetingMinute } from "@src/features/meetings/services/minutes";
-import { CreateMeetingMinuteSchema } from "@src/features/meetings/validators/minutes";
-import { z } from "zod";
+import { withAssociation } from '@src/shared/api/with-association';
+import { withRole } from '@src/shared/api/with-role';
+import { SuccessResponse } from '@src/shared/utils/responses';
+import { UserRole } from '@prisma/client';
+import { createMeetingMinute } from '@src/features/meetings/services/minutes';
+import { CreateMeetingMinuteSchema } from '@src/features/meetings/validators/minutes';
+import { z } from 'zod';
 
 const ParamsSchema = z.object({
-  meetingId: z.string().uuid("Invalid meeting ID"),
+  meetingId: z.string().uuid('Invalid meeting ID'),
 });
 
 export const POST = withAssociation(
@@ -45,7 +45,7 @@ export const POST = withAssociation(
 
     return SuccessResponse({
       data: minute,
-      message: "Meeting minute recorded successfully",
+      message: 'Meeting minute recorded successfully',
     });
   },
 );
@@ -69,17 +69,17 @@ git commit -m "feat: add meeting minutes collection api route"
 - [ ] **Step 1: Implement the PATCH handler**
 
 ```typescript
-import { withAssociation } from "@src/shared/api/with-association";
-import { withRole } from "@src/shared/api/with-role";
-import { SuccessResponse } from "@src/shared/utils/responses";
-import { UserRole } from "@prisma/client";
-import { updateMeetingMinute } from "@src/features/meetings/services/minutes";
-import { UpdateMeetingMinuteSchema } from "@src/features/meetings/validators/minutes";
-import { z } from "zod";
+import { withAssociation } from '@src/shared/api/with-association';
+import { withRole } from '@src/shared/api/with-role';
+import { SuccessResponse } from '@src/shared/utils/responses';
+import { UserRole } from '@prisma/client';
+import { updateMeetingMinute } from '@src/features/meetings/services/minutes';
+import { UpdateMeetingMinuteSchema } from '@src/features/meetings/validators/minutes';
+import { z } from 'zod';
 
 const ParamsSchema = z.object({
-  meetingId: z.string().uuid("Invalid meeting ID"),
-  minutesId: z.string().uuid("Invalid minute ID"),
+  meetingId: z.string().uuid('Invalid meeting ID'),
+  minutesId: z.string().uuid('Invalid minute ID'),
 });
 
 export const PATCH = withAssociation(
@@ -97,7 +97,7 @@ export const PATCH = withAssociation(
 
     return SuccessResponse({
       data: minute,
-      message: "Meeting minute updated successfully",
+      message: 'Meeting minute updated successfully',
     });
   },
 );

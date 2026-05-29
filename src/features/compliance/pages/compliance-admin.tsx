@@ -1,36 +1,25 @@
-"use client";
+'use client';
 
-import { useState, useCallback } from "react";
-import { DataTable } from "@src/shared/components/data-table";
-import { DataTableFilters } from "@src/shared/components/data-table-filters";
-import {
-  useComplianceChecks,
-  useDeleteComplianceCheck,
-  useComplianceColumns,
-} from "../hooks";
-import { ComplianceDetailDialog } from "../components/compliance-detail-dialog";
-import { DeleteComplianceDialog } from "../components/delete-compliance-dialog";
-import { TriggerChecksDialog } from "../components/trigger-checks-dialog";
-import { ComplianceStatusCards } from "../components/compliance-status-cards";
-import { DataTablePagination } from "@src/shared/components/data-table-pagination";
-import {
-  ALL_CHECK_TYPES,
-  ComplianceCheckStatusEnum,
-} from "../validators/compliance";
-import type { ComplianceRecord } from "../types/compliance.types";
-import { useUrlFilters } from "@src/shared/hooks";
+import { useState, useCallback } from 'react';
+import { DataTable } from '@src/shared/components/data-table';
+import { DataTableFilters } from '@src/shared/components/data-table-filters';
+import { useComplianceChecks, useDeleteComplianceCheck, useComplianceColumns } from '../hooks';
+import { ComplianceDetailDialog } from '../components/compliance-detail-dialog';
+import { DeleteComplianceDialog } from '../components/delete-compliance-dialog';
+import { TriggerChecksDialog } from '../components/trigger-checks-dialog';
+import { ComplianceStatusCards } from '../components/compliance-status-cards';
+import { DataTablePagination } from '@src/shared/components/data-table-pagination';
+import { ALL_CHECK_TYPES, ComplianceCheckStatusEnum } from '../validators/compliance';
+import type { ComplianceRecord } from '../types/compliance.types';
+import { useUrlFilters } from '@src/shared/hooks';
 
 export default function ComplianceAdminPage() {
   const { page, setPage } = useUrlFilters();
 
-  const [checkTypeFilter, setCheckTypeFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [detailRecord, setDetailRecord] = useState<ComplianceRecord | null>(
-    null,
-  );
-  const [deletingRecord, setDeletingRecord] = useState<ComplianceRecord | null>(
-    null,
-  );
+  const [checkTypeFilter, setCheckTypeFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [detailRecord, setDetailRecord] = useState<ComplianceRecord | null>(null);
+  const [deletingRecord, setDeletingRecord] = useState<ComplianceRecord | null>(null);
 
   const { checks, meta, isLoading } = useComplianceChecks({
     page,
@@ -73,18 +62,18 @@ export default function ComplianceAdminPage() {
       <DataTableFilters
         fields={[
           {
-            type: "select",
-            id: "checkType",
-            label: "Check Type",
+            type: 'select',
+            id: 'checkType',
+            label: 'Check Type',
             options: ALL_CHECK_TYPES.map((t) => ({
               value: t,
-              label: t.replace(/_/g, " "),
+              label: t.replace(/_/g, ' '),
             })),
           },
           {
-            type: "select",
-            id: "status",
-            label: "Status",
+            type: 'select',
+            id: 'status',
+            label: 'Status',
             options: ComplianceCheckStatusEnum.options.map((s) => ({
               value: s,
               label: s.charAt(0) + s.slice(1).toLowerCase(),

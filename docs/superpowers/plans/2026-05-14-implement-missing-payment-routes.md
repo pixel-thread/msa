@@ -21,13 +21,9 @@
 ```typescript
 export const GetTransactionsQuerySchema = z.object({
   userId: z.string().uuid().optional(),
-  status: z
-    .enum(["PENDING", "COMPLETED", "FAILED", "REFUNDED", "WAIVED"])
-    .optional(),
-  method: z
-    .enum(["CASH", "BANK_TRANSFER", "UPI", "CHEQUE", "ONLINE"])
-    .optional(),
-  gateway: z.enum(["RAZORPAY", "MANUAL"]).optional(),
+  status: z.enum(['PENDING', 'COMPLETED', 'FAILED', 'REFUNDED', 'WAIVED']).optional(),
+  method: z.enum(['CASH', 'BANK_TRANSFER', 'UPI', 'CHEQUE', 'ONLINE']).optional(),
+  gateway: z.enum(['RAZORPAY', 'MANUAL']).optional(),
   search: z.string().optional(),
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
@@ -56,7 +52,7 @@ export const CollectionReportQuerySchema = z.object({
     .string()
     .transform((v) => parseInt(v, 10))
     .pipe(z.number().int().min(1).max(12)),
-  status: z.enum(["DUE", "PARTIAL", "PAID", "WAIVED", "OVERDUE"]).optional(),
+  status: z.enum(['DUE', 'PARTIAL', 'PAID', 'WAIVED', 'OVERDUE']).optional(),
 });
 ```
 
@@ -79,17 +75,7 @@ git commit -m "feat(payments): add validators for missing routes"
 
 ```typescript
 export async function getAllTransactions(associationId: string, filters: any) {
-  const {
-    page,
-    pageSize,
-    userId,
-    status,
-    method,
-    gateway,
-    search,
-    startDate,
-    endDate,
-  } = filters;
+  const { page, pageSize, userId, status, method, gateway, search, startDate, endDate } = filters;
   const skip = (page - 1) * pageSize;
 
   const where: any = { associationId };
@@ -104,9 +90,9 @@ export async function getAllTransactions(associationId: string, filters: any) {
   }
   if (search) {
     where.OR = [
-      { referenceNumber: { contains: search, mode: "insensitive" } },
-      { receiptNumber: { contains: search, mode: "insensitive" } },
-      { notes: { contains: search, mode: "insensitive" } },
+      { referenceNumber: { contains: search, mode: 'insensitive' } },
+      { receiptNumber: { contains: search, mode: 'insensitive' } },
+      { notes: { contains: search, mode: 'insensitive' } },
     ];
   }
 
@@ -116,7 +102,7 @@ export async function getAllTransactions(associationId: string, filters: any) {
       include: {
         user: { select: { name: true, email: true, membershipNumber: true } },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
       skip,
       take: pageSize,
     }),
@@ -161,13 +147,13 @@ export async function getFinancialStats(associationId: string) {
     prisma.paymentTransaction.aggregate({
       where: {
         associationId,
-        status: "COMPLETED",
+        status: 'COMPLETED',
         paidAt: { gte: startOfMonth },
       },
       _sum: { amount: true },
     }),
     prisma.contributionPeriod.aggregate({
-      where: { associationId, status: { in: ["DUE", "PARTIAL", "OVERDUE"] } },
+      where: { associationId, status: { in: ['DUE', 'PARTIAL', 'OVERDUE'] } },
       _sum: { dueAmount: true },
       _count: { userId: true },
     }),
@@ -199,12 +185,12 @@ git commit -m "feat(payments): extend payment service for admin list and stats"
 - [ ] **Step 1: Create the route handler**
 
 ```typescript
-import { withAssociation } from "@src/shared/api/with-association";
-import { withRole } from "@src/shared/api/with-role";
-import { SuccessResponse } from "@utils/responses";
-import { UserRole } from "@prisma/client";
-import { GetTransactionsQuerySchema } from "@feature/payments/validators";
-import { getAllTransactions } from "@feature/payments/services/payment.service";
+import { withAssociation } from '@src/shared/api/with-association';
+import { withRole } from '@src/shared/api/with-role';
+import { SuccessResponse } from '@utils/responses';
+import { UserRole } from '@prisma/client';
+import { GetTransactionsQuerySchema } from '@feature/payments/validators';
+import { getAllTransactions } from '@feature/payments/services/payment.service';
 
 export const GET = withAssociation(
   { query: GetTransactionsQuerySchema },
@@ -238,91 +224,67 @@ git commit -m "feat(payments): implement admin list payments route"
 - [ ] **Step 1: Create transaction detail route**
 
 ```typescript
-import { withAssociation } from "@src/shared/api/with-association";
-import { withRole } from "@src/shared/api/with-role";
-import {
-  SuccessResponse,
-  NotFoundResponse,
-  ForbiddenResponse,
-} from "@utils/responses";
-import { UserRole } from "@prisma/client";
-import { getTransactionById } from "@feature/payments/services/payment.service";
+import { withAssociation } from '@src/shared/api/with-association';
+import { withRole } from '@src/shared/api/with-role';
+import { SuccessResponse, NotFoundResponse, ForbiddenResponse } from '@utils/responses';
+import { UserRole } from '@prisma/client';
+import { getTransactionById } from '@feature/payments/services/payment.service';
 
-export const GET = withAssociation(
-  async (association, _, request, { params }) => {
-    const user = await withRole(request, UserRole.MEMBER);
-    const transaction = await getTransactionById(params.id, association.id);
+export const GET = withAssociation(async (association, _, request, { params }) => {
+  const user = await withRole(request, UserRole.MEMBER);
+  const transaction = await getTransactionById(params.id, association.id);
 
-    if (!transaction) return NotFoundResponse("Transaction not found");
+  if (!transaction) return NotFoundResponse('Transaction not found');
 
-    // Check ownership if not admin/finance
-    const isFinance = user.role.some((r) =>
-      [
-        UserRole.FINANCE,
-        UserRole.SECRETARY,
-        UserRole.PRESIDENT,
-        UserRole.SUPER_ADMIN,
-      ].includes(r),
-    );
-    if (!isFinance && transaction.userId !== user.id)
-      return ForbiddenResponse();
+  // Check ownership if not admin/finance
+  const isFinance = user.role.some((r) =>
+    [UserRole.FINANCE, UserRole.SECRETARY, UserRole.PRESIDENT, UserRole.SUPER_ADMIN].includes(r),
+  );
+  if (!isFinance && transaction.userId !== user.id) return ForbiddenResponse();
 
-    return SuccessResponse({ data: transaction });
-  },
-);
+  return SuccessResponse({ data: transaction });
+});
 ```
 
 - [ ] **Step 2: Create receipt data route**
 
 ```typescript
 // File: src/app/api/payments/[id]/receipt/route.ts
-import { withAssociation } from "@src/shared/api/with-association";
-import { withRole } from "@src/shared/api/with-role";
-import {
-  SuccessResponse,
-  NotFoundResponse,
-  ForbiddenResponse,
-} from "@utils/responses";
-import { UserRole } from "@prisma/client";
-import { getTransactionById } from "@feature/payments/services/payment.service";
+import { withAssociation } from '@src/shared/api/with-association';
+import { withRole } from '@src/shared/api/with-role';
+import { SuccessResponse, NotFoundResponse, ForbiddenResponse } from '@utils/responses';
+import { UserRole } from '@prisma/client';
+import { getTransactionById } from '@feature/payments/services/payment.service';
 
-export const GET = withAssociation(
-  async (association, _, request, { params }) => {
-    const user = await withRole(request, UserRole.MEMBER);
-    const transaction = await getTransactionById(params.id, association.id);
+export const GET = withAssociation(async (association, _, request, { params }) => {
+  const user = await withRole(request, UserRole.MEMBER);
+  const transaction = await getTransactionById(params.id, association.id);
 
-    if (!transaction) return NotFoundResponse("Transaction not found");
-    const isFinance = user.role.some((r) =>
-      [
-        UserRole.FINANCE,
-        UserRole.SECRETARY,
-        UserRole.PRESIDENT,
-        UserRole.SUPER_ADMIN,
-      ].includes(r),
-    );
-    if (!isFinance && transaction.userId !== user.id)
-      return ForbiddenResponse();
+  if (!transaction) return NotFoundResponse('Transaction not found');
+  const isFinance = user.role.some((r) =>
+    [UserRole.FINANCE, UserRole.SECRETARY, UserRole.PRESIDENT, UserRole.SUPER_ADMIN].includes(r),
+  );
+  if (!isFinance && transaction.userId !== user.id) return ForbiddenResponse();
 
-    const receiptData = {
-      receiptNumber: transaction.receiptNumber || transaction.id,
-      paidAt: transaction.paidAt,
-      memberInfo: {
-        name: transaction.user.name,
-        membershipNumber: transaction.user.membershipNumber,
-      },
-      associationInfo: { name: association.name },
-      amount: transaction.amount,
-      method: transaction.method,
-      appliedTo: transaction.allocations.map((a) => ({
-        year: a.contributionPeriod.year,
-        month: a.contributionPeriod.month,
-        amount: a.allocatedAmount,
-      })),
-    };
+  const receiptData = {
+    receiptNumber: transaction.receiptNumber || transaction.id,
+    paidAt: transaction.paidAt,
+    memberInfo: {
+      name: transaction.user.name,
+      membershipNumber: transaction.user.membershipNumber,
+    },
+    associationInfo: { name: association.name },
+    amount: transaction.amount,
+    method: transaction.method,
+    appliedTo: transaction.allocations.map((a) => ({
+      year: a.contributionPeriod.year,
+      month: a.contributionPeriod.month,
+      amount: a.allocatedAmount,
+    })),
+  };
 
-    return SuccessResponse({ data: receiptData });
-  },
-);
+  return SuccessResponse({ data: receiptData });
+});
 ```
 
 - [ ] **Step 3: Commit**
@@ -344,11 +306,11 @@ git commit -m "feat(payments): implement transaction detail and receipt routes"
 - [ ] **Step 1: Create stats route**
 
 ```typescript
-import { withAssociation } from "@src/shared/api/with-association";
-import { withRole } from "@src/shared/api/with-role";
-import { SuccessResponse } from "@utils/responses";
-import { UserRole } from "@prisma/client";
-import { getFinancialStats } from "@feature/payments/services/payment.service";
+import { withAssociation } from '@src/shared/api/with-association';
+import { withRole } from '@src/shared/api/with-role';
+import { SuccessResponse } from '@utils/responses';
+import { UserRole } from '@prisma/client';
+import { getFinancialStats } from '@feature/payments/services/payment.service';
 
 export const GET = withAssociation(async (association, _, request) => {
   await withRole(request, UserRole.FINANCE);
@@ -360,12 +322,12 @@ export const GET = withAssociation(async (association, _, request) => {
 - [ ] **Step 2: Create collection report route**
 
 ```typescript
-import { withAssociation } from "@src/shared/api/with-association";
-import { withRole } from "@src/shared/api/with-role";
-import { SuccessResponse } from "@utils/responses";
-import { UserRole } from "@prisma/client";
-import { CollectionReportQuerySchema } from "@feature/payments/validators";
-import { prisma } from "@src/shared/lib/prisma";
+import { withAssociation } from '@src/shared/api/with-association';
+import { withRole } from '@src/shared/api/with-role';
+import { SuccessResponse } from '@utils/responses';
+import { UserRole } from '@prisma/client';
+import { CollectionReportQuerySchema } from '@feature/payments/validators';
+import { prisma } from '@src/shared/lib/prisma';
 
 export const GET = withAssociation(
   { query: CollectionReportQuerySchema },

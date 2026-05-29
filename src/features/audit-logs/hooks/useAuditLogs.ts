@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import type { AuditLogEntry } from "../types";
-import http from "@src/shared/utils/http";
+import { useQuery } from '@tanstack/react-query';
+import type { AuditLogEntry } from '../types';
+import http from '@src/shared/utils/http';
 
 interface UseAuditLogsParams {
   page?: number;
@@ -23,15 +23,7 @@ interface AuditLogsApiResponse {
 }
 
 export function useAuditLogs(params: UseAuditLogsParams = {}) {
-  const {
-    page = 1,
-    limit = 50,
-    action,
-    resourceType,
-    actorId,
-    fromDate,
-    toDate,
-  } = params;
+  const { page = 1, limit = 50, action, resourceType, actorId, fromDate, toDate } = params;
 
   const queryParams: Record<string, string> = {};
   if (page !== 1) queryParams.page = String(page);
@@ -43,9 +35,9 @@ export function useAuditLogs(params: UseAuditLogsParams = {}) {
   if (toDate) queryParams.toDate = toDate;
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["audit-logs", params],
+    queryKey: ['audit-logs', params],
     queryFn: () =>
-      http.get<AuditLogsApiResponse>("/audit-logs", {
+      http.get<AuditLogsApiResponse>('/audit-logs', {
         params: queryParams,
       }),
   });

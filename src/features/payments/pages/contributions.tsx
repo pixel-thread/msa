@@ -1,18 +1,15 @@
-"use client";
+'use client';
 
-import { useState, useMemo } from "react";
-import { useUrlFilters } from "@src/shared/hooks";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import { useContributions } from "@src/features/payments/hooks/useContributions";
-import {
-  DataTableFilters,
-  type FilterField,
-} from "@src/shared/components/data-table-filters";
-import { DataTable } from "@src/shared/components/data-table";
-import { useContributionPeriodColumns } from "@src/features/payments/hooks/useContributionPeriodColumns";
-import { DataTablePagination } from "@src/shared/components/data-table-pagination";
-import { Button } from "@src/shared/components/ui/button";
+import { useState, useMemo } from 'react';
+import { useUrlFilters } from '@src/shared/hooks';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import { useContributions } from '@src/features/payments/hooks/useContributions';
+import { DataTableFilters, type FilterField } from '@src/shared/components/data-table-filters';
+import { DataTable } from '@src/shared/components/data-table';
+import { useContributionPeriodColumns } from '@src/features/payments/hooks/useContributionPeriodColumns';
+import { DataTablePagination } from '@src/shared/components/data-table-pagination';
+import { Button } from '@src/shared/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -20,23 +17,23 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
+} from '@src/shared/components/ui/dialog';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@src/shared/components/ui/select";
-import { Card } from "@components/ui/card";
-import { Label } from "@src/shared/components/ui/label";
-import { CalendarDays, Plus } from "lucide-react";
-import { toast } from "sonner";
+} from '@src/shared/components/ui/select';
+import { Card } from '@components/ui/card';
+import { Label } from '@src/shared/components/ui/label';
+import { CalendarDays, Plus } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function ContributionsPage() {
   const queryClient = useQueryClient();
   const { filters, page, setPage, setFilters } = useUrlFilters({
-    basePath: "/payments/contributions",
+    basePath: '/payments/contributions',
   });
 
   const currentYear = new Date().getFullYear();
@@ -44,43 +41,43 @@ export default function ContributionsPage() {
 
   const filterFields: FilterField[] = [
     {
-      type: "select",
-      id: "status",
-      label: "Status",
+      type: 'select',
+      id: 'status',
+      label: 'Status',
       options: [
-        { value: "DUE", label: "Due" },
-        { value: "PARTIAL", label: "Partial" },
-        { value: "PAID", label: "Paid" },
-        { value: "WAIVED", label: "Waived" },
-        { value: "OVERDUE", label: "Overdue" },
+        { value: 'DUE', label: 'Due' },
+        { value: 'PARTIAL', label: 'Partial' },
+        { value: 'PAID', label: 'Paid' },
+        { value: 'WAIVED', label: 'Waived' },
+        { value: 'OVERDUE', label: 'Overdue' },
       ],
     },
     {
-      type: "select",
-      id: "year",
-      label: "Year",
+      type: 'select',
+      id: 'year',
+      label: 'Year',
       options: Array.from({ length: 6 }, (_, i) => {
         const y = currentYear - 5 + i;
         return { value: String(y), label: String(y) };
       }),
     },
     {
-      type: "select",
-      id: "month",
-      label: "Month",
+      type: 'select',
+      id: 'month',
+      label: 'Month',
       options: [
-        { value: "1", label: "January" },
-        { value: "2", label: "February" },
-        { value: "3", label: "March" },
-        { value: "4", label: "April" },
-        { value: "5", label: "May" },
-        { value: "6", label: "June" },
-        { value: "7", label: "July" },
-        { value: "8", label: "August" },
-        { value: "9", label: "September" },
-        { value: "10", label: "October" },
-        { value: "11", label: "November" },
-        { value: "12", label: "December" },
+        { value: '1', label: 'January' },
+        { value: '2', label: 'February' },
+        { value: '3', label: 'March' },
+        { value: '4', label: 'April' },
+        { value: '5', label: 'May' },
+        { value: '6', label: 'June' },
+        { value: '7', label: 'July' },
+        { value: '8', label: 'August' },
+        { value: '9', label: 'September' },
+        { value: '10', label: 'October' },
+        { value: '11', label: 'November' },
+        { value: '12', label: 'December' },
       ],
     },
   ];
@@ -104,39 +101,37 @@ export default function ContributionsPage() {
 
   const generateContributions = useMutation({
     mutationFn: () =>
-      http.post("/payments/contributions", {
+      http.post('/payments/contributions', {
         year: parseInt(year, 10),
         month: parseInt(month, 10),
       }),
     onSuccess: (response) => {
       if (response.success) {
-        toast.success(
-          response.message || "Contributions generated successfully",
-        );
-        queryClient.invalidateQueries({ queryKey: ["all-contributions"] });
+        toast.success(response.message || 'Contributions generated successfully');
+        queryClient.invalidateQueries({ queryKey: ['all-contributions'] });
         setGenerateDialogOpen(false);
       } else {
-        toast.error(response.message || "Failed to generate contributions");
+        toast.error(response.message || 'Failed to generate contributions');
       }
     },
     onError: () => {
-      toast.error("Failed to generate contributions");
+      toast.error('Failed to generate contributions');
     },
   });
 
   const months = [
-    { value: "1", label: "January" },
-    { value: "2", label: "February" },
-    { value: "3", label: "March" },
-    { value: "4", label: "April" },
-    { value: "5", label: "May" },
-    { value: "6", label: "June" },
-    { value: "7", label: "July" },
-    { value: "8", label: "August" },
-    { value: "9", label: "September" },
-    { value: "10", label: "October" },
-    { value: "11", label: "November" },
-    { value: "12", label: "December" },
+    { value: '1', label: 'January' },
+    { value: '2', label: 'February' },
+    { value: '3', label: 'March' },
+    { value: '4', label: 'April' },
+    { value: '5', label: 'May' },
+    { value: '6', label: 'June' },
+    { value: '7', label: 'July' },
+    { value: '8', label: 'August' },
+    { value: '9', label: 'September' },
+    { value: '10', label: 'October' },
+    { value: '11', label: 'November' },
+    { value: '12', label: 'December' },
   ];
 
   return (
@@ -160,19 +155,14 @@ export default function ContributionsPage() {
 
       <DataTable columns={columns} data={contributions} loading={isLoading} />
 
-      <DataTablePagination
-        meta={meta}
-        onPageChange={setPage}
-        label="contributions"
-      />
+      <DataTablePagination meta={meta} onPageChange={setPage} label="contributions" />
 
       <Dialog open={generateDialogOpen} onOpenChange={setGenerateDialogOpen}>
         <DialogContent className="sm:max-w-[400px]">
           <DialogHeader>
             <DialogTitle>Generate Contributions</DialogTitle>
             <DialogDescription>
-              Create contribution periods for all active members for the
-              selected month.
+              Create contribution periods for all active members for the selected month.
             </DialogDescription>
           </DialogHeader>
 
@@ -211,17 +201,14 @@ export default function ContributionsPage() {
           </div>
 
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setGenerateDialogOpen(false)}
-            >
+            <Button variant="outline" onClick={() => setGenerateDialogOpen(false)}>
               Cancel
             </Button>
             <Button
               onClick={() => generateContributions.mutate()}
               disabled={generateContributions.isPending}
             >
-              {generateContributions.isPending ? "Generating..." : "Generate"}
+              {generateContributions.isPending ? 'Generating...' : 'Generate'}
             </Button>
           </DialogFooter>
         </DialogContent>

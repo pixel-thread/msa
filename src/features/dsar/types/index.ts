@@ -1,4 +1,4 @@
-import { DsarRequestType, DsarStatus } from "@prisma/client";
+import { DsarRequestType, DsarStatus } from '@prisma/client';
 
 export interface DsarTicket {
   id: string;

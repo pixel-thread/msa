@@ -1,17 +1,14 @@
-import { withAssociation, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@src/shared/utils/responses";
-import { UserRole } from "@prisma/client";
-import {
-  deleteMeetingMinute,
-  updateMeetingMinute,
-} from "@feature/meetings/services/minutes";
-import { UpdateMeetingMinuteSchema } from "@feature/meetings/validators/minutes";
-import { z } from "zod";
-import { logger } from "@src/shared/logger/server";
+import { withAssociation, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@src/shared/utils/responses';
+import { UserRole } from '@prisma/client';
+import { deleteMeetingMinute, updateMeetingMinute } from '@feature/meetings/services/minutes';
+import { UpdateMeetingMinuteSchema } from '@feature/meetings/validators/minutes';
+import { z } from 'zod';
+import { logger } from '@src/shared/logger/server';
 
 const ParamsSchema = z.object({
-  meetingId: z.uuid("Invalid meeting ID"),
-  minutesId: z.uuid("Invalid minute ID"),
+  meetingId: z.uuid('Invalid meeting ID'),
+  minutesId: z.uuid('Invalid minute ID'),
 });
 
 export const PATCH = withAssociation(
@@ -24,7 +21,7 @@ export const PATCH = withAssociation(
         minutesId: params?.minutesId,
         associationId: association.id,
       },
-      "PATCH /api/meetings/[meetingId]/minutes/[minutesId] - Request started",
+      'PATCH /api/meetings/[meetingId]/minutes/[minutesId] - Request started',
     );
 
     // Check for administrative roles (Secretary and above)
@@ -37,12 +34,12 @@ export const PATCH = withAssociation(
         meetingId: params?.meetingId,
         minutesId: params?.minutesId,
       },
-      "PATCH /api/meetings/[meetingId]/minutes/[minutesId] - User authorized",
+      'PATCH /api/meetings/[meetingId]/minutes/[minutesId] - User authorized',
     );
 
     logger.info(
       { traceId, meetingId: params?.meetingId, minutesId: params?.minutesId },
-      "PATCH /api/meetings/[meetingId]/minutes/[minutesId] - Updating meeting minute",
+      'PATCH /api/meetings/[meetingId]/minutes/[minutesId] - Updating meeting minute',
     );
 
     const minute = await updateMeetingMinute({
@@ -54,12 +51,12 @@ export const PATCH = withAssociation(
 
     logger.info(
       { traceId, meetingId: params!.meetingId, minutesId: params!.minutesId },
-      "PATCH /api/meetings/[meetingId]/minutes/[minutesId] - Success",
+      'PATCH /api/meetings/[meetingId]/minutes/[minutesId] - Success',
     );
 
     return SuccessResponse({
       data: minute,
-      message: "Meeting minute updated successfully",
+      message: 'Meeting minute updated successfully',
     });
   },
 );
@@ -69,7 +66,7 @@ export const DELETE = withAssociation(
   async (_association, { params, traceId }, request) => {
     logger.info(
       { traceId, meetingId: params?.meetingId, minutesId: params?.minutesId },
-      "DELETE /api/meetings/[meetingId]/minutes/[minutesId] - Request started",
+      'DELETE /api/meetings/[meetingId]/minutes/[minutesId] - Request started',
     );
 
     // Check for administrative roles (Secretary and above)
@@ -82,12 +79,12 @@ export const DELETE = withAssociation(
         meetingId: params?.meetingId,
         minutesId: params?.minutesId,
       },
-      "DELETE /api/meetings/[meetingId]/minutes/[minutesId] - User authorized",
+      'DELETE /api/meetings/[meetingId]/minutes/[minutesId] - User authorized',
     );
 
     logger.info(
       { traceId, meetingId: params?.meetingId, minutesId: params?.minutesId },
-      "DELETE /api/meetings/[meetingId]/minutes/[minutesId] - Deleting meeting minute",
+      'DELETE /api/meetings/[meetingId]/minutes/[minutesId] - Deleting meeting minute',
     );
 
     const deletedMinute = await deleteMeetingMinute({
@@ -99,12 +96,12 @@ export const DELETE = withAssociation(
 
     logger.info(
       { traceId, meetingId: params!.meetingId, minutesId: params!.minutesId },
-      "DELETE /api/meetings/[meetingId]/minutes/[minutesId] - Success",
+      'DELETE /api/meetings/[meetingId]/minutes/[minutesId] - Success',
     );
 
     return SuccessResponse({
       data: deletedMinute,
-      message: "Meeting minute deleted successfully",
+      message: 'Meeting minute deleted successfully',
     });
   },
 );

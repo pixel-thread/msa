@@ -1,46 +1,35 @@
-import { withValidation } from "@src/shared/api";
-import {
-  verifyRefreshToken,
-  signAccessToken,
-  signRefreshToken,
-} from "@src/shared/lib/jwt";
-import { hashToken } from "@src/shared/lib/password";
-import { UnauthorizedError } from "@src/shared/errors";
-import { SuccessResponse } from "@src/shared/utils";
-import { RefreshTokenSchema } from "@src/features/auth/validators";
-import { getUniqueRefreshToken } from "@src/features/auth/services/get-unique-refresh-token";
-import { updateRefreshToken } from "@src/features/auth/services/update-refresh-token";
-import { createRefreshToken } from "@src/features/auth/services/create-refresh-token";
-import { revokedRefreshTokens } from "@src/features/auth/services/revoked-refresh-tokens";
-import { cacheClient } from "@src/shared/lib/cache";
-import { env } from "@src/env";
-import { logger } from "@src/shared/logger/server";
+import { withValidation } from '@src/shared/api';
+import { verifyRefreshToken, signAccessToken, signRefreshToken } from '@src/shared/lib/jwt';
+import { hashToken } from '@src/shared/lib/password';
+import { UnauthorizedError } from '@src/shared/errors';
+import { SuccessResponse } from '@src/shared/utils';
+import { RefreshTokenSchema } from '@src/features/auth/validators';
+import { getUniqueRefreshToken } from '@src/features/auth/services/get-unique-refresh-token';
+import { updateRefreshToken } from '@src/features/auth/services/update-refresh-token';
+import { createRefreshToken } from '@src/features/auth/services/create-refresh-token';
+import { revokedRefreshTokens } from '@src/features/auth/services/revoked-refresh-tokens';
+import { cacheClient } from '@src/shared/lib/cache';
+import { env } from '@src/env';
+import { logger } from '@src/shared/logger/server';
 
 export const POST = withValidation(
   { body: RefreshTokenSchema },
   async (request, _, { body, traceId }) => {
-    logger.info({ traceId }, "POST /api/auth/refresh - Request started");
+    logger.info({ traceId }, 'POST /api/auth/refresh - Request started');
     const bodyToken = body?.token;
 
-    const refreshCookie =
-      request.cookies.get("refresh_token")?.value || bodyToken;
+    const refreshCookie = request.cookies.get('refresh_token')?.value || bodyToken;
 
     if (!refreshCookie) {
-      logger.error(
-        { traceId },
-        "POST /api/auth/refresh - Refresh token not found",
-      );
-      throw new UnauthorizedError("Refresh token not found");
+      logger.error({ traceId }, 'POST /api/auth/refresh - Refresh token not found');
+      throw new UnauthorizedError('Refresh token not found');
     }
 
     try {
       await verifyRefreshToken(refreshCookie);
     } catch {
-      logger.error(
-        { traceId },
-        "POST /api/auth/refresh - Invalid refresh token signature",
-      );
-      throw new UnauthorizedError("Invalid refresh token");
+      logger.error({ traceId }, 'POST /api/auth/refresh - Invalid refresh token signature');
+      throw new UnauthorizedError('Invalid refresh token');
     }
 
     const hashedToken = hashToken(refreshCookie);
@@ -55,30 +44,30 @@ export const POST = withValidation(
     if (cachedTokens) {
       logger.info(
         { traceId },
-        "POST /api/auth/refresh - Success (grace period cached tokens returned)",
+        'POST /api/auth/refresh - Success (grace period cached tokens returned)',
       );
       const response = SuccessResponse({
-        message: "Token refreshed successfully",
+        message: 'Token refreshed successfully',
         data: {
           access_token: cachedTokens.accessToken,
           refresh_token: cachedTokens.refreshToken,
         },
       });
 
-      response.cookies.set("access_token", cachedTokens.accessToken, {
+      response.cookies.set('access_token', cachedTokens.accessToken, {
         httpOnly: true,
-        secure: env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: env.NODE_ENV === 'production',
+        sameSite: 'strict',
         maxAge: 15 * 60,
-        path: "/",
+        path: '/',
       });
 
-      response.cookies.set("refresh_token", cachedTokens.refreshToken, {
+      response.cookies.set('refresh_token', cachedTokens.refreshToken, {
         httpOnly: true,
-        secure: env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: env.NODE_ENV === 'production',
+        sameSite: 'strict',
         maxAge: 7 * 24 * 60 * 60,
-        path: "/",
+        path: '/',
       });
 
       return response;
@@ -90,11 +79,8 @@ export const POST = withValidation(
     });
 
     if (!storedToken || !storedToken.userId) {
-      logger.error(
-        { traceId },
-        "POST /api/auth/refresh - Invalid refresh token (not found in DB)",
-      );
-      throw new UnauthorizedError("Invalid refresh token");
+      logger.error({ traceId }, 'POST /api/auth/refresh - Invalid refresh token (not found in DB)');
+      throw new UnauthorizedError('Invalid refresh token');
     }
 
     if (storedToken.revokedAt) {
@@ -105,31 +91,28 @@ export const POST = withValidation(
       if (Date.now() - storedToken.revokedAt.getTime() > gracePeriodMs) {
         logger.warn(
           { traceId, userId: storedToken.userId },
-          "POST /api/auth/refresh - Revoking all family tokens (potential reuse attack)",
+          'POST /api/auth/refresh - Revoking all family tokens (potential reuse attack)',
         );
         await revokedRefreshTokens({
           where: { userId: storedToken.userId },
         });
       }
-      throw new UnauthorizedError("Invalid refresh token");
+      throw new UnauthorizedError('Invalid refresh token');
     }
 
     if (storedToken.expiresAt < new Date()) {
       logger.error(
         { traceId, userId: storedToken.userId },
-        "POST /api/auth/refresh - Refresh token expired",
+        'POST /api/auth/refresh - Refresh token expired',
       );
-      throw new UnauthorizedError("Refresh token has expired");
+      throw new UnauthorizedError('Refresh token has expired');
     }
 
     const user = storedToken.user;
 
-    if (user.status !== "ACTIVE") {
-      logger.error(
-        { traceId, userId: user.id },
-        "POST /api/auth/refresh - User is not active",
-      );
-      throw new UnauthorizedError("User is not active");
+    if (user.status !== 'ACTIVE') {
+      logger.error({ traceId, userId: user.id }, 'POST /api/auth/refresh - User is not active');
+      throw new UnauthorizedError('User is not active');
     }
 
     const newAccessToken = await signAccessToken(user.id);
@@ -164,33 +147,30 @@ export const POST = withValidation(
     });
 
     const response = SuccessResponse({
-      message: "Token refreshed successfully",
+      message: 'Token refreshed successfully',
       data: {
         access_token: newAccessToken,
         refresh_token: newRefreshToken,
       },
     });
 
-    response.cookies.set("access_token", newAccessToken, {
+    response.cookies.set('access_token', newAccessToken, {
       httpOnly: true,
-      secure: env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: env.NODE_ENV === 'production',
+      sameSite: 'strict',
       maxAge: 15 * 60,
-      path: "/",
+      path: '/',
     });
 
-    response.cookies.set("refresh_token", newRefreshToken, {
+    response.cookies.set('refresh_token', newRefreshToken, {
       httpOnly: true,
-      secure: env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: env.NODE_ENV === 'production',
+      sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60,
-      path: "/",
+      path: '/',
     });
 
-    logger.info(
-      { traceId, userId: user.id },
-      "POST /api/auth/refresh - Success",
-    );
+    logger.info({ traceId, userId: user.id }, 'POST /api/auth/refresh - Success');
 
     return response;
   },

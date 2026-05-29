@@ -1,4 +1,4 @@
-import { prisma } from "@src/shared/lib/prisma";
+import { prisma } from '@src/shared/lib/prisma';
 
 export async function findUniqueDsarTicket(id: string, associationId: string) {
   return await prisma.dsarTicket.findUnique({

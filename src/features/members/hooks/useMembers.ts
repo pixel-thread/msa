@@ -1,7 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import { User } from "@prisma/client";
-import { UserStatus } from "@prisma/client";
+import { useQuery } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import { User } from '@prisma/client';
+import { UserStatus } from '@prisma/client';
 
 interface UseMembersOptions {
   page?: number;
@@ -9,10 +9,10 @@ interface UseMembersOptions {
 }
 
 export function useMembers(options: UseMembersOptions = {}) {
-  const { page = 1, status = "ACTIVE" } = options;
+  const { page = 1, status = 'ACTIVE' } = options;
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["members", page, status],
+    queryKey: ['members', page, status],
     queryFn: () => http.get<User[]>(`/members?page=${page}&status=${status}`),
   });
 

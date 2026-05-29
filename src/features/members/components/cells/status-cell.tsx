@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Select,
@@ -6,10 +6,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@src/shared/components/ui/select";
-import { STATUSES } from "@src/features/members/utils/constants";
-import { User } from "@prisma/client";
-import { getStatusBadge } from "@src/shared/utils/helper/get-status-badge";
+} from '@src/shared/components/ui/select';
+import { STATUSES } from '@src/features/members/utils/constants';
+import { User } from '@prisma/client';
+import { getStatusBadge } from '@src/shared/utils/helper/get-status-badge';
 
 interface StatusCellProps {
   member: User;

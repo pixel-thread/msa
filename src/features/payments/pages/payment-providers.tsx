@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 import {
   usePaymentProviders,
   useDeleteProvider,
-} from "@src/features/payments/hooks/usePaymentProviders";
-import { DataTable } from "@src/shared/components/data-table";
-import { DataTableFilters } from "@src/shared/components/data-table-filters";
-import { usePaymentProviderColumns } from "@src/features/payments/hooks/usePaymentProviderColumns";
-import { Button } from "@src/shared/components/ui/button";
-import { Plus } from "lucide-react";
-import { toast } from "sonner";
+} from '@src/features/payments/hooks/usePaymentProviders';
+import { DataTable } from '@src/shared/components/data-table';
+import { DataTableFilters } from '@src/shared/components/data-table-filters';
+import { usePaymentProviderColumns } from '@src/features/payments/hooks/usePaymentProviderColumns';
+import { Button } from '@src/shared/components/ui/button';
+import { Plus } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -18,10 +18,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
-import { CreateProviderDialog } from "../components/create-provider-dialog";
-import { EditProviderDialog } from "../components/edit-provider-dialog";
-import { ProviderDetailDialog } from "../components/provider-detail-dialog";
+} from '@src/shared/components/ui/dialog';
+import { CreateProviderDialog } from '../components/create-provider-dialog';
+import { EditProviderDialog } from '../components/edit-provider-dialog';
+import { ProviderDetailDialog } from '../components/provider-detail-dialog';
 
 export default function PaymentProvidersPage() {
   const { providers, isLoading } = usePaymentProviders();
@@ -42,15 +42,15 @@ export default function PaymentProvidersPage() {
     deleteProvider.mutate(deletingId, {
       onSuccess: (response) => {
         if (response.success) {
-          toast.success(response.message || "Provider deleted successfully");
+          toast.success(response.message || 'Provider deleted successfully');
         } else {
-          toast.error(response.message || "Failed to delete provider");
+          toast.error(response.message || 'Failed to delete provider');
         }
         setDeleteDialogOpen(false);
         setDeletingId(null);
       },
       onError: () => {
-        toast.error("Failed to delete provider");
+        toast.error('Failed to delete provider');
         setDeleteDialogOpen(false);
         setDeletingId(null);
       },
@@ -84,26 +84,23 @@ export default function PaymentProvidersPage() {
       <DataTableFilters
         fields={[
           {
-            type: "search",
-            id: "search",
-            placeholder: "Search providers...",
+            type: 'search',
+            id: 'search',
+            placeholder: 'Search providers...',
           },
         ]}
         onFilterChange={() => {}}
       />
       <DataTable columns={columns} data={providers} loading={isLoading} />
 
-      <CreateProviderDialog
-        open={createDialogOpen}
-        onOpenChange={setCreateDialogOpen}
-      />
+      <CreateProviderDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
 
       <EditProviderDialog
         open={!!editingId}
         onOpenChange={(open) => {
           if (!open) setEditingId(null);
         }}
-        providerId={editingId ?? ""}
+        providerId={editingId ?? ''}
       />
 
       <ProviderDetailDialog
@@ -111,7 +108,7 @@ export default function PaymentProvidersPage() {
         onOpenChange={(open) => {
           if (!open) setDetailId(null);
         }}
-        providerId={detailId ?? ""}
+        providerId={detailId ?? ''}
         onEdit={(id) => {
           setDetailId(null);
           setEditingId(id);
@@ -123,8 +120,7 @@ export default function PaymentProvidersPage() {
           <DialogHeader>
             <DialogTitle>Delete Provider</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this payment provider? This action
-              cannot be undone.
+              Are you sure you want to delete this payment provider? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -142,7 +138,7 @@ export default function PaymentProvidersPage() {
               onClick={confirmDelete}
               disabled={deleteProvider.isPending}
             >
-              {deleteProvider.isPending ? "Deleting..." : "Delete"}
+              {deleteProvider.isPending ? 'Deleting...' : 'Delete'}
             </Button>
           </DialogFooter>
         </DialogContent>

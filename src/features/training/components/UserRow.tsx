@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { CheckSquare, Square } from "lucide-react";
-import { Button } from "@src/shared/components/ui/button";
+import { CheckSquare, Square } from 'lucide-react';
+import { Button } from '@src/shared/components/ui/button';
 
 interface UserDisplay {
   id: string;
@@ -18,21 +18,21 @@ interface UserRowProps {
 }
 
 const AVATAR_COLORS = [
-  "bg-blue-500",
-  "bg-emerald-500",
-  "bg-violet-500",
-  "bg-amber-500",
-  "bg-rose-500",
-  "bg-cyan-500",
-  "bg-pink-500",
-  "bg-teal-500",
-  "bg-indigo-500",
-  "bg-orange-500",
+  'bg-blue-500',
+  'bg-emerald-500',
+  'bg-violet-500',
+  'bg-amber-500',
+  'bg-rose-500',
+  'bg-cyan-500',
+  'bg-pink-500',
+  'bg-teal-500',
+  'bg-indigo-500',
+  'bg-orange-500',
 ];
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/);
-  if (parts.length === 0) return "?";
+  if (parts.length === 0) return '?';
   if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
   return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
 }
@@ -45,19 +45,11 @@ function getAvatarColor(name: string): string {
   return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 }
 
-export function UserRow({
-  user,
-  isSelected,
-  onToggle,
-  onClickRow,
-  actionButton,
-}: UserRowProps) {
+export function UserRow({ user, isSelected, onToggle, onClickRow, actionButton }: UserRowProps) {
   return (
     <div
       className={`flex items-center gap-3 p-3 border transition-all cursor-pointer ${
-        isSelected
-          ? "bg-primary/5 border-primary/20"
-          : "bg-surface-card hover:bg-canvas/50"
+        isSelected ? 'bg-primary/5 border-primary/20' : 'bg-surface-card hover:bg-canvas/50'
       }`}
       onClick={() => onClickRow?.(user.id)}
     >

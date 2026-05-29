@@ -1,4 +1,4 @@
-import { HIGH_ROLE_USERS } from "@src/shared/constants";
+import { HIGH_ROLE_USERS } from '@src/shared/constants';
 
 export interface Meeting {
   id: string;
@@ -42,6 +42,6 @@ export interface AddAttendeeForm {
 }
 
 export interface RsvpForm {
-  status: "ACCEPTED" | "DECLINED";
+  status: 'ACCEPTED' | 'DECLINED';
   note?: string;
 }

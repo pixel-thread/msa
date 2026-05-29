@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Select,
@@ -6,10 +6,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@src/shared/components/ui/select";
-import { PLAN_STATUSES } from "../../utils/constants";
-import { getPlanStatusBadge } from "../../utils/helper/get-plan-status-badge";
-import { SubscriptionPlan } from "../../types";
+} from '@src/shared/components/ui/select';
+import { PLAN_STATUSES } from '../../utils/constants';
+import { getPlanStatusBadge } from '../../utils/helper/get-plan-status-badge';
+import { SubscriptionPlan } from '../../types';
 
 interface PlanStatusCellProps {
   plan: SubscriptionPlan;
@@ -19,9 +19,9 @@ interface PlanStatusCellProps {
 export function PlanStatusCell({ plan, onStatusChange }: PlanStatusCellProps) {
   return (
     <Select
-      value={plan.isActive ? "ACTIVE" : "INACTIVE"}
+      value={plan.isActive ? 'ACTIVE' : 'INACTIVE'}
       onValueChange={(newStatus) => {
-        onStatusChange(plan.id, newStatus === "ACTIVE");
+        onStatusChange(plan.id, newStatus === 'ACTIVE');
       }}
     >
       <SelectTrigger className="h-8 w-35 border-hairline">

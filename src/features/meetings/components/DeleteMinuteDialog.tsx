@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Dialog,
@@ -7,9 +7,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
-import { Button } from "@src/shared/components/ui/button";
-import { AlertTriangle } from "lucide-react";
+} from '@src/shared/components/ui/dialog';
+import { Button } from '@src/shared/components/ui/button';
+import { AlertTriangle } from 'lucide-react';
 
 interface DeleteMinuteDialogProps {
   minute: { id: string; agendaPoint: string } | null;
@@ -37,26 +37,17 @@ export function DeleteMinuteDialog({
             <DialogTitle>Delete Minute</DialogTitle>
           </div>
           <DialogDescription className="pt-2">
-            Are you sure you want to delete the minute for{" "}
-            <strong>{minute?.agendaPoint}</strong>? This action cannot be
-            undone.
+            Are you sure you want to delete the minute for <strong>{minute?.agendaPoint}</strong>?
+            This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="gap-2 sm:gap-0">
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={isDeleting}
-          >
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isDeleting}>
             Cancel
           </Button>
-          <Button
-            variant="destructive"
-            onClick={onConfirm}
-            disabled={isDeleting}
-          >
-            {isDeleting ? "Deleting..." : "Delete Minute"}
+          <Button variant="destructive" onClick={onConfirm} disabled={isDeleting}>
+            {isDeleting ? 'Deleting...' : 'Delete Minute'}
           </Button>
         </DialogFooter>
       </DialogContent>

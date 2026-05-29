@@ -1,8 +1,8 @@
-import { prisma } from "@lib/prisma";
-import { MeetingType, MeetingStatus, Prisma, UserRole } from "@prisma/client";
-import { PAGE_SIZE } from "@src/shared/constants";
-import { buildPagination } from "@src/shared/utils/build-pagination";
-import { hasHighRoleAccess } from "@src/shared/utils/has-high-role";
+import { prisma } from '@lib/prisma';
+import { MeetingType, MeetingStatus, Prisma, UserRole } from '@prisma/client';
+import { PAGE_SIZE } from '@src/shared/constants';
+import { buildPagination } from '@src/shared/utils/build-pagination';
+import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
 
 interface FindManyMeetingsProps {
   associationId: string;
@@ -50,7 +50,7 @@ export async function findManyMeetings({
           select: { attendees: true },
         },
       },
-      orderBy: { scheduledAt: "desc" },
+      orderBy: { scheduledAt: 'desc' },
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
     }),

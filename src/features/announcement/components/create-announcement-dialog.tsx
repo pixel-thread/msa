@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Dialog,
   DialogContent,
@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@src/shared/components/ui/dialog";
+} from '@src/shared/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -17,24 +17,24 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
-import { Input } from "@src/shared/components/ui/input";
-import { Button } from "@src/shared/components/ui/button";
-import { Plus } from "lucide-react";
-import { useCreateAnnouncement } from "@src/features/announcement/hooks/useCreateAnnouncement";
+} from '@src/shared/components/ui/form';
+import { Input } from '@src/shared/components/ui/input';
+import { Button } from '@src/shared/components/ui/button';
+import { Plus } from 'lucide-react';
+import { useCreateAnnouncement } from '@src/features/announcement/hooks/useCreateAnnouncement';
 import {
   CreateAnnouncementInput,
   CreateAnnouncementSchema,
-} from "@src/features/announcement/validators";
+} from '@src/features/announcement/validators';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@src/shared/components/ui/select";
-import { Textarea } from "@src/shared/components/ui/textarea";
-import { AnnouncementStatus, AnnouncementPriority } from "@prisma/client";
+} from '@src/shared/components/ui/select';
+import { Textarea } from '@src/shared/components/ui/textarea';
+import { AnnouncementStatus, AnnouncementPriority } from '@prisma/client';
 
 export function CreateAnnouncementDialog() {
   const [open, setOpen] = useState(false);
@@ -43,9 +43,9 @@ export function CreateAnnouncementDialog() {
   const form = useForm({
     resolver: zodResolver(CreateAnnouncementSchema),
     defaultValues: {
-      title: "",
-      summary: "",
-      content: "",
+      title: '',
+      summary: '',
+      content: '',
       status: AnnouncementStatus.DRAFT,
       priority: AnnouncementPriority.NORMAL,
       targetRoles: [],
@@ -73,9 +73,7 @@ export function CreateAnnouncementDialog() {
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Create Announcement</DialogTitle>
-          <DialogDescription>
-            Create a new announcement for your association
-          </DialogDescription>
+          <DialogDescription>Create a new announcement for your association</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -101,10 +99,7 @@ export function CreateAnnouncementDialog() {
                 <FormItem>
                   <FormLabel>Summary</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Brief summary of the announcement"
-                      {...field}
-                    />
+                    <Textarea placeholder="Brief summary of the announcement" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -136,10 +131,7 @@ export function CreateAnnouncementDialog() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Status</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select status" />
@@ -164,10 +156,7 @@ export function CreateAnnouncementDialog() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Priority</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select priority" />
@@ -176,8 +165,7 @@ export function CreateAnnouncementDialog() {
                       <SelectContent>
                         {Object.values(AnnouncementPriority).map((priority) => (
                           <SelectItem key={priority} value={priority}>
-                            {priority.charAt(0) +
-                              priority.slice(1).toLowerCase()}
+                            {priority.charAt(0) + priority.slice(1).toLowerCase()}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -189,15 +177,11 @@ export function CreateAnnouncementDialog() {
             </div>
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setOpen(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={createAnnouncement.isPending}>
-                {createAnnouncement.isPending ? "Creating..." : "Create"}
+                {createAnnouncement.isPending ? 'Creating...' : 'Create'}
               </Button>
             </DialogFooter>
           </form>

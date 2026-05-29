@@ -1,7 +1,7 @@
-import React from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import z from "zod";
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import z from 'zod';
 import {
   Dialog,
   DialogContent,
@@ -9,7 +9,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
+} from '@src/shared/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -17,32 +17,28 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
+} from '@src/shared/components/ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@src/shared/components/ui/select";
-import { Button } from "@src/shared/components/ui/button";
-import { Calendar } from "@src/shared/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@src/shared/components/ui/popover";
-import { cn } from "@src/shared/lib/utils";
-import { formatDate } from "@src/shared/utils/format";
-import { CalendarIcon } from "lucide-react";
-import { useMemberTypes } from "@src/features/members/hooks/useMemberTypes";
-import { useApproveApplication } from "@src/features/membership-applications/hooks/useApproveApplication";
-import { useRejectApplication } from "@src/features/membership-applications/hooks/useRejectApplication";
-import { MembershipApplicationListItem } from "../types";
-import { ROLES } from "@src/features/members/utils/constants";
+} from '@src/shared/components/ui/select';
+import { Button } from '@src/shared/components/ui/button';
+import { Calendar } from '@src/shared/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@src/shared/components/ui/popover';
+import { cn } from '@src/shared/lib/utils';
+import { formatDate } from '@src/shared/utils/format';
+import { CalendarIcon } from 'lucide-react';
+import { useMemberTypes } from '@src/features/members/hooks/useMemberTypes';
+import { useApproveApplication } from '@src/features/membership-applications/hooks/useApproveApplication';
+import { useRejectApplication } from '@src/features/membership-applications/hooks/useRejectApplication';
+import { MembershipApplicationListItem } from '../types';
+import { ROLES } from '@src/features/members/utils/constants';
 
 const ApplicationReviewSchema = z.object({
-  memberTypeId: z.string().min(1, "Member type is required"),
+  memberTypeId: z.string().min(1, 'Member type is required'),
   role: z.string(),
   dateOfJoiningGovt: z.date().optional(),
 });
@@ -67,8 +63,8 @@ export function ApplicationReviewDialog({
   const form = useForm<ApplicationReviewForm>({
     resolver: zodResolver(ApplicationReviewSchema),
     defaultValues: {
-      memberTypeId: "",
-      role: "MEMBER",
+      memberTypeId: '',
+      role: 'MEMBER',
     },
   });
 
@@ -88,9 +84,9 @@ export function ApplicationReviewDialog({
 
   const handleReject = () => {
     if (!application) return;
-    const reason = prompt("Please provide a reason for rejection:");
+    const reason = prompt('Please provide a reason for rejection:');
     if (!reason || reason.trim().length < 10) {
-      alert("Rejection reason must be at least 10 characters");
+      alert('Rejection reason must be at least 10 characters');
       return;
     }
     rejectApplication.mutate(
@@ -102,8 +98,8 @@ export function ApplicationReviewDialog({
   React.useEffect(() => {
     if (open) {
       form.reset({
-        memberTypeId: "",
-        role: "MEMBER",
+        memberTypeId: '',
+        role: 'MEMBER',
         dateOfJoiningGovt: undefined,
       });
     }
@@ -111,8 +107,7 @@ export function ApplicationReviewDialog({
 
   if (!application) return null;
 
-  const fullName =
-    `${application.firstName ?? ""} ${application.lastName}`.trim();
+  const fullName = `${application.firstName ?? ''} ${application.lastName}`.trim();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -127,27 +122,23 @@ export function ApplicationReviewDialog({
         <div className=" border bg-muted/30 p-4 space-y-2 text-sm">
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <span className="text-muted-foreground">Phone:</span>{" "}
-              {application.phone}
+              <span className="text-muted-foreground">Phone:</span> {application.phone}
             </div>
             <div>
-              <span className="text-muted-foreground">Age:</span>{" "}
-              {application.age}
+              <span className="text-muted-foreground">Age:</span> {application.age}
             </div>
             <div>
-              <span className="text-muted-foreground">Gender:</span>{" "}
-              {application.gender}
+              <span className="text-muted-foreground">Gender:</span> {application.gender}
             </div>
             <div>
-              <span className="text-muted-foreground">Location:</span>{" "}
+              <span className="text-muted-foreground">Location:</span>{' '}
               {[application.city, application.state, application.country]
                 .filter(Boolean)
-                .join(", ") || "—"}
+                .join(', ') || '—'}
             </div>
             {application.address && (
               <div className="col-span-2">
-                <span className="text-muted-foreground">Address:</span>{" "}
-                {application.address}
+                <span className="text-muted-foreground">Address:</span> {application.address}
               </div>
             )}
           </div>
@@ -217,8 +208,8 @@ export function ApplicationReviewDialog({
                         <Button
                           variant="outline"
                           className={cn(
-                            "pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground",
+                            'pl-3 text-left font-normal',
+                            !field.value && 'text-muted-foreground',
                           )}
                         >
                           {field.value ? (
@@ -253,7 +244,7 @@ export function ApplicationReviewDialog({
                 Reject
               </Button>
               <Button type="submit" disabled={approveApplication.isPending}>
-                {approveApplication.isPending ? "Approving..." : "Approve"}
+                {approveApplication.isPending ? 'Approving...' : 'Approve'}
               </Button>
             </DialogFooter>
           </form>

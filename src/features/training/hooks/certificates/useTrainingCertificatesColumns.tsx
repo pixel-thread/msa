@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Download, Trash2 } from "lucide-react";
-import { Button } from "@src/shared/components/ui/button";
-import { ColumnDef } from "@tanstack/react-table";
-import { formatDate } from "@src/shared/utils";
-import type { TrainingCertificateItem } from "../../types";
+import { useState } from 'react';
+import { Download, Trash2 } from 'lucide-react';
+import { Button } from '@src/shared/components/ui/button';
+import { ColumnDef } from '@tanstack/react-table';
+import { formatDate } from '@src/shared/utils';
+import type { TrainingCertificateItem } from '../../types';
 
 export function useTrainingCertificatesColumns(options: {
   certificates: TrainingCertificateItem[];
@@ -23,47 +23,41 @@ export function useTrainingCertificatesColumns(options: {
     setCertificateToDelete(
       cert
         ? { id: cert.id, userId: cert.userId, userName: cert.user.name }
-        : { id: certificateId, userId: "", userName: "this certificate" },
+        : { id: certificateId, userId: '', userName: 'this certificate' },
     );
   };
 
   const certificateColumns: ColumnDef<TrainingCertificateItem>[] = [
     {
-      accessorKey: "user.name",
-      header: "Member",
+      accessorKey: 'user.name',
+      header: 'Member',
       cell: ({ row }) => {
         const u = row.original.user;
         return (
           <div className="flex flex-col">
-            <span className="text-sm font-semibold text-ink">
-              {u?.name || "Unknown"}
-            </span>
+            <span className="text-sm font-semibold text-ink">{u?.name || 'Unknown'}</span>
             <span className="text-xs text-muted-foreground">{u?.email}</span>
           </div>
         );
       },
     },
     {
-      accessorKey: "certificateNumber",
-      header: "Cert. #",
+      accessorKey: 'certificateNumber',
+      header: 'Cert. #',
       cell: ({ row }) => (
-        <span className="text-sm text-body">
-          {row.original.certificateNumber || "—"}
-        </span>
+        <span className="text-sm text-body">{row.original.certificateNumber || '—'}</span>
       ),
     },
     {
-      accessorKey: "issuedAt",
-      header: "Issued",
+      accessorKey: 'issuedAt',
+      header: 'Issued',
       cell: ({ row }) => (
-        <span className="text-sm text-body">
-          {formatDate(row.original.issuedAt)}
-        </span>
+        <span className="text-sm text-body">{formatDate(row.original.issuedAt)}</span>
       ),
     },
     {
-      id: "actions",
-      header: "Actions",
+      id: 'actions',
+      header: 'Actions',
       cell: ({ row }) => {
         const c = row.original;
         return (

@@ -1,141 +1,133 @@
-import { withAssociation, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@utils/responses";
-import { UserRole } from "@prisma/client";
-import { prisma } from "@src/shared/lib/prisma";
-import { CreateSubscriptionPlanSchema } from "@feature/subscriptions/validators";
-import { BadRequestError, ValidationError } from "@src/shared/errors";
-import { hasHighRoleAccess, getTraceId } from "@src/shared/utils";
-import { logger } from "@src/shared/logger/server";
+import { withAssociation, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@utils/responses';
+import { UserRole } from '@prisma/client';
+import { prisma } from '@src/shared/lib/prisma';
+import { CreateSubscriptionPlanSchema } from '@feature/subscriptions/validators';
+import { BadRequestError, ValidationError } from '@src/shared/errors';
+import { hasHighRoleAccess, getTraceId } from '@src/shared/utils';
+import { logger } from '@src/shared/logger/server';
 
-export const GET = withAssociation(
-  {},
-  async (association, { traceId }, request) => {
-    const user = await withRole(request, UserRole.MEMBER);
-    if (hasHighRoleAccess(user.role)) {
-      logger.info({ traceId }, "Fetching all plans for admin");
-      const plans = await prisma.subscriptionPlan.findMany({
-        where: { associationId: association.id },
-        include: {
-          versions: {
-            where: { effectiveTo: null },
-            orderBy: { createdAt: "desc" },
-          },
+export const GET = withAssociation({}, async (association, { traceId }, request) => {
+  const user = await withRole(request, UserRole.MEMBER);
+  if (hasHighRoleAccess(user.role)) {
+    logger.info({ traceId }, 'Fetching all plans for admin');
+    const plans = await prisma.subscriptionPlan.findMany({
+      where: { associationId: association.id },
+      include: {
+        versions: {
+          where: { effectiveTo: null },
+          orderBy: { createdAt: 'desc' },
         },
-        orderBy: {
-          createdAt: "desc",
-        },
-      });
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
-      const plansWithActiveVersion = plans.map((plan) => ({
-        ...plan,
-        activeVersion: plan.versions[0] || null,
-        versions: plan.versions,
-      }));
-
-      logger.info(
-        {
-          traceId,
-          count: plans.length,
-        },
-        "Admin plans fetched successfully",
-      );
-
-      return SuccessResponse({ data: plansWithActiveVersion });
-    }
+    const plansWithActiveVersion = plans.map((plan) => ({
+      ...plan,
+      activeVersion: plan.versions[0] || null,
+      versions: plan.versions,
+    }));
 
     logger.info(
       {
         traceId,
-        memberTypeId: user.memberTypeId,
+        count: plans.length,
       },
-      "Fetching plans for member",
+      'Admin plans fetched successfully',
     );
 
-    const whereClause: Record<string, unknown> = {
-      associationId: association.id,
-      isActive: true,
-    };
+    return SuccessResponse({ data: plansWithActiveVersion });
+  }
 
-    if (user.memberTypeId) {
-      whereClause.memberTypeId = user.memberTypeId;
-    } else {
-      whereClause.memberTypeId = null;
-    }
+  logger.info(
+    {
+      traceId,
+      memberTypeId: user.memberTypeId,
+    },
+    'Fetching plans for member',
+  );
 
-    const plans = await prisma.subscriptionPlan.findMany({
-      where: whereClause,
+  const whereClause: Record<string, unknown> = {
+    associationId: association.id,
+    isActive: true,
+  };
+
+  if (user.memberTypeId) {
+    whereClause.memberTypeId = user.memberTypeId;
+  } else {
+    whereClause.memberTypeId = null;
+  }
+
+  const plans = await prisma.subscriptionPlan.findMany({
+    where: whereClause,
+    include: {
+      versions: {
+        take: 1,
+        orderBy: { amount: 'asc' },
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+
+  if (plans.length === 0) {
+    logger.info({ traceId }, 'No member-specific plans found, falling back to default plan');
+
+    const defaultPlan = await prisma.subscriptionPlan.findMany({
+      where: {
+        associationId: association.id,
+        isDefault: true,
+        isActive: true,
+      },
       include: {
         versions: {
           take: 1,
-          orderBy: { amount: "asc" },
+          orderBy: { createdAt: 'desc' },
         },
       },
       orderBy: {
-        createdAt: "desc",
+        createdAt: 'desc',
       },
     });
 
-    if (plans.length === 0) {
-      logger.info(
-        { traceId },
-        "No member-specific plans found, falling back to default plan",
-      );
-
-      const defaultPlan = await prisma.subscriptionPlan.findMany({
-        where: {
-          associationId: association.id,
-          isDefault: true,
-          isActive: true,
-        },
-        include: {
-          versions: {
-            take: 1,
-            orderBy: { createdAt: "desc" },
-          },
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      });
-
-      const plansWithActiveVersion = defaultPlan.map((plan) => ({
-        ...plan,
-        activeVersion: plan.versions[0] || null,
-        versions: undefined,
-      }));
-
-      logger.info(
-        {
-          traceId,
-          planId: defaultPlan[0]?.id,
-        },
-        "Returning default plan",
-      );
-
-      return SuccessResponse({ data: plansWithActiveVersion[0] || null });
-    }
-
-    const plansWithActiveVersion = plans.map((plan) => ({
+    const plansWithActiveVersion = defaultPlan.map((plan) => ({
       ...plan,
       activeVersion: plan.versions[0] || null,
       versions: undefined,
     }));
 
-    const sortedPlans = user.memberTypeId
-      ? plansWithActiveVersion.sort(
-          (a, b) =>
-            Number(a.activeVersion?.amount ?? 0) -
-            Number(b.activeVersion?.amount ?? 0),
-        )
-      : plansWithActiveVersion;
+    logger.info(
+      {
+        traceId,
+        planId: defaultPlan[0]?.id,
+      },
+      'Returning default plan',
+    );
 
-    const result = user.memberTypeId ? sortedPlans[0] : sortedPlans[0] || null;
+    return SuccessResponse({ data: plansWithActiveVersion[0] || null });
+  }
 
-    logger.info({ traceId }, "Member plans fetched successfully");
+  const plansWithActiveVersion = plans.map((plan) => ({
+    ...plan,
+    activeVersion: plan.versions[0] || null,
+    versions: undefined,
+  }));
 
-    return SuccessResponse({ data: result });
-  },
-);
+  const sortedPlans = user.memberTypeId
+    ? plansWithActiveVersion.sort(
+        (a, b) => Number(a.activeVersion?.amount ?? 0) - Number(b.activeVersion?.amount ?? 0),
+      )
+    : plansWithActiveVersion;
+
+  const result = user.memberTypeId ? sortedPlans[0] : sortedPlans[0] || null;
+
+  logger.info({ traceId }, 'Member plans fetched successfully');
+
+  return SuccessResponse({ data: result });
+});
 
 export const POST = withAssociation(
   { body: CreateSubscriptionPlanSchema },
@@ -144,10 +136,10 @@ export const POST = withAssociation(
     await withRole(request, UserRole.SUPER_ADMIN);
 
     if (!body) {
-      throw new ValidationError("Invalid request body");
+      throw new ValidationError('Invalid request body');
     }
 
-    logger.info({ traceId, name: body.name }, "Checking plan name uniqueness");
+    logger.info({ traceId, name: body.name }, 'Checking plan name uniqueness');
 
     const isPlanExistWithSameName = await prisma.subscriptionPlan.findFirst({
       where: {
@@ -156,12 +148,11 @@ export const POST = withAssociation(
       },
     });
 
-    if (isPlanExistWithSameName)
-      throw new BadRequestError("Plan with same name already exist");
+    if (isPlanExistWithSameName) throw new BadRequestError('Plan with same name already exist');
 
-    logger.info({ traceId }, "Unsetting default on existing plans");
+    logger.info({ traceId }, 'Unsetting default on existing plans');
 
-    logger.info({ traceId, name: body.name }, "Creating new plan as default");
+    logger.info({ traceId, name: body.name }, 'Creating new plan as default');
 
     const plan = await prisma.$transaction(async (tx) => {
       await tx.subscriptionPlan.updateMany({
@@ -198,7 +189,7 @@ export const POST = withAssociation(
       });
     });
 
-    logger.info({ traceId, planId: plan.id }, "Plan created successfully");
+    logger.info({ traceId, planId: plan.id }, 'Plan created successfully');
 
     return SuccessResponse({ data: plan }, 201);
   },

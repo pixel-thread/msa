@@ -1,14 +1,9 @@
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@src/shared/components/ui/card";
-import { Avatar, AvatarFallback } from "@src/shared/components/ui/avatar";
-import { Separator } from "@src/shared/components/ui/separator";
-import { Mail, Phone, Hash, Briefcase } from "lucide-react";
-import { getInitials } from "@src/features/members/utils/helper/get-initials";
-import { User } from "@prisma/client";
+import { Card, CardHeader, CardTitle, CardContent } from '@src/shared/components/ui/card';
+import { Avatar, AvatarFallback } from '@src/shared/components/ui/avatar';
+import { Separator } from '@src/shared/components/ui/separator';
+import { Mail, Phone, Hash, Briefcase } from 'lucide-react';
+import { getInitials } from '@src/features/members/utils/helper/get-initials';
+import { User } from '@prisma/client';
 
 interface PersonalInfoCardProps {
   member: User;
@@ -42,9 +37,7 @@ export function PersonalInfoCard({ member }: PersonalInfoCardProps) {
             <div className="flex items-start gap-3">
               <Mail className="mt-0.5 h-4 w-4 text-muted-foreground" />
               <div>
-                <p className="text-xs font-medium text-muted-foreground">
-                  Email
-                </p>
+                <p className="text-xs font-medium text-muted-foreground">Email</p>
                 <p className="text-sm text-ink">{member.email}</p>
               </div>
             </div>
@@ -52,36 +45,24 @@ export function PersonalInfoCard({ member }: PersonalInfoCardProps) {
             <div className="flex items-start gap-3">
               <Phone className="mt-0.5 h-4 w-4 text-muted-foreground" />
               <div>
-                <p className="text-xs font-medium text-muted-foreground">
-                  Mobile
-                </p>
-                <p className="text-sm text-ink">
-                  {member.mobile || "Not provided"}
-                </p>
+                <p className="text-xs font-medium text-muted-foreground">Mobile</p>
+                <p className="text-sm text-ink">{member.mobile || 'Not provided'}</p>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
               <Hash className="mt-0.5 h-4 w-4 text-muted-foreground" />
               <div>
-                <p className="text-xs font-medium text-muted-foreground">
-                  Membership Number
-                </p>
-                <p className="text-sm text-ink">
-                  {member.membershipNumber || "Not assigned"}
-                </p>
+                <p className="text-xs font-medium text-muted-foreground">Membership Number</p>
+                <p className="text-sm text-ink">{member.membershipNumber || 'Not assigned'}</p>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
               <Briefcase className="mt-0.5 h-4 w-4 text-muted-foreground" />
               <div>
-                <p className="text-xs font-medium text-muted-foreground">
-                  Designation
-                </p>
-                <p className="text-sm text-ink">
-                  {member.designation || "Not provided"}
-                </p>
+                <p className="text-xs font-medium text-muted-foreground">Designation</p>
+                <p className="text-sm text-ink">{member.designation || 'Not provided'}</p>
               </div>
             </div>
           </div>

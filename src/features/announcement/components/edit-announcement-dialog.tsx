@@ -1,6 +1,6 @@
-import { useEffect, useRef } from "react";
-import { useForm, useWatch } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useRef } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Dialog,
   DialogContent,
@@ -8,7 +8,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
+} from '@src/shared/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -16,26 +16,26 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
-import { Input } from "@src/shared/components/ui/input";
-import { Button } from "@src/shared/components/ui/button";
-import { useUpdateAnnouncement } from "@src/features/announcement/hooks/useUpdateAnnouncement";
-import { useUploadAnnouncementImage } from "@src/features/announcement/hooks/useUploadAnnouncementImage";
+} from '@src/shared/components/ui/form';
+import { Input } from '@src/shared/components/ui/input';
+import { Button } from '@src/shared/components/ui/button';
+import { useUpdateAnnouncement } from '@src/features/announcement/hooks/useUpdateAnnouncement';
+import { useUploadAnnouncementImage } from '@src/features/announcement/hooks/useUploadAnnouncementImage';
 import {
   UpdateAnnouncementInput,
   UpdateAnnouncementSchema,
-} from "@src/features/announcement/validators";
+} from '@src/features/announcement/validators';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@src/shared/components/ui/select";
-import { Textarea } from "@src/shared/components/ui/textarea";
-import { AnnouncementStatus, AnnouncementPriority } from "@prisma/client";
-import type { Announcement } from "@src/features/announcement/types";
-import { ImageIcon, Upload, X } from "lucide-react";
+} from '@src/shared/components/ui/select';
+import { Textarea } from '@src/shared/components/ui/textarea';
+import { AnnouncementStatus, AnnouncementPriority } from '@prisma/client';
+import type { Announcement } from '@src/features/announcement/types';
+import { ImageIcon, Upload, X } from 'lucide-react';
 
 interface EditAnnouncementDialogProps {
   announcement: Announcement | null;
@@ -49,17 +49,15 @@ export function EditAnnouncementDialog({
   onOpenChange,
 }: EditAnnouncementDialogProps) {
   const updateAnnouncement = useUpdateAnnouncement();
-  const { uploadImage, isUploading } = useUploadAnnouncementImage(
-    announcement?.id ?? null,
-  );
+  const { uploadImage, isUploading } = useUploadAnnouncementImage(announcement?.id ?? null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm({
     resolver: zodResolver(UpdateAnnouncementSchema),
     defaultValues: {
-      title: "",
-      summary: "",
-      content: "",
+      title: '',
+      summary: '',
+      content: '',
       imageUrl: null,
       status: undefined,
       priority: undefined,
@@ -69,14 +67,14 @@ export function EditAnnouncementDialog({
 
   const previewUrl = useWatch({
     control: form.control,
-    name: "imageUrl",
+    name: 'imageUrl',
   });
 
   useEffect(() => {
     if (open && announcement) {
       form.reset({
         title: announcement.title,
-        summary: announcement.summary ?? "",
+        summary: announcement.summary ?? '',
         content: announcement.content,
         imageUrl: announcement.imageUrl,
         status: announcement.status as AnnouncementStatus,
@@ -106,7 +104,7 @@ export function EditAnnouncementDialog({
 
     uploadImage(file, {
       onSuccess: () => {
-        if (fileInputRef.current) fileInputRef.current.value = "";
+        if (fileInputRef.current) fileInputRef.current.value = '';
       },
       onError: () => {
         URL.revokeObjectURL(objectUrl);
@@ -123,9 +121,7 @@ export function EditAnnouncementDialog({
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Edit Announcement</DialogTitle>
-          <DialogDescription>
-            Update announcement: {announcement.title}
-          </DialogDescription>
+          <DialogDescription>Update announcement: {announcement.title}</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -151,10 +147,7 @@ export function EditAnnouncementDialog({
                 <FormItem>
                   <FormLabel>Summary</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Brief summary of the announcement"
-                      {...field}
-                    />
+                    <Textarea placeholder="Brief summary of the announcement" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -220,8 +213,7 @@ export function EditAnnouncementDialog({
                       <SelectContent>
                         {Object.values(AnnouncementPriority).map((priority) => (
                           <SelectItem key={priority} value={priority}>
-                            {priority.charAt(0) +
-                              priority.slice(1).toLowerCase()}
+                            {priority.charAt(0) + priority.slice(1).toLowerCase()}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -250,14 +242,14 @@ export function EditAnnouncementDialog({
                       disabled={isUploading}
                     >
                       <Upload className="h-4 w-4 mr-1" />
-                      {isUploading ? "Uploading..." : "Change"}
+                      {isUploading ? 'Uploading...' : 'Change'}
                     </Button>
                     <Button
                       type="button"
                       variant="destructive"
                       size="sm"
                       onClick={() => {
-                        form.setValue("imageUrl", null);
+                        form.setValue('imageUrl', null);
                       }}
                     >
                       <X className="h-4 w-4" />
@@ -267,7 +259,7 @@ export function EditAnnouncementDialog({
                     <div className="px-3 py-1.5 bg-muted text-xs text-muted-foreground flex items-center gap-2">
                       <ImageIcon className="h-3 w-3" />
                       {currentFile.originalName}
-                      {" — "}
+                      {' — '}
                       {(currentFile.sizeBytes / 1024).toFixed(1)} KB
                     </div>
                   )}
@@ -279,7 +271,7 @@ export function EditAnnouncementDialog({
                 >
                   <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                   <p className="text-sm text-muted-foreground">
-                    {isUploading ? "Uploading..." : "Click to upload an image"}
+                    {isUploading ? 'Uploading...' : 'Click to upload an image'}
                   </p>
                 </div>
               )}
@@ -293,15 +285,11 @@ export function EditAnnouncementDialog({
             </div>
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={updateAnnouncement.isPending}>
-                {updateAnnouncement.isPending ? "Saving..." : "Save Changes"}
+                {updateAnnouncement.isPending ? 'Saving...' : 'Save Changes'}
               </Button>
             </DialogFooter>
           </form>

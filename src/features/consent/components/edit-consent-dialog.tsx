@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
+} from '@src/shared/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -18,22 +18,22 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@src/shared/components/ui/form";
+} from '@src/shared/components/ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@src/shared/components/ui/select";
-import { Button } from "@src/shared/components/ui/button";
-import { useUpdateConsentReceipt } from "../hooks/useUpdateConsentReceipt";
+} from '@src/shared/components/ui/select';
+import { Button } from '@src/shared/components/ui/button';
+import { useUpdateConsentReceipt } from '../hooks/useUpdateConsentReceipt';
 import {
   UpdateConsentReceiptSchema,
   UpdateConsentReceiptInput,
-} from "../validators/consent.validators";
-import { ConsentStatus } from "@prisma/client";
-import type { ConsentRecord } from "../types/consent.types";
+} from '../validators/consent.validators';
+import { ConsentStatus } from '@prisma/client';
+import type { ConsentRecord } from '../types/consent.types';
 
 interface EditConsentDialogProps {
   record: ConsentRecord | null;
@@ -41,11 +41,7 @@ interface EditConsentDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function EditConsentDialog({
-  record,
-  open,
-  onOpenChange,
-}: EditConsentDialogProps) {
+export function EditConsentDialog({ record, open, onOpenChange }: EditConsentDialogProps) {
   const updateConsentReceipt = useUpdateConsentReceipt();
 
   const form = useForm<UpdateConsentReceiptInput>({
@@ -60,7 +56,7 @@ export function EditConsentDialog({
     if (open && record) {
       form.reset({
         status: record.status ?? undefined,
-        channel: (record.channel as "web" | "mobile" | "email") ?? undefined,
+        channel: (record.channel as 'web' | 'mobile' | 'email') ?? undefined,
       });
     }
   }, [open, record, form]);
@@ -98,20 +94,13 @@ export function EditConsentDialog({
                 <FormItem>
                   <FormLabel>Status</FormLabel>
                   <FormControl>
-                    <Select
-                      value={field.value ?? ""}
-                      onValueChange={field.onChange}
-                    >
+                    <Select value={field.value ?? ''} onValueChange={field.onChange}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value={ConsentStatus.GRANTED}>
-                          Granted
-                        </SelectItem>
-                        <SelectItem value={ConsentStatus.WITHDRAWN}>
-                          Withdrawn
-                        </SelectItem>
+                        <SelectItem value={ConsentStatus.GRANTED}>Granted</SelectItem>
+                        <SelectItem value={ConsentStatus.WITHDRAWN}>Withdrawn</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -127,10 +116,7 @@ export function EditConsentDialog({
                 <FormItem>
                   <FormLabel>Channel</FormLabel>
                   <FormControl>
-                    <Select
-                      value={field.value ?? ""}
-                      onValueChange={field.onChange}
-                    >
+                    <Select value={field.value ?? ''} onValueChange={field.onChange}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select channel" />
                       </SelectTrigger>
@@ -147,15 +133,11 @@ export function EditConsentDialog({
             />
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={updateConsentReceipt.isPending}>
-                {updateConsentReceipt.isPending ? "Saving..." : "Save Changes"}
+                {updateConsentReceipt.isPending ? 'Saving...' : 'Save Changes'}
               </Button>
             </DialogFooter>
           </form>

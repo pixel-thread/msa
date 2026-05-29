@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { usePayments } from "@src/features/payments/hooks/usePayments";
-import { DataTableFilters } from "@src/shared/components/data-table-filters";
-import { RecordPaymentDialog } from "@src/features/payments/components";
-import { DataTable } from "@src/shared/components/data-table";
-import { usePaymentTransactionColumns } from "@src/features/payments/hooks/usePaymentTransactionColumns";
-import { DataTablePagination } from "@src/shared/components/data-table-pagination";
-import { useUrlFilters } from "@src/shared/hooks";
-import { Button } from "@src/shared/components/ui/button";
-import { Plus } from "lucide-react";
+import { useState } from 'react';
+import { usePayments } from '@src/features/payments/hooks/usePayments';
+import { DataTableFilters } from '@src/shared/components/data-table-filters';
+import { RecordPaymentDialog } from '@src/features/payments/components';
+import { DataTable } from '@src/shared/components/data-table';
+import { usePaymentTransactionColumns } from '@src/features/payments/hooks/usePaymentTransactionColumns';
+import { DataTablePagination } from '@src/shared/components/data-table-pagination';
+import { useUrlFilters } from '@src/shared/hooks';
+import { Button } from '@src/shared/components/ui/button';
+import { Plus } from 'lucide-react';
 
 export default function AllPaymentsPage() {
   const [recordDialogOpen, setRecordDialogOpen] = useState(false);
   const { filters, page, setPage, setFilters } = useUrlFilters({
-    basePath: "/payments",
+    basePath: '/payments',
   });
 
   const { payments, meta, isLoading } = usePayments({
@@ -31,9 +31,7 @@ export default function AllPaymentsPage() {
           <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
             All Payments
           </h1>
-          <p className="mt-1 text-base text-body">
-            View and manage all payment transactions
-          </p>
+          <p className="mt-1 text-base text-body">View and manage all payment transactions</p>
         </div>
         <Button onClick={() => setRecordDialogOpen(true)} className="h-10">
           <Plus className="mr-2 h-4 w-4" />
@@ -44,41 +42,41 @@ export default function AllPaymentsPage() {
       <DataTableFilters
         fields={[
           {
-            type: "search",
-            id: "search",
-            placeholder: "Search member, reference, receipt...",
+            type: 'search',
+            id: 'search',
+            placeholder: 'Search member, reference, receipt...',
           },
           {
-            type: "select",
-            id: "status",
-            label: "Status",
+            type: 'select',
+            id: 'status',
+            label: 'Status',
             options: [
-              { value: "PENDING", label: "Pending" },
-              { value: "COMPLETED", label: "Completed" },
-              { value: "FAILED", label: "Failed" },
-              { value: "REFUNDED", label: "Refunded" },
-              { value: "WAIVED", label: "Waived" },
+              { value: 'PENDING', label: 'Pending' },
+              { value: 'COMPLETED', label: 'Completed' },
+              { value: 'FAILED', label: 'Failed' },
+              { value: 'REFUNDED', label: 'Refunded' },
+              { value: 'WAIVED', label: 'Waived' },
             ],
           },
           {
-            type: "select",
-            id: "method",
-            label: "Method",
+            type: 'select',
+            id: 'method',
+            label: 'Method',
             options: [
-              { value: "CASH", label: "Cash" },
-              { value: "BANK_TRANSFER", label: "Bank Transfer" },
-              { value: "UPI", label: "UPI" },
-              { value: "CHEQUE", label: "Cheque" },
-              { value: "ONLINE", label: "Online" },
+              { value: 'CASH', label: 'Cash' },
+              { value: 'BANK_TRANSFER', label: 'Bank Transfer' },
+              { value: 'UPI', label: 'UPI' },
+              { value: 'CHEQUE', label: 'Cheque' },
+              { value: 'ONLINE', label: 'Online' },
             ],
           },
           {
-            type: "select",
-            id: "gateway",
-            label: "Gateway",
+            type: 'select',
+            id: 'gateway',
+            label: 'Gateway',
             options: [
-              { value: "RAZORPAY", label: "Razorpay" },
-              { value: "MANUAL", label: "Manual" },
+              { value: 'RAZORPAY', label: 'Razorpay' },
+              { value: 'MANUAL', label: 'Manual' },
             ],
           },
         ]}
@@ -87,16 +85,9 @@ export default function AllPaymentsPage() {
 
       <DataTable columns={columns} data={payments} loading={isLoading} />
 
-      <DataTablePagination
-        meta={meta}
-        onPageChange={setPage}
-        label="payments"
-      />
+      <DataTablePagination meta={meta} onPageChange={setPage} label="payments" />
 
-      <RecordPaymentDialog
-        open={recordDialogOpen}
-        onOpenChange={setRecordDialogOpen}
-      />
+      <RecordPaymentDialog open={recordDialogOpen} onOpenChange={setRecordDialogOpen} />
     </>
   );
 }

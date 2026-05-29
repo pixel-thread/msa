@@ -1,14 +1,11 @@
-"use client";
+'use client';
 
-import { useQuery } from "@tanstack/react-query";
-import http from "@src/shared/utils/http";
-import { trainingEndpoints, trainingQueryKeys } from "../../utils/constants";
-import type { TrainingCompletionItem } from "../../types";
+import { useQuery } from '@tanstack/react-query';
+import http from '@src/shared/utils/http';
+import { trainingEndpoints, trainingQueryKeys } from '../../utils/constants';
+import type { TrainingCompletionItem } from '../../types';
 
-export function useTrainingCompletions(
-  moduleId: string | null,
-  options: { page?: number } = {},
-) {
+export function useTrainingCompletions(moduleId: string | null, options: { page?: number } = {}) {
   const { page = 1 } = options;
 
   const url = !!moduleId

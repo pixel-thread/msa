@@ -1,40 +1,40 @@
 export const userPaths = {
-  "/user": {
+  '/user': {
     post: {
-      tags: ["User"],
-      summary: "Update user profile",
+      tags: ['User'],
+      summary: 'Update user profile',
       description: "Update the current user's profile information",
       security: [{ bearerAuth: [] }],
       requestBody: {
         required: true,
         content: {
-          "application/json": {
+          'application/json': {
             schema: {
-              type: "object",
-              required: ["name", "mobile"],
+              type: 'object',
+              required: ['name', 'mobile'],
               properties: {
                 name: {
-                  type: "string",
+                  type: 'string',
                   minLength: 1,
-                  description: "Full name",
+                  description: 'Full name',
                 },
                 mobile: {
-                  type: "number",
-                  description: "Mobile number (10 digits)",
+                  type: 'number',
+                  description: 'Mobile number (10 digits)',
                 },
                 designation: {
-                  type: "string",
-                  description: "Designation/job title",
+                  type: 'string',
+                  description: 'Designation/job title',
                 },
                 dateOfJoiningGovt: {
-                  type: "string",
-                  format: "date-time",
-                  description: "Date of joining government service",
+                  type: 'string',
+                  format: 'date-time',
+                  description: 'Date of joining government service',
                 },
                 dateOfJoiningAssociation: {
-                  type: "string",
-                  format: "date-time",
-                  description: "Date of joining MFSA",
+                  type: 'string',
+                  format: 'date-time',
+                  description: 'Date of joining MFSA',
                 },
               },
             },
@@ -42,24 +42,24 @@ export const userPaths = {
         },
       },
       responses: {
-        "200": {
-          description: "User profile updated",
+        '200': {
+          description: 'User profile updated',
           content: {
-            "application/json": {
+            'application/json': {
               schema: {
-                type: "object",
+                type: 'object',
                 properties: {
-                  id: { type: "string" },
-                  name: { type: "string" },
-                  email: { type: "string" },
-                  mobile: { type: "number" },
-                  designation: { type: "string" },
+                  id: { type: 'string' },
+                  name: { type: 'string' },
+                  email: { type: 'string' },
+                  mobile: { type: 'number' },
+                  designation: { type: 'string' },
                 },
               },
             },
           },
         },
-        "401": { description: "Unauthorized" },
+        '401': { description: 'Unauthorized' },
       },
     },
   },

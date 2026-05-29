@@ -1,15 +1,12 @@
-import { withAssociation, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@src/shared/utils/responses";
-import { UserRole } from "@prisma/client";
-import { prisma } from "@src/shared/lib/prisma";
-import {
-  CreateLedgerEntrySchema,
-  LedgerQueryParams,
-} from "@src/features/ledger/validators";
-import { ValidationError } from "@src/shared/errors";
-import { buildPagination } from "@src/shared/utils";
-import { PAGE_SIZE } from "@src/shared/constants";
-import { logger } from "@src/shared/logger/server";
+import { withAssociation, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@src/shared/utils/responses';
+import { UserRole } from '@prisma/client';
+import { prisma } from '@src/shared/lib/prisma';
+import { CreateLedgerEntrySchema, LedgerQueryParams } from '@src/features/ledger/validators';
+import { ValidationError } from '@src/shared/errors';
+import { buildPagination } from '@src/shared/utils';
+import { PAGE_SIZE } from '@src/shared/constants';
+import { logger } from '@src/shared/logger/server';
 
 export const GET = withAssociation(
   { query: LedgerQueryParams },
@@ -19,7 +16,7 @@ export const GET = withAssociation(
         traceId,
         associationId: association.id,
       },
-      "GET /api/ledger/entries - Request started",
+      'GET /api/ledger/entries - Request started',
     );
 
     const user = await withRole(request, UserRole.FINANCE);
@@ -29,7 +26,7 @@ export const GET = withAssociation(
         traceId,
         userId: user.id,
       },
-      "GET /api/ledger/entries - User authorized",
+      'GET /api/ledger/entries - User authorized',
     );
 
     const { page = 1 } = query || {};
@@ -41,7 +38,7 @@ export const GET = withAssociation(
           lines: true,
           paymentTransaction: true,
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
         skip,
         take: PAGE_SIZE,
       }),
@@ -53,7 +50,7 @@ export const GET = withAssociation(
         traceId,
         count: entries.length,
       },
-      "GET /api/ledger/entries - Success",
+      'GET /api/ledger/entries - Success',
     );
 
     return SuccessResponse({
@@ -71,7 +68,7 @@ export const POST = withAssociation(
         traceId,
         associationId: association.id,
       },
-      "POST /api/ledger/entries - Request started",
+      'POST /api/ledger/entries - Request started',
     );
 
     const user = await withRole(request, UserRole.FINANCE);
@@ -81,13 +78,13 @@ export const POST = withAssociation(
         traceId,
         userId: user.id,
       },
-      "POST /api/ledger/entries - User authorized",
+      'POST /api/ledger/entries - User authorized',
     );
 
-    const userId = request.headers.get("x-user-id")!;
+    const userId = request.headers.get('x-user-id')!;
 
     if (!body) {
-      throw new ValidationError("Invalid request body");
+      throw new ValidationError('Invalid request body');
     }
 
     const entry = await prisma.ledgerEntry.create({
@@ -113,7 +110,7 @@ export const POST = withAssociation(
         traceId,
         entryId: entry.id,
       },
-      "POST /api/ledger/entries - Success",
+      'POST /api/ledger/entries - Success',
     );
 
     return SuccessResponse({ data: entry }, 201);

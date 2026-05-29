@@ -1,32 +1,25 @@
-import * as crypto from "crypto";
-import { env } from "@src/env";
-import { logger } from "@src/shared/logger/server";
+import * as crypto from 'crypto';
+import { env } from '@src/env';
+import { logger } from '@src/shared/logger/server';
 
-const ALGORITHM = "aes-256-gcm";
+const ALGORITHM = 'aes-256-gcm';
 
-const KEY = Buffer.from(env.FIELD_ENCRYPTION_KEY, "hex");
+const KEY = Buffer.from(env.FIELD_ENCRYPTION_KEY, 'hex');
 
 export const encrypt = (plain: string): string => {
   const iv = crypto.randomBytes(16);
 
   const cipher = crypto.createCipheriv(ALGORITHM, KEY, iv);
 
-  const encrypted = Buffer.concat([
-    cipher.update(plain, "utf8"),
-    cipher.final(),
-  ]);
+  const encrypted = Buffer.concat([cipher.update(plain, 'utf8'), cipher.final()]);
 
   const tag = cipher.getAuthTag();
 
-  return [
-    iv.toString("hex"),
-    tag.toString("hex"),
-    encrypted.toString("hex"),
-  ].join(":");
+  return [iv.toString('hex'), tag.toString('hex'), encrypted.toString('hex')].join(':');
 };
 
 export const decrypt = (ciphertext: string): string => {
-  const parts = ciphertext.split(":");
+  const parts = ciphertext.split(':');
 
   if (parts.length !== 3) {
     throw new Error(`Invalid encrypted value format`);
@@ -35,23 +28,19 @@ export const decrypt = (ciphertext: string): string => {
   const [ivHex, tagHex, encHex] = parts;
 
   try {
-    const decipher = crypto.createDecipheriv(
-      ALGORITHM,
-      KEY,
-      Buffer.from(ivHex, "hex"),
-    );
+    const decipher = crypto.createDecipheriv(ALGORITHM, KEY, Buffer.from(ivHex, 'hex'));
 
-    decipher.setAuthTag(Buffer.from(tagHex, "hex"));
+    decipher.setAuthTag(Buffer.from(tagHex, 'hex'));
 
     const decrypted = Buffer.concat([
-      decipher.update(Buffer.from(encHex, "hex")),
+      decipher.update(Buffer.from(encHex, 'hex')),
       decipher.final(),
     ]);
 
-    return decrypted.toString("utf8");
+    return decrypted.toString('utf8');
   } catch (error) {
-    logger.error({ error }, "Failed to decrypt value");
+    logger.error({ error }, 'Failed to decrypt value');
 
-    throw new Error("Failed to decrypt value");
+    throw new Error('Failed to decrypt value');
   }
 };

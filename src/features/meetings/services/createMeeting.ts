@@ -1,5 +1,5 @@
-import { prisma } from "@lib/prisma";
-import { MeetingType, MeetingStatus } from "@prisma/client";
+import { prisma } from '@lib/prisma';
+import { MeetingType, MeetingStatus } from '@prisma/client';
 
 interface AgendaItemData {
   order: number;
@@ -19,11 +19,7 @@ interface CreateMeetingProps {
   };
 }
 
-export async function createMeeting({
-  associationId,
-  createdById,
-  data,
-}: CreateMeetingProps) {
+export async function createMeeting({ associationId, createdById, data }: CreateMeetingProps) {
   return await prisma.meeting.create({
     data: {
       associationId,

@@ -1,40 +1,40 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-const fs = require("fs");
-const path = require("path");
-const readline = require("readline");
+const fs = require('fs');
+const path = require('path');
+const readline = require('readline');
 
 const ROOT = process.cwd();
-const BASE_PATH = path.join(ROOT, "src", "features");
+const BASE_PATH = path.join(ROOT, 'src', 'features');
 
 const FOLDERS = [
-  "components",
-  "hooks",
-  "services",
-  "store",
-  "pages",
-  "types",
-  "utils",
-  "validators",
+  'components',
+  'hooks',
+  'services',
+  'store',
+  'pages',
+  'types',
+  'utils',
+  'validators',
 ];
 
 function ensureDir(dirPath) {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
-    console.log("📁 Created:", dirPath);
+    console.log('📁 Created:', dirPath);
   }
 }
 
 function createKeepFile(dirPath) {
-  const keepFile = path.join(dirPath, ".keep");
+  const keepFile = path.join(dirPath, '.keep');
   if (!fs.existsSync(keepFile)) {
-    fs.writeFileSync(keepFile, "");
+    fs.writeFileSync(keepFile, '');
   }
 }
 
 function createIndexFile(featurePath) {
-  const indexFile = path.join(featurePath, "index.ts");
+  const indexFile = path.join(featurePath, 'index.ts');
   if (!fs.existsSync(indexFile)) {
-    fs.writeFileSync(indexFile, "// exports\n");
+    fs.writeFileSync(indexFile, '// exports\n');
   }
 }
 
@@ -65,23 +65,23 @@ function startCLI() {
     output: process.stdout,
   });
 
-  console.log("\n🚀 Next.js Feature Generator\n");
+  console.log('\n🚀 Next.js Feature Generator\n');
 
-  rl.question("📦 Enter feature name (comma separated): ", (input) => {
+  rl.question('📦 Enter feature name (comma separated): ', (input) => {
     const features = input
-      .split(",")
+      .split(',')
       .map((f) => f.trim())
       .filter(Boolean);
 
     if (!features.length) {
-      console.log("❌ No feature name provided");
+      console.log('❌ No feature name provided');
       rl.close();
       return;
     }
 
     features.forEach(createFeature);
 
-    console.log("\n🎉 Done!\n");
+    console.log('\n🎉 Done!\n');
     rl.close();
   });
 }

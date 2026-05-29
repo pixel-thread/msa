@@ -1,8 +1,5 @@
-import {
-  pageNumberValidation,
-  uuidValidiation,
-} from "@src/shared/validators/common";
-import z from "zod";
+import { pageNumberValidation, uuidValidiation } from '@src/shared/validators/common';
+import z from 'zod';
 
 export const LedgerRouteParams = z.object({ memberId: uuidValidiation });
 

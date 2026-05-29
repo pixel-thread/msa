@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -8,12 +8,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
-import { Button } from "@src/shared/components/ui/button";
-import { Label } from "@src/shared/components/ui/label";
-import { Textarea } from "@src/shared/components/ui/textarea";
-import { useRejectDsarTicket } from "../hooks";
-import type { DsarTicketRecord } from "../types";
+} from '@src/shared/components/ui/dialog';
+import { Button } from '@src/shared/components/ui/button';
+import { Label } from '@src/shared/components/ui/label';
+import { Textarea } from '@src/shared/components/ui/textarea';
+import { useRejectDsarTicket } from '../hooks';
+import type { DsarTicketRecord } from '../types';
 
 interface DsarRejectDialogProps {
   record: DsarTicketRecord | null;
@@ -21,12 +21,8 @@ interface DsarRejectDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function DsarRejectDialog({
-  record,
-  open,
-  onOpenChange,
-}: DsarRejectDialogProps) {
-  const [reason, setReason] = useState("");
+export function DsarRejectDialog({ record, open, onOpenChange }: DsarRejectDialogProps) {
+  const [reason, setReason] = useState('');
 
   const rejectMutation = useRejectDsarTicket();
 
@@ -37,7 +33,7 @@ export function DsarRejectDialog({
       { id: record.id, reason: reason.trim() },
       {
         onSuccess: () => {
-          setReason("");
+          setReason('');
           onOpenChange(false);
         },
       },
@@ -45,7 +41,7 @@ export function DsarRejectDialog({
   };
 
   const handleClose = () => {
-    setReason("");
+    setReason('');
     onOpenChange(false);
   };
 
@@ -80,7 +76,7 @@ export function DsarRejectDialog({
             onClick={handleSubmit}
             disabled={rejectMutation.isPending || !reason.trim()}
           >
-            {rejectMutation.isPending ? "Rejecting..." : "Reject"}
+            {rejectMutation.isPending ? 'Rejecting...' : 'Reject'}
           </Button>
         </DialogFooter>
       </DialogContent>

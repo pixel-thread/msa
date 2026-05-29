@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -8,19 +8,19 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@src/shared/components/ui/dialog";
+} from '@src/shared/components/ui/dialog';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@src/shared/components/ui/select";
-import { Button } from "@src/shared/components/ui/button";
-import { Label } from "@src/shared/components/ui/label";
-import { useAssignDsarTicket } from "../hooks";
-import type { DsarTicketRecord } from "../types";
-import { MemberCombobox } from "@src/shared/components/members/member-combobox";
+} from '@src/shared/components/ui/select';
+import { Button } from '@src/shared/components/ui/button';
+import { Label } from '@src/shared/components/ui/label';
+import { useAssignDsarTicket } from '../hooks';
+import type { DsarTicketRecord } from '../types';
+import { MemberCombobox } from '@src/shared/components/members/member-combobox';
 
 interface DsarAssignDialogProps {
   record: DsarTicketRecord | null;
@@ -28,12 +28,8 @@ interface DsarAssignDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function DsarAssignDialog({
-  record,
-  open,
-  onOpenChange,
-}: DsarAssignDialogProps) {
-  const [selectedAdminId, setSelectedAdminId] = useState("");
+export function DsarAssignDialog({ record, open, onOpenChange }: DsarAssignDialogProps) {
+  const [selectedAdminId, setSelectedAdminId] = useState('');
 
   const assignMutation = useAssignDsarTicket();
 
@@ -44,7 +40,7 @@ export function DsarAssignDialog({
       { id: record.id, assignedToId: selectedAdminId },
       {
         onSuccess: () => {
-          setSelectedAdminId("");
+          setSelectedAdminId('');
           onOpenChange(false);
         },
       },
@@ -52,13 +48,13 @@ export function DsarAssignDialog({
   };
 
   const handleClose = () => {
-    setSelectedAdminId("");
+    setSelectedAdminId('');
     onOpenChange(false);
   };
 
   if (!record) return null;
 
-  const currentAssigneeId = record.assignedTo?.id || "";
+  const currentAssigneeId = record.assignedTo?.id || '';
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -66,8 +62,7 @@ export function DsarAssignDialog({
         <DialogHeader>
           <DialogTitle>Assign DSAR Ticket</DialogTitle>
           <DialogDescription>
-            {record.ticketNumber} — Choose an administrator to handle this
-            request
+            {record.ticketNumber} — Choose an administrator to handle this request
           </DialogDescription>
         </DialogHeader>
 
@@ -79,11 +74,8 @@ export function DsarAssignDialog({
           <Button type="button" variant="outline" onClick={handleClose}>
             Cancel
           </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={assignMutation.isPending || !selectedAdminId}
-          >
-            {assignMutation.isPending ? "Assigning..." : "Assign"}
+          <Button onClick={handleSubmit} disabled={assignMutation.isPending || !selectedAdminId}>
+            {assignMutation.isPending ? 'Assigning...' : 'Assign'}
           </Button>
         </DialogFooter>
       </DialogContent>

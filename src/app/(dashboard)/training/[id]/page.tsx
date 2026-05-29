@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { TrainingDetailPage } from "@src/features/training/pages";
+import { TrainingDetailPage } from '@src/features/training/pages';
 
 export default function TrainingDetailRoute() {
   return <TrainingDetailPage />;

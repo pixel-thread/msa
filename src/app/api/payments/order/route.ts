@@ -1,12 +1,12 @@
-import { withAssociation, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@utils/responses";
-import { logger } from "@src/shared/logger/server";
-import { UserRole } from "@prisma/client";
-import { CreateOrderSchema } from "@feature/payments/validators";
-import { createPaymentOrder } from "@feature/payments/services/payment.service";
-import { prisma } from "@src/shared/lib/prisma";
-import { NotFoundError } from "@src/shared/errors";
-import { getActiveProvider } from "@src/features/payments/services/payment-provider.service";
+import { withAssociation, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@utils/responses';
+import { logger } from '@src/shared/logger/server';
+import { UserRole } from '@prisma/client';
+import { CreateOrderSchema } from '@feature/payments/validators';
+import { createPaymentOrder } from '@feature/payments/services/payment.service';
+import { prisma } from '@src/shared/lib/prisma';
+import { NotFoundError } from '@src/shared/errors';
+import { getActiveProvider } from '@src/features/payments/services/payment-provider.service';
 
 /**
  * POST /api/payments/order
@@ -19,21 +19,16 @@ import { getActiveProvider } from "@src/features/payments/services/payment-provi
 export const POST = withAssociation(
   { body: CreateOrderSchema },
   async (association, { body, traceId }, request) => {
-    logger.info({ traceId }, "POST /api/payments/order - Request started");
+    logger.info({ traceId }, 'POST /api/payments/order - Request started');
 
     const user = await withRole(request, UserRole.MEMBER);
-    logger.info(
-      { traceId, userId: user.id },
-      "POST /api/payments/order - User authorized",
-    );
+    logger.info({ traceId, userId: user.id }, 'POST /api/payments/order - User authorized');
     const typeId = user?.memberTypeId;
 
     const associationActivePaymentProvider = getActiveProvider(association.id);
 
     if (!associationActivePaymentProvider)
-      throw new NotFoundError(
-        "No payment provider set up for this association.",
-      );
+      throw new NotFoundError('No payment provider set up for this association.');
 
     const whereClause: Record<string, unknown> = {
       associationId: association.id,
@@ -51,10 +46,10 @@ export const POST = withAssociation(
       include: {
         versions: {
           take: 1,
-          orderBy: { createdAt: "desc" },
+          orderBy: { createdAt: 'desc' },
         },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
     });
 
     if (plans.length === 0) {
@@ -67,22 +62,20 @@ export const POST = withAssociation(
         include: {
           versions: {
             take: 1,
-            orderBy: { createdAt: "desc" },
+            orderBy: { createdAt: 'desc' },
           },
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
       });
     }
 
     if (plans.length === 0 || !plans[0].versions[0]) {
-      throw new NotFoundError("Plan not found under this member Group");
+      throw new NotFoundError('Plan not found under this member Group');
     }
 
     const selectedPlan = typeId
       ? plans.sort(
-          (a, b) =>
-            Number(a.versions[0]?.amount ?? 0) -
-            Number(b.versions[0]?.amount ?? 0),
+          (a, b) => Number(a.versions[0]?.amount ?? 0) - Number(b.versions[0]?.amount ?? 0),
         )[0]
       : plans[0];
 
@@ -94,7 +87,7 @@ export const POST = withAssociation(
         userId: user.id,
         amount: parseInt(activeVersion.amount.toFixed(2)),
       },
-      "POST /api/payments/order - Creating payment order",
+      'POST /api/payments/order - Creating payment order',
     );
 
     const orderDetails = await createPaymentOrder({
@@ -106,7 +99,7 @@ export const POST = withAssociation(
 
     logger.info(
       { traceId, orderId: (orderDetails as any).id },
-      "POST /api/payments/order - Success",
+      'POST /api/payments/order - Success',
     );
 
     return SuccessResponse({ data: orderDetails }, 201);

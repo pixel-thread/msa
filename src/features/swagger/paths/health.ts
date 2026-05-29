@@ -1,19 +1,19 @@
 export const healthPath = {
-  "/health": {
+  '/health': {
     get: {
-      tags: ["Health"],
-      summary: "Health check",
-      description: "Returns the health status of the API",
+      tags: ['Health'],
+      summary: 'Health check',
+      description: 'Returns the health status of the API',
       responses: {
-        "200": {
-          description: "API is healthy",
+        '200': {
+          description: 'API is healthy',
           content: {
-            "application/json": {
+            'application/json': {
               schema: {
-                type: "object",
+                type: 'object',
                 properties: {
-                  status: { type: "string" },
-                  timestamp: { type: "string" },
+                  status: { type: 'string' },
+                  timestamp: { type: 'string' },
                 },
               },
             },

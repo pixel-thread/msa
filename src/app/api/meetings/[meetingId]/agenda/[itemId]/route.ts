@@ -1,10 +1,10 @@
-import { withAssociation, withRole } from "@src/shared/api";
-import { SuccessResponse } from "@src/shared/utils/responses";
-import { UserRole } from "@prisma/client";
-import { prisma } from "@src/shared/lib/prisma";
-import { z } from "zod";
-import { ValidationError } from "@src/shared/errors";
-import { logger } from "@src/shared/logger/server";
+import { withAssociation, withRole } from '@src/shared/api';
+import { SuccessResponse } from '@src/shared/utils/responses';
+import { UserRole } from '@prisma/client';
+import { prisma } from '@src/shared/lib/prisma';
+import { z } from 'zod';
+import { ValidationError } from '@src/shared/errors';
+import { logger } from '@src/shared/logger/server';
 
 const UpdateAgendaItemSchema = z.object({
   title: z.string().min(1).optional(),
@@ -17,24 +17,24 @@ export const PATCH = withAssociation(
   async (association, { body, traceId }, request, { params }) => {
     logger.info(
       { traceId, associationId: association.id },
-      "PATCH /api/meetings/[meetingId]/agenda/[itemId] - Request started",
+      'PATCH /api/meetings/[meetingId]/agenda/[itemId] - Request started',
     );
 
     const user = await withRole(request, UserRole.SECRETARY);
     logger.info(
       { traceId, userId: user.id, role: user.role },
-      "PATCH /api/meetings/[meetingId]/agenda/[itemId] - User authorized",
+      'PATCH /api/meetings/[meetingId]/agenda/[itemId] - User authorized',
     );
 
     if (!body) {
-      throw new ValidationError("Invalid body");
+      throw new ValidationError('Invalid body');
     }
 
     const { itemId } = (await params) as { itemId: string };
 
     logger.info(
       { traceId, itemId },
-      "PATCH /api/meetings/[meetingId]/agenda/[itemId] - Updating agenda item",
+      'PATCH /api/meetings/[meetingId]/agenda/[itemId] - Updating agenda item',
     );
 
     const item = await prisma.agendaItem.update({
@@ -44,47 +44,38 @@ export const PATCH = withAssociation(
       data: body,
     });
 
-    logger.info(
-      { traceId, itemId },
-      "PATCH /api/meetings/[meetingId]/agenda/[itemId] - Success",
-    );
+    logger.info({ traceId, itemId }, 'PATCH /api/meetings/[meetingId]/agenda/[itemId] - Success');
 
     return SuccessResponse({ data: item });
   },
 );
 
-export const DELETE = withAssociation(
-  {},
-  async (association, { traceId }, request, { params }) => {
-    logger.info(
-      { traceId, associationId: association.id },
-      "DELETE /api/meetings/[meetingId]/agenda/[itemId] - Request started",
-    );
+export const DELETE = withAssociation({}, async (association, { traceId }, request, { params }) => {
+  logger.info(
+    { traceId, associationId: association.id },
+    'DELETE /api/meetings/[meetingId]/agenda/[itemId] - Request started',
+  );
 
-    const user = await withRole(request, UserRole.SECRETARY);
-    logger.info(
-      { traceId, userId: user.id, role: user.role },
-      "DELETE /api/meetings/[meetingId]/agenda/[itemId] - User authorized",
-    );
+  const user = await withRole(request, UserRole.SECRETARY);
+  logger.info(
+    { traceId, userId: user.id, role: user.role },
+    'DELETE /api/meetings/[meetingId]/agenda/[itemId] - User authorized',
+  );
 
-    const { itemId } = (await params) as { itemId: string };
+  const { itemId } = (await params) as { itemId: string };
 
-    logger.info(
-      { traceId, itemId },
-      "DELETE /api/meetings/[meetingId]/agenda/[itemId] - Deleting agenda item",
-    );
+  logger.info(
+    { traceId, itemId },
+    'DELETE /api/meetings/[meetingId]/agenda/[itemId] - Deleting agenda item',
+  );
 
-    const item = await prisma.agendaItem.delete({
-      where: {
-        id: itemId,
-      },
-    });
+  const item = await prisma.agendaItem.delete({
+    where: {
+      id: itemId,
+    },
+  });
 
-    logger.info(
-      { traceId, itemId },
-      "DELETE /api/meetings/[meetingId]/agenda/[itemId] - Success",
-    );
+  logger.info({ traceId, itemId }, 'DELETE /api/meetings/[meetingId]/agenda/[itemId] - Success');
 
-    return SuccessResponse({ data: item });
-  },
-);
+  return SuccessResponse({ data: item });
+});

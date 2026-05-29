@@ -1,84 +1,81 @@
-import { withRole, withValidation } from "@src/shared/api";
-import { ValidationError } from "@src/shared/errors";
-import { createLogs, getLogs } from "@src/shared/services/logs";
-import { SuccessResponse } from "@src/shared/utils";
-import { LogIngestSchema, LogQuerySchema } from "@src/shared/validators/logs";
-import { UserRole, type Log } from "@prisma/client";
+import { withRole, withValidation } from '@src/shared/api';
+import { ValidationError } from '@src/shared/errors';
+import { createLogs, getLogs } from '@src/shared/services/logs';
+import { SuccessResponse } from '@src/shared/utils';
+import { LogIngestSchema, LogQuerySchema } from '@src/shared/validators/logs';
+import { UserRole, type Log } from '@prisma/client';
 // import { logger } from "@src/shared/logger/server";
 
-export const GET = withValidation(
-  { query: LogQuerySchema },
-  async (req, _ctx, { query }) => {
-    await withRole(req, UserRole.SUPER_ADMIN);
-    // logger.info({ traceId }, "GET /api/logs - Request started");
+export const GET = withValidation({ query: LogQuerySchema }, async (req, _ctx, { query }) => {
+  await withRole(req, UserRole.SUPER_ADMIN);
+  // logger.info({ traceId }, "GET /api/logs - Request started");
 
-    const {
-      page,
-      level,
-      search,
-      messageExact,
-      contentSearch,
-      startDate,
-      endDate,
-      isBackend,
-      ids,
-      sortBy,
-      sortOrder,
-      limit,
-    } = query!;
+  const {
+    page,
+    level,
+    search,
+    messageExact,
+    contentSearch,
+    startDate,
+    endDate,
+    isBackend,
+    ids,
+    sortBy,
+    sortOrder,
+    limit,
+  } = query!;
 
-    const where: Parameters<typeof getLogs>[0]["where"] = {};
+  const where: Parameters<typeof getLogs>[0]['where'] = {};
 
-    if (level) {
-      const levels = Array.isArray(level) ? level : [level];
-      where.type = levels.length === 1 ? levels[0] : { in: levels };
+  if (level) {
+    const levels = Array.isArray(level) ? level : [level];
+    where.type = levels.length === 1 ? levels[0] : { in: levels };
+  }
+
+  if (messageExact) {
+    where.message = messageExact;
+  } else if (search) {
+    where.message = { contains: search, mode: 'insensitive' };
+  }
+
+  if (contentSearch) {
+    where.content = { string_contains: contentSearch };
+  }
+
+  if (startDate || endDate) {
+    where.createdAt = {};
+    if (startDate) {
+      where.createdAt.gte = new Date(startDate);
     }
-
-    if (messageExact) {
-      where.message = messageExact;
-    } else if (search) {
-      where.message = { contains: search, mode: "insensitive" };
+    if (endDate) {
+      where.createdAt.lte = new Date(endDate);
     }
+  }
 
-    if (contentSearch) {
-      where.content = { string_contains: contentSearch };
-    }
+  if (isBackend !== undefined) {
+    where.isBackend = isBackend;
+  }
 
-    if (startDate || endDate) {
-      where.createdAt = {};
-      if (startDate) {
-        where.createdAt.gte = new Date(startDate);
-      }
-      if (endDate) {
-        where.createdAt.lte = new Date(endDate);
-      }
-    }
+  if (ids) {
+    where.id = { in: ids.split(',').map((id) => id.trim()) };
+  }
 
-    if (isBackend !== undefined) {
-      where.isBackend = isBackend;
-    }
+  const { logs, pagination } = await getLogs({
+    where,
+    page: page || 1,
+    sortBy,
+    sortOrder,
+    limit,
+  });
 
-    if (ids) {
-      where.id = { in: ids.split(",").map((id) => id.trim()) };
-    }
+  // logger.info({ traceId, count: logs.length }, "GET /api/logs - Success");
 
-    const { logs, pagination } = await getLogs({
-      where,
-      page: page || 1,
-      sortBy,
-      sortOrder,
-      limit,
-    });
-
-    // logger.info({ traceId, count: logs.length }, "GET /api/logs - Success");
-
-    return SuccessResponse<Log[]>({
-      data: logs,
-      meta: pagination,
-      message: "Logs retrieved successfully",
-    });
-  },
-);
+  return SuccessResponse<Log[]>({
+    data: logs,
+    meta: pagination,
+    message: 'Logs retrieved successfully',
+  });
+});
 
 export const POST = withValidation(
   { body: LogIngestSchema.strict() },
@@ -92,7 +89,7 @@ export const POST = withValidation(
     const message = body?.message;
 
     if (!level || !message || !body) {
-      throw new ValidationError("Invalid request body");
+      throw new ValidationError('Invalid request body');
     }
 
     const sanitizedContextJson = body?.context
@@ -113,7 +110,7 @@ export const POST = withValidation(
     return SuccessResponse(
       {
         data: { id: savedLog.id, traceId },
-        message: "Successfully log to server",
+        message: 'Successfully log to server',
       },
       201,
     );
