@@ -11,7 +11,7 @@ import {
 import { Button } from '@src/shared/components/ui/button';
 import { ChevronDown } from 'lucide-react';
 import { ROLES } from '@src/features/members/utils/constants';
-import { User } from '@prisma/client';
+import type { User } from '@src/shared/types';
 
 interface RoleCellProps {
   member: User;

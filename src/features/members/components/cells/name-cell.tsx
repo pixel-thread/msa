@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback } from '@src/shared/components/ui/avatar';
 import Link from 'next/link';
 import { getInitials } from '@src/features/members/utils/helper/get-initials';
-import { User } from '@prisma/client';
+import type { User } from '@src/shared/types';
 
 interface NameCellProps {
   member: User;

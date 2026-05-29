@@ -1,7 +1,7 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@src/shared/components/ui/card';
 import { Calendar } from 'lucide-react';
 import { formatDate } from '@src/shared/utils';
-import { User } from '@prisma/client';
+import type { User } from '@src/shared/types';
 
 interface DatesCardProps {
   member: User;

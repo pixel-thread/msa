@@ -1,6 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { formatDate } from '@src/shared/utils';
-import { User } from '@prisma/client';
+import type { User } from '@src/shared/types';
 import { RoleCell } from '@src/features/members/components/cells/role-cell';
 import { StatusCell } from '@src/features/members/components/cells/status-cell';
 import { NameCell } from '@src/features/members/components/cells/name-cell';

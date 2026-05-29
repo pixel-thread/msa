@@ -1,5 +1,5 @@
 import { type ColumnDef } from '@tanstack/react-table';
-import type { Account } from '@prisma/client';
+import type { Account } from '@src/shared/types';
 
 export function useLedgerAccountColumns() {
   const columns: ColumnDef<Account>[] = [

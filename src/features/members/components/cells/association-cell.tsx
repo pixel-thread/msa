@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { User } from '@prisma/client';
+import type { User } from '@src/shared/types';
 import { useAssociationsList } from '@src/features/associations/hooks/useAssociationsList';
 import { Button } from '@src/shared/components/ui/button';
 import {

@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback } from '@src/shared/components/ui/avatar';
 import { Separator } from '@src/shared/components/ui/separator';
 import { Mail, Phone, Hash, Briefcase } from 'lucide-react';
 import { getInitials } from '@src/features/members/utils/helper/get-initials';
-import { User } from '@prisma/client';
+import type { User } from '@src/shared/types';
 
 interface PersonalInfoCardProps {
   member: User;

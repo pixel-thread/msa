@@ -1,6 +1,6 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@src/shared/components/ui/card';
 import { formatDate } from '@src/shared/utils';
-import { User } from '@prisma/client';
+import type { User } from '@src/shared/types';
 
 interface AccountCardProps {
   member: User;

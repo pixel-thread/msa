@@ -1,5 +1,5 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@src/shared/components/ui/card';
-import { User } from '@prisma/client';
+import type { User } from '@src/shared/types';
 
 interface ActivityCardProps {
   member: User & { _count?: { meetingAttendances?: number } };

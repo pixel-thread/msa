@@ -1,6 +1,6 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@src/shared/components/ui/card';
 import { Badge } from '@src/shared/components/ui/badge';
-import { User } from '@prisma/client';
+import type { User } from '@src/shared/types';
 import { getStatusBadge } from '@src/shared/utils/helper/get-status-badge';
 
 interface StatusCardProps {
