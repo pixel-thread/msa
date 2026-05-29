@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "format": "prettier --write .",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -76,6 +77,7 @@
     "@types/ssh2-sftp-client": "^9.0.6",
     "@types/swagger-ui-react": "^5.18.0",
     "eslint": "^9",
+    "prettier": "^3",
     "eslint-config-next": "16.2.5",
     "prisma": "^7.8.0",
     "tailwindcss": "^4",

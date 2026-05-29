@@ -10,6 +10,7 @@ import {
 } from "./classes/http-errors";
 import { Prisma } from "@prisma/client";
 import { JWTClaimValidationFailed, JOSEError } from "jose/errors";
+import { logger } from "../logger/server";
 
 /**
  * Type guard to check if an error is a Prisma-specific error
@@ -47,10 +48,14 @@ export function isSupabaseStorageError(error: unknown) {
   );
 }
 
-export const normalizeUnknownError = (error: unknown): AppError => {
+export const normalizeUnknownError = (
+  error: unknown,
+  traceId?: string,
+): AppError => {
   const isProd = env.NODE_ENV === "production";
 
   if (isJwtError(error) || error instanceof UnauthorizedError) {
+    logger.error({ ...error, traceId }, "UnauthorizedError");
     return new UnauthorizedError(error.message);
   }
 
@@ -59,6 +64,7 @@ export const normalizeUnknownError = (error: unknown): AppError => {
   }
 
   if (isSupabaseStorageError(error)) {
+    logger.error({ error, traceId }, "Supabase storage error");
     return new BadRequestError("Supabase storage error");
   }
 
@@ -67,10 +73,12 @@ export const normalizeUnknownError = (error: unknown): AppError => {
   }
 
   if (error instanceof PaymentError) {
+    logger.error({ ...error, traceId }, "PaymentError");
     return new PaymentError(error.message, error.code, error.statusCode);
   }
 
   if (isPrismaError(error)) {
+    logger.error({ error, traceId }, "Database error");
     return new AppError(
       "DATABASE_ERROR",
       isProd ? "Database error" : error.message,
@@ -87,5 +95,6 @@ export const normalizeUnknownError = (error: unknown): AppError => {
 
   const displayMessage = isProd ? "Internal Server Error" : message;
 
+  logger.error({ error, traceId }, "Internal Server Error");
   return new AppError("INTERNAL_ERROR", displayMessage, 500);
 };

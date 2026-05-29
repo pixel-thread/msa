@@ -16,12 +16,15 @@ export function handleApiErrors<TContext>(handler: RouteHandler<TContext>) {
     try {
       return await handler(request, context);
     } catch (error) {
-      const appError = normalizeUnknownError(error);
+      const appError = normalizeUnknownError(error, traceId);
       if (!(error instanceof AppError)) {
-        logger.error({
-          traceId,
-          error,
-        }, "API ERROR");
+        logger.error(
+          {
+            traceId,
+            error,
+          },
+          "API ERROR",
+        );
       }
 
       return AppErrorResponse(appError, traceId);
