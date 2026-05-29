@@ -27,13 +27,13 @@ export async function GET(request: Request) {
     ).length;
 
     logger.info(
-      "GET /api/cron/subscription-expiry - Subscription expiry check completed",
       {
         totalAssociations: results.length,
         processedAssociations,
         totalExpired,
         totalFailed,
       },
+      "GET /api/cron/subscription-expiry - Subscription expiry check completed",
     );
 
     return NextResponse.json({

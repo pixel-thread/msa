@@ -71,8 +71,8 @@ export const GET = withAssociation(
 
     if (plans.length === 0) {
       logger.info(
-        "No member-specific plans found, falling back to default plan",
         { traceId },
+        "No member-specific plans found, falling back to default plan",
       );
 
       const defaultPlan = await prisma.subscriptionPlan.findMany({

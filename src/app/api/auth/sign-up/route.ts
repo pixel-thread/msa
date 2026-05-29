@@ -55,8 +55,8 @@ export const POST = withValidation(
 
     if (user && user.status === "ACTIVE") {
       logger.error(
-        "POST /api/auth/sign-up - Active User already exists with this email",
         { traceId, email },
+        "POST /api/auth/sign-up - Active User already exists with this email",
       );
       throw new ConflictError("An Active User already exist with this email");
     }
