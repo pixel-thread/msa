@@ -26,6 +26,7 @@ export default function LedgerDashboardPage() {
   const pendingEntries = entries.filter((e) => e.approvalStatus === 'PENDING').length;
 
   const { columns: entryColumns } = useRecentLedgerEntryColumns();
+
   return (
     <>
       <div className="flex items-center justify-between">

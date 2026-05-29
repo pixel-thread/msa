@@ -641,6 +641,46 @@ async function createLedgerEntry(
   description: string,
   createdById: string,
 ) {
+  // 1. Fetch the transaction to know its associationId and method
+  const transaction = await tx.paymentTransaction.findUnique({
+    where: { id: paymentTransactionId },
+    select: { associationId: true, method: true },
+  });
+
+  if (!transaction) {
+    throw new Error(`Transaction ${paymentTransactionId} not found during ledger generation.`);
+  }
+
+  // 2. Determine correct Bank/Cash and Revenue accounts by code
+  // If payment method is CASH, debit Cash in Hand ('1001'). Otherwise debit Bank ('1002').
+  const isCash = transaction.method === 'CASH';
+  const debitAccountCode = isCash ? '1001' : '1002';
+  const creditAccountCode = '3001'; // Membership Income
+
+  // 3. Find the corresponding accounts in the Chart of Accounts for this association
+  const [debitAccount, creditAccount] = await Promise.all([
+    tx.account.findFirst({
+      where: {
+        associationId: transaction.associationId,
+        code: debitAccountCode,
+        isActive: true,
+      },
+    }),
+    tx.account.findFirst({
+      where: {
+        associationId: transaction.associationId,
+        code: creditAccountCode,
+        isActive: true,
+      },
+    }),
+  ]);
+
+  if (!debitAccount || !creditAccount) {
+    throw new Error(
+      `Required accounts (debit: ${debitAccountCode}, credit: ${creditAccountCode}) not found in chart of accounts for association ${transaction.associationId}.`
+    );
+  }
+
   return tx.ledgerEntry.create({
     data: {
       paymentTransactionId,
@@ -651,12 +691,12 @@ async function createLedgerEntry(
       lines: {
         create: [
           {
-            accountId: 'BANK',
+            accountId: debitAccount.id,
             isDebit: true,
             amount,
           },
           {
-            accountId: 'SUBSCRIPTION_INCOME',
+            accountId: creditAccount.id,
             isDebit: false,
             amount,
           },

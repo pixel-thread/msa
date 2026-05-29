@@ -8,12 +8,14 @@ export const LedgerQueryParams = z.object({
 });
 
 export const CreateLedgerLineSchema = z.object({
-  debitAccountId: z.string(),
-  amount: z.number(),
+  accountId: z.string().uuid(),
+  isDebit: z.boolean(),
+  amount: z.number().positive(),
 });
 
 export const CreateLedgerEntrySchema = z.object({
-  description: z.string(),
-  paymentId: z.string().optional(),
-  lines: z.array(CreateLedgerLineSchema),
+  description: z.string().min(1),
+  paymentId: z.string().uuid().optional().nullable(),
+  lines: z.array(CreateLedgerLineSchema).min(2),
 });
+

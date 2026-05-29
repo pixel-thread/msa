@@ -4,18 +4,8 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUrlFilters } from '@src/shared/hooks';
 import { DataTable } from '@src/shared/components/data-table';
-import { Card, CardContent } from '@src/shared/components/ui/card';
 import { Button } from '@src/shared/components/ui/button';
 import { DataTableFilters } from '@src/shared/components/data-table-filters';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@src/shared/components/ui/pagination';
 import { useLedgerEntries, type LedgerEntryResponse } from '../hooks/useLedgerEntries';
 import { useLedgerEntriesColumns } from '../hooks/useLedgerEntriesColumns';
 import { CreateEntryDialog } from '../components/create-entry-dialog';

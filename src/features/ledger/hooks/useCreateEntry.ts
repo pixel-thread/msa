@@ -3,13 +3,14 @@ import http from '@src/shared/utils/http';
 import { toast } from 'sonner';
 
 export interface CreateLedgerLineInput {
-  debitAccountId: string;
+  accountId: string;
+  isDebit: boolean;
   amount: number;
 }
 
 export interface CreateLedgerEntryInput {
   description: string;
-  paymentId?: string;
+  paymentId?: string | null;
   lines: CreateLedgerLineInput[];
 }
 

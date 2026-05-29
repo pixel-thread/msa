@@ -87,6 +87,39 @@ export const POST = withAssociation(
       throw new ValidationError('Invalid request body');
     }
 
+    // 1. Verify double-entry balancing constraints
+    const debits = body.lines.filter((l) => l.isDebit);
+    const credits = body.lines.filter((l) => !l.isDebit);
+
+    if (debits.length === 0 || credits.length === 0) {
+      throw new ValidationError('A ledger entry must have at least one debit line and one credit line.');
+    }
+
+    const totalDebits = debits.reduce((sum, l) => sum + l.amount, 0);
+    const totalCredits = credits.reduce((sum, l) => sum + l.amount, 0);
+
+    // Floating-point matching within ₹0.01 tolerance
+    if (Math.abs(totalDebits - totalCredits) > 0.01) {
+      throw new ValidationError(
+        `Ledger entry is not balanced. Total debits (${totalDebits.toFixed(2)}) must equal total credits (${totalCredits.toFixed(2)}).`
+      );
+    }
+
+    // 2. Validate all referenced accounts belong to this association
+    const accountIds = body.lines.map((l) => l.accountId);
+    const uniqueAccountIds = Array.from(new Set(accountIds));
+    const accountsCount = await prisma.account.count({
+      where: {
+        id: { in: uniqueAccountIds },
+        associationId: association.id,
+        isActive: true,
+      },
+    });
+
+    if (accountsCount !== uniqueAccountIds.length) {
+      throw new ValidationError('One or more selected accounts are invalid or inactive.');
+    }
+
     const entry = await prisma.ledgerEntry.create({
       data: {
         description: body.description,
@@ -94,8 +127,8 @@ export const POST = withAssociation(
         paymentTransactionId: body.paymentId || null,
         lines: {
           create: body.lines.map((line) => ({
-            accountId: line.debitAccountId,
-            isDebit: true,
+            accountId: line.accountId,
+            isDebit: line.isDebit,
             amount: line.amount,
           })),
         },
