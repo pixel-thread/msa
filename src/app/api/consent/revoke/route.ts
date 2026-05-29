@@ -3,7 +3,7 @@ import { ConsentService, ConsentUpdateSchema } from "@src/features/consent";
 import { ConsentStatus } from "@prisma/client";
 import { SuccessResponse } from "@src/shared/utils";
 import { BadRequestError, UnauthorizedError } from "@src/shared/errors";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 /**
  * POST /api/consent/revoke
@@ -15,10 +15,10 @@ export const POST = withAssociation(
     body: ConsentUpdateSchema.omit({ action: true }),
   },
   async (association, { body, traceId }, request) => {
-    logger.info("POST /api/consent/revoke - Request started", {
+    logger.info({
       traceId,
       associationId: association.id,
-    });
+    }, "POST /api/consent/revoke - Request started");
 
     const userId = request.headers.get("x-user-id");
     if (!userId) throw new UnauthorizedError("Unauthorized");
@@ -40,10 +40,10 @@ export const POST = withAssociation(
       userAgent,
     );
 
-    logger.info("POST /api/consent/revoke - Consent revoked successfully", {
+    logger.info({
       traceId,
       userId,
-    });
+    }, "POST /api/consent/revoke - Consent revoked successfully");
 
     return SuccessResponse({
       message: "Consent revoked successfully",

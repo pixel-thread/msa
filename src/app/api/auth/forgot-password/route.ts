@@ -4,7 +4,7 @@ import { signPasswordResetToken } from "@src/shared/lib/jwt";
 import { sendPasswordResetEmail } from "@src/shared/lib/email";
 import { SuccessResponse } from "@src/shared/utils";
 import { env } from "@src/env";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 import {
   ForgotPasswordInput,
   ForgotPasswordSchema,
@@ -48,7 +48,7 @@ export const POST = withValidation(
     }
 
     if (env.NODE_ENV === "development") {
-      logger.debug("Reset password Token", { token: resetToken });
+      logger.debug({ token: resetToken }, "Reset password Token");
     }
 
     return SuccessResponse({

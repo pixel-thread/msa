@@ -6,7 +6,7 @@ import {
 } from "@src/shared/errors";
 import { $Enums, AttendeeRole } from "@prisma/client";
 import { ExpoNotificationService } from "@lib/expo";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 import { EXPO_ROUTES } from "@src/shared/constants/expo-route";
 import { createNotification } from "@src/shared/services/notification";
 
@@ -98,10 +98,10 @@ export async function assignAttendee({
           ...payload,
         },
       );
-      logger.debug("Push notification results:", { results });
+      logger.debug({ results }, "Push notification results:");
     }
   } catch (error) {
-    logger.error("Failed to send push notification:", { error });
+    logger.error({ error }, "Failed to send push notification:");
   }
 
   return attendee;

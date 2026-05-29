@@ -1,6 +1,6 @@
 import { withAssociation, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils/responses";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 import { UserRole } from "@prisma/client";
 import { getTransactionById } from "@feature/payments/services/payment.service";
 import { ForbiddenError, NotFoundError } from "@src/shared/errors";
@@ -15,7 +15,7 @@ import { ForbiddenError, NotFoundError } from "@src/shared/errors";
 export const GET = withAssociation(
   {},
   async (association, { traceId }, request, context) => {
-    logger.info("GET /api/payments/[id]/receipt - Request started", { traceId });
+    logger.info({ traceId }, "GET /api/payments/[id]/receipt - Request started");
 
     const params = await context.params;
     const paymentId = params?.paymentId;
@@ -25,7 +25,7 @@ export const GET = withAssociation(
     }
 
     const user = await withRole(request, UserRole.MEMBER);
-    logger.info("GET /api/payments/[id]/receipt - User authorized", { traceId, userId: user.id, paymentId });
+    logger.info({ traceId, userId: user.id, paymentId }, "GET /api/payments/[id]/receipt - User authorized");
 
     const transaction = await getTransactionById(paymentId, association.id);
 
@@ -57,7 +57,7 @@ export const GET = withAssociation(
       }))
     };
 
-    logger.info("GET /api/payments/[id]/receipt - Success", { traceId, paymentId });
+    logger.info({ traceId, paymentId }, "GET /api/payments/[id]/receipt - Success");
 
     return SuccessResponse({ data: receiptData });
   },

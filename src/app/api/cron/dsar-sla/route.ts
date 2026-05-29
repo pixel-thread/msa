@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { env } from "@src/env";
 import { runDsarSlaCron } from "@src/features/cron/services";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export async function GET(request: Request) {
   logger.info("GET /api/cron/dsar-sla - Request started");
@@ -22,12 +22,12 @@ export async function GET(request: Request) {
     const totalAtRisk = results.reduce((sum, r) => sum + r.atRisk, 0);
     const processedAssociations = results.filter((r) => r.processed).length;
 
-    logger.info("GET /api/cron/dsar-sla - DSAR SLA check completed", {
+    logger.info({
       totalAssociations: results.length,
       processedAssociations,
       totalBreached,
       totalAtRisk,
-    });
+    }, "GET /api/cron/dsar-sla - DSAR SLA check completed");
 
     return NextResponse.json({
       success: true,
@@ -41,7 +41,7 @@ export async function GET(request: Request) {
       results,
     });
   } catch (error) {
-    logger.error("GET /api/cron/dsar-sla - Unhandled error", { error });
+    logger.error({ error }, "GET /api/cron/dsar-sla - Unhandled error");
     return NextResponse.json(
       {
         error: "Internal server error",

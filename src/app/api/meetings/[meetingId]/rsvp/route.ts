@@ -4,7 +4,7 @@ import { ForbiddenError, ValidationError } from "@src/shared/errors";
 import { UserRole } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
 import { z } from "zod";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const AttendeeParamsSchema = z.object({
   meetingId: z.uuid("Invalid meeting ID"),
@@ -22,7 +22,7 @@ const RsvpSchema = z.object({
 export const POST = withAssociation(
   { params: AttendeeParamsSchema, body: RsvpSchema },
   async (_association, { params, body, traceId }, request) => {
-    logger.info("POST /api/meetings/[meetingId]/rsvp - Request started", { traceId, meetingId: params?.meetingId });
+    logger.info({ traceId, meetingId: params?.meetingId }, "POST /api/meetings/[meetingId]/rsvp - Request started");
 
     if (!params) {
       throw new ForbiddenError("Invalid parameters");
@@ -33,7 +33,7 @@ export const POST = withAssociation(
     }
 
     const user = await withRole(request, UserRole.MEMBER);
-    logger.info("POST /api/meetings/[meetingId]/rsvp - User authorized", { traceId, userId: user.id, role: user.role, meetingId: params.meetingId });
+    logger.info({ traceId, userId: user.id, role: user.role, meetingId: params.meetingId }, "POST /api/meetings/[meetingId]/rsvp - User authorized");
 
     // Member submitting own RSVP
     const userId = request.headers.get("x-user-id");
@@ -41,7 +41,7 @@ export const POST = withAssociation(
       throw new ForbiddenError("Unauthorized");
     }
 
-    logger.info("POST /api/meetings/[meetingId]/rsvp - Submitting RSVP", { traceId, meetingId: params.meetingId, userId });
+    logger.info({ traceId, meetingId: params.meetingId, userId }, "POST /api/meetings/[meetingId]/rsvp - Submitting RSVP");
 
     const updated = await prisma.meetingAttendee.update({
       where: {
@@ -57,7 +57,7 @@ export const POST = withAssociation(
       },
     });
 
-    logger.info("POST /api/meetings/[meetingId]/rsvp - Success", { traceId, meetingId: params.meetingId });
+    logger.info({ traceId, meetingId: params.meetingId }, "POST /api/meetings/[meetingId]/rsvp - Success");
 
     return SuccessResponse({
       data: updated,

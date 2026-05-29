@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 
 import { env } from "@src/env";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const resend = env.RESEND_API_KEY ? new Resend(env.RESEND_API_KEY) : null;
 
@@ -31,14 +31,14 @@ async function sendEmail({ to, subject, html }: EmailProps) {
     });
 
     if (result.error) {
-      logger.error("[Email] Error sending email", { error: result.error, to });
+      logger.error({ error: result.error, to }, "[Email] Error sending email");
       return { success: false, error: result.error };
     }
 
-    logger.info("[Email] Sent successfully", { to });
+    logger.info({ to }, "[Email] Sent successfully");
     return { success: true };
   } catch (error) {
-    logger.error("[Email] Exception sending email", { error, to });
+    logger.error({ error, to }, "[Email] Exception sending email");
     return { success: false, error };
   }
 }

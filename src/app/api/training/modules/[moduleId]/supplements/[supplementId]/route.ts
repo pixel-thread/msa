@@ -16,7 +16,7 @@ import {
 import { UpdateSupplementSchema } from "@feature/training/validators/training";
 import { uploadToBucket, deleteFromBucket } from "@lib/supabase/storage";
 import { z } from "zod";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const TrainingParamsSchema = z.object({
   moduleId: z.uuid("Invalid module ID"),
@@ -30,10 +30,10 @@ export const GET = withAssociation(
       throw new ForbiddenError("Invalid params");
     }
 
-    logger.info("GET /training/modules/{moduleId}/supplements/{supplementId} - Request started", { traceId, associationId: association.id });
+    logger.info({ traceId, associationId: association.id }, "GET /training/modules/{moduleId}/supplements/{supplementId} - Request started");
 
     await withRole(request, UserRole.MEMBER);
-    logger.info("GET /training/modules/{moduleId}/supplements/{supplementId} - User authorized", { traceId });
+    logger.info({ traceId }, "GET /training/modules/{moduleId}/supplements/{supplementId} - User authorized");
 
     const { moduleId, supplementId } = params;
 
@@ -48,7 +48,7 @@ export const GET = withAssociation(
       throw new NotFoundError("Training supplement not found");
     }
 
-    logger.info("GET /training/modules/{moduleId}/supplements/{supplementId} - Success", { traceId, supplementId });
+    logger.info({ traceId, supplementId }, "GET /training/modules/{moduleId}/supplements/{supplementId} - Success");
     return SuccessResponse({ data: supplement });
   },
 );
@@ -60,11 +60,11 @@ export const PATCH = withAssociation(
       throw new ForbiddenError("Invalid params");
     }
 
-    logger.info("PATCH /training/modules/{moduleId}/supplements/{supplementId} - Request started", { traceId, associationId: association.id });
+    logger.info({ traceId, associationId: association.id }, "PATCH /training/modules/{moduleId}/supplements/{supplementId} - Request started");
 
     const { moduleId, supplementId } = params;
     const user = await withRole(request, UserRole.DPO);
-    logger.info("PATCH /training/modules/{moduleId}/supplements/{supplementId} - User authorized", { traceId, userId: user.id });
+    logger.info({ traceId, userId: user.id }, "PATCH /training/modules/{moduleId}/supplements/{supplementId} - User authorized");
 
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
@@ -93,7 +93,7 @@ export const PATCH = withAssociation(
         throw new BadRequestError("File is empty");
       }
 
-      logger.info("PATCH /training/modules/{moduleId}/supplements/{supplementId} - Uploading file", { traceId });
+      logger.info({ traceId }, "PATCH /training/modules/{moduleId}/supplements/{supplementId} - Uploading file");
 
       const uploadResult = await uploadToBucket(
         file,
@@ -137,7 +137,7 @@ export const PATCH = withAssociation(
       }
     }
 
-    logger.info("PATCH /training/modules/{moduleId}/supplements/{supplementId} - Success", { traceId, supplementId });
+    logger.info({ traceId, supplementId }, "PATCH /training/modules/{moduleId}/supplements/{supplementId} - Success");
     return SuccessResponse({ data: supplement });
   },
 );
@@ -149,11 +149,11 @@ export const DELETE = withAssociation(
       throw new ForbiddenError("Invalid params");
     }
 
-    logger.info("DELETE /training/modules/{moduleId}/supplements/{supplementId} - Request started", { traceId, associationId: association.id });
+    logger.info({ traceId, associationId: association.id }, "DELETE /training/modules/{moduleId}/supplements/{supplementId} - Request started");
 
     const { moduleId, supplementId } = params;
     const user = await withRole(request, UserRole.DPO);
-    logger.info("DELETE /training/modules/{moduleId}/supplements/{supplementId} - User authorized", { traceId, userId: user.id });
+    logger.info({ traceId, userId: user.id }, "DELETE /training/modules/{moduleId}/supplements/{supplementId} - User authorized");
 
     const result = await deleteSupplement({
       associationId: association.id,
@@ -170,7 +170,7 @@ export const DELETE = withAssociation(
       }
     }
 
-    logger.info("DELETE /training/modules/{moduleId}/supplements/{supplementId} - Success", { traceId, supplementId });
+    logger.info({ traceId, supplementId }, "DELETE /training/modules/{moduleId}/supplements/{supplementId} - Success");
     return SuccessResponse({
       data: { success: true, message: "Training supplement deleted" },
     });

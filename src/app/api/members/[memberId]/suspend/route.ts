@@ -5,7 +5,7 @@ import { withAssociation, withRole } from "@src/shared/api";
 import { BadRequestError, NotFoundError } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
 import z from "zod";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const SuspenseUserRouteParams = z.object({
   memberId: z.uuid(),
@@ -14,17 +14,17 @@ const SuspenseUserRouteParams = z.object({
 export const POST = withAssociation(
   { params: SuspenseUserRouteParams },
   async (association, { params, traceId }, req) => {
-    logger.info("POST /api/members/[memberId]/suspend - Request started", {
+    logger.info({
       traceId,
       associationId: association.id,
-    });
+    }, "POST /api/members/[memberId]/suspend - Request started");
 
     const user = await withRole(req, UserRole.PRESIDENT);
 
-    logger.info("POST /api/members/[memberId]/suspend - User authorized", {
+    logger.info({
       traceId,
       userId: user.id,
-    });
+    }, "POST /api/members/[memberId]/suspend - User authorized");
 
     const target = await findUniqueMember({ where: { id: params?.memberId } });
 
@@ -40,10 +40,10 @@ export const POST = withAssociation(
       data: { status: "SUSPENDED" },
     });
 
-    logger.info("POST /api/members/[memberId]/suspend - Success", {
+    logger.info({
       traceId,
       memberId: params?.memberId,
-    });
+    }, "POST /api/members/[memberId]/suspend - Success");
 
     return SuccessResponse({ data: updatedMember,message:"Member suspended successfully" });
   },

@@ -7,29 +7,29 @@ import {
   findManyMemberTypes,
 } from "@feature/member-type/services";
 import { CreateMemberTypeSchema } from "@feature/member-type/validators";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export const GET = withAssociation({}, async (association, { traceId }, request) => {
-  logger.info("GET /api/member-types - Request started", {
+  logger.info({
     traceId,
     associationId: association.id,
-  });
+  }, "GET /api/member-types - Request started");
 
   const user = await withRole(request, UserRole.MEMBER);
 
-  logger.info("GET /api/member-types - User authorized", {
+  logger.info({
     traceId,
     userId: user.id,
-  });
+  }, "GET /api/member-types - User authorized");
 
   const memberTypes = await findManyMemberTypes({
     associationId: association.id,
   });
 
-  logger.info("GET /api/member-types - Success", {
+  logger.info({
     traceId,
     count: memberTypes.length,
-  });
+  }, "GET /api/member-types - Success");
 
   return SuccessResponse({ data: memberTypes });
 });
@@ -37,10 +37,10 @@ export const GET = withAssociation({}, async (association, { traceId }, request)
 export const POST = withAssociation(
   { body: CreateMemberTypeSchema },
   async (association, { body, traceId }, request) => {
-    logger.info("POST /api/member-types - Request started", {
+    logger.info({
       traceId,
       associationId: association.id,
-    });
+    }, "POST /api/member-types - Request started");
 
     if (!body) {
       throw new BadRequestError("Invalid request body");
@@ -48,10 +48,10 @@ export const POST = withAssociation(
 
     const user = await withRole(request, UserRole.PRESIDENT);
 
-    logger.info("POST /api/member-types - User authorized", {
+    logger.info({
       traceId,
       userId: user.id,
-    });
+    }, "POST /api/member-types - User authorized");
 
     const memberType = await createMemberType({
       associationId: association.id,
@@ -59,10 +59,10 @@ export const POST = withAssociation(
       data: body,
     });
 
-    logger.info("POST /api/member-types - Success", {
+    logger.info({
       traceId,
       memberTypeId: memberType.id,
-    });
+    }, "POST /api/member-types - Success");
 
     return SuccessResponse({ data: memberType }, 201);
   },

@@ -15,15 +15,15 @@ import {
   UpdateMemberTypeSchema,
   MemberTypeParamsSchema,
 } from "@feature/member-type/validators";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export const GET = withAssociation(
   { params: MemberTypeParamsSchema },
   async (association, { params, traceId }, request) => {
-    logger.info("GET /api/member-types/[memberTypeId] - Request started", {
+    logger.info({
       traceId,
       associationId: association.id,
-    });
+    }, "GET /api/member-types/[memberTypeId] - Request started");
 
     if (!params) {
       throw new BadRequestError("Invalid member type ID");
@@ -31,10 +31,10 @@ export const GET = withAssociation(
 
     const user = await withRole(request, UserRole.MEMBER);
 
-    logger.info("GET /api/member-types/[memberTypeId] - User authorized", {
+    logger.info({
       traceId,
       userId: user.id,
-    });
+    }, "GET /api/member-types/[memberTypeId] - User authorized");
 
     const { memberTypeId } = params;
 
@@ -47,10 +47,10 @@ export const GET = withAssociation(
       throw new NotFoundError("Member type not found");
     }
 
-    logger.info("GET /api/member-types/[memberTypeId] - Success", {
+    logger.info({
       traceId,
       memberTypeId,
-    });
+    }, "GET /api/member-types/[memberTypeId] - Success");
 
     return SuccessResponse({ data: memberType, message: "Member type found" });
   },
@@ -59,10 +59,10 @@ export const GET = withAssociation(
 export const PATCH = withAssociation(
   { params: MemberTypeParamsSchema, body: UpdateMemberTypeSchema },
   async (association, { params, body, traceId }, request) => {
-    logger.info("PATCH /api/member-types/[memberTypeId] - Request started", {
+    logger.info({
       traceId,
       associationId: association.id,
-    });
+    }, "PATCH /api/member-types/[memberTypeId] - Request started");
 
     if (!params) {
       throw new ForbiddenError("Invalid member type ID");
@@ -74,10 +74,10 @@ export const PATCH = withAssociation(
 
     const user = await withRole(request, UserRole.PRESIDENT);
 
-    logger.info("PATCH /api/member-types/[memberTypeId] - User authorized", {
+    logger.info({
       traceId,
       userId: user.id,
-    });
+    }, "PATCH /api/member-types/[memberTypeId] - User authorized");
 
     const { memberTypeId } = params;
 
@@ -88,10 +88,10 @@ export const PATCH = withAssociation(
       data: body,
     });
 
-    logger.info("PATCH /api/member-types/[memberTypeId] - Success", {
+    logger.info({
       traceId,
       memberTypeId,
-    });
+    }, "PATCH /api/member-types/[memberTypeId] - Success");
 
     return SuccessResponse({
       data: memberType,
@@ -103,10 +103,10 @@ export const PATCH = withAssociation(
 export const DELETE = withAssociation(
   { params: MemberTypeParamsSchema },
   async (association, { params, traceId }, request) => {
-    logger.info("DELETE /api/member-types/[memberTypeId] - Request started", {
+    logger.info({
       traceId,
       associationId: association.id,
-    });
+    }, "DELETE /api/member-types/[memberTypeId] - Request started");
 
     if (!params) {
       throw new ForbiddenError("Invalid member type ID");
@@ -114,10 +114,10 @@ export const DELETE = withAssociation(
 
     const user = await withRole(request, UserRole.PRESIDENT);
 
-    logger.info("DELETE /api/member-types/[memberTypeId] - User authorized", {
+    logger.info({
       traceId,
       userId: user.id,
-    });
+    }, "DELETE /api/member-types/[memberTypeId] - User authorized");
 
     const { memberTypeId } = params;
 
@@ -127,10 +127,10 @@ export const DELETE = withAssociation(
       memberTypeId,
     });
 
-    logger.info("DELETE /api/member-types/[memberTypeId] - Success", {
+    logger.info({
       traceId,
       memberTypeId,
-    });
+    }, "DELETE /api/member-types/[memberTypeId] - Success");
 
     return SuccessResponse({
       data: null,

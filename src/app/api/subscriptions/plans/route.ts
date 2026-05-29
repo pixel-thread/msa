@@ -5,14 +5,14 @@ import { prisma } from "@src/shared/lib/prisma";
 import { CreateSubscriptionPlanSchema } from "@feature/subscriptions/validators";
 import { BadRequestError, ValidationError } from "@src/shared/errors";
 import { hasHighRoleAccess, getTraceId } from "@src/shared/utils";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export const GET = withAssociation(
   {},
   async (association, { traceId }, request) => {
     const user = await withRole(request, UserRole.MEMBER);
     if (hasHighRoleAccess(user.role)) {
-      logger.info("Fetching all plans for admin", { traceId });
+      logger.info({ traceId }, "Fetching all plans for admin");
       const plans = await prisma.subscriptionPlan.findMany({
         where: { associationId: association.id },
         include: {
@@ -32,18 +32,18 @@ export const GET = withAssociation(
         versions: plan.versions,
       }));
 
-      logger.info("Admin plans fetched successfully", {
+      logger.info({
         traceId,
         count: plans.length,
-      });
+      }, "Admin plans fetched successfully");
 
       return SuccessResponse({ data: plansWithActiveVersion });
     }
 
-    logger.info("Fetching plans for member", {
+    logger.info({
       traceId,
       memberTypeId: user.memberTypeId,
-    });
+    }, "Fetching plans for member");
 
     const whereClause: Record<string, unknown> = {
       associationId: association.id,
@@ -98,10 +98,10 @@ export const GET = withAssociation(
         versions: undefined,
       }));
 
-      logger.info("Returning default plan", {
+      logger.info({
         traceId,
         planId: defaultPlan[0]?.id,
-      });
+      }, "Returning default plan");
 
       return SuccessResponse({ data: plansWithActiveVersion[0] || null });
     }
@@ -122,7 +122,7 @@ export const GET = withAssociation(
 
     const result = user.memberTypeId ? sortedPlans[0] : sortedPlans[0] || null;
 
-    logger.info("Member plans fetched successfully", { traceId });
+    logger.info({ traceId }, "Member plans fetched successfully");
 
     return SuccessResponse({ data: result });
   },
@@ -138,7 +138,7 @@ export const POST = withAssociation(
       throw new ValidationError("Invalid request body");
     }
 
-    logger.info("Checking plan name uniqueness", { traceId, name: body.name });
+    logger.info({ traceId, name: body.name }, "Checking plan name uniqueness");
 
     const isPlanExistWithSameName = await prisma.subscriptionPlan.findFirst({
       where: {
@@ -150,9 +150,9 @@ export const POST = withAssociation(
     if (isPlanExistWithSameName)
       throw new BadRequestError("Plan with same name already exist");
 
-    logger.info("Unsetting default on existing plans", { traceId });
+    logger.info({ traceId }, "Unsetting default on existing plans");
 
-    logger.info("Creating new plan as default", { traceId, name: body.name });
+    logger.info({ traceId, name: body.name }, "Creating new plan as default");
 
     const plan = await prisma.$transaction(async (tx) => {
       await tx.subscriptionPlan.updateMany({
@@ -189,7 +189,7 @@ export const POST = withAssociation(
       });
     });
 
-    logger.info("Plan created successfully", { traceId, planId: plan.id });
+    logger.info({ traceId, planId: plan.id }, "Plan created successfully");
 
     return SuccessResponse({ data: plan }, 201);
   },

@@ -4,12 +4,12 @@ import { createLogs, getLogs } from "@src/shared/services/logs";
 import { SuccessResponse } from "@src/shared/utils";
 import { LogIngestSchema, LogQuerySchema } from "@src/shared/validators/logs";
 import type { Log } from "@prisma/client";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export const GET = withValidation(
   { query: LogQuerySchema },
   async (_req, _ctx, { query, traceId }) => {
-    logger.info("GET /api/logs - Request started", { traceId });
+    logger.info({ traceId }, "GET /api/logs - Request started");
 
     const {
       page,
@@ -69,7 +69,7 @@ export const GET = withValidation(
       limit,
     });
 
-    logger.info("GET /api/logs - Success", { traceId, count: logs.length });
+    logger.info({ traceId, count: logs.length }, "GET /api/logs - Success");
 
     return SuccessResponse<Log[]>({
       data: logs,
@@ -82,7 +82,7 @@ export const GET = withValidation(
 export const POST = withValidation(
   { body: LogIngestSchema.strict() },
   async (_req, _ctx, { body, traceId }) => {
-    logger.info("POST /api/logs - Request started", { traceId });
+    logger.info({ traceId }, "POST /api/logs - Request started");
 
     const context = body?.context;
 
@@ -107,7 +107,7 @@ export const POST = withValidation(
       },
     });
 
-    logger.info("POST /api/logs - Success", { traceId, logId: savedLog.id });
+    logger.info({ traceId, logId: savedLog.id }, "POST /api/logs - Success");
 
     return SuccessResponse(
       { data: { id: savedLog.id }, message: "Successfully log to server" },

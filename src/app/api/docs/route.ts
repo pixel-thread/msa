@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { openApiSpec } from "@feature/swagger";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export const GET = () => {
   logger.info("GET /api/docs - Request started");

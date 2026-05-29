@@ -1,6 +1,6 @@
 import { Expo, ExpoPushMessage, ExpoPushTicket } from "expo-server-sdk";
 import { prisma } from "./prisma";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 import { NotificationDataT } from "@sharedType/notification";
 
 const expo = new Expo();
@@ -68,7 +68,7 @@ export class ExpoNotificationService {
           }
         }
       } catch (error) {
-        logger.error("Error sending push notification chunk:", { error });
+        logger.error({ error }, "Error sending push notification chunk:");
       }
     }
 

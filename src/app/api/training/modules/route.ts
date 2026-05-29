@@ -8,7 +8,7 @@ import { CreateTrainingModuleSchema } from "@feature/training/validators/trainin
 import { hasHighRoleAccess } from "@src/shared/utils/has-high-role";
 import { z } from "zod";
 import { pageNumberValidation } from "@src/shared/validators";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const TraingModuleQuerySchema = z.object({
   page: pageNumberValidation,
@@ -16,10 +16,10 @@ const TraingModuleQuerySchema = z.object({
 export const GET = withAssociation(
   { query: TraingModuleQuerySchema },
   async (association, { query, traceId }, request) => {
-    logger.info("GET /training/modules - Request started", { traceId, associationId: association.id });
+    logger.info({ traceId, associationId: association.id }, "GET /training/modules - Request started");
 
     const user = await withRole(request, UserRole.MEMBER);
-    logger.info("GET /training/modules - User authorized", { traceId, userId: user.id, role: user.role });
+    logger.info({ traceId, userId: user.id, role: user.role }, "GET /training/modules - User authorized");
 
     const isManager =
       hasHighRoleAccess(user.role) || user.role.includes(UserRole.DPO);
@@ -33,7 +33,7 @@ export const GET = withAssociation(
         role,
         page: query?.page || 1,
       });
-      logger.info("GET /training/modules - Success", { traceId });
+      logger.info({ traceId }, "GET /training/modules - Success");
       return SuccessResponse({
         data: modules.trainingModules,
         meta: modules.pagination,
@@ -48,7 +48,7 @@ export const GET = withAssociation(
       page: query?.page || 1,
     });
 
-    logger.info("GET /training/modules - Success", { traceId });
+    logger.info({ traceId }, "GET /training/modules - Success");
     return SuccessResponse({
       data: modules.trainingModules,
       meta: modules.pagination,
@@ -63,10 +63,10 @@ export const POST = withAssociation(
       throw new ForbiddenError("Invalid request body");
     }
 
-    logger.info("POST /training/modules - Request started", { traceId, associationId: association.id });
+    logger.info({ traceId, associationId: association.id }, "POST /training/modules - Request started");
 
     const user = await withRole(request, UserRole.DPO); // DPO or higher
-    logger.info("POST /training/modules - User authorized", { traceId, userId: user.id });
+    logger.info({ traceId, userId: user.id }, "POST /training/modules - User authorized");
 
     const trainingModule = await createModule({
       associationId: association.id,
@@ -74,7 +74,7 @@ export const POST = withAssociation(
       data: body,
     });
 
-    logger.info("POST /training/modules - Success", { traceId, moduleId: trainingModule.id });
+    logger.info({ traceId, moduleId: trainingModule.id }, "POST /training/modules - Success");
     return SuccessResponse({ data: trainingModule }, 201);
   },
 );

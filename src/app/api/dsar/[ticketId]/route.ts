@@ -7,7 +7,7 @@ import {
   deleteDsarTicket,
 } from "@src/features/dsar/services";
 import { z } from "zod";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const ParamsSchema = z.object({
   ticketId: z.uuid(),
@@ -31,11 +31,11 @@ const ParamsSchema = z.object({
 export const GET = withAssociation(
   { params: ParamsSchema },
   async (association, { params, traceId }, request) => {
-    logger.info("GET /api/dsar/[ticketId] - Request started", {
+    logger.info({
       traceId,
       associationId: association.id,
       ticketId: params?.ticketId,
-    });
+    }, "GET /api/dsar/[ticketId] - Request started");
 
     const userId = request.headers.get("x-user-id")!;
     const ticketId = params!.ticketId;
@@ -51,18 +51,18 @@ export const GET = withAssociation(
     if (!isOwner) {
       // If not owner, check if user has DPO role or higher
       const user = await withRole(request, UserRole.DPO);
-      logger.info("GET /api/dsar/[ticketId] - User authorized (DPO)", {
+      logger.info({
         traceId,
         userId: user.id,
-      });
+      }, "GET /api/dsar/[ticketId] - User authorized (DPO)");
     } else {
-      logger.info("GET /api/dsar/[ticketId] - User authorized (Owner)", {
+      logger.info({
         traceId,
         userId,
-      });
+      }, "GET /api/dsar/[ticketId] - User authorized (Owner)");
     }
 
-    logger.info("GET /api/dsar/[ticketId] - Success", { traceId });
+    logger.info({ traceId }, "GET /api/dsar/[ticketId] - Success");
 
     return SuccessResponse({ data: ticket });
   },
@@ -71,19 +71,19 @@ export const GET = withAssociation(
 export const DELETE = withAssociation(
   { params: ParamsSchema },
   async (association, { params, traceId }, request) => {
-    logger.info("DELETE /api/dsar/[ticketId] - Request started", {
+    logger.info({
       traceId,
       associationId: association.id,
       ticketId: params?.ticketId,
-    });
+    }, "DELETE /api/dsar/[ticketId] - Request started");
 
     const actorId = request.headers.get("x-user-id")!;
     const user = await withRole(request, UserRole.DPO);
 
-    logger.info("DELETE /api/dsar/[ticketId] - User authorized", {
+    logger.info({
       traceId,
       userId: user.id,
-    });
+    }, "DELETE /api/dsar/[ticketId] - User authorized");
 
     const ticket = await findUniqueDsarTicket(params!.ticketId, association.id);
     if (!ticket) {
@@ -96,7 +96,7 @@ export const DELETE = withAssociation(
       actorId,
     });
 
-    logger.info("DELETE /api/dsar/[ticketId] - Success", { traceId });
+    logger.info({ traceId }, "DELETE /api/dsar/[ticketId] - Success");
 
     return SuccessResponse({
       data: null,

@@ -2,10 +2,10 @@ import { getUser, updateUser } from "@src/features/user/services";
 import { withValidation } from "@src/shared/api";
 import { UnauthorizedError } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export const POST = withValidation({}, async (req, _ctx, { traceId }) => {
-  logger.info("POST /api/user/mfa - Request started", { traceId });
+  logger.info({ traceId }, "POST /api/user/mfa - Request started");
 
   const userId = req.headers.get("x-user-id");
 
@@ -22,7 +22,7 @@ export const POST = withValidation({}, async (req, _ctx, { traceId }) => {
     data: { mfaEnabled: user.mfaEnabled ? false : true },
   });
 
-  logger.info("POST /api/user/mfa - Success", { traceId, userId });
+  logger.info({ traceId, userId }, "POST /api/user/mfa - Success");
 
   return SuccessResponse({
     data: { mfaEnable: user.mfaEnabled ? false : true },

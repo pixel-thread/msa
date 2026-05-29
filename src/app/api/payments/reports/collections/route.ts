@@ -1,6 +1,6 @@
 import { withAssociation, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils/responses";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 import { UserRole } from "@prisma/client";
 import { CollectionReportQuerySchema } from "@feature/payments/validators";
 import { prisma } from "@src/shared/lib/prisma";
@@ -18,10 +18,10 @@ import { PAGE_SIZE } from "@src/shared/constants";
 export const GET = withAssociation(
   { query: CollectionReportQuerySchema },
   async (association, { query, traceId }, request) => {
-    logger.info("GET /api/payments/reports/collections - Request started", { traceId, year: query!.year, month: query!.month });
+    logger.info({ traceId, year: query!.year, month: query!.month }, "GET /api/payments/reports/collections - Request started");
 
     await withRole(request, UserRole.FINANCE);
-    logger.info("GET /api/payments/reports/collections - User authorized", { traceId });
+    logger.info({ traceId }, "GET /api/payments/reports/collections - User authorized");
 
     const [collections, total] = await prisma.$transaction([
       prisma.contributionPeriod.findMany({
@@ -59,7 +59,7 @@ export const GET = withAssociation(
       }),
     ]);
 
-    logger.info("GET /api/payments/reports/collections - Success", { traceId, count: collections.length, total });
+    logger.info({ traceId, count: collections.length, total }, "GET /api/payments/reports/collections - Success");
 
     return SuccessResponse({
       data: collections,

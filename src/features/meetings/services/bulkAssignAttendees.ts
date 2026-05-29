@@ -3,7 +3,7 @@ import { NotFoundError, ForbiddenError } from "@src/shared/errors";
 import { $Enums, AttendeeRole } from "@prisma/client";
 import { ExpoNotificationService } from "@lib/expo";
 import { EXPO_ROUTES } from "@src/shared/constants/expo-route";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 interface BulkAssignAttendeesProps {
   meetingId: string;
@@ -122,10 +122,10 @@ route: EXPO_ROUTES.MEETINGS.MEETING_DETAIL(meeting.id),
         }
       }
     } catch (error) {
-      logger.error("Background notification processing failed", {
+      logger.error({
         meetingId,
         error,
-      });
+      }, "Background notification processing failed");
     }
   })();
 

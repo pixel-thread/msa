@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { env } from "@src/env";
 import { runAnonymizeCron } from "@src/features/cron/services";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export async function GET(request: Request) {
   logger.info("GET /api/cron/anonymize - Request started");
@@ -24,12 +24,12 @@ export async function GET(request: Request) {
       (r) => r.processed && !r.error,
     ).length;
 
-    logger.info("GET /api/cron/anonymize - Anonymization completed", {
+    logger.info({
       totalAssociations: results.length,
       processedAssociations,
       totalAnonymized: totalProcessed,
       totalFailed,
-    });
+    }, "GET /api/cron/anonymize - Anonymization completed");
 
     return NextResponse.json({
       success: true,
@@ -43,7 +43,7 @@ export async function GET(request: Request) {
       results,
     });
   } catch (error) {
-    logger.error("GET /api/cron/anonymize - Unhandled error", { error });
+    logger.error({ error }, "GET /api/cron/anonymize - Unhandled error");
     return NextResponse.json(
       {
         error: "Internal server error",

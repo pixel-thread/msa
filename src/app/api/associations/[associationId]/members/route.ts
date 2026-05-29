@@ -9,7 +9,7 @@ import { prisma } from "@src/shared/lib/prisma";
 import { UserRole } from "@prisma/client";
 import { NextRequest } from "next/server";
 import z from "zod";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const BodySchema = z.object({
   memberId: z.string(),
@@ -21,12 +21,12 @@ const ParamsSchema = z.object({
 export const POST = withAssociation(
   { body: BodySchema, params: ParamsSchema },
   async (association, { body, params, traceId }, request) => {
-    logger.info("POST /api/associations/[associationId]/members - Request started", { traceId, targetMemberId: body?.memberId, associationId: params?.associationId });
+    logger.info({ traceId, targetMemberId: body?.memberId, associationId: params?.associationId }, "POST /api/associations/[associationId]/members - Request started");
     const user = await withRole(request as NextRequest, UserRole.PRESIDENT);
-    logger.info("POST /api/associations/[associationId]/members - User authorized", { traceId, userId: user.id, roles: user.role });
+    logger.info({ traceId, userId: user.id, roles: user.role }, "POST /api/associations/[associationId]/members - User authorized");
 
     if (!body?.memberId) {
-      logger.error("POST /api/associations/[associationId]/members - memberId is required", { traceId });
+      logger.error({ traceId }, "POST /api/associations/[associationId]/members - memberId is required");
       throw new ValidationError("memberId is required");
     }
 
@@ -35,12 +35,12 @@ export const POST = withAssociation(
     });
 
     if (!existingMember) {
-      logger.error("POST /api/associations/[associationId]/members - Member not found", { traceId, targetMemberId: body.memberId });
+      logger.error({ traceId, targetMemberId: body.memberId }, "POST /api/associations/[associationId]/members - Member not found");
       throw new NotFoundError("Member not found");
     }
 
     if (existingMember.associationId === params?.associationId) {
-      logger.error("POST /api/associations/[associationId]/members - Member already in this association", { traceId, targetMemberId: body.memberId, associationId: params?.associationId });
+      logger.error({ traceId, targetMemberId: body.memberId, associationId: params?.associationId }, "POST /api/associations/[associationId]/members - Member already in this association");
       throw new ConflictError("Member already in this association");
     }
 
@@ -58,7 +58,7 @@ export const POST = withAssociation(
       },
     });
 
-    logger.info("POST /api/associations/[associationId]/members - Success", { traceId, targetMemberId: body.memberId, associationId: association.id });
+    logger.info({ traceId, targetMemberId: body.memberId, associationId: association.id }, "POST /api/associations/[associationId]/members - Success");
 
     return SuccessResponse({ data: updatedMember }, 201);
   },

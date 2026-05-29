@@ -8,15 +8,15 @@ import {
   MembershipApplicationSchema,
 } from "@src/features/membership-applications/validators";
 import { createMembershipApplication } from "@src/features/membership-applications/services";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export const POST = withValidation(
   { body: MembershipApplicationSchema },
   async (_req, _ctx, { body, traceId }) => {
-    logger.info("POST /api/auth/sign-up - Request started", {
+    logger.info({
       traceId,
       email: body?.email,
-    });
+    }, "POST /api/auth/sign-up - Request started");
     const {
       email,
       phone,
@@ -46,10 +46,10 @@ export const POST = withValidation(
     ]);
 
     if (!association) {
-      logger.error("POST /api/auth/sign-up - Association not found", {
+      logger.error({
         traceId,
         associationSlug,
-      });
+      }, "POST /api/auth/sign-up - Association not found");
       throw new ConflictError("Association not found");
     }
 
@@ -77,10 +77,10 @@ export const POST = withValidation(
       postalCode,
     });
 
-    logger.info("POST /api/auth/sign-up - Success", {
+    logger.info({
       traceId,
       applicationId: application.id,
-    });
+    }, "POST /api/auth/sign-up - Success");
 
     return SuccessResponse(
       {

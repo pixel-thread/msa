@@ -10,7 +10,7 @@ import { generateOTP, hashToken } from "@src/shared/lib/password";
 import { env } from "@src/env";
 import { ForbiddenError, UnauthorizedError } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 import { SignInSchema } from "@src/features/auth/validators";
 import { getUserFirst } from "@src/shared/services/user/get-user-first";
 import { updateUser } from "@src/features/user/services";

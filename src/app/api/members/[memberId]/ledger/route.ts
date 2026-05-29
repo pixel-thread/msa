@@ -7,22 +7,22 @@ import {
   LedgerQueryParams,
   LedgerRouteParams,
 } from "@src/features/ledger/validators";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export const GET = withAssociation(
   { params: LedgerRouteParams, query: LedgerQueryParams },
   async (association, { query, traceId }, request) => {
-    logger.info("GET /api/members/[memberId]/ledger - Request started", {
+    logger.info({
       traceId,
       associationId: association.id,
-    });
+    }, "GET /api/members/[memberId]/ledger - Request started");
 
     const user = await withRole(request, UserRole.FINANCE);
 
-    logger.info("GET /api/members/[memberId]/ledger - User authorized", {
+    logger.info({
       traceId,
       userId: user.id,
-    });
+    }, "GET /api/members/[memberId]/ledger - User authorized");
 
     const userId = request.headers.get("x-user-id")!;
     const page = query?.page ?? 1;
@@ -32,10 +32,10 @@ export const GET = withAssociation(
       getUserContributionSummary(userId),
     ]);
 
-    logger.info("GET /api/members/[memberId]/ledger - Success", {
+    logger.info({
       traceId,
       count: history.transactions.length,
-    });
+    }, "GET /api/members/[memberId]/ledger - Success");
 
     return SuccessResponse({
       data: {

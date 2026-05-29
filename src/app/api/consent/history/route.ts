@@ -4,7 +4,7 @@ import { SuccessResponse } from "@src/shared/utils";
 import z from "zod";
 import { pageNumberValidation } from "@src/shared/validators";
 import { UnauthorizedError } from "@src/shared/errors";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 /**
  * GET /api/consent/history
@@ -17,10 +17,10 @@ const HistoryQuerySchema = z.object({
 export const GET = withAssociation(
   { query: HistoryQuerySchema },
   async (association, { query, traceId }, req) => {
-    logger.info("GET /api/consent/history - Request started", {
+    logger.info({
       traceId,
       associationId: association.id,
-    });
+    }, "GET /api/consent/history - Request started");
 
     const userId = req.headers.get("x-user-id");
 
@@ -35,7 +35,7 @@ export const GET = withAssociation(
       page,
     );
 
-    logger.info("GET /api/consent/history - Success", { traceId, userId });
+    logger.info({ traceId, userId }, "GET /api/consent/history - Success");
 
     return SuccessResponse({
       data: data.history,

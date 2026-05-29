@@ -1,7 +1,7 @@
 import { supabase } from "@src/shared/lib/supabase/client";
 import { env } from "@src/env";
 import { getStorageProvider } from "@src/shared/services/storage";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export interface UploadResult {
   key: string;
@@ -25,13 +25,13 @@ export async function uploadToBucket(
 
   const buffer = Buffer.from(arrayBuffer);
 
-  logger.info("Uploading file started", {
+  logger.info({
     traceId,
     fileName,
     mimeType,
     fileSize,
     storage: env.STORAGE_PROVIDER,
-  });
+  }, "Uploading file started");
 
   const { key, url } = await storage.upload({
     fileBuffer: buffer,
@@ -40,13 +40,13 @@ export async function uploadToBucket(
     mimeType: mimeType,
   });
 
-  logger.info("Uploading file completed", {
+  logger.info({
     traceId,
     fileName,
     mimeType,
     fileSize,
     storage: env.STORAGE_PROVIDER,
-  });
+  }, "Uploading file completed");
   return {
     mimeType,
     key,

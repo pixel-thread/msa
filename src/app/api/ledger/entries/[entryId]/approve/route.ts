@@ -2,23 +2,23 @@ import { withAssociation, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils/responses";
 import { UserRole, ApprovalStatus } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export const POST = withAssociation(
   {},
   async (association, { traceId }, request, { params }) => {
-    logger.info("POST /api/ledger/entries/[entryId]/approve - Request started", {
+    logger.info({
       traceId,
       associationId: association.id,
-    });
+    }, "POST /api/ledger/entries/[entryId]/approve - Request started");
 
     const user = await withRole(request, UserRole.PRESIDENT);
     const userId = request.headers.get("x-user-id")!;
 
-    logger.info("POST /api/ledger/entries/[entryId]/approve - User authorized", {
+    logger.info({
       traceId,
       userId: user.id,
-    });
+    }, "POST /api/ledger/entries/[entryId]/approve - User authorized");
 
     const { entryId } = (await params) as { entryId: string };
 
@@ -30,10 +30,10 @@ export const POST = withAssociation(
       },
     });
 
-    logger.info("POST /api/ledger/entries/[entryId]/approve - Success", {
+    logger.info({
       traceId,
       entryId,
-    });
+    }, "POST /api/ledger/entries/[entryId]/approve - Success");
 
     return SuccessResponse({ data: entry });
   },

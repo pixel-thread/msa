@@ -1,7 +1,7 @@
 import { withAssociation, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils/responses";
 import { ForbiddenError } from "@src/shared/errors";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 import { UserRole, AnnouncementStatus } from "@prisma/client";
 import {
   createAnnouncement,
@@ -16,10 +16,10 @@ import { hasHighRoleAccess } from "@src/shared/utils/has-high-role";
 export const GET = withAssociation(
   { query: AnnouncementQuerySchema },
   async (association, { query, traceId }, request) => {
-    logger.info("GET /api/announcements - Request started", { traceId, query });
+    logger.info({ traceId, query }, "GET /api/announcements - Request started");
 
     const user = await withRole(request, UserRole.MEMBER);
-    logger.info("GET /api/announcements - User authorized", { traceId, userId: user.id, roles: user.role });
+    logger.info({ traceId, userId: user.id, roles: user.role }, "GET /api/announcements - User authorized");
 
     if (!query) {
       throw new ForbiddenError("Invalid query parameters");
@@ -27,14 +27,14 @@ export const GET = withAssociation(
 
     const { page, priority, search, status } = query;
     if (hasHighRoleAccess(user.role)) {
-      logger.info("GET /api/announcements - High role: fetching all announcements", {
+      logger.info({
         traceId,
         associationId: association.id,
         page,
         priority,
         search,
         status,
-      });
+      }, "GET /api/announcements - High role: fetching all announcements");
 
       const result = await findManyAnnouncements({
         associationId: association.id,
@@ -42,7 +42,7 @@ export const GET = withAssociation(
         pagination: { page },
       });
 
-      logger.info("GET /api/announcements - Success", { traceId, count: result.announcements.length });
+      logger.info({ traceId, count: result.announcements.length }, "GET /api/announcements - Success");
 
       return SuccessResponse({
         data: result.announcements,
@@ -50,13 +50,13 @@ export const GET = withAssociation(
       });
     }
 
-    logger.info("GET /api/announcements - Member: fetching published only", {
+    logger.info({
       traceId,
       associationId: association.id,
       page,
       priority,
       search,
-    });
+    }, "GET /api/announcements - Member: fetching published only");
 
     const result = await findManyAnnouncements({
       associationId: association.id,
@@ -64,7 +64,7 @@ export const GET = withAssociation(
       pagination: { page },
     });
 
-    logger.info("GET /api/announcements - Success", { traceId, count: result.announcements.length });
+    logger.info({ traceId, count: result.announcements.length }, "GET /api/announcements - Success");
 
     return SuccessResponse({
       data: result.announcements,
@@ -76,10 +76,10 @@ export const GET = withAssociation(
 export const POST = withAssociation(
   { body: CreateAnnouncementSchema },
   async (association, { body, traceId }, request) => {
-    logger.info("POST /api/announcements - Request started", { traceId });
+    logger.info({ traceId }, "POST /api/announcements - Request started");
 
     const user = await withRole(request, UserRole.SECRETARY);
-    logger.info("POST /api/announcements - User authorized", { traceId, userId: user.id, roles: user.role });
+    logger.info({ traceId, userId: user.id, roles: user.role }, "POST /api/announcements - User authorized");
 
     if (!body) {
       throw new ForbiddenError("Invalid request body");
@@ -88,13 +88,13 @@ export const POST = withAssociation(
     const userId = request.headers.get("x-user-id")!;
     const isPublishing = body.status === AnnouncementStatus.PUBLISHED;
 
-    logger.info("POST /api/announcements - Creating announcement", {
+    logger.info({
       traceId,
       associationId: association.id,
       title: body.title,
       status: body.status,
       isPublishing,
-    });
+    }, "POST /api/announcements - Creating announcement");
 
     const announcement = await createAnnouncement({
       associationId: association.id,
@@ -111,7 +111,7 @@ export const POST = withAssociation(
       sendNotification: isPublishing,
     });
 
-    logger.info("POST /api/announcements - Success", { traceId, announcementId: announcement.id });
+    logger.info({ traceId, announcementId: announcement.id }, "POST /api/announcements - Success");
 
     return SuccessResponse({ data: announcement }, 201);
   },

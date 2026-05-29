@@ -1,6 +1,6 @@
 import { withAssociation, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils/responses";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 import { UserRole } from "@prisma/client";
 import { markAnnouncementRead } from "@feature/announcement/services";
 import { NextRequest } from "next/server";
@@ -13,7 +13,7 @@ const RouteParams = z.object({
 export const POST = withAssociation(
   { params: RouteParams },
   async (association, { params, traceId }, request: NextRequest) => {
-    logger.info("POST /api/announcements/[id]/read - Request started", { traceId, announcementId: params?.announcementId });
+    logger.info({ traceId, announcementId: params?.announcementId }, "POST /api/announcements/[id]/read - Request started");
 
     const announcementId = params?.announcementId;
 
@@ -23,7 +23,7 @@ export const POST = withAssociation(
 
     const userId = request.headers.get("x-user-id")!;
     await withRole(request, UserRole.MEMBER);
-    logger.info("POST /api/announcements/[id]/read - User authorized", { traceId, userId, announcementId });
+    logger.info({ traceId, userId, announcementId }, "POST /api/announcements/[id]/read - User authorized");
 
     const readReceipt = await markAnnouncementRead({
       announcementId,
@@ -31,7 +31,7 @@ export const POST = withAssociation(
       associationId: association.id,
     });
 
-    logger.info("POST /api/announcements/[id]/read - Success", { traceId, announcementId });
+    logger.info({ traceId, announcementId }, "POST /api/announcements/[id]/read - Success");
 
     return SuccessResponse({
       data: readReceipt,

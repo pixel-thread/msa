@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { env } from "@src/env";
 import { runSubscriptionExpiryCron } from "@src/features/cron/services";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export async function GET(request: Request) {
   logger.info("GET /api/cron/subscription-expiry - Request started");
@@ -48,9 +48,9 @@ export async function GET(request: Request) {
       results,
     });
   } catch (error) {
-    logger.error("GET /api/cron/subscription-expiry - Unhandled error", {
+    logger.error({
       error,
-    });
+    }, "GET /api/cron/subscription-expiry - Unhandled error");
     return NextResponse.json(
       {
         error: "Internal server error",

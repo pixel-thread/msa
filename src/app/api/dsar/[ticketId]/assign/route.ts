@@ -5,7 +5,7 @@ import { prisma } from "@src/shared/lib/prisma";
 import { z } from "zod";
 import { getUniqueUser, logAction } from "@src/shared/services";
 import { BadRequestError, NotFoundError } from "@src/shared/errors";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const ParamsSchema = z.object({
   ticketId: z.uuid(),
@@ -30,20 +30,20 @@ const AssignSchema = z.object({
 export const PATCH = withAssociation(
   { params: ParamsSchema, body: AssignSchema },
   async (association, { params, body, traceId }, request) => {
-    logger.info("PATCH /api/dsar/[ticketId]/assign - Request started", {
+    logger.info({
       traceId,
       associationId: association.id,
       ticketId: params?.ticketId,
-    });
+    }, "PATCH /api/dsar/[ticketId]/assign - Request started");
 
     const actorId = request.headers.get("x-user-id")!;
 
     const actor = await withRole(request, UserRole.DPO);
 
-    logger.info("PATCH /api/dsar/[ticketId]/assign - User authorized", {
+    logger.info({
       traceId,
       userId: actor.id,
-    });
+    }, "PATCH /api/dsar/[ticketId]/assign - User authorized");
 
     const user = await getUniqueUser({ where: { id: body?.assignedToId } });
 
@@ -73,7 +73,7 @@ export const PATCH = withAssociation(
       return updated;
     });
 
-    logger.info("PATCH /api/dsar/[ticketId]/assign - Success", { traceId });
+    logger.info({ traceId }, "PATCH /api/dsar/[ticketId]/assign - Success");
 
     return SuccessResponse({ data: ticket });
   },

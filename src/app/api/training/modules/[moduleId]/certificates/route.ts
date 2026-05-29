@@ -11,7 +11,7 @@ import {
 import { CreateTrainingCertificateSchema } from "@feature/training/validators/training";
 import { uploadToBucket } from "@src/shared/lib/supabase/storage";
 import { z } from "zod";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const TrainingParamsSchema = z.object({
   moduleId: z.uuid("Invalid module ID"),
@@ -24,10 +24,10 @@ export const GET = withAssociation(
       throw new ForbiddenError("Invalid module ID");
     }
 
-    logger.info("GET /training/modules/{moduleId}/certificates - Request started", { traceId, associationId: association.id });
+    logger.info({ traceId, associationId: association.id }, "GET /training/modules/{moduleId}/certificates - Request started");
 
     await withRole(request, UserRole.MEMBER);
-    logger.info("GET /training/modules/{moduleId}/certificates - User authorized", { traceId });
+    logger.info({ traceId }, "GET /training/modules/{moduleId}/certificates - User authorized");
 
     const { moduleId } = params;
 
@@ -36,7 +36,7 @@ export const GET = withAssociation(
       moduleId,
     });
 
-    logger.info("GET /training/modules/{moduleId}/certificates - Success", { traceId });
+    logger.info({ traceId }, "GET /training/modules/{moduleId}/certificates - Success");
     return SuccessResponse({ data: certificates });
   },
 );
@@ -48,12 +48,12 @@ export const POST = withAssociation(
       throw new ForbiddenError("Invalid module ID");
     }
 
-    logger.info("POST /training/modules/{moduleId}/certificates - Request started", { traceId, associationId: association.id });
+    logger.info({ traceId, associationId: association.id }, "POST /training/modules/{moduleId}/certificates - Request started");
 
     const { moduleId } = params;
 
     const user = await withRole(request, UserRole.DPO);
-    logger.info("POST /training/modules/{moduleId}/certificates - User authorized", { traceId, userId: user.id });
+    logger.info({ traceId, userId: user.id }, "POST /training/modules/{moduleId}/certificates - User authorized");
 
     const formData = await request.formData();
 
@@ -66,7 +66,7 @@ export const POST = withAssociation(
     }
 
     let metadata: z.infer<typeof CreateTrainingCertificateSchema>;
-    logger.info("POST /training/modules/{moduleId}/certificates - Parsing metadata", { traceId });
+    logger.info({ traceId }, "POST /training/modules/{moduleId}/certificates - Parsing metadata");
     try {
       const parsed = JSON.parse(metadataRaw);
       metadata = CreateTrainingCertificateSchema.parse(parsed);
@@ -81,16 +81,16 @@ export const POST = withAssociation(
       throw new BadRequestError("File is empty");
     }
 
-    logger.info("POST /training/modules/{moduleId}/certificates - Uploading file", { traceId });
+    logger.info({ traceId }, "POST /training/modules/{moduleId}/certificates - Uploading file");
     const uploadResult = await uploadToBucket(
       file,
       `certificates/${association.slug}/${moduleId}`,
     );
 
-    logger.info("POST /training/modules/{moduleId}/certificates - Creating file record", {
+    logger.info({
       traceId,
       storedName: uploadResult.key,
-    });
+    }, "POST /training/modules/{moduleId}/certificates - Creating file record");
     const fileRecord = await prisma.file.create({
       data: {
         associationId: association.id,
@@ -106,7 +106,7 @@ export const POST = withAssociation(
       },
     });
 
-    logger.info("POST /training/modules/{moduleId}/certificates - Creating certificate record", { traceId });
+    logger.info({ traceId }, "POST /training/modules/{moduleId}/certificates - Creating certificate record");
     const certificate = await createCertificate({
       associationId: association.id,
       moduleId,
@@ -116,7 +116,7 @@ export const POST = withAssociation(
       fileId: fileRecord.id,
     });
 
-    logger.info("POST /training/modules/{moduleId}/certificates - Success", { traceId, certificateId: certificate.id });
+    logger.info({ traceId, certificateId: certificate.id }, "POST /training/modules/{moduleId}/certificates - Success");
     return SuccessResponse({ data: certificate }, 201);
   },
 );

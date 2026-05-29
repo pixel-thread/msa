@@ -8,19 +8,19 @@ import type { Association } from "@prisma/client";
 import { ConflictError } from "@src/shared/errors";
 import type { CreateAssociationInput } from "@validator/associations";
 import { CreateAssociationSchema } from "@src/shared/validators";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export const GET = withValidation({}, async (req, _ctx, { traceId }) => {
-  logger.info("GET /api/admin/associations - Request started", { traceId });
+  logger.info({ traceId }, "GET /api/admin/associations - Request started");
   const user = await withRole(req, UserRole.SUPER_ADMIN);
-  logger.info("GET /api/admin/associations - User authorized", { traceId, userId: user.id, roles: user.role });
+  logger.info({ traceId, userId: user.id, roles: user.role }, "GET /api/admin/associations - User authorized");
 
   const data = await findManyAssociation({
     orderBy: { createdAt: "desc" },
     where: { status: "ACTIVE" },
   });
 
-  logger.info("GET /api/admin/associations - Success", { traceId, count: data.associations.length });
+  logger.info({ traceId, count: data.associations.length }, "GET /api/admin/associations - Success");
 
   return SuccessResponse<Association[]>({
     data: data.associations,
@@ -31,9 +31,9 @@ export const GET = withValidation({}, async (req, _ctx, { traceId }) => {
 export const POST = withValidation(
   { body: CreateAssociationSchema },
   async (req, _ctx, { body, traceId }) => {
-    logger.info("POST /api/admin/associations - Request started", { traceId, name: body?.name });
+    logger.info({ traceId, name: body?.name }, "POST /api/admin/associations - Request started");
     const user = await withRole(req, UserRole.SUPER_ADMIN);
-    logger.info("POST /api/admin/associations - User authorized", { traceId, userId: user.id, roles: user.role });
+    logger.info({ traceId, userId: user.id, roles: user.role }, "POST /api/admin/associations - User authorized");
 
     const existing = await findFirstAssociation({
       where: {
@@ -46,7 +46,7 @@ export const POST = withValidation(
     });
 
     if (existing) {
-      logger.error("POST /api/admin/associations - Association Already Exists", { traceId, slug: body?.slug, name: body?.name });
+      logger.error({ traceId, slug: body?.slug, name: body?.name }, "POST /api/admin/associations - Association Already Exists");
       throw new ConflictError("Association Already Exists");
     }
 
@@ -54,7 +54,7 @@ export const POST = withValidation(
       data: body as CreateAssociationInput,
     });
 
-    logger.info("POST /api/admin/associations - Success", { traceId, associationId: association.id });
+    logger.info({ traceId, associationId: association.id }, "POST /api/admin/associations - Success");
 
     return SuccessResponse<Association>(
       {

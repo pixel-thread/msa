@@ -1,6 +1,6 @@
 import * as crypto from "crypto";
 import { env } from "@src/env";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const ALGORITHM = "aes-256-gcm";
 
@@ -50,7 +50,7 @@ export const decrypt = (ciphertext: string): string => {
 
     return decrypted.toString("utf8");
   } catch (error) {
-    logger.error("Failed to decrypt value", { error });
+    logger.error({ error }, "Failed to decrypt value");
 
     throw new Error("Failed to decrypt value");
   }

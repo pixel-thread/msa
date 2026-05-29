@@ -5,7 +5,7 @@ import { UnauthorizedError } from "@src/shared/errors";
 import { buildPagination, SuccessResponse } from "@src/shared/utils";
 import { pageNumberValidation } from "@src/shared/validators";
 import z from "zod";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const InvoiceRouteQuery = z.object({
   page: pageNumberValidation,
@@ -14,17 +14,17 @@ const InvoiceRouteQuery = z.object({
 export const GET = withAssociation(
   { query: InvoiceRouteQuery },
   async (association, { query, traceId }, req) => {
-    logger.info("GET /api/user/invoices - Request started", {
+    logger.info({
       traceId,
       associationId: association.id,
-    });
+    }, "GET /api/user/invoices - Request started");
 
     const user = await withRole(req, UserRole.MEMBER);
 
-    logger.info("GET /api/user/invoices - User authorized", {
+    logger.info({
       traceId,
       userId: user.id,
-    });
+    }, "GET /api/user/invoices - User authorized");
 
     const page = query?.page || 1;
     const userId = req.headers.get("x-user-id");
@@ -39,10 +39,10 @@ export const GET = withAssociation(
       page,
     });
 
-    logger.info("GET /api/user/invoices - Success", {
+    logger.info({
       traceId,
       count: invoices.length,
-    });
+    }, "GET /api/user/invoices - Success");
 
     return SuccessResponse({
       data: invoices,

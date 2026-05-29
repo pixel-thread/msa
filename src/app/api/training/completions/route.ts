@@ -9,7 +9,7 @@ import {
 import { AdminRecordCompletionSchema } from "@feature/training/validators/training";
 import { pageNumberValidation } from "@src/shared/validators/common";
 import z from "zod";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const GetAllCompletionsQuerySchema = z.object({
   page: pageNumberValidation,
@@ -18,10 +18,10 @@ const GetAllCompletionsQuerySchema = z.object({
 export const GET = withAssociation(
   { query: GetAllCompletionsQuerySchema },
   async (association, { query, traceId }, request) => {
-    logger.info("GET /training/completions - Request started", { traceId, associationId: association.id });
+    logger.info({ traceId, associationId: association.id }, "GET /training/completions - Request started");
 
     await withRole(request, UserRole.SECRETARY);
-    logger.info("GET /training/completions - User authorized", { traceId });
+    logger.info({ traceId }, "GET /training/completions - User authorized");
 
     const page = query?.page || 1;
 
@@ -38,7 +38,7 @@ export const GET = withAssociation(
       page,
     });
 
-    logger.info("GET /training/completions - Success", { traceId });
+    logger.info({ traceId }, "GET /training/completions - Success");
     return SuccessResponse({
       data: data.completions,
       meta: data.pagination,
@@ -53,10 +53,10 @@ export const POST = withAssociation(
       throw new ForbiddenError("Invalid request body");
     }
 
-    logger.info("POST /training/completions - Request started", { traceId, associationId: association.id });
+    logger.info({ traceId, associationId: association.id }, "POST /training/completions - Request started");
 
     const admin = await withRole(request, UserRole.SECRETARY);
-    logger.info("POST /training/completions - User authorized", { traceId, userId: admin.id });
+    logger.info({ traceId, userId: admin.id }, "POST /training/completions - User authorized");
 
     const completion = await adminRecordCompletion({
       associationId: association.id,
@@ -64,7 +64,7 @@ export const POST = withAssociation(
       data: body,
     });
 
-    logger.info("POST /training/completions - Success", { traceId, completionId: completion.id });
+    logger.info({ traceId, completionId: completion.id }, "POST /training/completions - Success");
     return SuccessResponse({ data: completion }, 201);
   },
 );

@@ -3,18 +3,18 @@ import { SuccessResponse } from "@src/shared/utils/responses";
 import { UserRole } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
 import { NotFoundError } from "@src/shared/errors";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export const GET = withAssociation({}, async (association, { traceId }, request, { params }) => {
-  logger.info("GET /api/meetings/[meetingId]/report - Request started", { traceId, associationId: association.id });
+  logger.info({ traceId, associationId: association.id }, "GET /api/meetings/[meetingId]/report - Request started");
 
   const user = await withRole(request, UserRole.SECRETARY);
 
   const { meetingId } = (await params) as { meetingId: string };
 
-  logger.info("GET /api/meetings/[meetingId]/report - User authorized", { traceId, userId: user.id, role: user.role, meetingId });
+  logger.info({ traceId, userId: user.id, role: user.role, meetingId }, "GET /api/meetings/[meetingId]/report - User authorized");
 
-  logger.info("GET /api/meetings/[meetingId]/report - Fetching meeting report", { traceId, meetingId });
+  logger.info({ traceId, meetingId }, "GET /api/meetings/[meetingId]/report - Fetching meeting report");
 
   const meeting = await prisma.meeting.findUnique({
     where: {
@@ -34,7 +34,7 @@ export const GET = withAssociation({}, async (association, { traceId }, request,
     throw new NotFoundError("Meeting not found");
   }
 
-  logger.info("GET /api/meetings/[meetingId]/report - Success", { traceId, meetingId: meeting.id });
+  logger.info({ traceId, meetingId: meeting.id }, "GET /api/meetings/[meetingId]/report - Success");
 
   return SuccessResponse({ data: meeting });
 });

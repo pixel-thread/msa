@@ -1,6 +1,6 @@
 import { withAssociation, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils/responses";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 import { ProviderIdParamSchema } from "@src/features/payments/validators";
 import {
   getProviderById,
@@ -12,10 +12,10 @@ import { BadRequestError, NotFoundError } from "@src/shared/errors";
 export const POST = withAssociation(
   { params: ProviderIdParamSchema },
   async (association, { params, traceId }, req) => {
-    logger.info("POST /api/payments/providers/[providerId]/activate - Request started", { traceId, providerId: params?.providerId });
+    logger.info({ traceId, providerId: params?.providerId }, "POST /api/payments/providers/[providerId]/activate - Request started");
 
     await withRole(req, UserRole.PRESIDENT);
-    logger.info("POST /api/payments/providers/[providerId]/activate - User authorized", { traceId, providerId: params?.providerId });
+    logger.info({ traceId, providerId: params?.providerId }, "POST /api/payments/providers/[providerId]/activate - User authorized");
 
     const providerId = params?.providerId;
 
@@ -27,12 +27,12 @@ export const POST = withAssociation(
       throw new NotFoundError("Provider not found");
     }
 
-    logger.info("POST /api/payments/providers/[providerId]/activate - Toggling provider activation", { traceId, providerId });
+    logger.info({ traceId, providerId }, "POST /api/payments/providers/[providerId]/activate - Toggling provider activation");
     const result = await setActiveProvider(provderExist.id, association.id);
 
     const activatedMessage = "Provider successfully activated";
     const deActivatedMessage = "Provider successfully de-activated";
-    logger.info("POST /api/payments/providers/[providerId]/activate - Success", { traceId, providerId, isActive: result.isActive });
+    logger.info({ traceId, providerId, isActive: result.isActive }, "POST /api/payments/providers/[providerId]/activate - Success");
 
     return SuccessResponse({
       data: result,

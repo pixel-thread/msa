@@ -10,7 +10,7 @@ import { SuccessResponse } from "@src/shared/utils";
 import type { Association } from "@prisma/client";
 import { ConflictError, NotFoundError } from "@src/shared/errors";
 import z from "zod";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 import { UserRole } from "@prisma/client";
 
 const ParamsSchema = z.object({
@@ -20,20 +20,20 @@ const ParamsSchema = z.object({
 export const GET = withValidation(
   { params: ParamsSchema },
   async (req, _ctx, { params, traceId }) => {
-    logger.info("GET /api/associations/[associationId] - Request started", { traceId, associationId: params?.associationId });
+    logger.info({ traceId, associationId: params?.associationId }, "GET /api/associations/[associationId] - Request started");
     const user = await withRole(req, UserRole.SUPER_ADMIN);
-    logger.info("GET /api/associations/[associationId] - User authorized", { traceId, userId: user.id, roles: user.role });
+    logger.info({ traceId, userId: user.id, roles: user.role }, "GET /api/associations/[associationId] - User authorized");
 
     const association = await findUniqueAssociation({
       where: { id: params?.associationId },
     });
 
     if (!association) {
-      logger.error("GET /api/associations/[associationId] - Association not found", { traceId, associationId: params?.associationId });
+      logger.error({ traceId, associationId: params?.associationId }, "GET /api/associations/[associationId] - Association not found");
       throw new NotFoundError("Association not found");
     }
 
-    logger.info("GET /api/associations/[associationId] - Success", { traceId, associationId: params?.associationId });
+    logger.info({ traceId, associationId: params?.associationId }, "GET /api/associations/[associationId] - Success");
 
     return SuccessResponse<Association>({
       data: association,
@@ -45,16 +45,16 @@ export const GET = withValidation(
 export const PATCH = withValidation(
   { body: CreateAssociationSchema, params: ParamsSchema },
   async (req, _ctx, { body, params, traceId }) => {
-    logger.info("PATCH /api/associations/[associationId] - Request started", { traceId, associationId: params?.associationId });
+    logger.info({ traceId, associationId: params?.associationId }, "PATCH /api/associations/[associationId] - Request started");
     const user = await withRole(req, UserRole.SUPER_ADMIN);
-    logger.info("PATCH /api/associations/[associationId] - User authorized", { traceId, userId: user.id, roles: user.role });
+    logger.info({ traceId, userId: user.id, roles: user.role }, "PATCH /api/associations/[associationId] - User authorized");
 
     const existing = await findUniqueAssociation({
       where: { id: params?.associationId },
     });
 
     if (!existing) {
-      logger.error("PATCH /api/associations/[associationId] - Association Not Found", { traceId, associationId: params?.associationId });
+      logger.error({ traceId, associationId: params?.associationId }, "PATCH /api/associations/[associationId] - Association Not Found");
       throw new NotFoundError("Association Not Found");
     }
 
@@ -68,7 +68,7 @@ export const PATCH = withValidation(
       });
 
       if (conflict) {
-        logger.error("PATCH /api/associations/[associationId] - Association conflict", { traceId, slug: body?.slug, name: body?.name });
+        logger.error({ traceId, slug: body?.slug, name: body?.name }, "PATCH /api/associations/[associationId] - Association conflict");
         throw new ConflictError(
           "Association with this slug or name already exists",
         );
@@ -80,7 +80,7 @@ export const PATCH = withValidation(
       data: body as CreateAssociationInput,
     });
 
-    logger.info("PATCH /api/associations/[associationId] - Success", { traceId, associationId: params?.associationId });
+    logger.info({ traceId, associationId: params?.associationId }, "PATCH /api/associations/[associationId] - Success");
 
     return SuccessResponse<Association>(
       { data: updated, message: "Association updated successfully" },

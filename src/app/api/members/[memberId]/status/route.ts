@@ -4,7 +4,7 @@ import { NotFoundError, UnauthorizedError } from "@src/shared/errors";
 import { prisma } from "@src/shared/lib/prisma";
 import { SuccessResponse } from "@src/shared/utils";
 import z from "zod";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const UpdateUserStatusSchema = z.object({
   status: z.enum(UserStatus),
@@ -17,17 +17,17 @@ const UpdateUserStatusParamsSchema = z.object({
 export const PATCH = withAssociation(
   { body: UpdateUserStatusSchema, params: UpdateUserStatusParamsSchema },
   async (association, { body, params, traceId }, req) => {
-    logger.info("PATCH /api/members/[memberId]/status - Request started", {
+    logger.info({
       traceId,
       associationId: association.id,
-    });
+    }, "PATCH /api/members/[memberId]/status - Request started");
 
     const user = await withRole(req, UserRole.PRESIDENT);
 
-    logger.info("PATCH /api/members/[memberId]/status - User authorized", {
+    logger.info({
       traceId,
       userId: user.id,
-    });
+    }, "PATCH /api/members/[memberId]/status - User authorized");
 
     const memberId = params?.memberId;
 
@@ -46,11 +46,11 @@ export const PATCH = withAssociation(
       select: { id: true, status: true, email: true },
     });
 
-    logger.info("PATCH /api/members/[memberId]/status - Success", {
+    logger.info({
       traceId,
       memberId,
       status: body?.status,
-    });
+    }, "PATCH /api/members/[memberId]/status - Success");
 
     return SuccessResponse({
       data: updatedUser,

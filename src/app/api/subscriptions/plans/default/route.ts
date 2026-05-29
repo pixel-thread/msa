@@ -5,7 +5,7 @@ import { prisma } from "@src/shared/lib/prisma";
 import { z } from "zod";
 import { ValidationError, NotFoundError } from "@src/shared/errors";
 import { getTraceId } from "@src/shared/utils";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const SetDefaultPlanSchema = z.object({
   planId: z.string().uuid(),
@@ -21,7 +21,7 @@ export const POST = withAssociation(
       throw new ValidationError("Invalid request body");
     }
 
-    logger.info("Verifying plan exists", { traceId, planId: body.planId });
+    logger.info({ traceId, planId: body.planId }, "Verifying plan exists");
 
     const plan = await prisma.subscriptionPlan.findFirst({
       where: {
@@ -34,7 +34,7 @@ export const POST = withAssociation(
       throw new NotFoundError("Plan not found in this association");
     }
 
-    logger.info("Setting plan as default", { traceId, planId: body.planId });
+    logger.info({ traceId, planId: body.planId }, "Setting plan as default");
 
     const updated = await prisma.$transaction(async (tx) => {
       await tx.subscriptionPlan.updateMany({
@@ -48,7 +48,7 @@ export const POST = withAssociation(
       });
     });
 
-    logger.info("Default plan updated successfully", { traceId, planId: updated.id });
+    logger.info({ traceId, planId: updated.id }, "Default plan updated successfully");
 
     return SuccessResponse({ data: updated });
   },

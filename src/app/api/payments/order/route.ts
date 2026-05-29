@@ -1,6 +1,6 @@
 import { withAssociation, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@utils/responses";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 import { UserRole } from "@prisma/client";
 import { CreateOrderSchema } from "@feature/payments/validators";
 import { createPaymentOrder } from "@feature/payments/services/payment.service";
@@ -19,10 +19,10 @@ import { getActiveProvider } from "@src/features/payments/services/payment-provi
 export const POST = withAssociation(
   { body: CreateOrderSchema },
   async (association, { body, traceId }, request) => {
-    logger.info("POST /api/payments/order - Request started", { traceId });
+    logger.info({ traceId }, "POST /api/payments/order - Request started");
 
     const user = await withRole(request, UserRole.MEMBER);
-    logger.info("POST /api/payments/order - User authorized", { traceId, userId: user.id });
+    logger.info({ traceId, userId: user.id }, "POST /api/payments/order - User authorized");
     const typeId = user?.memberTypeId;
 
     const associationActivePaymentProvider = getActiveProvider(association.id);
@@ -85,7 +85,7 @@ export const POST = withAssociation(
 
     const activeVersion = selectedPlan.versions[0];
 
-    logger.info("POST /api/payments/order - Creating payment order", { traceId, userId: user.id, amount: parseInt(activeVersion.amount.toFixed(2)) });
+    logger.info({ traceId, userId: user.id, amount: parseInt(activeVersion.amount.toFixed(2)) }, "POST /api/payments/order - Creating payment order");
 
     const orderDetails = await createPaymentOrder({
       associationId: association.id,
@@ -94,7 +94,7 @@ export const POST = withAssociation(
       notes: body!.notes,
     });
 
-    logger.info("POST /api/payments/order - Success", { traceId, orderId: (orderDetails as any).id });
+    logger.info({ traceId, orderId: (orderDetails as any).id }, "POST /api/payments/order - Success");
 
     return SuccessResponse({ data: orderDetails }, 201);
   },

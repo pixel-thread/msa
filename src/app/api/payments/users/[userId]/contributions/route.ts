@@ -1,7 +1,7 @@
 import { withAssociation, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils/responses";
 import { buildPagination } from "@src/shared/utils";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 import { UserRole } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
 import { z } from "zod";
@@ -24,10 +24,10 @@ const UserContributionsQuerySchema = z.object({
 export const GET = withAssociation(
   { params: UserContributionsParamsSchema, query: UserContributionsQuerySchema },
   async (association, { params, query, traceId }, request) => {
-    logger.info("GET /api/payments/users/[userId]/contributions - Request started", { traceId, userId: params?.userId });
+    logger.info({ traceId, userId: params?.userId }, "GET /api/payments/users/[userId]/contributions - Request started");
 
     await withRole(request, UserRole.FINANCE);
-    logger.info("GET /api/payments/users/[userId]/contributions - User authorized", { traceId });
+    logger.info({ traceId }, "GET /api/payments/users/[userId]/contributions - User authorized");
 
     if (!params) {
       throw new ValidationError("Missing user ID parameter");
@@ -84,7 +84,7 @@ export const GET = withAssociation(
 
     const skip = (page - 1) * PAGE_SIZE;
 
-    logger.info("GET /api/payments/users/[userId]/contributions - Fetching contributions", { traceId, userId });
+    logger.info({ traceId, userId }, "GET /api/payments/users/[userId]/contributions - Fetching contributions");
 
     const [contributions, total, summary] = await Promise.all([
       prisma.contributionPeriod.findMany({
@@ -114,7 +114,7 @@ export const GET = withAssociation(
       getUserContributionSummary(userId),
     ]);
 
-    logger.info("GET /api/payments/users/[userId]/contributions - Success", { traceId, userId, count: contributions.length, total });
+    logger.info({ traceId, userId, count: contributions.length, total }, "GET /api/payments/users/[userId]/contributions - Success");
 
     return SuccessResponse({
       data: {

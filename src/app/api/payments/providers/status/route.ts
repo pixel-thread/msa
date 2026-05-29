@@ -4,15 +4,15 @@ import {
   getProvidersByAssociation,
 } from "@src/features/payments/services/payment-provider.service";
 import { withAssociation, withRole } from "@src/shared/api";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 import { NotFoundError } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
 
 export const GET = withAssociation({}, async (association, { traceId }, req) => {
-  logger.info("GET /api/payments/providers/status - Request started", { traceId });
+  logger.info({ traceId }, "GET /api/payments/providers/status - Request started");
 
   const user = await withRole(req, UserRole.MEMBER);
-  logger.info("GET /api/payments/providers/status - User authorized", { traceId, userId: user.id });
+  logger.info({ traceId, userId: user.id }, "GET /api/payments/providers/status - User authorized");
 
   const providerByAssociation = await getProvidersByAssociation(association.id);
 
@@ -26,7 +26,7 @@ export const GET = withAssociation({}, async (association, { traceId }, req) => 
     throw new NotFoundError("Provider not found");
   }
 
-  logger.info("GET /api/payments/providers/status - Success", { traceId, isActive: activeProvider.isActive });
+  logger.info({ traceId, isActive: activeProvider.isActive }, "GET /api/payments/providers/status - Success");
 
   return SuccessResponse({
     data: { status: activeProvider.isActive },

@@ -1,17 +1,17 @@
 import { withAssociation } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils/responses";
 import { getDashboardOverview } from "@feature/dashboard/services/dashboard.service";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export const GET = withAssociation({}, async (association, { traceId }) => {
-  logger.info("GET /api/dashboard/overview - Request started", {
+  logger.info({
     traceId,
     associationId: association.id,
-  });
+  }, "GET /api/dashboard/overview - Request started");
 
   const data = await getDashboardOverview(association.id);
 
-  logger.info("GET /api/dashboard/overview - Success", { traceId });
+  logger.info({ traceId }, "GET /api/dashboard/overview - Success");
 
   return SuccessResponse({ data });
 });

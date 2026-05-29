@@ -1,5 +1,5 @@
 import { env } from "@src/env";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 import {
   StorageProvider,
   UploadParams,
@@ -12,12 +12,12 @@ export class SftpStorageProvider implements StorageProvider {
   // Uploads a file to /uploads/<folder>/<timestamp>-<name>, returns key + CDN URL.
   async upload(params: UploadParams): Promise<UploadResult> {
     const sftp = new SftpClient("upload-client");
-    logger.debug("[Storage] SFTP connecting...", {
+    logger.debug({
       host: env.SFTP_HOST,
       port: env.SFTP_PORT,
       username: env.SFTP_USERNAME,
       readyTimeout: env.SFTP_TIMEOUT,
-    });
+    }, "[Storage] SFTP connecting...");
 
     try {
       await sftp.connect({
@@ -29,7 +29,7 @@ export class SftpStorageProvider implements StorageProvider {
         readyTimeout: env.SFTP_TIMEOUT,
       });
     } catch (error) {
-      logger.debug("[Storage] SFTP connection failed", { error });
+      logger.debug({ error }, "[Storage] SFTP connection failed");
       await sftp.end();
       throw error;
     }
@@ -39,7 +39,7 @@ export class SftpStorageProvider implements StorageProvider {
     try {
       await sftp.put(params.fileBuffer, `/${env.STORAGE_BUCKET}/${key}`);
     } catch (error) {
-      logger.debug("[Storage] SFTP upload failed", { error });
+      logger.debug({ error }, "[Storage] SFTP upload failed");
       throw error;
     } finally {
       await sftp.end();

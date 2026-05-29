@@ -3,12 +3,12 @@ import { LogBatchSchema } from "@src/shared/validators/logs";
 import { createLogsBatch } from "@src/shared/services/logs";
 import { SuccessResponse } from "@src/shared/utils";
 import { Prisma } from "@prisma/client";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export const POST = withValidation(
   { body: LogBatchSchema },
   async (_req, _ctx, { body, traceId }) => {
-    logger.info("POST /api/logs/batch - Request started", { traceId });
+    logger.info({ traceId }, "POST /api/logs/batch - Request started");
 
     const { logs } = body!;
 
@@ -21,7 +21,7 @@ export const POST = withValidation(
       })),
     });
 
-    logger.info("POST /api/logs/batch - Success", { traceId, count: logs.length });
+    logger.info({ traceId, count: logs.length }, "POST /api/logs/batch - Success");
 
     return SuccessResponse(
       { data: null, message: "Logs ingested successfully" },

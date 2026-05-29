@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 
 import { AppError, normalizeUnknownError } from "@src/shared/errors";
 import { AppErrorResponse, getTraceId } from "@src/shared/utils";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 type RouteHandler<TContext> = (
   request: NextRequest,
@@ -18,10 +18,10 @@ export function handleApiErrors<TContext>(handler: RouteHandler<TContext>) {
     } catch (error) {
       const appError = normalizeUnknownError(error);
       if (!(error instanceof AppError)) {
-        logger.error("API ERROR", {
+        logger.error({
           traceId,
           error,
-        });
+        }, "API ERROR");
       }
 
       return AppErrorResponse(appError, traceId);

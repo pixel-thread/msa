@@ -5,16 +5,16 @@ import { UnauthorizedError } from "@src/shared/errors";
 import { prisma } from "@src/shared/lib/prisma";
 import { PAGE_SIZE } from "@src/shared/constants";
 import { ComplaintQuerySchema } from "@src/features/compliance/validators";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export const GET = withAssociation(
   { query: ComplaintQuerySchema },
   async (association, { query, traceId }, req) => {
     const userId = req.headers.get("x-user-id");
-    logger.info("GET /api/compliance/my - Request started", { traceId, associationId: association.id, userId });
+    logger.info({ traceId, associationId: association.id, userId }, "GET /api/compliance/my - Request started");
 
     if (!userId) {
-      logger.error("GET /api/compliance/my - Unauthorized (missing x-user-id)", { traceId });
+      logger.error({ traceId }, "GET /api/compliance/my - Unauthorized (missing x-user-id)");
       throw new UnauthorizedError("Unauthorized");
     }
 
@@ -56,7 +56,7 @@ export const GET = withAssociation(
 
     const total = await prisma.complaint.count({ where });
 
-    logger.info("GET /api/compliance/my - Success", { traceId, count: complaints.length });
+    logger.info({ traceId, count: complaints.length }, "GET /api/compliance/my - Success");
 
     return SuccessResponse({
       data: complaints,

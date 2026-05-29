@@ -3,20 +3,20 @@ import { SuccessResponse } from "@src/shared/utils";
 import { BadRequestError, NotFoundError, UnauthorizedError } from "@src/shared/errors";
 import { prisma } from "@src/shared/lib/prisma";
 import { ComplaintParamsSchema } from "@src/features/compliance/validators";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export const GET = withAssociation(
   { params: ComplaintParamsSchema },
   async (association, { params, traceId }, req) => {
-    logger.info("GET /api/compliance/my/[complaintId] - Request started", { traceId, associationId: association.id, complaintId: params?.complaintId });
+    logger.info({ traceId, associationId: association.id, complaintId: params?.complaintId }, "GET /api/compliance/my/[complaintId] - Request started");
     if (!params) {
-      logger.error("GET /api/compliance/my/[complaintId] - Invalid complaint ID (missing params)", { traceId });
+      logger.error({ traceId }, "GET /api/compliance/my/[complaintId] - Invalid complaint ID (missing params)");
       throw new BadRequestError("Invalid complaint ID");
     }
 
     const userId = req.headers.get("x-user-id");
     if (!userId) {
-      logger.error("GET /api/compliance/my/[complaintId] - Unauthorized (missing x-user-id)", { traceId });
+      logger.error({ traceId }, "GET /api/compliance/my/[complaintId] - Unauthorized (missing x-user-id)");
       throw new UnauthorizedError("Unauthorized");
     }
 
@@ -34,11 +34,11 @@ export const GET = withAssociation(
     });
 
     if (!complaint) {
-      logger.error("GET /api/compliance/my/[complaintId] - Complaint not found", { traceId, complaintId: params.complaintId });
+      logger.error({ traceId, complaintId: params.complaintId }, "GET /api/compliance/my/[complaintId] - Complaint not found");
       throw new NotFoundError("Complaint not found");
     }
 
-    logger.info("GET /api/compliance/my/[complaintId] - Success", { traceId, complaintId: params.complaintId });
+    logger.info({ traceId, complaintId: params.complaintId }, "GET /api/compliance/my/[complaintId] - Success");
 
     return SuccessResponse({ data: complaint });
   },

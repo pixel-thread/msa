@@ -17,16 +17,16 @@ import {
 import { updateUser } from "@src/features/user/services";
 import { deleteRefreshTokens } from "@src/features/auth/services/delete-refresh-tokens";
 import { getUniqueUserNoFilter } from "@src/shared/services/user/get-unique-user-no-filter";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export const POST = withValidation(
   { body: ChangePasswordSchema },
   async (req, _ctx, { body, traceId }) => {
     const userId = req.headers.get("x-user-id");
-    logger.info("POST /api/auth/change-password - Request started", { traceId, userId });
+    logger.info({ traceId, userId }, "POST /api/auth/change-password - Request started");
 
     if (!userId) {
-      logger.error("POST /api/auth/change-password - User not found (missing x-user-id)", { traceId });
+      logger.error({ traceId }, "POST /api/auth/change-password - User not found (missing x-user-id)");
       throw new UnauthorizedError("User not found");
     }
 
@@ -34,7 +34,7 @@ export const POST = withValidation(
 
     const passwordValidation = validatePasswordStrength(newPassword);
     if (!passwordValidation.valid) {
-      logger.error("POST /api/auth/change-password - Invalid password strength", { traceId, userId });
+      logger.error({ traceId, userId }, "POST /api/auth/change-password - Invalid password strength");
       throw new ValidationError(passwordValidation.errors.join("; "));
     }
 
@@ -43,7 +43,7 @@ export const POST = withValidation(
     });
 
     if (!user || !user.password) {
-      logger.error("POST /api/auth/change-password - User has no password set", { traceId, userId });
+      logger.error({ traceId, userId }, "POST /api/auth/change-password - User has no password set");
       throw new BadRequestError(
         "Please use password reset to set a new password",
       );
@@ -52,7 +52,7 @@ export const POST = withValidation(
     const isValid = await verifyPassword(currentPassword, user.password);
 
     if (!isValid) {
-      logger.error("POST /api/auth/change-password - Current password incorrect", { traceId, userId });
+      logger.error({ traceId, userId }, "POST /api/auth/change-password - Current password incorrect");
       throw new BadRequestError("Current password is incorrect");
     }
 
@@ -65,7 +65,7 @@ export const POST = withValidation(
 
     await deleteRefreshTokens({ where: { userId } });
 
-    logger.info("POST /api/auth/change-password - Success", { traceId, userId });
+    logger.info({ traceId, userId }, "POST /api/auth/change-password - Success");
 
     return SuccessResponse({
       data: null,

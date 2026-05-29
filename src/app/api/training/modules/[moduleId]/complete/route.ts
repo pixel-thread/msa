@@ -8,7 +8,7 @@ import {
 } from "@feature/training/services";
 import { RecordCompletionSchema } from "@feature/training/validators/training";
 import { z } from "zod";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const TrainingParamsSchema = z.object({
   moduleId: z.uuid("Invalid module ID"),
@@ -20,18 +20,18 @@ export const GET = withAssociation(
       throw new ForbiddenError("Invalid module ID");
     }
 
-    logger.info("GET /training/modules/{moduleId}/complete - Request started", { traceId, associationId: association.id });
+    logger.info({ traceId, associationId: association.id }, "GET /training/modules/{moduleId}/complete - Request started");
 
     const { moduleId } = params;
     await withRole(req, UserRole.MEMBER);
-    logger.info("GET /training/modules/{moduleId}/complete - User authorized", { traceId });
+    logger.info({ traceId }, "GET /training/modules/{moduleId}/complete - User authorized");
 
     const data = await findManyCompletions({
       associationId: association.id,
       moduleId,
     });
 
-    logger.info("GET /training/modules/{moduleId}/complete - Success", { traceId });
+    logger.info({ traceId }, "GET /training/modules/{moduleId}/complete - Success");
     return SuccessResponse({ data: data.completions, meta: data.pagination });
   },
 );
@@ -46,12 +46,12 @@ export const POST = withAssociation(
       throw new ForbiddenError("Invalid request body");
     }
 
-    logger.info("POST /training/modules/{moduleId}/complete - Request started", { traceId, associationId: association.id });
+    logger.info({ traceId, associationId: association.id }, "POST /training/modules/{moduleId}/complete - Request started");
 
     const { moduleId } = params;
 
     const user = await withRole(request, UserRole.SUPER_ADMIN);
-    logger.info("POST /training/modules/{moduleId}/complete - User authorized", { traceId, userId: user.id });
+    logger.info({ traceId, userId: user.id }, "POST /training/modules/{moduleId}/complete - User authorized");
 
     const completion = await recordCompletion({
       associationId: association.id,
@@ -60,7 +60,7 @@ export const POST = withAssociation(
       data: body,
     });
 
-    logger.info("POST /training/modules/{moduleId}/complete - Success", { traceId, completionId: completion.id });
+    logger.info({ traceId, completionId: completion.id }, "POST /training/modules/{moduleId}/complete - Success");
     return SuccessResponse({ data: completion }, 201);
   },
 );

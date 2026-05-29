@@ -9,7 +9,7 @@ import {
   UnauthorizedError,
 } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export const POST = withValidation({}, async (request) => {
   const userId = request.headers.get("x-user-id");
@@ -68,7 +68,7 @@ export const POST = withValidation({}, async (request) => {
   }
 
   if (env.NODE_ENV === "development") {
-    logger.debug("OTP sent to ", { otp });
+    logger.debug({ otp }, "OTP sent to ");
   }
 
   return SuccessResponse({

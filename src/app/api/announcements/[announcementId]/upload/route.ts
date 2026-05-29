@@ -4,7 +4,7 @@ import { SuccessResponse } from "@src/shared/utils/responses";
 import { UserRole } from "@prisma/client";
 import { uploadAnnouncementImage } from "@feature/announcement/services";
 import { deleteFromBucket } from "@src/shared/lib/supabase/storage";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 import {
   AnnouncementRouteParams,
   AnnouncementUploadFormData,
@@ -16,12 +16,12 @@ export const POST = withAssociationFormData(
     params: AnnouncementRouteParams,
   },
   async (association, { formData, params, traceId }, request) => {
-    logger.info("POST /api/announcements/[id]/upload - Request started", { traceId, announcementId: params?.announcementId });
+    logger.info({ traceId, announcementId: params?.announcementId }, "POST /api/announcements/[id]/upload - Request started");
 
     const user = await withRole(request, UserRole.SECRETARY);
-    logger.info("POST /api/announcements/[id]/upload - User authorized", { traceId, userId: user.id, announcementId: params?.announcementId });
+    logger.info({ traceId, userId: user.id, announcementId: params?.announcementId }, "POST /api/announcements/[id]/upload - User authorized");
 
-    logger.info("POST /api/announcements/[id]/upload - Uploading image", { traceId, announcementId: params?.announcementId });
+    logger.info({ traceId, announcementId: params?.announcementId }, "POST /api/announcements/[id]/upload - Uploading image");
 
     const { announcement, oldStorageKey } = await uploadAnnouncementImage({
       announcementId: params!.announcementId,
@@ -34,11 +34,11 @@ export const POST = withAssociationFormData(
       try {
         await deleteFromBucket(oldStorageKey);
       } catch (error) {
-        logger.error("POST /api/announcements/[id]/upload - Failed to delete old image", { error, traceId });
+        logger.error({ error, traceId }, "POST /api/announcements/[id]/upload - Failed to delete old image");
       }
     }
 
-    logger.info("POST /api/announcements/[id]/upload - Success", { traceId, announcementId: params?.announcementId });
+    logger.info({ traceId, announcementId: params?.announcementId }, "POST /api/announcements/[id]/upload - Success");
 
     return SuccessResponse({ data: announcement }, 200);
   },

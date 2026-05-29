@@ -10,7 +10,7 @@ import {
 } from "@feature/training/services";
 import { uploadToBucket } from "@src/shared/lib/supabase/storage";
 import { z } from "zod";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const ParamsSchema = z.object({
   moduleId: z.uuid("Invalid module ID"),
@@ -31,11 +31,11 @@ export const POST = withAssociation(
       throw new ForbiddenError("Invalid module ID");
     }
 
-    logger.info("POST /training/modules/{moduleId}/certificate-template - Request started", { traceId, associationId: association.id });
+    logger.info({ traceId, associationId: association.id }, "POST /training/modules/{moduleId}/certificate-template - Request started");
 
     const { moduleId } = params;
     const user = await withRole(request, UserRole.DPO);
-    logger.info("POST /training/modules/{moduleId}/certificate-template - User authorized", { traceId, userId: user.id });
+    logger.info({ traceId, userId: user.id }, "POST /training/modules/{moduleId}/certificate-template - User authorized");
 
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
@@ -75,7 +75,7 @@ export const POST = withAssociation(
       fileId: fileRecord.id,
     });
 
-    logger.info("POST /training/modules/{moduleId}/certificate-template - Success", { traceId, templateId: template.id });
+    logger.info({ traceId, templateId: template.id }, "POST /training/modules/{moduleId}/certificate-template - Success");
     return SuccessResponse({ data: template }, 201);
   },
 );
@@ -94,11 +94,11 @@ export const DELETE = withAssociation(
       throw new ForbiddenError("Invalid module ID");
     }
 
-    logger.info("DELETE /training/modules/{moduleId}/certificate-template - Request started", { traceId, associationId: association.id });
+    logger.info({ traceId, associationId: association.id }, "DELETE /training/modules/{moduleId}/certificate-template - Request started");
 
     const { moduleId } = params;
     const user = await withRole(request, UserRole.DPO);
-    logger.info("DELETE /training/modules/{moduleId}/certificate-template - User authorized", { traceId, userId: user.id });
+    logger.info({ traceId, userId: user.id }, "DELETE /training/modules/{moduleId}/certificate-template - User authorized");
 
     await deleteCertificateTemplate({
       associationId: association.id,
@@ -106,7 +106,7 @@ export const DELETE = withAssociation(
       actorId: user.id,
     });
 
-    logger.info("DELETE /training/modules/{moduleId}/certificate-template - Success", { traceId, moduleId });
+    logger.info({ traceId, moduleId }, "DELETE /training/modules/{moduleId}/certificate-template - Success");
     return SuccessResponse({
       data: { success: true, message: "Certificate template removed" },
     });

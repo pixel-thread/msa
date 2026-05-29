@@ -8,7 +8,7 @@ import {
 import { SuccessResponse } from "@src/shared/utils";
 import { hasHighRoleAccess } from "@src/shared/utils/has-high-role";
 import { withRole } from "@src/shared/api/with-role";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const AuditLogQuerySchema = {
   parse: (params: URLSearchParams) => {
@@ -30,13 +30,13 @@ const AuditLogQuerySchema = {
 export const GET = withAssociation(
   {},
   async (association, { traceId }, request) => {
-    logger.info("GET /api/audit-logs - Request started", { traceId, associationId: association.id });
+    logger.info({ traceId, associationId: association.id }, "GET /api/audit-logs - Request started");
     
     const user = await withRole(request, UserRole.SECRETARY);
-    logger.info("GET /api/audit-logs - User authorized", { traceId, userId: user.id, roles: user.role });
+    logger.info({ traceId, userId: user.id, roles: user.role }, "GET /api/audit-logs - User authorized");
 
     if (!hasHighRoleAccess(user.role)) {
-      logger.error("GET /api/audit-logs - Permission denied", { traceId, userId: user.id, roles: user.role });
+      logger.error({ traceId, userId: user.id, roles: user.role }, "GET /api/audit-logs - Permission denied");
       throw new ForbiddenError(
         "Permission denied: DPO, PRESIDENT, or SUPER_ADMIN required",
       );
@@ -50,7 +50,7 @@ export const GET = withAssociation(
       getAuditLogStats(association.id),
     ]);
 
-    logger.info("GET /api/audit-logs - Success", { traceId, count: logsResult.logs.length });
+    logger.info({ traceId, count: logsResult.logs.length }, "GET /api/audit-logs - Success");
 
     return SuccessResponse({
       data: {

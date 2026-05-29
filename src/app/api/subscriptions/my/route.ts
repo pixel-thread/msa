@@ -6,7 +6,7 @@ import { z } from "zod";
 import { pageNumberValidation } from "@src/shared/validators/common";
 import { PAGE_SIZE } from "@src/shared/constants";
 import { buildPagination } from "@src/shared/utils/build-pagination";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const MySubscriptionQuerySchema = z.object({
   page: pageNumberValidation,
@@ -14,18 +14,18 @@ const MySubscriptionQuerySchema = z.object({
 export const GET = withAssociation(
   { query: MySubscriptionQuerySchema },
   async (association, { query, traceId }, request) => {
-    logger.info("GET /api/subscriptions/my - Request started", {
+    logger.info({
       traceId,
       associationId: association.id,
-    });
+    }, "GET /api/subscriptions/my - Request started");
 
     const page = query?.page || 1;
     const user = await withRole(request, UserRole.MEMBER);
 
-    logger.info("GET /api/subscriptions/my - User authorized", {
+    logger.info({
       traceId,
       userId: user.id,
-    });
+    }, "GET /api/subscriptions/my - User authorized");
 
     const userId = request.headers.get("x-user-id")!;
 
@@ -49,10 +49,10 @@ export const GET = withAssociation(
       }),
     ]);
 
-    logger.info("GET /api/subscriptions/my - Success", {
+    logger.info({
       traceId,
       count: subscriptions.length,
-    });
+    }, "GET /api/subscriptions/my - Success");
 
     return SuccessResponse({
       data: subscriptions,

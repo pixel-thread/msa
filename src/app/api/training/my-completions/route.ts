@@ -4,7 +4,7 @@ import { UserRole } from "@prisma/client";
 import { findUserCompletions } from "@feature/training/services";
 import { pageNumberValidation } from "@src/shared/validators/common";
 import { z } from "zod";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const TrainingCompletionQuerySchema = z.object({
   page: pageNumberValidation,
@@ -12,10 +12,10 @@ const TrainingCompletionQuerySchema = z.object({
 export const GET = withAssociation(
   { query: TrainingCompletionQuerySchema },
   async (association, { query, traceId }, request) => {
-    logger.info("GET /training/my-completions - Request started", { traceId, associationId: association.id });
+    logger.info({ traceId, associationId: association.id }, "GET /training/my-completions - Request started");
 
     const user = await withRole(request, UserRole.MEMBER);
-    logger.info("GET /training/my-completions - User authorized", { traceId, userId: user.id });
+    logger.info({ traceId, userId: user.id }, "GET /training/my-completions - User authorized");
 
     const page = query?.page;
 
@@ -25,7 +25,7 @@ export const GET = withAssociation(
       page,
     });
 
-    logger.info("GET /training/my-completions - Success", { traceId });
+    logger.info({ traceId }, "GET /training/my-completions - Success");
     return SuccessResponse({
       data: completions.module,
       meta: completions.pagination,

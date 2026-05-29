@@ -1,6 +1,6 @@
 import { withAssociation, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils/responses";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 import { UserRole } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
 import { z } from "zod";
@@ -20,10 +20,10 @@ const UserPaymentsQuerySchema = z.object({
 export const GET = withAssociation(
   { params: UserPaymentsParamsSchema, query: UserPaymentsQuerySchema },
   async (association, { params, query, traceId }, request) => {
-    logger.info("GET /api/payments/users/[userId] - Request started", { traceId, userId: params?.userId });
+    logger.info({ traceId, userId: params?.userId }, "GET /api/payments/users/[userId] - Request started");
 
     await withRole(request, UserRole.FINANCE);
-    logger.info("GET /api/payments/users/[userId] - User authorized", { traceId });
+    logger.info({ traceId }, "GET /api/payments/users/[userId] - User authorized");
 
     if (!params) {
       throw new ValidationError("Missing user ID parameter");
@@ -41,7 +41,7 @@ export const GET = withAssociation(
       throw new NotFoundError("User not found in this association");
     }
 
-    logger.info("GET /api/payments/users/[userId] - Fetching transactions", { traceId, userId });
+    logger.info({ traceId, userId }, "GET /api/payments/users/[userId] - Fetching transactions");
 
     const [transactions, total, summary] = await Promise.all([
       prisma.paymentTransaction.findMany({
@@ -70,7 +70,7 @@ export const GET = withAssociation(
       getUserContributionSummary(userId),
     ]);
 
-    logger.info("GET /api/payments/users/[userId] - Success", { traceId, userId, count: transactions.length, total });
+    logger.info({ traceId, userId, count: transactions.length, total }, "GET /api/payments/users/[userId] - Success");
 
     return SuccessResponse({
       data: {

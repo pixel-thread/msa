@@ -7,7 +7,7 @@ import {
 } from "@feature/meetings/services/minutes";
 import { UpdateMeetingMinuteSchema } from "@feature/meetings/validators/minutes";
 import { z } from "zod";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const ParamsSchema = z.object({
   meetingId: z.uuid("Invalid meeting ID"),
@@ -17,13 +17,13 @@ const ParamsSchema = z.object({
 export const PATCH = withAssociation(
   { params: ParamsSchema, body: UpdateMeetingMinuteSchema },
   async (association, { params, body, traceId }, request) => {
-    logger.info("PATCH /api/meetings/[meetingId]/minutes/[minutesId] - Request started", { traceId, meetingId: params?.meetingId, minutesId: params?.minutesId, associationId: association.id });
+    logger.info({ traceId, meetingId: params?.meetingId, minutesId: params?.minutesId, associationId: association.id }, "PATCH /api/meetings/[meetingId]/minutes/[minutesId] - Request started");
 
     // Check for administrative roles (Secretary and above)
     const user = await withRole(request, UserRole.SECRETARY);
-    logger.info("PATCH /api/meetings/[meetingId]/minutes/[minutesId] - User authorized", { traceId, userId: user.id, role: user.role, meetingId: params?.meetingId, minutesId: params?.minutesId });
+    logger.info({ traceId, userId: user.id, role: user.role, meetingId: params?.meetingId, minutesId: params?.minutesId }, "PATCH /api/meetings/[meetingId]/minutes/[minutesId] - User authorized");
 
-    logger.info("PATCH /api/meetings/[meetingId]/minutes/[minutesId] - Updating meeting minute", { traceId, meetingId: params?.meetingId, minutesId: params?.minutesId });
+    logger.info({ traceId, meetingId: params?.meetingId, minutesId: params?.minutesId }, "PATCH /api/meetings/[meetingId]/minutes/[minutesId] - Updating meeting minute");
 
     const minute = await updateMeetingMinute({
       meetingId: params!.meetingId,
@@ -32,7 +32,7 @@ export const PATCH = withAssociation(
       data: body!,
     });
 
-    logger.info("PATCH /api/meetings/[meetingId]/minutes/[minutesId] - Success", { traceId, meetingId: params!.meetingId, minutesId: params!.minutesId });
+    logger.info({ traceId, meetingId: params!.meetingId, minutesId: params!.minutesId }, "PATCH /api/meetings/[meetingId]/minutes/[minutesId] - Success");
 
     return SuccessResponse({
       data: minute,
@@ -44,13 +44,13 @@ export const PATCH = withAssociation(
 export const DELETE = withAssociation(
   { params: ParamsSchema },
   async (_association, { params, traceId }, request) => {
-    logger.info("DELETE /api/meetings/[meetingId]/minutes/[minutesId] - Request started", { traceId, meetingId: params?.meetingId, minutesId: params?.minutesId });
+    logger.info({ traceId, meetingId: params?.meetingId, minutesId: params?.minutesId }, "DELETE /api/meetings/[meetingId]/minutes/[minutesId] - Request started");
 
     // Check for administrative roles (Secretary and above)
     const user = await withRole(request, UserRole.SECRETARY);
-    logger.info("DELETE /api/meetings/[meetingId]/minutes/[minutesId] - User authorized", { traceId, userId: user.id, role: user.role, meetingId: params?.meetingId, minutesId: params?.minutesId });
+    logger.info({ traceId, userId: user.id, role: user.role, meetingId: params?.meetingId, minutesId: params?.minutesId }, "DELETE /api/meetings/[meetingId]/minutes/[minutesId] - User authorized");
 
-    logger.info("DELETE /api/meetings/[meetingId]/minutes/[minutesId] - Deleting meeting minute", { traceId, meetingId: params?.meetingId, minutesId: params?.minutesId });
+    logger.info({ traceId, meetingId: params?.meetingId, minutesId: params?.minutesId }, "DELETE /api/meetings/[meetingId]/minutes/[minutesId] - Deleting meeting minute");
 
     const deletedMinute = await deleteMeetingMinute({
       where: {
@@ -59,7 +59,7 @@ export const DELETE = withAssociation(
       },
     });
 
-    logger.info("DELETE /api/meetings/[meetingId]/minutes/[minutesId] - Success", { traceId, meetingId: params!.meetingId, minutesId: params!.minutesId });
+    logger.info({ traceId, meetingId: params!.meetingId, minutesId: params!.minutesId }, "DELETE /api/meetings/[meetingId]/minutes/[minutesId] - Success");
 
     return SuccessResponse({
       data: deletedMinute,

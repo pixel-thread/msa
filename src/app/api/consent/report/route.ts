@@ -2,7 +2,7 @@ import { withAssociation, withRole } from "@src/shared/api";
 import { ConsentService } from "@src/features/consent";
 import { SuccessResponse } from "@src/shared/utils";
 import { UserRole } from "@prisma/client";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 /**
  * GET /api/consent/report
@@ -11,21 +11,21 @@ import { logger } from "@src/shared/logger";
  * Roles: DPO, PRESIDENT, SUPER_ADMIN
  */
 export const GET = withAssociation({}, async (association, { traceId }, req) => {
-  logger.info("GET /api/consent/report - Request started", {
+  logger.info({
     traceId,
     associationId: association.id,
-  });
+  }, "GET /api/consent/report - Request started");
 
   const user = await withRole(req, UserRole.DPO);
 
-  logger.info("GET /api/consent/report - User authorized", {
+  logger.info({
     traceId,
     userId: user.id,
-  });
+  }, "GET /api/consent/report - User authorized");
 
   const report = await ConsentService.getConsentReport(association.id);
 
-  logger.info("GET /api/consent/report - Success", { traceId });
+  logger.info({ traceId }, "GET /api/consent/report - Success");
 
   return SuccessResponse({
     data: report,

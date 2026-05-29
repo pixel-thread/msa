@@ -3,7 +3,7 @@ import { withValidation } from "@src/shared/api";
 import z from "zod";
 import { UnauthorizedError, ValidationError } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const LinkNotificationSchema = z.object({
   token: z.string().min(1, "Token is required"),
@@ -12,7 +12,7 @@ const LinkNotificationSchema = z.object({
 export const POST = withValidation(
   { body: LinkNotificationSchema },
   async (req, _ctx, { body, traceId }) => {
-    logger.info("POST /api/notifications/link - Request started", { traceId });
+    logger.info({ traceId }, "POST /api/notifications/link - Request started");
 
     const userId = req.headers.get("x-user-id");
 
@@ -36,7 +36,7 @@ export const POST = withValidation(
       },
     });
 
-    logger.info("POST /api/notifications/link - Success", { traceId, tokenId: pushToken.id });
+    logger.info({ traceId, tokenId: pushToken.id }, "POST /api/notifications/link - Success");
 
     return SuccessResponse({ data: pushToken }, 201);
   },

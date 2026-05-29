@@ -11,7 +11,7 @@ import {
   markOverdueContributions,
   waiveContribution,
 } from "@feature/payments/services/contribution.service";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 import { z } from "zod";
 import { ValidationError } from "@src/shared/errors";
 import { pageNumberValidation } from "@src/shared/validators/common";
@@ -36,10 +36,10 @@ const ContributionsQuerySchema = z.object({
 export const GET = withAssociation(
   { query: ContributionsQuerySchema },
   async (association, { query, traceId }, request) => {
-    logger.info("GET /api/payments/contributions - Request started", { traceId, query });
+    logger.info({ traceId, query }, "GET /api/payments/contributions - Request started");
 
     await withRole(request, UserRole.FINANCE);
-    logger.info("GET /api/payments/contributions - User authorized", { traceId });
+    logger.info({ traceId }, "GET /api/payments/contributions - User authorized");
 
     if (!query) {
       throw new ValidationError("Invalid query parameters");
@@ -97,7 +97,7 @@ export const GET = withAssociation(
       prisma.contributionPeriod.count({ where }),
     ]);
 
-    logger.info("GET /api/payments/contributions - Success", { traceId, count: contributions.length });
+    logger.info({ traceId, count: contributions.length }, "GET /api/payments/contributions - Success");
 
     return SuccessResponse({
       data: contributions,
@@ -119,12 +119,12 @@ export const GET = withAssociation(
 export const POST = withAssociation(
   { body: GenerateContributionsSchema },
   async (association, { body, traceId }, request) => {
-    logger.info("POST /api/payments/contributions - Request started", { traceId, year: body!.year, month: body!.month });
+    logger.info({ traceId, year: body!.year, month: body!.month }, "POST /api/payments/contributions - Request started");
 
     await withRole(request, UserRole.FINANCE);
-    logger.info("POST /api/payments/contributions - User authorized", { traceId });
+    logger.info({ traceId }, "POST /api/payments/contributions - User authorized");
 
-    logger.info("POST /api/payments/contributions - Generating contributions", { traceId, year: body!.year, month: body!.month });
+    logger.info({ traceId, year: body!.year, month: body!.month }, "POST /api/payments/contributions - Generating contributions");
     const count = await generateMonthlyContributions(
       association.id,
       body!.year,
@@ -134,7 +134,7 @@ export const POST = withAssociation(
     // Also mark overdue contributions while we're at it
     const overdueCount = await markOverdueContributions(association.id);
 
-    logger.info("POST /api/payments/contributions - Success", { traceId, generated: count, markedOverdue: overdueCount });
+    logger.info({ traceId, generated: count, markedOverdue: overdueCount }, "POST /api/payments/contributions - Success");
 
     return SuccessResponse(
       {
@@ -159,17 +159,17 @@ export const POST = withAssociation(
 export const PATCH = withAssociation(
   { body: WaiveContributionSchema },
   async (_association, { body, traceId }, request) => {
-    logger.info("PATCH /api/payments/contributions - Request started", { traceId, contributionPeriodId: body!.contributionPeriodId });
+    logger.info({ traceId, contributionPeriodId: body!.contributionPeriodId }, "PATCH /api/payments/contributions - Request started");
 
     await withRole(request, UserRole.FINANCE);
-    logger.info("PATCH /api/payments/contributions - User authorized", { traceId });
+    logger.info({ traceId }, "PATCH /api/payments/contributions - User authorized");
 
     const waived = await waiveContribution(
       body!.contributionPeriodId,
       body!.reason,
     );
 
-    logger.info("PATCH /api/payments/contributions - Success", { traceId, contributionPeriodId: body!.contributionPeriodId });
+    logger.info({ traceId, contributionPeriodId: body!.contributionPeriodId }, "PATCH /api/payments/contributions - Success");
 
     return SuccessResponse(
       {

@@ -7,7 +7,7 @@ import { UserRole } from "@prisma/client";
 import { completeAssignment } from "@feature/training/services";
 import { uploadToBucket } from "@src/shared/lib/supabase/storage";
 import { z } from "zod";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const ParamsSchema = z.object({
   moduleId: z.uuid("Invalid module ID"),
@@ -27,11 +27,11 @@ export const POST = withAssociation(
       throw new ForbiddenError("Invalid parameters");
     }
 
-    logger.info("POST /training/modules/{moduleId}/assignments/{userId}/complete - Request started", { traceId, associationId: association.id });
+    logger.info({ traceId, associationId: association.id }, "POST /training/modules/{moduleId}/assignments/{userId}/complete - Request started");
 
     const { moduleId, userId } = params;
     const actor = await withRole(request, UserRole.SECRETARY);
-    logger.info("POST /training/modules/{moduleId}/assignments/{userId}/complete - User authorized", { traceId, userId: actor.id });
+    logger.info({ traceId, userId: actor.id }, "POST /training/modules/{moduleId}/assignments/{userId}/complete - User authorized");
 
     const contentType = request.headers.get("content-type") || "";
 
@@ -105,7 +105,7 @@ export const POST = withAssociation(
         certificateFileId = fileRecord.id;
       }
 
-      logger.info("POST /training/modules/{moduleId}/assignments/{userId}/complete - Completing assignment", { traceId, moduleId, targetUserId: userId });
+      logger.info({ traceId, moduleId, targetUserId: userId }, "POST /training/modules/{moduleId}/assignments/{userId}/complete - Completing assignment");
 
       const result = await completeAssignment({
         associationId: association.id,
@@ -119,7 +119,7 @@ export const POST = withAssociation(
         certificateNumber,
       });
 
-      logger.info("POST /training/modules/{moduleId}/assignments/{userId}/complete - Success", { traceId });
+      logger.info({ traceId }, "POST /training/modules/{moduleId}/assignments/{userId}/complete - Success");
       return SuccessResponse({ data: result }, 201);
     } catch (error) {
       if (error instanceof Error) {

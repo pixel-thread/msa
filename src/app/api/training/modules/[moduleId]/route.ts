@@ -5,7 +5,7 @@ import { UserRole } from "@prisma/client";
 import { findUniqueModule, updateModule, deleteModule } from "@feature/training/services";
 import { UpdateTrainingModuleSchema } from "@feature/training/validators/training";
 import { z } from "zod";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const TrainingParamsSchema = z.object({
   moduleId: z.uuid("Invalid module ID"),
@@ -18,10 +18,10 @@ export const GET = withAssociation(
       throw new ForbiddenError("Invalid module ID");
     }
 
-    logger.info("GET /training/modules/{moduleId} - Request started", { traceId, associationId: association.id });
+    logger.info({ traceId, associationId: association.id }, "GET /training/modules/{moduleId} - Request started");
 
     await withRole(request, UserRole.MEMBER);
-    logger.info("GET /training/modules/{moduleId} - User authorized", { traceId });
+    logger.info({ traceId }, "GET /training/modules/{moduleId} - User authorized");
 
     const { moduleId } = params;
 
@@ -34,7 +34,7 @@ export const GET = withAssociation(
       throw new NotFoundError("Training module not found");
     }
 
-    logger.info("GET /training/modules/{moduleId} - Success", { traceId, moduleId });
+    logger.info({ traceId, moduleId }, "GET /training/modules/{moduleId} - Success");
     return SuccessResponse({ data: trainingmodule });
   },
 );
@@ -49,11 +49,11 @@ export const PATCH = withAssociation(
       throw new ForbiddenError("Invalid request body");
     }
 
-    logger.info("PATCH /training/modules/{moduleId} - Request started", { traceId, associationId: association.id });
+    logger.info({ traceId, associationId: association.id }, "PATCH /training/modules/{moduleId} - Request started");
 
     const { moduleId } = params;
     const user = await withRole(request, UserRole.DPO);
-    logger.info("PATCH /training/modules/{moduleId} - User authorized", { traceId, userId: user.id });
+    logger.info({ traceId, userId: user.id }, "PATCH /training/modules/{moduleId} - User authorized");
 
     const trainingModule = await updateModule({
       associationId: association.id,
@@ -62,7 +62,7 @@ export const PATCH = withAssociation(
       data: body,
     });
 
-    logger.info("PATCH /training/modules/{moduleId} - Success", { traceId, moduleId });
+    logger.info({ traceId, moduleId }, "PATCH /training/modules/{moduleId} - Success");
     return SuccessResponse({ data: trainingModule });
   },
 );
@@ -74,11 +74,11 @@ export const DELETE = withAssociation(
       throw new ForbiddenError("Invalid module ID");
     }
 
-    logger.info("DELETE /training/modules/{moduleId} - Request started", { traceId, associationId: association.id });
+    logger.info({ traceId, associationId: association.id }, "DELETE /training/modules/{moduleId} - Request started");
 
     const { moduleId } = params;
     const user = await withRole(request, UserRole.DPO);
-    logger.info("DELETE /training/modules/{moduleId} - User authorized", { traceId, userId: user.id });
+    logger.info({ traceId, userId: user.id }, "DELETE /training/modules/{moduleId} - User authorized");
 
     await deleteModule({
       associationId: association.id,
@@ -86,7 +86,7 @@ export const DELETE = withAssociation(
       actorId: user.id,
     });
 
-    logger.info("DELETE /training/modules/{moduleId} - Success", { traceId, moduleId });
+    logger.info({ traceId, moduleId }, "DELETE /training/modules/{moduleId} - Success");
     return SuccessResponse({ data: { success: true } });
   },
 );

@@ -13,7 +13,7 @@ import { SuccessResponse } from "@src/shared/utils";
 import { getUniqueUser } from "@src/shared/services/user/get-unique-user";
 import { getVerificationCodeFirst } from "@src/features/auth/services/get-verification-code-first";
 import { createVerificationCode } from "@src/features/auth/services/create-verification-code";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const ResendSignInCodeSchema = z.object({
   mfa_temp_token: z.string(),

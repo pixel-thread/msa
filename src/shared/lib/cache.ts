@@ -1,4 +1,4 @@
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 import { redis } from "./redis";
 
 export interface CacheClient {
@@ -27,10 +27,10 @@ export const cacheClient: CacheClient = {
     try {
       return (await redis.get(key)) as T | null;
     } catch (error) {
-      logger.error("Cache get failed", {
+      logger.error({
         key,
         error,
-      });
+      }, "Cache get failed");
 
       return null;
     }
@@ -48,10 +48,10 @@ export const cacheClient: CacheClient = {
         await redis.set(key, serialized);
       }
     } catch (error) {
-      logger.error("Cache set failed", {
+      logger.error({
         key,
         ...serializeError(error),
-      });
+      }, "Cache set failed");
     }
   },
 
@@ -59,10 +59,10 @@ export const cacheClient: CacheClient = {
     try {
       await redis.del(key);
     } catch (error) {
-      logger.error("Cache del failed", {
+      logger.error({
         key,
         ...serializeError(error),
-      });
+      }, "Cache del failed");
     }
   },
 
@@ -83,10 +83,10 @@ export const cacheClient: CacheClient = {
         }
       } while (cursor !== "0");
     } catch (error) {
-      logger.error("Cache delPattern failed", {
+      logger.error({
         pattern,
         ...serializeError(error),
-      });
+      }, "Cache delPattern failed");
     }
   },
 };

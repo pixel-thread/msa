@@ -1,7 +1,7 @@
 import { prisma } from "@lib/prisma";
 import { NotFoundError, ForbiddenError } from "@src/shared/errors";
 import { AttendeeRole, RsvpStatus } from "@prisma/client";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 interface UpdateAttendeeProps {
   meetingId: string;
@@ -30,10 +30,10 @@ export async function updateAttendee({
     throw new NotFoundError("Meeting");
   }
 
-  logger.debug("Update Attendee", {
+  logger.debug({
     meetingId,
     userId,
-  });
+  }, "Update Attendee");
   const attendance = await prisma.meetingAttendee.findUnique({
     where: {
       meetingId_userId: {

@@ -4,10 +4,10 @@ import { UserRole, MeetingStatus } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
 import { hasHighRoleAccess } from "@src/shared/utils/has-high-role";
 import { ForbiddenError } from "@src/shared/errors";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export const POST = withAssociation({}, async (association, { traceId }, request, { params }) => {
-  logger.info("POST /api/meetings/[meetingId]/cancel - Request started", { traceId, associationId: association.id });
+  logger.info({ traceId, associationId: association.id }, "POST /api/meetings/[meetingId]/cancel - Request started");
 
   const user = await withRole(request, UserRole.PRESIDENT);
 
@@ -17,9 +17,9 @@ export const POST = withAssociation({}, async (association, { traceId }, request
 
   const { meetingId } = (await params) as { meetingId: string };
 
-  logger.info("POST /api/meetings/[meetingId]/cancel - User authorized", { traceId, userId: user.id, role: user.role, meetingId });
+  logger.info({ traceId, userId: user.id, role: user.role, meetingId }, "POST /api/meetings/[meetingId]/cancel - User authorized");
 
-  logger.info("POST /api/meetings/[meetingId]/cancel - Cancelling meeting", { traceId, meetingId });
+  logger.info({ traceId, meetingId }, "POST /api/meetings/[meetingId]/cancel - Cancelling meeting");
 
   const meeting = await prisma.meeting.update({
     where: {
@@ -31,7 +31,7 @@ export const POST = withAssociation({}, async (association, { traceId }, request
     },
   });
 
-  logger.info("POST /api/meetings/[meetingId]/cancel - Success", { traceId, meetingId: meeting.id });
+  logger.info({ traceId, meetingId: meeting.id }, "POST /api/meetings/[meetingId]/cancel - Success");
 
   return SuccessResponse({ data: meeting });
 });

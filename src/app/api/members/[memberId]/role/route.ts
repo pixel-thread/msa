@@ -4,7 +4,7 @@ import { ConflictError, NotFoundError } from "@src/shared/errors";
 import { prisma } from "@src/shared/lib/prisma";
 import { SuccessResponse } from "@src/shared/utils";
 import z from "zod";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const UpdateUserRoleSchema = z.object({
   role: z.enum(UserRole),
@@ -17,17 +17,17 @@ const UpdateUserRoleParamsSchema = z.object({
 export const POST = withAssociation(
   { body: UpdateUserRoleSchema, params: UpdateUserRoleParamsSchema },
   async (association, { body, params, traceId }, req) => {
-    logger.info("POST /api/members/[memberId]/role - Request started", {
+    logger.info({
       traceId,
       associationId: association.id,
-    });
+    }, "POST /api/members/[memberId]/role - Request started");
 
     const user = await withRole(req, UserRole.PRESIDENT);
 
-    logger.info("POST /api/members/[memberId]/role - User authorized", {
+    logger.info({
       traceId,
       userId: user.id,
-    });
+    }, "POST /api/members/[memberId]/role - User authorized");
 
     const target = await prisma.user.findUnique({
       where: { id: params?.memberId, associationId: association.id },
@@ -49,11 +49,11 @@ export const POST = withAssociation(
       select: { id: true, role: true, email: true },
     });
 
-    logger.info("POST /api/members/[memberId]/role - Success", {
+    logger.info({
       traceId,
       memberId: params?.memberId,
       newRole,
-    });
+    }, "POST /api/members/[memberId]/role - Success");
 
     return SuccessResponse({
       data: updatedUser,
@@ -65,17 +65,17 @@ export const POST = withAssociation(
 export const PUT = withAssociation(
   { body: UpdateUserRoleSchema, params: UpdateUserRoleParamsSchema },
   async (association, { body, params, traceId }, req) => {
-    logger.info("PUT /api/members/[memberId]/role - Request started", {
+    logger.info({
       traceId,
       associationId: association.id,
-    });
+    }, "PUT /api/members/[memberId]/role - Request started");
 
     const user = await withRole(req, UserRole.PRESIDENT);
 
-    logger.info("PUT /api/members/[memberId]/role - User authorized", {
+    logger.info({
       traceId,
       userId: user.id,
-    });
+    }, "PUT /api/members/[memberId]/role - User authorized");
 
     const target = await prisma.user.findUnique({
       where: { id: params?.memberId, associationId: association.id },
@@ -98,11 +98,11 @@ export const PUT = withAssociation(
       select: { id: true, role: true, email: true },
     });
 
-    logger.info("PUT /api/members/[memberId]/role - Success", {
+    logger.info({
       traceId,
       memberId: params?.memberId,
       removeRole,
-    });
+    }, "PUT /api/members/[memberId]/role - Success");
 
     return SuccessResponse({
       data: updatedUser,

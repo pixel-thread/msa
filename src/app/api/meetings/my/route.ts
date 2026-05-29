@@ -5,7 +5,7 @@ import { UserRole } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
 import { pageNumberValidation } from "@src/shared/validators";
 import { PAGE_SIZE } from "@src/shared/constants";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 import { z } from "zod";
 
 const QuerySchema = z.object({
@@ -15,10 +15,10 @@ const QuerySchema = z.object({
 export const GET = withAssociation(
   { query: QuerySchema },
   async (association, { query, traceId }, request) => {
-    logger.info("GET /api/meetings/my - Request started", { traceId, associationId: association.id });
+    logger.info({ traceId, associationId: association.id }, "GET /api/meetings/my - Request started");
 
     const user = await withRole(request, UserRole.MEMBER);
-    logger.info("GET /api/meetings/my - User authorized", { traceId, userId: user.id, role: user.role });
+    logger.info({ traceId, userId: user.id, role: user.role }, "GET /api/meetings/my - User authorized");
 
     const userId = request.headers.get("x-user-id")!;
     const page = query?.page || 1;
@@ -50,7 +50,7 @@ export const GET = withAssociation(
       prisma.meeting.count({ where }),
     ]);
 
-    logger.info("GET /api/meetings/my - Success", { traceId, count: meetings.length });
+    logger.info({ traceId, count: meetings.length }, "GET /api/meetings/my - Success");
 
     return SuccessResponse({
       data: meetings,

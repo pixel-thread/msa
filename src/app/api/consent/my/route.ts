@@ -3,7 +3,7 @@ import { ConsentService } from "@src/features/consent";
 import { SuccessResponse } from "@src/shared/utils";
 import { UserRole } from "@prisma/client";
 import { UnauthorizedError } from "@src/shared/errors";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 /**
  * GET /api/consent/my
@@ -11,17 +11,17 @@ import { logger } from "@src/shared/logger";
  * Retrieves the current consent state for the authenticated user.
  */
 export const GET = withAssociation({}, async (association, { traceId }, req) => {
-  logger.info("GET /api/consent/my - Request started", {
+  logger.info({
     traceId,
     associationId: association.id,
-  });
+  }, "GET /api/consent/my - Request started");
 
   const user = await withRole(req, UserRole.MEMBER);
 
-  logger.info("GET /api/consent/my - User authorized", {
+  logger.info({
     traceId,
     userId: user.id,
-  });
+  }, "GET /api/consent/my - User authorized");
 
   const userId = req.headers.get("x-user-id");
 
@@ -32,7 +32,7 @@ export const GET = withAssociation({}, async (association, { traceId }, req) => 
     association.id,
   );
 
-  logger.info("GET /api/consent/my - Success", { traceId });
+  logger.info({ traceId }, "GET /api/consent/my - Success");
 
   return SuccessResponse({
     data: consentState,

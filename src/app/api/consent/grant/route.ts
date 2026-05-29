@@ -3,7 +3,7 @@ import { ConsentService, ConsentUpdateSchema } from "@src/features/consent";
 import { ConsentStatus } from "@prisma/client";
 import { SuccessResponse } from "@src/shared/utils";
 import { BadRequestError, UnauthorizedError } from "@src/shared/errors";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 /**
  * POST /api/consent/grant
@@ -15,10 +15,10 @@ export const POST = withAssociation(
     body: ConsentUpdateSchema.omit({ action: true }),
   },
   async (association, { body, traceId }, request) => {
-    logger.info("POST /api/consent/grant - Request started", {
+    logger.info({
       traceId,
       associationId: association.id,
-    });
+    }, "POST /api/consent/grant - Request started");
 
     const userId = request.headers.get("x-user-id");
 
@@ -43,10 +43,10 @@ export const POST = withAssociation(
       userAgent,
     );
 
-    logger.info("POST /api/consent/grant - Consent granted successfully", {
+    logger.info({
       traceId,
       userId,
-    });
+    }, "POST /api/consent/grant - Consent granted successfully");
 
     return SuccessResponse({
       message: "Consent granted successfully",

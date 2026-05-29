@@ -6,7 +6,7 @@ import { hashToken } from "@src/shared/lib/password";
 import { env } from "@src/env";
 import { TooManyRequestsError, UnauthorizedError } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const VerifyMfaSchema = z.object({
   code: z.string().length(6, "Code must be 6 digits"),
@@ -18,10 +18,10 @@ export const POST = withValidation(
   { body: VerifyMfaSchema },
   async (request, _ctx, { body, traceId }) => {
     const userId = request.headers.get("x-user-id");
-    logger.info("POST /api/auth/mfa/verify - Request started", { traceId, userId });
+    logger.info({ traceId, userId }, "POST /api/auth/mfa/verify - Request started");
 
     if (!userId) {
-      logger.error("POST /api/auth/mfa/verify - Unauthorized (missing x-user-id)", { traceId });
+      logger.error({ traceId }, "POST /api/auth/mfa/verify - Unauthorized (missing x-user-id)");
       throw new UnauthorizedError("Unauthorized");
     }
 
@@ -40,12 +40,12 @@ export const POST = withValidation(
     });
 
     if (!verificationCode) {
-      logger.error("POST /api/auth/mfa/verify - Invalid or expired verification code", { traceId, userId });
+      logger.error({ traceId, userId }, "POST /api/auth/mfa/verify - Invalid or expired verification code");
       throw new UnauthorizedError("Invalid or expired verification code");
     }
 
     if (verificationCode.attempts >= env.OTP_MAX_ATTEMPTS) {
-      logger.error("POST /api/auth/mfa/verify - Too many attempts", { traceId, userId, verificationCodeId: verificationCode.id });
+      logger.error({ traceId, userId, verificationCodeId: verificationCode.id }, "POST /api/auth/mfa/verify - Too many attempts");
       throw new TooManyRequestsError(
         "Too many attempts. Please request a new code",
       );
@@ -57,7 +57,7 @@ export const POST = withValidation(
         data: { attempts: { increment: 1 } },
       });
 
-      logger.error("POST /api/auth/mfa/verify - Invalid verification code input", { traceId, userId, verificationCodeId: verificationCode.id });
+      logger.error({ traceId, userId, verificationCodeId: verificationCode.id }, "POST /api/auth/mfa/verify - Invalid verification code input");
       throw new UnauthorizedError("Invalid verification code");
     }
 
@@ -71,7 +71,7 @@ export const POST = withValidation(
       data: { mfaEnabled: true },
     });
 
-    logger.info("POST /api/auth/mfa/verify - Success", { traceId, userId });
+    logger.info({ traceId, userId }, "POST /api/auth/mfa/verify - Success");
 
     return SuccessResponse({
       message: "MFA enabled successfully",

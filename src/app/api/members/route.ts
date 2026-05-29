@@ -5,7 +5,7 @@ import { getMembers } from "@src/features/members/services/getMembers";
 import z from "zod";
 import { hasHighRoleAccess } from "@src/shared/utils/has-high-role";
 import { pageNumberValidation } from "@src/shared/validators/common";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const QuerySchema = z.object({
   page: pageNumberValidation,
@@ -15,17 +15,17 @@ const QuerySchema = z.object({
 export const GET = withAssociation(
   { query: QuerySchema },
   async (association, { query, traceId }, request) => {
-    logger.info("GET /api/members - Request started", {
+    logger.info({
       traceId,
       associationId: association.id,
-    });
+    }, "GET /api/members - Request started");
 
     const user = await withRole(request, UserRole.SECRETARY);
 
-    logger.info("GET /api/members - User authorized", {
+    logger.info({
       traceId,
       userId: user.id,
-    });
+    }, "GET /api/members - User authorized");
 
     const page = query?.page;
     const status = query?.status;
@@ -53,10 +53,10 @@ export const GET = withAssociation(
       });
     }
 
-    logger.info("GET /api/members - Success", {
+    logger.info({
       traceId,
       count: members.data.length,
-    });
+    }, "GET /api/members - Success");
 
     return SuccessResponse({
       data: members.data,

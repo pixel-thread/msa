@@ -4,12 +4,12 @@ import { SuccessResponse } from "@src/shared/utils";
 import { SignOutSchema } from "@src/features/auth/validators";
 import { updateRefreshTokens } from "@src/features/auth/services/update-refresh-tokens";
 import { env } from "@src/env";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 export const POST = withValidation(
   { body: SignOutSchema },
   async (request, _context, { body, traceId }) => {
-    logger.info("POST /api/auth/logout - Request started", { traceId });
+    logger.info({ traceId }, "POST /api/auth/logout - Request started");
     const bodyToken =
       body?.token || request?.cookies?.get("refresh_token")?.value;
 
@@ -43,7 +43,7 @@ export const POST = withValidation(
       path: "/",
     });
 
-    logger.info("POST /api/auth/logout - Success", { traceId });
+    logger.info({ traceId }, "POST /api/auth/logout - Success");
 
     return response;
   },

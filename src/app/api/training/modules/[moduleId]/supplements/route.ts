@@ -16,7 +16,7 @@ import {
 import { CreateSupplementSchema } from "@feature/training/validators/training";
 import { uploadToBucket } from "@src/shared/lib/supabase/storage";
 import { z } from "zod";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const TrainingParamsSchema = z.object({
   moduleId: z.uuid("Invalid module ID"),
@@ -36,10 +36,10 @@ export const GET = withAssociation(
       throw new ForbiddenError("Invalid module ID");
     }
 
-    logger.info("GET /training/modules/{moduleId}/supplements - Request started", { traceId, associationId: association.id });
+    logger.info({ traceId, associationId: association.id }, "GET /training/modules/{moduleId}/supplements - Request started");
 
     await withRole(request, UserRole.MEMBER);
-    logger.info("GET /training/modules/{moduleId}/supplements - User authorized", { traceId });
+    logger.info({ traceId }, "GET /training/modules/{moduleId}/supplements - User authorized");
 
     const { moduleId } = params;
 
@@ -48,7 +48,7 @@ export const GET = withAssociation(
       moduleId,
     });
 
-    logger.info("GET /training/modules/{moduleId}/supplements - Success", { traceId });
+    logger.info({ traceId }, "GET /training/modules/{moduleId}/supplements - Success");
     return SuccessResponse({ data: supplements });
   },
 );
@@ -61,10 +61,10 @@ export const POST = withAssociationFormData(
   async (association, { formData, params, traceId }, request) => {
     const { moduleId } = params!;
 
-    logger.info("POST /training/modules/{moduleId}/supplements - Request started", { traceId, associationId: association.id, moduleId });
+    logger.info({ traceId, associationId: association.id, moduleId }, "POST /training/modules/{moduleId}/supplements - Request started");
 
     const user = await withRole(request, UserRole.DPO);
-    logger.info("POST /training/modules/{moduleId}/supplements - User authorized", { traceId, userId: user.id });
+    logger.info({ traceId, userId: user.id }, "POST /training/modules/{moduleId}/supplements - User authorized");
 
     const { file, metadata } = formData;
 
@@ -97,7 +97,7 @@ export const POST = withAssociationFormData(
       fileId: fileRecord.id,
     });
 
-    logger.info("POST /training/modules/{moduleId}/supplements - Success", { traceId, supplementId: supplement.id });
+    logger.info({ traceId, supplementId: supplement.id }, "POST /training/modules/{moduleId}/supplements - Success");
     return SuccessResponse({ data: supplement }, 201);
   },
 );

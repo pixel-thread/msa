@@ -10,21 +10,21 @@ import { z } from "zod";
 import { ForbiddenError } from "@src/shared/errors";
 import { findUniqueMeeting } from "@src/features/meetings";
 import { prisma } from "@src/shared/lib/prisma";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const ParamsSchema = z.object({ meetingId: z.string("Invalid meeting ID") });
 
 export const GET = withAssociation(
   { params: ParamsSchema },
   async (association, { params, traceId }, request) => {
-    logger.info("GET /api/meetings/[meetingId]/agenda - Request started", { traceId, meetingId: params?.meetingId, associationId: association.id });
+    logger.info({ traceId, meetingId: params?.meetingId, associationId: association.id }, "GET /api/meetings/[meetingId]/agenda - Request started");
 
     if (!params) {
       throw new ForbiddenError("Invalid meeting ID");
     }
 
     const user = await withRole(request, UserRole.MEMBER);
-    logger.info("GET /api/meetings/[meetingId]/agenda - User authorized", { traceId, userId: user.id, role: user.role, meetingId: params.meetingId });
+    logger.info({ traceId, userId: user.id, role: user.role, meetingId: params.meetingId }, "GET /api/meetings/[meetingId]/agenda - User authorized");
 
     const meeting = await findUniqueMeeting({
       meetingId: params.meetingId,
@@ -33,7 +33,7 @@ export const GET = withAssociation(
 
     const agenda = meeting.agendaItems;
 
-    logger.info("GET /api/meetings/[meetingId]/agenda - Success", { traceId, meetingId: meeting.id });
+    logger.info({ traceId, meetingId: meeting.id }, "GET /api/meetings/[meetingId]/agenda - Success");
 
     return SuccessResponse({ data: agenda });
   },
@@ -42,16 +42,16 @@ export const GET = withAssociation(
 export const POST = withAssociation(
   { params: ParamsSchema, body: CreateAgendaItemSchema },
   async (_association, { params, body, traceId }, request) => {
-    logger.info("POST /api/meetings/[meetingId]/agenda - Request started", { traceId, meetingId: params?.meetingId });
+    logger.info({ traceId, meetingId: params?.meetingId }, "POST /api/meetings/[meetingId]/agenda - Request started");
 
     const user = await withRole(request, UserRole.SECRETARY);
-    logger.info("POST /api/meetings/[meetingId]/agenda - User authorized", { traceId, userId: user.id, role: user.role, meetingId: params?.meetingId });
+    logger.info({ traceId, userId: user.id, role: user.role, meetingId: params?.meetingId }, "POST /api/meetings/[meetingId]/agenda - User authorized");
 
     if (!body) {
       throw new ForbiddenError("Invalid request body");
     }
 
-    logger.info("POST /api/meetings/[meetingId]/agenda - Creating agenda item", { traceId, meetingId: params?.meetingId });
+    logger.info({ traceId, meetingId: params?.meetingId }, "POST /api/meetings/[meetingId]/agenda - Creating agenda item");
 
     let order = body.order;
 
@@ -71,7 +71,7 @@ export const POST = withAssociation(
       },
     });
 
-    logger.info("POST /api/meetings/[meetingId]/agenda - Success", { traceId, meetingId: params!.meetingId, agendaItemId: item.id });
+    logger.info({ traceId, meetingId: params!.meetingId, agendaItemId: item.id }, "POST /api/meetings/[meetingId]/agenda - Success");
 
     return SuccessResponse({
       data: item,
@@ -83,14 +83,14 @@ export const POST = withAssociation(
 export const PATCH = withAssociation(
   { params: ParamsSchema, body: AgendaOperationSchema },
   async (association, { params, body, traceId }, request) => {
-    logger.info("PATCH /api/meetings/[meetingId]/agenda - Request started", { traceId, meetingId: params?.meetingId, associationId: association.id });
+    logger.info({ traceId, meetingId: params?.meetingId, associationId: association.id }, "PATCH /api/meetings/[meetingId]/agenda - Request started");
 
     // Check for administrative roles (Secretary and above)
     const user = await withRole(request, UserRole.SECRETARY);
-    logger.info("PATCH /api/meetings/[meetingId]/agenda - User authorized", { traceId, userId: user.id, role: user.role, meetingId: params?.meetingId });
+    logger.info({ traceId, userId: user.id, role: user.role, meetingId: params?.meetingId }, "PATCH /api/meetings/[meetingId]/agenda - User authorized");
 
     // params and body are guaranteed to be defined because of withAssociation/withValidation
-    logger.info("PATCH /api/meetings/[meetingId]/agenda - Processing agenda operations", { traceId, meetingId: params?.meetingId });
+    logger.info({ traceId, meetingId: params?.meetingId }, "PATCH /api/meetings/[meetingId]/agenda - Processing agenda operations");
 
     const items = await processAgendaOperations({
       meetingId: params!.meetingId,
@@ -98,7 +98,7 @@ export const PATCH = withAssociation(
       operations: body!.operations,
     });
 
-    logger.info("PATCH /api/meetings/[meetingId]/agenda - Success", { traceId, meetingId: params!.meetingId });
+    logger.info({ traceId, meetingId: params!.meetingId }, "PATCH /api/meetings/[meetingId]/agenda - Success");
 
     return SuccessResponse({
       data: items,

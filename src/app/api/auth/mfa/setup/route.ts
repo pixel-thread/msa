@@ -13,7 +13,7 @@ import {
   ValidationError,
 } from "@src/shared/errors";
 import { SuccessResponse } from "@src/shared/utils";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 
 const SetupMfaSchema = z.object({
   password: z.string().min(1, "Password is required"),
@@ -74,7 +74,7 @@ export const POST = withValidation(
     }
 
     if (authUser && env.NODE_ENV === "development") {
-      logger.debug("OTP:", { otp });
+      logger.debug({ otp }, "OTP:");
     }
 
     return SuccessResponse({

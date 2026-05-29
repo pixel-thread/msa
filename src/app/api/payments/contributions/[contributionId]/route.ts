@@ -1,7 +1,7 @@
 import { withAssociation } from "@src/shared/api";
 import { SuccessResponse } from "@src/shared/utils/responses";
 import { prisma } from "@src/shared/lib/prisma";
-import { logger } from "@src/shared/logger";
+import { logger } from "@src/shared/logger/server";
 import { z } from "zod";
 import { NotFoundError } from "@src/shared/errors";
 
@@ -12,7 +12,7 @@ const ParamsSchema = z.object({
 export const GET = withAssociation(
   { params: ParamsSchema },
   async (association, { params, traceId }) => {
-    logger.info("GET /api/payments/contributions/[contributionId] - Request started", { traceId, contributionId: params!.contributionId });
+    logger.info({ traceId, contributionId: params!.contributionId }, "GET /api/payments/contributions/[contributionId] - Request started");
     const contribution = await prisma.contributionPeriod.findFirst({
       where: {
         id: params!.contributionId,
@@ -48,7 +48,7 @@ export const GET = withAssociation(
       throw new NotFoundError("Contribution not found");
     }
 
-    logger.info("GET /api/payments/contributions/[contributionId] - Success", { traceId, contributionId: params!.contributionId });
+    logger.info({ traceId, contributionId: params!.contributionId }, "GET /api/payments/contributions/[contributionId] - Success");
 
     return SuccessResponse({ data: contribution });
   },
