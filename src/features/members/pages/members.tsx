@@ -15,8 +15,12 @@ export default function MembersPage() {
   const { page, setPage } = useUrlFilters({ basePath: "/members" });
 
   const { members, meta, isLoading } = useMembers({ page });
-  const { onRoleChange, onStatusChange } = useMemberTableActions();
-  const { columns } = useMemberTableColumns({ onRoleChange, onStatusChange });
+  const { onRoleChange, onStatusChange, onAssociationChange } = useMemberTableActions();
+  const { columns } = useMemberTableColumns({
+    onRoleChange,
+    onStatusChange,
+    onAssociationChange,
+  });
 
   return (
     <>

@@ -4,15 +4,18 @@ import { User } from "@prisma/client";
 import { RoleCell } from "@src/features/members/components/cells/role-cell";
 import { StatusCell } from "@src/features/members/components/cells/status-cell";
 import { NameCell } from "@src/features/members/components/cells/name-cell";
+import { AssociationCell } from "@src/features/members/components/cells/association-cell";
 
 interface UseMemberTableColumnsOptions {
   onRoleChange: (memberId: string, role: string, action: "add" | "remove") => void;
   onStatusChange: (memberId: string, status: string) => void;
+  onAssociationChange: (memberId: string, associationId: string) => void;
 }
 
 export const useMemberTableColumns = ({
   onRoleChange,
   onStatusChange,
+  onAssociationChange,
 }: UseMemberTableColumnsOptions): { columns: ColumnDef<User>[] } => {
   const columns: ColumnDef<User>[] = [
     {
@@ -34,6 +37,16 @@ export const useMemberTableColumns = ({
       header: "Role",
       cell: ({ row }) => (
         <RoleCell member={row.original} onRoleChange={onRoleChange} />
+      ),
+    },
+    {
+      accessorKey: "associationId",
+      header: "Association",
+      cell: ({ row }) => (
+        <AssociationCell
+          member={row.original}
+          onAssociationChange={onAssociationChange}
+        />
       ),
     },
     {

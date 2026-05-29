@@ -36,6 +36,7 @@ export async function getMembers({ where, page = 1, search }: Props) {
         role: true,
         status: true,
         membershipNumber: true,
+        associationId: true,
         createdAt: true,
       },
 

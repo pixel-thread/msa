@@ -10,10 +10,10 @@ import {
   withRequestSizeLimit,
   withTraceId,
 } from "./shared/middleware";
-import { withSleep } from "./shared/middleware/withSleep.middleware";
+import { withSleep } from "./shared/middleware/with-sleep.middleware";
 
 export default chain([
-  withSleep
+  withSleep,
   withTraceId,
   withCors,
   withCsrf,
