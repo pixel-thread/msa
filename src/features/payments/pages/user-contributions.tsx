@@ -10,16 +10,9 @@ import {
 } from "@src/shared/components/ui/card";
 import { Button } from "@src/shared/components/ui/button";
 import { DataTable } from "@src/shared/components/data-table";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import { useUserContributionColumns } from "@src/features/payments/hooks/useUserContributionColumns";
-import {
-  CalendarDays,
-  CreditCard,
-  AlertCircle,
-  Receipt,
-} from "lucide-react";
+import { CalendarDays, CreditCard, AlertCircle, Receipt } from "lucide-react";
 import Link from "next/link";
 import { formattedAmount } from "@src/shared/utils";
 

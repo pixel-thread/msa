@@ -3,7 +3,10 @@ import { SuccessResponse } from "@utils/responses";
 import { buildPagination } from "@src/shared/utils";
 import { ForbiddenError, BadRequestError } from "@src/shared/errors";
 import { UserRole } from "@prisma/client";
-import { getAssignedUsers, completeAssignment } from "@feature/training/services";
+import {
+  getAssignedUsers,
+  completeAssignment,
+} from "@feature/training/services";
 import { pageNumberValidation } from "@src/shared/validators";
 import { z } from "zod";
 import { logger } from "@src/shared/logger/server";
@@ -27,10 +30,16 @@ export const GET = withAssociation(
       throw new ForbiddenError("Invalid module ID");
     }
 
-    logger.info({ traceId, associationId: association.id }, "GET /training/modules/{moduleId}/assigned-users - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "GET /training/modules/{moduleId}/assigned-users - Request started",
+    );
 
     await withRole(request, UserRole.SECRETARY);
-    logger.info({ traceId }, "GET /training/modules/{moduleId}/assigned-users - User authorized");
+    logger.info(
+      { traceId },
+      "GET /training/modules/{moduleId}/assigned-users - User authorized",
+    );
 
     const { moduleId } = params;
     const page = query?.page || 1;
@@ -41,7 +50,10 @@ export const GET = withAssociation(
       page,
     });
 
-    logger.info({ traceId }, "GET /training/modules/{moduleId}/assigned-users - Success");
+    logger.info(
+      { traceId },
+      "GET /training/modules/{moduleId}/assigned-users - Success",
+    );
     return SuccessResponse({
       data: result.data,
       meta: buildPagination(result.total, page),

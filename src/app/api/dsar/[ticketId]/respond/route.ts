@@ -29,19 +29,25 @@ const ParamsSchema = z.object({ ticketId: z.uuid() });
 export const POST = withAssociation(
   { params: ParamsSchema, body: RespondDsarSchema },
   async (association, { params, body, traceId }, request) => {
-    logger.info({
-      traceId,
-      associationId: association.id,
-      ticketId: params?.ticketId,
-    }, "POST /api/dsar/[ticketId]/respond - Request started");
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+        ticketId: params?.ticketId,
+      },
+      "POST /api/dsar/[ticketId]/respond - Request started",
+    );
 
     const actorId = request.headers.get("x-user-id")!;
     const actor = await withRole(request, UserRole.DPO);
 
-    logger.info({
-      traceId,
-      userId: actor.id,
-    }, "POST /api/dsar/[ticketId]/respond - User authorized");
+    logger.info(
+      {
+        traceId,
+        userId: actor.id,
+      },
+      "POST /api/dsar/[ticketId]/respond - User authorized",
+    );
 
     const ticket = await respondToDsarTicket({
       associationId: association.id,

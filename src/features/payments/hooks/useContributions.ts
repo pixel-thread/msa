@@ -23,7 +23,9 @@ export function useContributions(options: UseContributionsOptions = {}) {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["all-contributions", params.toString()],
     queryFn: () =>
-      http.get<ContributionPeriod[]>(`/payments/contributions?${params.toString()}`),
+      http.get<ContributionPeriod[]>(
+        `/payments/contributions?${params.toString()}`,
+      ),
   });
 
   return {

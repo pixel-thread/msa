@@ -32,7 +32,10 @@ export const POST = withValidation(
       request.cookies.get("mfa_temp_token")?.value || body?.mfa_temp_token;
 
     if (!mfaCookie) {
-      logger.error({ traceId }, "POST /api/auth/sign-in/verify - Session expired (missing mfa_temp_token cookie/body)");
+      logger.error(
+        { traceId },
+        "POST /api/auth/sign-in/verify - Session expired (missing mfa_temp_token cookie/body)",
+      );
       throw new BadRequestError("Session expired. Please signin again");
     }
 
@@ -40,7 +43,10 @@ export const POST = withValidation(
     try {
       payload = await verifyMfaTempToken(mfaCookie);
     } catch {
-      logger.error({ traceId }, "POST /api/auth/sign-in/verify - Session expired (failed payload verification)");
+      logger.error(
+        { traceId },
+        "POST /api/auth/sign-in/verify - Session expired (failed payload verification)",
+      );
       throw new BadRequestError("Session expired. Please signin again");
     }
 
@@ -49,7 +55,10 @@ export const POST = withValidation(
     });
 
     if (!user || user.status !== "ACTIVE") {
-      logger.error({ traceId, userId: payload.sub }, "POST /api/auth/sign-in/verify - User not found or inactive");
+      logger.error(
+        { traceId, userId: payload.sub },
+        "POST /api/auth/sign-in/verify - User not found or inactive",
+      );
       throw new UnauthorizedError("User not found or inactive");
     }
 
@@ -66,12 +75,18 @@ export const POST = withValidation(
     });
 
     if (!verificationCode) {
-      logger.error({ traceId, userId: user.id }, "POST /api/auth/sign-in/verify - Invalid or expired verification code");
+      logger.error(
+        { traceId, userId: user.id },
+        "POST /api/auth/sign-in/verify - Invalid or expired verification code",
+      );
       throw new UnauthorizedError("Invalid or expired verification code");
     }
 
     if (verificationCode.attempts >= env.OTP_MAX_ATTEMPTS) {
-      logger.error({ traceId, userId: user.id, verificationCodeId: verificationCode.id }, "POST /api/auth/sign-in/verify - Too many attempts");
+      logger.error(
+        { traceId, userId: user.id, verificationCodeId: verificationCode.id },
+        "POST /api/auth/sign-in/verify - Too many attempts",
+      );
       throw new TooManyRequestsError(
         "Too many attempts. Please request a new code",
       );
@@ -83,7 +98,10 @@ export const POST = withValidation(
         data: { attempts: { increment: 1 } },
       });
 
-      logger.error({ traceId, userId: user.id }, "POST /api/auth/sign-in/verify - Invalid verification code input");
+      logger.error(
+        { traceId, userId: user.id },
+        "POST /api/auth/sign-in/verify - Invalid verification code input",
+      );
       throw new UnauthorizedError("Invalid verification code");
     }
 
@@ -133,7 +151,10 @@ export const POST = withValidation(
 
     response.cookies.delete("mfa_temp_token");
 
-    logger.info({ traceId, userId: user.id }, "POST /api/auth/sign-in/verify - Success");
+    logger.info(
+      { traceId, userId: user.id },
+      "POST /api/auth/sign-in/verify - Success",
+    );
 
     return response;
   },

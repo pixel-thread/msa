@@ -15,11 +15,7 @@ export function PublicFooter() {
             >
               MFSA Connect
             </Text>
-            <Text
-              variant="body-sm"
-              color="muted"
-              className="leading-relaxed"
-            >
+            <Text variant="body-sm" color="muted" className="leading-relaxed">
               Security-first governance platform for Meghalaya Finance Service
               Association and affiliated bodies.
             </Text>

@@ -208,7 +208,8 @@ export const meetingPaths = {
     delete: {
       tags: ["Meetings"],
       summary: "Remove attendee from meeting",
-      description: "Remove an attendee from a meeting (SECRETARY, PRESIDENT, or SUPER_ADMIN only)",
+      description:
+        "Remove an attendee from a meeting (SECRETARY, PRESIDENT, or SUPER_ADMIN only)",
       security: [{ bearerAuth: [] }],
       parameters: [
         {
@@ -223,7 +224,10 @@ export const meetingPaths = {
         "200": {
           description: "Attendee removed successfully",
         },
-        "403": { description: "Only secretary, president, or super admin can remove attendees" },
+        "403": {
+          description:
+            "Only secretary, president, or super admin can remove attendees",
+        },
       },
     },
   },
@@ -267,7 +271,8 @@ export const meetingPaths = {
     patch: {
       tags: ["Meetings"],
       summary: "Update meeting agenda",
-      description: "Add, remove, or reorder agenda items (SECRETARY role or higher required)",
+      description:
+        "Add, remove, or reorder agenda items (SECRETARY role or higher required)",
       security: [{ bearerAuth: [] }],
       parameters: [
         {
@@ -290,7 +295,10 @@ export const meetingPaths = {
                   items: {
                     type: "object",
                     properties: {
-                      action: { type: "string", enum: ["ADD", "REMOVE", "REORDER"] },
+                      action: {
+                        type: "string",
+                        enum: ["ADD", "REMOVE", "REORDER"],
+                      },
                       itemId: { type: "string" },
                       title: { type: "string" },
                       duration: { type: "integer" },
@@ -351,7 +359,8 @@ export const meetingPaths = {
     post: {
       tags: ["Meetings"],
       summary: "Create meeting minute",
-      description: "Create a new meeting minute (SECRETARY role or higher required)",
+      description:
+        "Create a new meeting minute (SECRETARY role or higher required)",
       security: [{ bearerAuth: [] }],
       parameters: [
         {
@@ -401,7 +410,8 @@ export const meetingPaths = {
     patch: {
       tags: ["Meetings"],
       summary: "Update meeting minute",
-      description: "Update a meeting minute (SECRETARY role or higher required)",
+      description:
+        "Update a meeting minute (SECRETARY role or higher required)",
       security: [{ bearerAuth: [] }],
       parameters: [
         {
@@ -442,7 +452,8 @@ export const meetingPaths = {
     delete: {
       tags: ["Meetings"],
       summary: "Delete meeting minute",
-      description: "Delete a meeting minute (SECRETARY role or higher required)",
+      description:
+        "Delete a meeting minute (SECRETARY role or higher required)",
       security: [{ bearerAuth: [] }],
       parameters: [
         {

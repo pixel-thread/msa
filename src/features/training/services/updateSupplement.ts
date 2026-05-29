@@ -12,7 +12,15 @@ interface UpdateSupplementProps {
   fileId?: string;
 }
 
-export async function updateSupplement({ associationId, moduleId, supplementId, actorId, data, downloadUrl, fileId }: UpdateSupplementProps) {
+export async function updateSupplement({
+  associationId,
+  moduleId,
+  supplementId,
+  actorId,
+  data,
+  downloadUrl,
+  fileId,
+}: UpdateSupplementProps) {
   return await prisma.$transaction(async (tx) => {
     const supplement = await tx.trainingSupplement.findFirst({
       where: { id: supplementId, moduleId, module: { associationId } },

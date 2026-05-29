@@ -25,7 +25,9 @@ export function DatesCard({ member }: DatesCardProps) {
           <div className="flex items-start gap-3">
             <Calendar className="mt-0.5 h-4 w-4 text-muted-foreground" />
             <div>
-              <p className="text-xs font-medium text-muted-foreground">Joined MFSA</p>
+              <p className="text-xs font-medium text-muted-foreground">
+                Joined MFSA
+              </p>
               <p className="text-sm text-ink">
                 {member.dateOfJoiningAssociation
                   ? formatDate(member.dateOfJoiningAssociation)
@@ -36,7 +38,9 @@ export function DatesCard({ member }: DatesCardProps) {
           <div className="flex items-start gap-3">
             <Calendar className="mt-0.5 h-4 w-4 text-muted-foreground" />
             <div>
-              <p className="text-xs font-medium text-muted-foreground">Joined Govt</p>
+              <p className="text-xs font-medium text-muted-foreground">
+                Joined Govt
+              </p>
               <p className="text-sm text-ink">
                 {member.dateOfJoiningGovt
                   ? formatDate(member.dateOfJoiningGovt)

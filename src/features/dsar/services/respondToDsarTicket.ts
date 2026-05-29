@@ -17,13 +17,13 @@ interface RespondToDsarTicketProps {
 
 /**
  * Processes a response to an existing DSAR ticket.
- * 
+ *
  * This service is a multi-step transactional operation that:
  * 1. Updates the ticket status (e.g., to COMPLETED or REJECTED).
  * 2. If providing data, creates a DsarResponse record linked to the ticket.
  * 3. Sets the 'completedAt' timestamp if the status is terminal.
  * 4. Logs the DSAR_RESPOND action in the AuditLog with the response payload.
- * 
+ *
  * @param {RespondToDsarTicketProps} props - Ticket ID, Association context, actor ID, and response data.
  * @returns {Promise<DsarTicket>} The updated DSAR ticket.
  */
@@ -39,7 +39,8 @@ export async function respondToDsarTicket({
       data: {
         status: data.status,
         rejectedReason: data.rejectedReason,
-        completedAt: data.status === DsarStatus.COMPLETED ? new Date() : undefined,
+        completedAt:
+          data.status === DsarStatus.COMPLETED ? new Date() : undefined,
       },
     });
 

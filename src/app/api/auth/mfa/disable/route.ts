@@ -17,10 +17,16 @@ export const POST = withValidation(
   { body: DisableMfaSchema },
   async (request, _ctx, { body, traceId }) => {
     const userId = request.headers.get("x-user-id");
-    logger.info({ traceId, userId }, "POST /api/auth/mfa/disable - Request started");
+    logger.info(
+      { traceId, userId },
+      "POST /api/auth/mfa/disable - Request started",
+    );
 
     if (!userId) {
-      logger.error({ traceId }, "POST /api/auth/mfa/disable - Unauthorized (missing x-user-id)");
+      logger.error(
+        { traceId },
+        "POST /api/auth/mfa/disable - Unauthorized (missing x-user-id)",
+      );
       throw new UnauthorizedError("Unauthorized");
     }
 
@@ -32,19 +38,28 @@ export const POST = withValidation(
     });
 
     if (!user || !user.mfaEnabled) {
-      logger.error({ traceId, userId }, "POST /api/auth/mfa/disable - MFA is not enabled");
+      logger.error(
+        { traceId, userId },
+        "POST /api/auth/mfa/disable - MFA is not enabled",
+      );
       throw new BadRequestError("MFA is not enabled");
     }
 
     if (!user.password) {
-      logger.error({ traceId, userId }, "POST /api/auth/mfa/disable - User password not set");
+      logger.error(
+        { traceId, userId },
+        "POST /api/auth/mfa/disable - User password not set",
+      );
       throw new BadRequestError("Please set a password first");
     }
 
     const isValid = await verifyPassword(password, user.password);
 
     if (!isValid) {
-      logger.error({ traceId, userId }, "POST /api/auth/mfa/disable - Invalid password");
+      logger.error(
+        { traceId, userId },
+        "POST /api/auth/mfa/disable - Invalid password",
+      );
       throw new UnauthorizedError("Invalid password");
     }
 

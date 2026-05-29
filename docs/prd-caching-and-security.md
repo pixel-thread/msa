@@ -7,33 +7,37 @@ Add server-side caching to the `/api/auth/me` endpoint using the existing Upstas
 ## 2. Problem Statement
 
 ### 2.1 Performance
+
 - The `/api/auth/me` endpoint is called on nearly every page load (sidebar, header, profile checks)
 - Each call hits the PostgreSQL database directly via Prisma
 - Under load, this creates unnecessary DB connection churn for data that rarely changes
 
 ### 2.2 Security
+
 - Authenticated API responses lack `Cache-Control` headers, allowing browsers and proxies to cache sensitive user data
 - Missing modern security headers: `Permissions-Policy`, `Cross-Origin-Opener-Policy`, `Cross-Origin-Resource-Policy`
 - No defense-in-depth for cached response prevention on authenticated routes
 
 ## 3. Goals
 
-| Goal | Metric |
-|---|---|
-| Reduce DB load on `/api/auth/me` | >80% cache hit rate under normal usage |
+| Goal                                       | Metric                                                       |
+| ------------------------------------------ | ------------------------------------------------------------ |
+| Reduce DB load on `/api/auth/me`           | >80% cache hit rate under normal usage                       |
 | Prevent browser/proxy caching of auth data | `Cache-Control: no-store` on all authenticated API responses |
-| Add missing security headers | All 3 new headers present on every response |
-| Zero breaking changes | Existing API contract unchanged, graceful Redis degradation |
+| Add missing security headers               | All 3 new headers present on every response                  |
+| Zero breaking changes                      | Existing API contract unchanged, graceful Redis degradation  |
 
 ## 4. Scope
 
 ### In Scope
+
 - Redis-backed cache layer for `/api/auth/me` endpoint only
 - Cache invalidation helper for future use
 - Security header enhancements via existing `withSecurityHeaders` middleware
 - Graceful degradation if Redis is unavailable
 
 ### Out of Scope (Future)
+
 - Caching other API endpoints
 - Cache warming / prefetching
 - Cache analytics / monitoring dashboard
@@ -59,22 +63,28 @@ Add server-side caching to the `/api/auth/me` endpoint using the existing Upstas
 ```
 
 ### 5.2 Cache Key Strategy
+
 - **Key format**: `mfsa:user:{userId}`
 - **Source of userId**: `x-user-id` header (set by `withAuth` middleware after JWT verification)
 - **Namespacing**: `mfsa:` prefix prevents collisions with other data in shared Redis
 
 ### 5.3 Cache TTL
+
 - **5 minutes (300 seconds)**
 - Rationale: User profile data (name, email, role, status) changes infrequently. A 5-minute window limits stale data exposure while providing meaningful DB load reduction.
 
 ### 5.4 Cached Data
+
 Only the fields returned by `getUniqueUser`:
+
 - `id`, `associationId`, `email`, `name`, `role`, `status`, `memberTypeId`
 
 **Excluded (never cached)**: `password`, `passwordResetToken`, `mfaEnabled`, `mobile` (encrypted), `designation` (encrypted), `failedLoginAttempts`, `lockedUntil`, tokens, timestamps
 
 ### 5.5 Graceful Degradation
+
 All Redis operations are wrapped in try/catch. On any Redis failure:
+
 - Cache read returns `null` → falls through to DB query
 - Cache write is silently skipped → DB serves the request
 - No request ever fails due to cache infrastructure issues
@@ -97,21 +107,27 @@ All Redis operations are wrapped in try/catch. On any Redis failure:
 ## 6. Security Considerations
 
 ### 6.1 Cache Key Trust
+
 The cache key is derived from `x-user-id`, which is set by the `withAuth` middleware **after** JWT verification. Users cannot spoof this header because:
+
 1. The middleware chain runs before the route handler
 2. The header is set server-side from the verified JWT payload
 3. Any client-supplied `x-user-id` header is overwritten
 
 ### 6.2 No Sensitive Data in Cache
+
 The cached data comes from `getUniqueUser`, which uses a `select` clause that explicitly excludes sensitive fields. Even if Redis were compromised, no passwords, tokens, or encrypted PII would be exposed.
 
 ### 6.3 Browser/Proxy Cache Prevention
+
 The `Cache-Control: no-store` header ensures that:
+
 - Browser HTTP cache does not store the response
 - CDNs and reverse proxies do not cache the response
 - Service workers do not cache the response
 
 ### 6.4 Stale Data Window
+
 Maximum 5-minute window for stale data. If a user's role changes or account is suspended, the worst case is 5 minutes of stale cached data before the TTL expires.
 
 ## 7. Future Migration Path
@@ -127,6 +143,7 @@ interface CacheClient {
 ```
 
 Future backends could include:
+
 - Vercel KV
 - In-memory LRU cache (for single-instance deployments)
 - Redis Cluster

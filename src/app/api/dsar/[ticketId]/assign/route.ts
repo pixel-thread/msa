@@ -30,20 +30,26 @@ const AssignSchema = z.object({
 export const PATCH = withAssociation(
   { params: ParamsSchema, body: AssignSchema },
   async (association, { params, body, traceId }, request) => {
-    logger.info({
-      traceId,
-      associationId: association.id,
-      ticketId: params?.ticketId,
-    }, "PATCH /api/dsar/[ticketId]/assign - Request started");
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+        ticketId: params?.ticketId,
+      },
+      "PATCH /api/dsar/[ticketId]/assign - Request started",
+    );
 
     const actorId = request.headers.get("x-user-id")!;
 
     const actor = await withRole(request, UserRole.DPO);
 
-    logger.info({
-      traceId,
-      userId: actor.id,
-    }, "PATCH /api/dsar/[ticketId]/assign - User authorized");
+    logger.info(
+      {
+        traceId,
+        userId: actor.id,
+      },
+      "PATCH /api/dsar/[ticketId]/assign - User authorized",
+    );
 
     const user = await getUniqueUser({ where: { id: body?.assignedToId } });
 

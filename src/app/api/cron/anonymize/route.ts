@@ -24,12 +24,15 @@ export async function GET(request: Request) {
       (r) => r.processed && !r.error,
     ).length;
 
-    logger.info({
-      totalAssociations: results.length,
-      processedAssociations,
-      totalAnonymized: totalProcessed,
-      totalFailed,
-    }, "GET /api/cron/anonymize - Anonymization completed");
+    logger.info(
+      {
+        totalAssociations: results.length,
+        processedAssociations,
+        totalAnonymized: totalProcessed,
+        totalFailed,
+      },
+      "GET /api/cron/anonymize - Anonymization completed",
+    );
 
     return NextResponse.json({
       success: true,

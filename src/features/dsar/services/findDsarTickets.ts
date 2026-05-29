@@ -17,11 +17,11 @@ interface FindDsarTicketsProps {
 
 /**
  * Retrieves a paginated list of DSAR tickets scoped by association and optional user.
- * 
- * Supports filtering by status and request type. Results are ordered by 
+ *
+ * Supports filtering by status and request type. Results are ordered by
  * creation date (descending) to show the newest requests first.
  * Includes relations for the requesting member and the assigned administrator.
- * 
+ *
  * @param {FindDsarTicketsProps} props - Association ID, optional User ID, filters, and pagination.
  * @returns {Promise<{ tickets: DsarTicket[], pagination: object }>} Paginated tickets and metadata.
  */

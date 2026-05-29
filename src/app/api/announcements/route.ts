@@ -19,7 +19,10 @@ export const GET = withAssociation(
     logger.info({ traceId, query }, "GET /api/announcements - Request started");
 
     const user = await withRole(request, UserRole.MEMBER);
-    logger.info({ traceId, userId: user.id, roles: user.role }, "GET /api/announcements - User authorized");
+    logger.info(
+      { traceId, userId: user.id, roles: user.role },
+      "GET /api/announcements - User authorized",
+    );
 
     if (!query) {
       throw new ForbiddenError("Invalid query parameters");
@@ -27,14 +30,17 @@ export const GET = withAssociation(
 
     const { page, priority, search, status } = query;
     if (hasHighRoleAccess(user.role)) {
-      logger.info({
-        traceId,
-        associationId: association.id,
-        page,
-        priority,
-        search,
-        status,
-      }, "GET /api/announcements - High role: fetching all announcements");
+      logger.info(
+        {
+          traceId,
+          associationId: association.id,
+          page,
+          priority,
+          search,
+          status,
+        },
+        "GET /api/announcements - High role: fetching all announcements",
+      );
 
       const result = await findManyAnnouncements({
         associationId: association.id,
@@ -42,7 +48,10 @@ export const GET = withAssociation(
         pagination: { page },
       });
 
-      logger.info({ traceId, count: result.announcements.length }, "GET /api/announcements - Success");
+      logger.info(
+        { traceId, count: result.announcements.length },
+        "GET /api/announcements - Success",
+      );
 
       return SuccessResponse({
         data: result.announcements,
@@ -50,13 +59,16 @@ export const GET = withAssociation(
       });
     }
 
-    logger.info({
-      traceId,
-      associationId: association.id,
-      page,
-      priority,
-      search,
-    }, "GET /api/announcements - Member: fetching published only");
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+        page,
+        priority,
+        search,
+      },
+      "GET /api/announcements - Member: fetching published only",
+    );
 
     const result = await findManyAnnouncements({
       associationId: association.id,
@@ -64,7 +76,10 @@ export const GET = withAssociation(
       pagination: { page },
     });
 
-    logger.info({ traceId, count: result.announcements.length }, "GET /api/announcements - Success");
+    logger.info(
+      { traceId, count: result.announcements.length },
+      "GET /api/announcements - Success",
+    );
 
     return SuccessResponse({
       data: result.announcements,
@@ -79,7 +94,10 @@ export const POST = withAssociation(
     logger.info({ traceId }, "POST /api/announcements - Request started");
 
     const user = await withRole(request, UserRole.SECRETARY);
-    logger.info({ traceId, userId: user.id, roles: user.role }, "POST /api/announcements - User authorized");
+    logger.info(
+      { traceId, userId: user.id, roles: user.role },
+      "POST /api/announcements - User authorized",
+    );
 
     if (!body) {
       throw new ForbiddenError("Invalid request body");
@@ -88,13 +106,16 @@ export const POST = withAssociation(
     const userId = request.headers.get("x-user-id")!;
     const isPublishing = body.status === AnnouncementStatus.PUBLISHED;
 
-    logger.info({
-      traceId,
-      associationId: association.id,
-      title: body.title,
-      status: body.status,
-      isPublishing,
-    }, "POST /api/announcements - Creating announcement");
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+        title: body.title,
+        status: body.status,
+        isPublishing,
+      },
+      "POST /api/announcements - Creating announcement",
+    );
 
     const announcement = await createAnnouncement({
       associationId: association.id,
@@ -111,7 +132,10 @@ export const POST = withAssociation(
       sendNotification: isPublishing,
     });
 
-    logger.info({ traceId, announcementId: announcement.id }, "POST /api/announcements - Success");
+    logger.info(
+      { traceId, announcementId: announcement.id },
+      "POST /api/announcements - Success",
+    );
 
     return SuccessResponse({ data: announcement }, 201);
   },

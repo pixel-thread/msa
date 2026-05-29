@@ -25,13 +25,16 @@ export async function uploadToBucket(
 
   const buffer = Buffer.from(arrayBuffer);
 
-  logger.info({
-    traceId,
-    fileName,
-    mimeType,
-    fileSize,
-    storage: env.STORAGE_PROVIDER,
-  }, "Uploading file started");
+  logger.info(
+    {
+      traceId,
+      fileName,
+      mimeType,
+      fileSize,
+      storage: env.STORAGE_PROVIDER,
+    },
+    "Uploading file started",
+  );
 
   const { key, url } = await storage.upload({
     fileBuffer: buffer,
@@ -40,13 +43,16 @@ export async function uploadToBucket(
     mimeType: mimeType,
   });
 
-  logger.info({
-    traceId,
-    fileName,
-    mimeType,
-    fileSize,
-    storage: env.STORAGE_PROVIDER,
-  }, "Uploading file completed");
+  logger.info(
+    {
+      traceId,
+      fileName,
+      mimeType,
+      fileSize,
+      storage: env.STORAGE_PROVIDER,
+    },
+    "Uploading file completed",
+  );
   return {
     mimeType,
     key,

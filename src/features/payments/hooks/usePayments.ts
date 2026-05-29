@@ -14,7 +14,16 @@ interface UsePaymentsOptions {
 }
 
 export function usePayments(options: UsePaymentsOptions = {}) {
-  const { page = 1, userId, status, method, gateway, search, startDate, endDate } = options;
+  const {
+    page = 1,
+    userId,
+    status,
+    method,
+    gateway,
+    search,
+    startDate,
+    endDate,
+  } = options;
 
   const params = new URLSearchParams();
   params.set("page", String(page));
@@ -28,7 +37,8 @@ export function usePayments(options: UsePaymentsOptions = {}) {
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["all-payments", params.toString()],
-    queryFn: () => http.get<PaymentTransaction[]>(`/payments?${params.toString()}`),
+    queryFn: () =>
+      http.get<PaymentTransaction[]>(`/payments?${params.toString()}`),
   });
 
   return {

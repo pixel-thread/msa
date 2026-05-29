@@ -25,7 +25,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@src/shared/components/ui/form";
-import { CreateTrainingModuleSchema, type CreateTrainingModuleInput } from "../validators/training";
+import {
+  CreateTrainingModuleSchema,
+  type CreateTrainingModuleInput,
+} from "../validators/training";
 import { useCreateTrainingModule } from "../hooks";
 
 interface CreateModuleDialogProps {
@@ -35,7 +38,10 @@ interface CreateModuleDialogProps {
 
 const ROLES_LIST = Object.values(UserRole);
 
-export function CreateModuleDialog({ open, onOpenChange }: CreateModuleDialogProps) {
+export function CreateModuleDialog({
+  open,
+  onOpenChange,
+}: CreateModuleDialogProps) {
   const { createModule, isCreating } = useCreateTrainingModule();
 
   const form = useForm({
@@ -135,7 +141,13 @@ export function CreateModuleDialog({ open, onOpenChange }: CreateModuleDialogPro
                         type="number"
                         placeholder="e.g. 30"
                         {...field}
-                        onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value, 10) : undefined)}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value
+                              ? parseInt(e.target.value, 10)
+                              : undefined,
+                          )
+                        }
                       />
                     </FormControl>
                     <FormMessage />
@@ -184,7 +196,9 @@ export function CreateModuleDialog({ open, onOpenChange }: CreateModuleDialogPro
                                 onCheckedChange={(checked) => {
                                   const updatedRoles = checked
                                     ? [...(field.value || []), role]
-                                    : (field.value || []).filter((r) => r !== role);
+                                    : (field.value || []).filter(
+                                        (r) => r !== role,
+                                      );
                                   field.onChange(updatedRoles);
                                 }}
                               />

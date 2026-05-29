@@ -12,7 +12,10 @@ const RegisterPushTokenSchema = z.object({
 export const POST = withValidation(
   { body: RegisterPushTokenSchema },
   async (_req, _ctx, { body, traceId }) => {
-    logger.info({ traceId }, "POST /api/notifications/register - Request started");
+    logger.info(
+      { traceId },
+      "POST /api/notifications/register - Request started",
+    );
 
     const token = body?.token;
 
@@ -26,7 +29,10 @@ export const POST = withValidation(
       create: { token },
     });
 
-    logger.info({ traceId, tokenId: pushToken.id }, "POST /api/notifications/register - Success");
+    logger.info(
+      { traceId, tokenId: pushToken.id },
+      "POST /api/notifications/register - Success",
+    );
 
     return SuccessResponse({ data: pushToken });
   },

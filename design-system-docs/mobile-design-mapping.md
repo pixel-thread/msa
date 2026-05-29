@@ -4,11 +4,11 @@
 
 This document maps the MFSA Connect web design system to React Native (RN) frameworks. The web system is built with Tailwind CSS v4 + Radix UI. For mobile, the closest parity is achieved with:
 
-| Framework | Best For | Parity Level |
-|-----------|----------|-------------|
-| NativeWind v4 | React Native with Tailwind-like utility classes | High |
-| Tamagui | Universal design system with styled components | High (CSS vars → tokens) |
-| Expo Router | File-based routing matching Next.js App Router | High |
+| Framework     | Best For                                        | Parity Level             |
+| ------------- | ----------------------------------------------- | ------------------------ |
+| NativeWind v4 | React Native with Tailwind-like utility classes | High                     |
+| Tamagui       | Universal design system with styled components  | High (CSS vars → tokens) |
+| Expo Router   | File-based routing matching Next.js App Router  | High                     |
 
 ---
 
@@ -24,26 +24,26 @@ module.exports = {
     extend: {
       colors: {
         // Core semantic tokens (static values, no dark mode variants needed)
-        primary: '#0052ff',
-        'primary-foreground': '#ffffff',
-        destructive: '#cf202f',
-        'destructive-foreground': '#ffffff',
-        'semantic-up': '#05b169',
-        'semantic-down': '#cf202f',
-        'accent-yellow': '#f4b000',
+        primary: "#0052ff",
+        "primary-foreground": "#ffffff",
+        destructive: "#cf202f",
+        "destructive-foreground": "#ffffff",
+        "semantic-up": "#05b169",
+        "semantic-down": "#cf202f",
+        "accent-yellow": "#f4b000",
 
         // Backgrounds (use React Native Appearance API for dark mode)
-        background: { light: '#ffffff', dark: '#0a0b0d' },
-        foreground: { light: '#0a0b0d', dark: '#ffffff' },
-        card: { light: '#ffffff', dark: '#16181c' },
-        'card-foreground': { light: '#0a0b0d', dark: '#ffffff' },
-        popover: { light: '#ffffff', dark: '#16181c' },
-        'popover-foreground': { light: '#0a0b0d', dark: '#ffffff' },
-        muted: { light: '#f7f7f7', dark: '#16181c' },
-        'muted-foreground': { light: '#7c828a', dark: '#a8acb3' },
-        border: { light: '#dee1e6', dark: '#2b2d31' },
-        input: { light: '#dee1e6', dark: '#2b2d31' },
-        ring: '#0052ff', // same in both modes
+        background: { light: "#ffffff", dark: "#0a0b0d" },
+        foreground: { light: "#0a0b0d", dark: "#ffffff" },
+        card: { light: "#ffffff", dark: "#16181c" },
+        "card-foreground": { light: "#0a0b0d", dark: "#ffffff" },
+        popover: { light: "#ffffff", dark: "#16181c" },
+        "popover-foreground": { light: "#0a0b0d", dark: "#ffffff" },
+        muted: { light: "#f7f7f7", dark: "#16181c" },
+        "muted-foreground": { light: "#7c828a", dark: "#a8acb3" },
+        border: { light: "#dee1e6", dark: "#2b2d31" },
+        input: { light: "#dee1e6", dark: "#2b2d31" },
+        ring: "#0052ff", // same in both modes
       },
     },
   },
@@ -54,32 +54,32 @@ module.exports = {
 
 ```ts
 // tamagui.config.ts
-import { createTokens } from 'tamagui';
+import { createTokens } from "tamagui";
 
 export const tokens = createTokens({
   color: {
-    primary: '#0052ff',
-    primaryForeground: '#ffffff',
-    primaryActive: '#003ecc',
-    primaryDisabled: { light: '#a8b8cc', dark: '#3a4a5c' },
-    background: { light: '#ffffff', dark: '#0a0b0d' },
-    foreground: { light: '#0a0b0d', dark: '#ffffff' },
-    card: { light: '#ffffff', dark: '#16181c' },
-    cardForeground: { light: '#0a0b0d', dark: '#ffffff' },
-    popover: { light: '#ffffff', dark: '#16181c' },
-    popoverForeground: { light: '#0a0b0d', dark: '#ffffff' },
-    muted: { light: '#f7f7f7', dark: '#16181c' },
-    mutedForeground: { light: '#7c828a', dark: '#a8acb3' },
-    border: { light: '#dee1e6', dark: '#2b2d31' },
-    hairline: { light: '#dee1e6', dark: '#2b2d31' },
-    ink: { light: '#0a0b0d', dark: '#ffffff' },
-    body: { light: '#5b616e', dark: '#a8acb3' },
-    mutedSoft: { light: '#a8acb3', dark: '#5b616e' },
-    canvas: { light: '#ffffff', dark: '#0a0b0d' },
-    surfaceCard: { light: '#ffffff', dark: '#16181c' },
-    semanticUp: '#05b169',
-    semanticDown: '#cf202f',
-    accentYellow: '#f4b000',
+    primary: "#0052ff",
+    primaryForeground: "#ffffff",
+    primaryActive: "#003ecc",
+    primaryDisabled: { light: "#a8b8cc", dark: "#3a4a5c" },
+    background: { light: "#ffffff", dark: "#0a0b0d" },
+    foreground: { light: "#0a0b0d", dark: "#ffffff" },
+    card: { light: "#ffffff", dark: "#16181c" },
+    cardForeground: { light: "#0a0b0d", dark: "#ffffff" },
+    popover: { light: "#ffffff", dark: "#16181c" },
+    popoverForeground: { light: "#0a0b0d", dark: "#ffffff" },
+    muted: { light: "#f7f7f7", dark: "#16181c" },
+    mutedForeground: { light: "#7c828a", dark: "#a8acb3" },
+    border: { light: "#dee1e6", dark: "#2b2d31" },
+    hairline: { light: "#dee1e6", dark: "#2b2d31" },
+    ink: { light: "#0a0b0d", dark: "#ffffff" },
+    body: { light: "#5b616e", dark: "#a8acb3" },
+    mutedSoft: { light: "#a8acb3", dark: "#5b616e" },
+    canvas: { light: "#ffffff", dark: "#0a0b0d" },
+    surfaceCard: { light: "#ffffff", dark: "#16181c" },
+    semanticUp: "#05b169",
+    semanticDown: "#cf202f",
+    accentYellow: "#f4b000",
   },
 });
 ```
@@ -123,9 +123,17 @@ theme: {
 
 ```ts
 // app/_layout.tsx
-import { useFonts } from 'expo-font';
-import { Roboto_400Regular, Roboto_500Medium, Roboto_700Bold } from '@expo-google-fonts/roboto';
-import { JetBrainsMono_400Regular, JetBrainsMono_500Medium, JetBrainsMono_700Bold } from '@expo-google-fonts/jetbrains-mono';
+import { useFonts } from "expo-font";
+import {
+  Roboto_400Regular,
+  Roboto_500Medium,
+  Roboto_700Bold,
+} from "@expo-google-fonts/roboto";
+import {
+  JetBrainsMono_400Regular,
+  JetBrainsMono_500Medium,
+  JetBrainsMono_700Bold,
+} from "@expo-google-fonts/jetbrains-mono";
 
 // Load fonts, apply via provider context or styled-components theme
 ```
@@ -136,33 +144,33 @@ import { JetBrainsMono_400Regular, JetBrainsMono_500Medium, JetBrainsMono_700Bol
 
 ### Web → React Native (General)
 
-| Web Component | RN Equivalent | Notes |
-|---------------|---------------|-------|
-| `Button` | `Pressable` + `Text` | No native `<button>`, use Pressable with styled children |
-| `Input` | `TextInput` | underline style via `borderBottomWidth` |
-| `Select` | Custom modal picker / `Picker` | No native `<select>`, use Modal with FlatList |
-| `Combobox` | Custom component | TextInput + FlatList dropdown |
-| `Textarea` | `TextInput multiline` | Same component, multiline prop |
-| `Dialog` | `Modal` with transparent overlay | Animation via Animated API |
-| `Sheet` | `Modal` with slide animation | PanResponder for drag-to-dismiss |
-| `DropdownMenu` | Context menu / Modal | Use Modal for mobile-appropriate UX |
-| `Popover` | `Modal` / Tooltip | Position absolutely, use Modal on small screens |
-| `Tooltip` | `Tooltip` (RN 0.73+) | Native Tooltip component |
-| `Tabs` | Custom segmented control | FlatList-based tab bar |
-| `Toggle` | `Pressable` with state | Styled toggle button |
-| `Badge` | `View` + `Text` | Same styling pattern |
-| `Card` | `View` with shadow | Use shadow props (shadowColor, shadowOffset, etc.) |
-| `Avatar` | `Image` + fallback `View` | Use `Image` component with onError fallback |
-| `Switch` | `Switch` (RN built-in) | Native switch, style via theme |
-| `Checkbox` | `Pressable` + icon | Use checkbox or switch pattern |
-| `Progress` | `View` clip pattern | Two overlapping Views with width % |
-| `Separator` | `View` | Thin View with border color |
-| `Skeleton` | `View` with animation | Animated opacity pulse |
-| `Table` | FlatList / ScrollView | Use FlatList with header row |
-| `Pagination` | Custom component | FlatList + page indicator |
-| `Sidebar` | Drawer navigation | React Navigation Drawer or custom |
-| `Breadcrumb` | Text links with separator | Simple text-based navigation |
-| `Carousel` | FlatList paging | horizontal pagingEnabled FlatList |
+| Web Component  | RN Equivalent                    | Notes                                                    |
+| -------------- | -------------------------------- | -------------------------------------------------------- |
+| `Button`       | `Pressable` + `Text`             | No native `<button>`, use Pressable with styled children |
+| `Input`        | `TextInput`                      | underline style via `borderBottomWidth`                  |
+| `Select`       | Custom modal picker / `Picker`   | No native `<select>`, use Modal with FlatList            |
+| `Combobox`     | Custom component                 | TextInput + FlatList dropdown                            |
+| `Textarea`     | `TextInput multiline`            | Same component, multiline prop                           |
+| `Dialog`       | `Modal` with transparent overlay | Animation via Animated API                               |
+| `Sheet`        | `Modal` with slide animation     | PanResponder for drag-to-dismiss                         |
+| `DropdownMenu` | Context menu / Modal             | Use Modal for mobile-appropriate UX                      |
+| `Popover`      | `Modal` / Tooltip                | Position absolutely, use Modal on small screens          |
+| `Tooltip`      | `Tooltip` (RN 0.73+)             | Native Tooltip component                                 |
+| `Tabs`         | Custom segmented control         | FlatList-based tab bar                                   |
+| `Toggle`       | `Pressable` with state           | Styled toggle button                                     |
+| `Badge`        | `View` + `Text`                  | Same styling pattern                                     |
+| `Card`         | `View` with shadow               | Use shadow props (shadowColor, shadowOffset, etc.)       |
+| `Avatar`       | `Image` + fallback `View`        | Use `Image` component with onError fallback              |
+| `Switch`       | `Switch` (RN built-in)           | Native switch, style via theme                           |
+| `Checkbox`     | `Pressable` + icon               | Use checkbox or switch pattern                           |
+| `Progress`     | `View` clip pattern              | Two overlapping Views with width %                       |
+| `Separator`    | `View`                           | Thin View with border color                              |
+| `Skeleton`     | `View` with animation            | Animated opacity pulse                                   |
+| `Table`        | FlatList / ScrollView            | Use FlatList with header row                             |
+| `Pagination`   | Custom component                 | FlatList + page indicator                                |
+| `Sidebar`      | Drawer navigation                | React Navigation Drawer or custom                        |
+| `Breadcrumb`   | Text links with separator        | Simple text-based navigation                             |
+| `Carousel`     | FlatList paging                  | horizontal pagingEnabled FlatList                        |
 
 ### Web → NativeWind (Tailwind ID)
 
@@ -186,7 +194,7 @@ NativeWind allows using same Tailwind classes in RN:
 
 ```tsx
 // Tamagui — uses styled components with theme tokens
-import { Button, Text, YStack } from 'tamagui';
+import { Button, Text, YStack } from "tamagui";
 
 <Button
   backgroundColor="$primary"
@@ -202,24 +210,24 @@ import { Button, Text, YStack } from 'tamagui';
   >
     Submit
   </Text>
-</Button>
+</Button>;
 ```
 
 ---
 
 ## Spacing Mapping
 
-| Web Class | Value | RN (NativeWind) | RN (StyleSheet) | Notes |
-|-----------|-------|-----------------|-----------------|-------|
-| `p-6` | 24px | `p-6` | `{ padding: 24 }` | Dashboard page padding |
-| `p-4` | 16px | `p-4` | `{ padding: 16 }` | Compact card |
-| `px-8` | 32px | `px-8` | `{ paddingHorizontal: 32 }` | Card content X |
-| `py-8` | 32px | `py-8` | `{ paddingVertical: 32 }` | Card Y padding |
-| `gap-4` | 16px | `gap-4` | `{ gap: 16 }` | Grid gaps |
-| `space-y-6` | 24px | N/A | Manual margin bottom | Use margin on children |
-| `h-10` | 40px | `h-10` | `{ height: 40 }` | Standard input/button height |
-| `rounded-none` | 0 | `rounded-none` | `{ borderRadius: 0 }` | All components |
-| `rounded-full` | 9999px | `rounded-full` | `{ borderRadius: 9999 }` | Avatars only |
+| Web Class      | Value  | RN (NativeWind) | RN (StyleSheet)             | Notes                        |
+| -------------- | ------ | --------------- | --------------------------- | ---------------------------- |
+| `p-6`          | 24px   | `p-6`           | `{ padding: 24 }`           | Dashboard page padding       |
+| `p-4`          | 16px   | `p-4`           | `{ padding: 16 }`           | Compact card                 |
+| `px-8`         | 32px   | `px-8`          | `{ paddingHorizontal: 32 }` | Card content X               |
+| `py-8`         | 32px   | `py-8`          | `{ paddingVertical: 32 }`   | Card Y padding               |
+| `gap-4`        | 16px   | `gap-4`         | `{ gap: 16 }`               | Grid gaps                    |
+| `space-y-6`    | 24px   | N/A             | Manual margin bottom        | Use margin on children       |
+| `h-10`         | 40px   | `h-10`          | `{ height: 40 }`            | Standard input/button height |
+| `rounded-none` | 0      | `rounded-none`  | `{ borderRadius: 0 }`       | All components               |
+| `rounded-full` | 9999px | `rounded-full`  | `{ borderRadius: 9999 }`    | Avatars only                 |
 
 > Note: `space-y-*` and `space-x-*` are gap utilities in web CSS that don't exist in RN. Replace with explicit `margin` or `gap` props.
 
@@ -227,24 +235,28 @@ import { Button, Text, YStack } from 'tamagui';
 
 ## Elevation Mapping
 
-| Web | RN (iOS) | RN (Android) |
-|-----|----------|--------------|
-| `shadow-sm` | `{ shadowColor, shadowOffset: {0,1}, shadowOpacity: 0.05, shadowRadius: 2 }` | `{ elevation: 1 }` |
-| `shadow-md` | `{ shadowColor, shadowOffset: {0,4}, shadowOpacity: 0.1, shadowRadius: 6 }` | `{ elevation: 3 }` |
-| `ring-1 ring-foreground/5` | `{ borderWidth: 1, borderColor: 'rgba(0,0,0,0.05)' }` | Same |
-| `z-50` | `{ zIndex: 50 }` | `{ elevation: 50 }` |
+| Web                        | RN (iOS)                                                                     | RN (Android)        |
+| -------------------------- | ---------------------------------------------------------------------------- | ------------------- |
+| `shadow-sm`                | `{ shadowColor, shadowOffset: {0,1}, shadowOpacity: 0.05, shadowRadius: 2 }` | `{ elevation: 1 }`  |
+| `shadow-md`                | `{ shadowColor, shadowOffset: {0,4}, shadowOpacity: 0.1, shadowRadius: 6 }`  | `{ elevation: 3 }`  |
+| `ring-1 ring-foreground/5` | `{ borderWidth: 1, borderColor: 'rgba(0,0,0,0.05)' }`                        | Same                |
+| `z-50`                     | `{ zIndex: 50 }`                                                             | `{ elevation: 50 }` |
 
 ---
 
 ## Dark Mode Mapping
 
 ### Web (CSS class toggle)
+
 ```css
 /* Web: .dark class toggles CSS vars */
-.dark { --background: #0a0b0d; }
+.dark {
+  --background: #0a0b0d;
+}
 ```
 
 ### React Native (Appearance API)
+
 ```ts
 import { useColorScheme } from 'react-native';
 
@@ -257,6 +269,7 @@ const backgroundColor = isDark ? '#0a0b0d' : '#ffffff';
 ```
 
 ### Tamagui
+
 ```ts
 // Tamagui has built-in dark mode support via ThemeProvider
 <Theme name={isDark ? 'dark' : 'light'}>
@@ -268,17 +281,18 @@ const backgroundColor = isDark ? '#0a0b0d' : '#ffffff';
 
 ## Navigation Mapping
 
-| Web (Next.js App Router) | Expo Router | React Navigation |
-|--------------------------|-------------|-----------------|
-| `app/(dashboard)/layout.tsx` | `app/(dashboard)/_layout.tsx` | Stack navigator |
-| `app/(dashboard)/members/page.tsx` | `app/(dashboard)/members.tsx` | `MembersScreen` |
-| `SidebarProvider` + `AppSidebar` | Drawer navigator in layout | Drawer.Navigator |
-| `SidebarInset` + header + content | Stack navigator with header | Stack.Navigator |
+| Web (Next.js App Router)           | Expo Router                   | React Navigation |
+| ---------------------------------- | ----------------------------- | ---------------- |
+| `app/(dashboard)/layout.tsx`       | `app/(dashboard)/_layout.tsx` | Stack navigator  |
+| `app/(dashboard)/members/page.tsx` | `app/(dashboard)/members.tsx` | `MembersScreen`  |
+| `SidebarProvider` + `AppSidebar`   | Drawer navigator in layout    | Drawer.Navigator |
+| `SidebarInset` + header + content  | Stack navigator with header   | Stack.Navigator  |
 
 **Expo Router Layout Mapping:**
+
 ```tsx
 // app/(dashboard)/_layout.tsx
-import { Drawer } from 'expo-router/drawer';
+import { Drawer } from "expo-router/drawer";
 
 export default function DashboardLayout() {
   return (
@@ -297,13 +311,22 @@ export default function DashboardLayout() {
 ## Font Loading on Mobile
 
 ### Expo (recommended)
+
 ```ts
 // Use @expo-google-fonts/* packages for parity with web
-import { Roboto_400Regular, Roboto_500Medium, Roboto_700Bold } from '@expo-google-fonts/roboto';
-import { JetBrainsMono_400Regular, JetBrainsMono_700Bold } from '@expo-google-fonts/jetbrains-mono';
+import {
+  Roboto_400Regular,
+  Roboto_500Medium,
+  Roboto_700Bold,
+} from "@expo-google-fonts/roboto";
+import {
+  JetBrainsMono_400Regular,
+  JetBrainsMono_700Bold,
+} from "@expo-google-fonts/jetbrains-mono";
 ```
 
 ### Bare React Native
+
 - Download font files manually
 - Configure in `react-native.config.js`
 - Link via `npx react-native-asset`
@@ -313,18 +336,21 @@ import { JetBrainsMono_400Regular, JetBrainsMono_700Bold } from '@expo-google-fo
 ## Platform-Specific Considerations
 
 ### iOS
+
 - Safe area insets: use `SafeAreaView` or `expo-status-bar`
 - Shadow rendering: use `shadowColor, shadowOpacity, shadowOffset, shadowRadius`
 - Gesture handling: `react-native-gesture-handler` for sheet/drawer
 - Haptic feedback: `expo-haptics` for button presses, toggles
 
 ### Android
+
 - Elevation: use Android `elevation` property instead of shadow
 - Ripple effect: `TouchableNativeFeedback` for press feedback
 - Back button: handle hardware back button for dialogs/sheets
 - Font rendering: Roboto is system font — may not need explicit loading
 
 ### Both Platforms
+
 - No CSS `:hover` state — use `Pressable` state styles instead
 - No CSS `:focus-visible` — handle focus via accessibility states
 - Scroll behaviour: `ScrollView` for overflow content, `FlatList` for data tables
@@ -334,34 +360,36 @@ import { JetBrainsMono_400Regular, JetBrainsMono_700Bold } from '@expo-google-fo
 
 ## Component Migration Priorities
 
-| Priority | Component | Reason |
-|----------|-----------|--------|
-| P0 | Sidebar/Drawer | Core navigation, must work first |
-| P0 | Card | Most common layout container |
-| P0 | Button | Primary interaction element |
-| P0 | Input/TextInput | Form entry |
-| P0 | Text | Typography foundation |
-| P1 | Dialog/Modal | CRUD operations |
-| P1 | DataTable | List/CRUD pages |
-| P1 | Form | All data entry |
-| P1 | Select/Picker | Dropdown selection |
-| P1 | Toast | User feedback |
-| P2 | Sheet | Detail panels |
-| P2 | Tabs | Content organization |
-| P2 | Charts | Data visualization |
-| P3 | Carousel | Landing page only |
-| P3 | Skeleton | Loading polish |
+| Priority | Component       | Reason                           |
+| -------- | --------------- | -------------------------------- |
+| P0       | Sidebar/Drawer  | Core navigation, must work first |
+| P0       | Card            | Most common layout container     |
+| P0       | Button          | Primary interaction element      |
+| P0       | Input/TextInput | Form entry                       |
+| P0       | Text            | Typography foundation            |
+| P1       | Dialog/Modal    | CRUD operations                  |
+| P1       | DataTable       | List/CRUD pages                  |
+| P1       | Form            | All data entry                   |
+| P1       | Select/Picker   | Dropdown selection               |
+| P1       | Toast           | User feedback                    |
+| P2       | Sheet           | Detail panels                    |
+| P2       | Tabs            | Content organization             |
+| P2       | Charts          | Data visualization               |
+| P3       | Carousel        | Landing page only                |
+| P3       | Skeleton        | Loading polish                   |
 
 ---
 
 ## Responsive Strategy for Mobile
 
 ### Web Approach
+
 - Container queries (`@container`) for card-level responsiveness
 - Tailwind breakpoints (sm/md/lg/xl) for page-level responsiveness
 - Mobile detection at 768px for sidebar behavior
 
 ### Mobile Approach
+
 - Fixed layout (no breakpoints needed on single-device-width)
 - Adapt between phone and tablet using `Dimensions` API
 - Tablet: use `useWindowDimensions()` to switch between compact/regular layouts (similar to `md:` breakpoint)

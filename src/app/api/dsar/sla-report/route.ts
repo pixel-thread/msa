@@ -7,17 +7,23 @@ import { logger } from "@src/shared/logger/server";
 export const GET = withAssociation(
   {},
   async (association, { traceId }, request) => {
-    logger.info({
-      traceId,
-      associationId: association.id,
-    }, "GET /api/dsar/sla-report - Request started");
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+      },
+      "GET /api/dsar/sla-report - Request started",
+    );
 
     const user = await withRole(request, UserRole.DPO);
 
-    logger.info({
-      traceId,
-      userId: user.id,
-    }, "GET /api/dsar/sla-report - User authorized");
+    logger.info(
+      {
+        traceId,
+        userId: user.id,
+      },
+      "GET /api/dsar/sla-report - User authorized",
+    );
 
     const report = await getDsarSlaStatus(association.id);
 

@@ -33,10 +33,16 @@ export const GET = withAssociation(
       throw new ForbiddenError("Invalid params");
     }
 
-    logger.info({ traceId, associationId: association.id }, "GET /training/modules/{moduleId}/certificates/{certificateId} - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "GET /training/modules/{moduleId}/certificates/{certificateId} - Request started",
+    );
 
     await withRole(request, UserRole.MEMBER);
-    logger.info({ traceId }, "GET /training/modules/{moduleId}/certificates/{certificateId} - User authorized");
+    logger.info(
+      { traceId },
+      "GET /training/modules/{moduleId}/certificates/{certificateId} - User authorized",
+    );
 
     const { moduleId, certificateId } = params;
 
@@ -51,7 +57,10 @@ export const GET = withAssociation(
       throw new NotFoundError("Training certificate not found");
     }
 
-    logger.info({ traceId, certificateId }, "GET /training/modules/{moduleId}/certificates/{certificateId} - Success");
+    logger.info(
+      { traceId, certificateId },
+      "GET /training/modules/{moduleId}/certificates/{certificateId} - Success",
+    );
     return SuccessResponse({ data: certificate });
   },
 );
@@ -63,11 +72,17 @@ export const PATCH = withAssociation(
       throw new ForbiddenError("Invalid params");
     }
 
-    logger.info({ traceId, associationId: association.id }, "PATCH /training/modules/{moduleId}/certificates/{certificateId} - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "PATCH /training/modules/{moduleId}/certificates/{certificateId} - Request started",
+    );
 
     const { moduleId, certificateId } = params;
     const user = await withRole(request, UserRole.DPO);
-    logger.info({ traceId, userId: user.id }, "PATCH /training/modules/{moduleId}/certificates/{certificateId} - User authorized");
+    logger.info(
+      { traceId, userId: user.id },
+      "PATCH /training/modules/{moduleId}/certificates/{certificateId} - User authorized",
+    );
 
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
@@ -138,7 +153,10 @@ export const PATCH = withAssociation(
       }
     }
 
-    logger.info({ traceId, certificateId }, "PATCH /training/modules/{moduleId}/certificates/{certificateId} - Success");
+    logger.info(
+      { traceId, certificateId },
+      "PATCH /training/modules/{moduleId}/certificates/{certificateId} - Success",
+    );
     return SuccessResponse({ data: certificate });
   },
 );
@@ -150,11 +168,17 @@ export const DELETE = withAssociation(
       throw new ForbiddenError("Invalid params");
     }
 
-    logger.info({ traceId, associationId: association.id }, "DELETE /training/modules/{moduleId}/certificates/{certificateId} - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "DELETE /training/modules/{moduleId}/certificates/{certificateId} - Request started",
+    );
 
     const { moduleId, certificateId } = params;
     const user = await withRole(request, UserRole.DPO);
-    logger.info({ traceId, userId: user.id }, "DELETE /training/modules/{moduleId}/certificates/{certificateId} - User authorized");
+    logger.info(
+      { traceId, userId: user.id },
+      "DELETE /training/modules/{moduleId}/certificates/{certificateId} - User authorized",
+    );
 
     const result = await deleteCertificate({
       associationId: association.id,
@@ -171,7 +195,10 @@ export const DELETE = withAssociation(
       }
     }
 
-    logger.info({ traceId, certificateId }, "DELETE /training/modules/{moduleId}/certificates/{certificateId} - Success");
+    logger.info(
+      { traceId, certificateId },
+      "DELETE /training/modules/{moduleId}/certificates/{certificateId} - Success",
+    );
     return SuccessResponse({
       data: { success: true, message: "Training certificate deleted" },
     });

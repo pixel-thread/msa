@@ -7,4 +7,3 @@ export const SHARED_ENDPOINTS = {
     ME: "/auth/me",
   },
 } as const;
-

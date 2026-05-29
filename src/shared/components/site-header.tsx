@@ -1,6 +1,6 @@
-import { Button } from "@src/shared/components/ui/button"
-import { Separator } from "@src/shared/components/ui/separator"
-import { SidebarTrigger } from "@src/shared/components/ui/sidebar"
+import { Button } from "@src/shared/components/ui/button";
+import { Separator } from "@src/shared/components/ui/separator";
+import { SidebarTrigger } from "@src/shared/components/ui/sidebar";
 
 export function SiteHeader() {
   return (
@@ -14,5 +14,5 @@ export function SiteHeader() {
         <h1 className="text-base font-medium">Documents</h1>
       </div>
     </header>
-  )
+  );
 }

@@ -25,19 +25,29 @@ export const GET = withAssociation(
     }
 
     const user = await withRole(request, UserRole.MEMBER);
-    logger.info({ traceId, userId: user.id, paymentId }, "GET /api/payments/[id] - User authorized");
+    logger.info(
+      { traceId, userId: user.id, paymentId },
+      "GET /api/payments/[id] - User authorized",
+    );
 
     const transaction = await getTransactionById(paymentId, association.id);
 
     if (!transaction) {
       throw new NotFoundError("Transaction");
     }
-    
-    const adminRoles: UserRole[] = [UserRole.FINANCE, UserRole.SECRETARY, UserRole.PRESIDENT, UserRole.SUPER_ADMIN];
-    const isFinance = user.role.some(r => adminRoles.includes(r));
-    
+
+    const adminRoles: UserRole[] = [
+      UserRole.FINANCE,
+      UserRole.SECRETARY,
+      UserRole.PRESIDENT,
+      UserRole.SUPER_ADMIN,
+    ];
+    const isFinance = user.role.some((r) => adminRoles.includes(r));
+
     if (!isFinance && transaction.userId !== user.id) {
-      throw new ForbiddenError("You do not have permission to view this transaction");
+      throw new ForbiddenError(
+        "You do not have permission to view this transaction",
+      );
     }
 
     logger.info({ traceId, paymentId }, "GET /api/payments/[id] - Success");

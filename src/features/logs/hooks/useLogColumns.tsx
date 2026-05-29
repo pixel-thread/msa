@@ -4,7 +4,10 @@ import { Button } from "@src/shared/components/ui/button";
 import { formatDate } from "@src/shared/utils";
 import type { LogEntry } from "../types";
 
-const levelBadgeVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+const levelBadgeVariant: Record<
+  string,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
   error: "destructive",
   warn: "secondary",
   info: "default",

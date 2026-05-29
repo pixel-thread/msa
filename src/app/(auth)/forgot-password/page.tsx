@@ -44,8 +44,7 @@ export default function ForgotPasswordPage() {
     try {
       await forgotPasswordMutation.mutateAsync(values);
       setIsSuccess(true);
-    } catch {
-    }
+    } catch {}
   };
 
   if (isSuccess) {
@@ -88,10 +87,7 @@ export default function ForgotPasswordPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-5"
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               {forgotPasswordMutation.isError && (
                 <Alert variant="destructive">
                   <AlertDescription>

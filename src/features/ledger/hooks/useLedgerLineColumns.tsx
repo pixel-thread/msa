@@ -6,9 +6,7 @@ interface UseLedgerLineColumnsOptions {
   getAccountName: (accountId: string) => string;
 }
 
-export function useLedgerLineColumns(
-  options: UseLedgerLineColumnsOptions,
-) {
+export function useLedgerLineColumns(options: UseLedgerLineColumnsOptions) {
   const { getAccountName } = options;
 
   const columns: ColumnDef<LedgerLineResponse>[] = [
@@ -44,7 +42,8 @@ export function useLedgerLineColumns(
       header: () => <span className="text-right">Amount</span>,
       cell: ({ row }) => (
         <span className="text-sm text-right font-mono text-ink block">
-          ₹{Number(row.original.amount).toLocaleString("en-IN", {
+          ₹
+          {Number(row.original.amount).toLocaleString("en-IN", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           })}

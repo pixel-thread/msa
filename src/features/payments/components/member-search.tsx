@@ -16,7 +16,11 @@ export function MemberSearch({ onSelect }: MemberSearchProps) {
   const { results, isLoading } = useMemberSearch(query);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleSelect = (member: { id: string; name: string; email: string }) => {
+  const handleSelect = (member: {
+    id: string;
+    name: string;
+    email: string;
+  }) => {
     onSelect(member);
     setQuery("");
     setIsOpen(false);
@@ -83,7 +87,9 @@ export function MemberSearch({ onSelect }: MemberSearchProps) {
                       <p className="text-xs text-muted-foreground truncate">
                         {member.email}
                         {member.membershipNumber && (
-                          <span className="ml-1">#{member.membershipNumber}</span>
+                          <span className="ml-1">
+                            #{member.membershipNumber}
+                          </span>
                         )}
                       </p>
                     </div>

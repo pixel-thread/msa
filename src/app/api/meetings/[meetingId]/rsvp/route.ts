@@ -22,7 +22,10 @@ const RsvpSchema = z.object({
 export const POST = withAssociation(
   { params: AttendeeParamsSchema, body: RsvpSchema },
   async (_association, { params, body, traceId }, request) => {
-    logger.info({ traceId, meetingId: params?.meetingId }, "POST /api/meetings/[meetingId]/rsvp - Request started");
+    logger.info(
+      { traceId, meetingId: params?.meetingId },
+      "POST /api/meetings/[meetingId]/rsvp - Request started",
+    );
 
     if (!params) {
       throw new ForbiddenError("Invalid parameters");
@@ -33,7 +36,15 @@ export const POST = withAssociation(
     }
 
     const user = await withRole(request, UserRole.MEMBER);
-    logger.info({ traceId, userId: user.id, role: user.role, meetingId: params.meetingId }, "POST /api/meetings/[meetingId]/rsvp - User authorized");
+    logger.info(
+      {
+        traceId,
+        userId: user.id,
+        role: user.role,
+        meetingId: params.meetingId,
+      },
+      "POST /api/meetings/[meetingId]/rsvp - User authorized",
+    );
 
     // Member submitting own RSVP
     const userId = request.headers.get("x-user-id");
@@ -41,7 +52,10 @@ export const POST = withAssociation(
       throw new ForbiddenError("Unauthorized");
     }
 
-    logger.info({ traceId, meetingId: params.meetingId, userId }, "POST /api/meetings/[meetingId]/rsvp - Submitting RSVP");
+    logger.info(
+      { traceId, meetingId: params.meetingId, userId },
+      "POST /api/meetings/[meetingId]/rsvp - Submitting RSVP",
+    );
 
     const updated = await prisma.meetingAttendee.update({
       where: {
@@ -57,7 +71,10 @@ export const POST = withAssociation(
       },
     });
 
-    logger.info({ traceId, meetingId: params.meetingId }, "POST /api/meetings/[meetingId]/rsvp - Success");
+    logger.info(
+      { traceId, meetingId: params.meetingId },
+      "POST /api/meetings/[meetingId]/rsvp - Success",
+    );
 
     return SuccessResponse({
       data: updated,

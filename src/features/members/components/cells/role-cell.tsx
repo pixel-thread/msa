@@ -15,7 +15,11 @@ import { User } from "@prisma/client";
 
 interface RoleCellProps {
   member: User;
-  onRoleChange: (memberId: string, role: string, action: "add" | "remove") => void;
+  onRoleChange: (
+    memberId: string,
+    role: string,
+    action: "add" | "remove",
+  ) => void;
 }
 
 export function RoleCell({ member, onRoleChange }: RoleCellProps) {

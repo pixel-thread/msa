@@ -62,10 +62,7 @@ export function ComplianceStatusCards() {
       {ALL_CHECK_TYPES.map((type) => {
         const latest = latestPerType.get(type);
         return (
-          <div
-            key={type}
-            className=" border border-border bg-card p-4"
-          >
+          <div key={type} className=" border border-border bg-card p-4">
             <p className="text-xs font-medium text-body uppercase tracking-wider">
               {checkTypeLabels[type] || type.replace(/_/g, " ")}
             </p>
@@ -79,7 +76,9 @@ export function ComplianceStatusCards() {
                 >
                   {latest.status}
                 </span>
-                <span className="text-xs text-body ml-auto">{latest.score}%</span>
+                <span className="text-xs text-body ml-auto">
+                  {latest.score}%
+                </span>
               </div>
             ) : (
               <p className="mt-2 text-xs text-body">No checks yet</p>

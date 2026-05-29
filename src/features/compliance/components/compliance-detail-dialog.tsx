@@ -55,7 +55,9 @@ export function ComplianceDetailDialog({
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-xs font-medium text-body uppercase tracking-wider">Status</p>
+              <p className="text-xs font-medium text-body uppercase tracking-wider">
+                Status
+              </p>
               <div className="mt-1">
                 <Badge
                   variant="outline"
@@ -66,18 +68,26 @@ export function ComplianceDetailDialog({
               </div>
             </div>
             <div>
-              <p className="text-xs font-medium text-body uppercase tracking-wider">Score</p>
-              <p className="text-sm text-ink mt-1 font-semibold">{record.score}%</p>
+              <p className="text-xs font-medium text-body uppercase tracking-wider">
+                Score
+              </p>
+              <p className="text-sm text-ink mt-1 font-semibold">
+                {record.score}%
+              </p>
             </div>
           </div>
 
           <div>
-            <p className="text-xs font-medium text-body uppercase tracking-wider">Message</p>
+            <p className="text-xs font-medium text-body uppercase tracking-wider">
+              Message
+            </p>
             <p className="text-sm text-ink mt-1">{record.message}</p>
           </div>
 
           <div>
-            <p className="text-xs font-medium text-body uppercase tracking-wider">Check Date</p>
+            <p className="text-xs font-medium text-body uppercase tracking-wider">
+              Check Date
+            </p>
             <p className="text-sm text-ink mt-1">
               {new Date(record.checkedAt).toLocaleString("en-IN")}
             </p>
@@ -85,7 +95,9 @@ export function ComplianceDetailDialog({
 
           {details && Object.keys(details).length > 0 && (
             <div>
-              <p className="text-xs font-medium text-body uppercase tracking-wider mb-2">Details</p>
+              <p className="text-xs font-medium text-body uppercase tracking-wider mb-2">
+                Details
+              </p>
               <div className=" bg-muted p-3">
                 <pre className="text-xs text-ink whitespace-pre-wrap font-mono leading-relaxed">
                   {JSON.stringify(details, null, 2)}
@@ -110,7 +122,9 @@ export function ComplianceDetailDialog({
           )}
 
           <div>
-            <p className="text-xs font-medium text-body uppercase tracking-wider">Check ID</p>
+            <p className="text-xs font-medium text-body uppercase tracking-wider">
+              Check ID
+            </p>
             <p className="text-sm text-ink mt-1 font-mono">{record.id}</p>
           </div>
         </div>

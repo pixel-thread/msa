@@ -61,7 +61,10 @@ export async function createAnnouncement({
     },
   });
 
-  if (sendNotification && announcement.status === AnnouncementStatus.PUBLISHED) {
+  if (
+    sendNotification &&
+    announcement.status === AnnouncementStatus.PUBLISHED
+  ) {
     await sendAnnouncementNotifications(announcement.id, associationId);
   }
 

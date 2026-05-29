@@ -6,7 +6,10 @@ interface DeleteMeetingProps {
   associationId: string;
 }
 
-export async function deleteMeeting({ meetingId, associationId }: DeleteMeetingProps) {
+export async function deleteMeeting({
+  meetingId,
+  associationId,
+}: DeleteMeetingProps) {
   const existing = await prisma.meeting.findFirst({
     where: { id: meetingId, associationId },
   });

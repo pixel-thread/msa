@@ -36,7 +36,10 @@ export const POST = withValidation(
       },
     });
 
-    logger.info({ traceId, tokenId: pushToken.id }, "POST /api/notifications/link - Success");
+    logger.info(
+      { traceId, tokenId: pushToken.id },
+      "POST /api/notifications/link - Success",
+    );
 
     return SuccessResponse({ data: pushToken }, 201);
   },

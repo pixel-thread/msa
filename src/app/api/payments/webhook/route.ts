@@ -77,7 +77,10 @@ export async function POST(request: NextRequest) {
       // Non-critical — don't fail the webhook for audit logging errors
     }
 
-    logger.info({ event: result.status }, "POST /api/payments/webhook - Success");
+    logger.info(
+      { event: result.status },
+      "POST /api/payments/webhook - Success",
+    );
 
     return NextResponse.json({ status: result.status }, { status: 200 });
   } catch (error) {

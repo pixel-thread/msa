@@ -33,7 +33,9 @@ export function useTestPayment(providerId: string) {
       );
 
       if (!verifyResponse.success) {
-        throw new Error(verifyResponse.message || "Payment verification failed");
+        throw new Error(
+          verifyResponse.message || "Payment verification failed",
+        );
       }
 
       return verifyResponse.data;

@@ -86,7 +86,7 @@ function RsvpStatusBadge({ status }: { status: string | undefined }) {
   return (
     <div
       className={cn(
-       "inline-flex items-center gap-1.5 px-3 py-1.5  border text-xs font-medium",
+        "inline-flex items-center gap-1.5 px-3 py-1.5  border text-xs font-medium",
         config.bg,
         config.border,
         config.text,
@@ -153,7 +153,7 @@ function AttendeeCard({
         <div className="flex items-center gap-2">
           <span
             className={cn(
-             "text-xs px-2.5 py-1  font-medium",
+              "text-xs px-2.5 py-1  font-medium",
               getRoleColor(attendee.attendeeRole),
             )}
           >

@@ -15,10 +15,13 @@ export const POST = withAssociation(
     body: ConsentUpdateSchema.omit({ action: true }),
   },
   async (association, { body, traceId }, request) => {
-    logger.info({
-      traceId,
-      associationId: association.id,
-    }, "POST /api/consent/grant - Request started");
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+      },
+      "POST /api/consent/grant - Request started",
+    );
 
     const userId = request.headers.get("x-user-id");
 
@@ -43,10 +46,13 @@ export const POST = withAssociation(
       userAgent,
     );
 
-    logger.info({
-      traceId,
-      userId,
-    }, "POST /api/consent/grant - Consent granted successfully");
+    logger.info(
+      {
+        traceId,
+        userId,
+      },
+      "POST /api/consent/grant - Consent granted successfully",
+    );
 
     return SuccessResponse({
       message: "Consent granted successfully",

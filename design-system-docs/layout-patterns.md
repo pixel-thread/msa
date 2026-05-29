@@ -3,11 +3,13 @@
 ## Page Width Strategy
 
 ### Public Pages (Landing)
+
 - Max-width: `max-w-7xl` (1280px) centered with `mx-auto`
 - Content padding: `px-6`
 - Full-width sections with `border-y` separators
 
 ### Dashboard Pages
+
 - Full-width within sidebar inset: no max-width constraint
 - Content padding: `p-6`
 - Uses flex-1 with `min-w-0` for overflow prevention
@@ -17,51 +19,67 @@
 ## Grid Systems
 
 ### Dashboard Stats Cards
+
 ```jsx
 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 ```
+
 - Single column on mobile, 2 on tablet, 4 on desktop
 
 ### Dashboard Chart Pairs
+
 ```jsx
 <div className="grid gap-4 md:grid-cols-2">
 ```
+
 - Single column on mobile, 2 columns on tablet+
 
 ### Landing Page Feature Grid
+
 ```jsx
 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 ```
+
 - Feature cards: single → 2 → 3 columns
 
 ### Landing Page Stats
+
 ```jsx
 <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
 ```
+
 - 2 columns on mobile, 4 on desktop
 
 ### Footer
+
 ```jsx
 <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
 ```
+
 - Single → 2 → 4 columns
 
 ### About Section Stats
+
 ```jsx
 <div className="grid grid-cols-2 gap-4">
 ```
+
 - 2-column grid always
 
 ### Contact Form
+
 ```jsx
 <div className="grid gap-12 md:grid-cols-2">
 ```
+
 - 2-column layout for contact info + form
 
 ### How It Works Steps
+
 ```jsx
 <div className="grid gap-8 md:grid-cols-3">
 ```
+
 - Single → 3 columns on tablet+
 
 ---
@@ -69,6 +87,7 @@
 ## Dashboard Layout
 
 ### Structure
+
 ```
 SidebarProvider
 ├── AppSidebar (collapsible="icon")
@@ -81,6 +100,7 @@ SidebarProvider
 ```
 
 ### Header Bar
+
 - Height: `h-16` (expanded), `h-12` (sidebar collapsed)
 - Border: `border-b border-hairline`
 - Background: `bg-canvas`
@@ -88,6 +108,7 @@ SidebarProvider
 - Contains: SidebarTrigger icon + vertical separator + theme toggle
 
 ### Sidebar Dimensions
+
 - Expanded width: `16rem` (256px)
 - Collapsed width: `3rem` (48px)
 - Mobile width: `18rem` (288px) opens as Sheet overlay
@@ -97,6 +118,7 @@ SidebarProvider
 ## Breakpoint Strategy
 
 ### Tailwind Default Breakpoints
+
 ```
 sm: 640px
 md: 768px (also used for mobile detection in hooks)
@@ -106,7 +128,9 @@ xl: 1280px
 ```
 
 ### Container Queries (CSS @container)
+
 Used for card-level responsive adaptation:
+
 - `@container/card` — card-level container context
 - `@[250px]/card:text-3xl` — card title grows at 250px width
 - `@[540px]/card:block` — show full description at 540px
@@ -116,6 +140,7 @@ Used for card-level responsive adaptation:
 - `@container` query names: `/card`, `/card-header`, `/main`
 
 ### Mobile Detection
+
 - `use-mobile.ts`: Breakpoint at 768px
 - Mobile sidebar: renders as Sheet overlay
 - Chart interactive: default 90d range, switches to 7d on mobile
@@ -125,17 +150,20 @@ Used for card-level responsive adaptation:
 ## Sidebar Navigation Pattern
 
 ### Main Navigation (NavMain)
+
 - Uses Collapsible items for nested groups
 - Groups under "Platform" label
 - Active detection: `pathname === item.url || pathname?.startsWith(item.url + "/")`
 - Chevron rotation on expand: `transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90`
 
 ### User Navigation (NavUser)
+
 - Avatar + name/email in sidebar footer
 - Dropdown menu with: Account, Change Password, Log out
 - Dropdown side="right" on desktop, "bottom" on mobile
 
 ### Secondary Navigation (NavSecondary)
+
 - Flat list of icon + label items
 - Used for support/docs links
 
@@ -175,20 +203,20 @@ This pattern is followed by members, payments, announcements, compliance, consen
 
 ## Layout Spacing Conventions
 
-| Element | Spacing |
-|---------|---------|
-| Page section top/bottom (landing) | `py-24` |
-| Dashboard page padding | `p-6` |
-| Section title to content | `mb-4` (heading), `mt-1` (description) |
-| Dashboard sections | `space-y-6` |
-| Card groups | `gap-4` |
-| Chart grid | `gap-4 md:grid-cols-2` |
-| Filter bar | Card with `gap-3 p-4 flex-row` |
-| Page title to filters | Implicit via `space-y-6` or manual |
-| Filters to table | Implicit via `space-y-6` or `flex-col gap-6` |
-| Table to pagination | `flex items-center justify-between` |
-| Form fields | `space-y-4` (within form) |
-| Form field pairs | `grid grid-cols-2 gap-4` |
+| Element                           | Spacing                                      |
+| --------------------------------- | -------------------------------------------- |
+| Page section top/bottom (landing) | `py-24`                                      |
+| Dashboard page padding            | `p-6`                                        |
+| Section title to content          | `mb-4` (heading), `mt-1` (description)       |
+| Dashboard sections                | `space-y-6`                                  |
+| Card groups                       | `gap-4`                                      |
+| Chart grid                        | `gap-4 md:grid-cols-2`                       |
+| Filter bar                        | Card with `gap-3 p-4 flex-row`               |
+| Page title to filters             | Implicit via `space-y-6` or manual           |
+| Filters to table                  | Implicit via `space-y-6` or `flex-col gap-6` |
+| Table to pagination               | `flex items-center justify-between`          |
+| Form fields                       | `space-y-4` (within form)                    |
+| Form field pairs                  | `grid grid-cols-2 gap-4`                     |
 
 ---
 

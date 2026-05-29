@@ -7,17 +7,25 @@ import { logger } from "@src/shared/logger/server";
 export const GET = withAssociation(
   {},
   async (association, { traceId }, request) => {
-    logger.info({ traceId, associationId: association.id }, "GET /api/compliance/evidence - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "GET /api/compliance/evidence - Request started",
+    );
     const user = await withRole(request, UserRole.DPO);
-    logger.info({ traceId, userId: user.id, roles: user.role }, "GET /api/compliance/evidence - User authorized");
+    logger.info(
+      { traceId, userId: user.id, roles: user.role },
+      "GET /api/compliance/evidence - User authorized",
+    );
 
     const evidence = await generateComplianceEvidence(association.id, 30);
 
-    logger.info({ traceId, associationId: association.id }, "GET /api/compliance/evidence - Success");
+    logger.info(
+      { traceId, associationId: association.id },
+      "GET /api/compliance/evidence - Success",
+    );
 
     return SuccessResponse({
       data: evidence,
     });
   },
 );
-

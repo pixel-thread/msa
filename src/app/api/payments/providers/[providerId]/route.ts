@@ -16,17 +16,26 @@ import { UserRole } from "@prisma/client";
 export const GET = withAssociation(
   { params: ProviderIdParamSchema },
   async (association, { params, traceId }, req) => {
-    logger.info({ traceId, providerId: params!.providerId }, "GET /api/payments/providers/[providerId] - Request started");
+    logger.info(
+      { traceId, providerId: params!.providerId },
+      "GET /api/payments/providers/[providerId] - Request started",
+    );
 
     await withRole(req, UserRole.PRESIDENT);
-    logger.info({ traceId, providerId: params!.providerId }, "GET /api/payments/providers/[providerId] - User authorized");
+    logger.info(
+      { traceId, providerId: params!.providerId },
+      "GET /api/payments/providers/[providerId] - User authorized",
+    );
     const provider = await getProviderById(params!.providerId, association.id);
 
     if (!provider) {
       throw new NotFoundError("Provider not found");
     }
 
-    logger.info({ traceId, providerId: params!.providerId }, "GET /api/payments/providers/[providerId] - Success");
+    logger.info(
+      { traceId, providerId: params!.providerId },
+      "GET /api/payments/providers/[providerId] - Success",
+    );
 
     return SuccessResponse({ data: provider });
   },
@@ -35,11 +44,20 @@ export const GET = withAssociation(
 export const PATCH = withAssociation(
   { params: ProviderIdParamSchema, body: UpdatePaymentProviderSchema },
   async (association, { body, params, traceId }, req) => {
-    logger.info({ traceId, providerId: params!.providerId }, "PATCH /api/payments/providers/[providerId] - Request started");
+    logger.info(
+      { traceId, providerId: params!.providerId },
+      "PATCH /api/payments/providers/[providerId] - Request started",
+    );
 
     await withRole(req, UserRole.PRESIDENT);
-    logger.info({ traceId, providerId: params!.providerId }, "PATCH /api/payments/providers/[providerId] - User authorized");
-    logger.info({ traceId, providerId: params!.providerId }, "PATCH /api/payments/providers/[providerId] - Updating provider");
+    logger.info(
+      { traceId, providerId: params!.providerId },
+      "PATCH /api/payments/providers/[providerId] - User authorized",
+    );
+    logger.info(
+      { traceId, providerId: params!.providerId },
+      "PATCH /api/payments/providers/[providerId] - Updating provider",
+    );
 
     const result = await updateProvider(params!.providerId, association.id, {
       keyId: body?.keyId,
@@ -48,7 +66,10 @@ export const PATCH = withAssociation(
       isActive: body?.isActive,
     });
 
-    logger.info({ traceId, providerId: params!.providerId }, "PATCH /api/payments/providers/[providerId] - Success");
+    logger.info(
+      { traceId, providerId: params!.providerId },
+      "PATCH /api/payments/providers/[providerId] - Success",
+    );
 
     return SuccessResponse({ data: result });
   },
@@ -57,13 +78,22 @@ export const PATCH = withAssociation(
 export const DELETE = withAssociation(
   { params: ProviderIdParamSchema },
   async (association, { params, traceId }, req) => {
-    logger.info({ traceId, providerId: params!.providerId }, "DELETE /api/payments/providers/[providerId] - Request started");
+    logger.info(
+      { traceId, providerId: params!.providerId },
+      "DELETE /api/payments/providers/[providerId] - Request started",
+    );
 
     await withRole(req, UserRole.PRESIDENT);
-    logger.info({ traceId, providerId: params!.providerId }, "DELETE /api/payments/providers/[providerId] - User authorized");
+    logger.info(
+      { traceId, providerId: params!.providerId },
+      "DELETE /api/payments/providers/[providerId] - User authorized",
+    );
 
     await deleteProvider(params!.providerId, association.id);
-    logger.info({ traceId, providerId: params!.providerId }, "DELETE /api/payments/providers/[providerId] - Success");
+    logger.info(
+      { traceId, providerId: params!.providerId },
+      "DELETE /api/payments/providers/[providerId] - Success",
+    );
 
     return SuccessResponse({
       data: null,

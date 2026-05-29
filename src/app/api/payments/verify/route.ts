@@ -20,9 +20,15 @@ import { verifyAndCompletePayment } from "@feature/payments/services/payment.ser
 export const POST = withAssociation(
   { body: VerifyPaymentSchema },
   async (_association, { body, traceId }) => {
-    logger.info({ traceId, razorpayOrderId: body!.razorpayOrderId }, "POST /api/payments/verify - Request started");
+    logger.info(
+      { traceId, razorpayOrderId: body!.razorpayOrderId },
+      "POST /api/payments/verify - Request started",
+    );
 
-    logger.info({ traceId, razorpayOrderId: body!.razorpayOrderId }, "POST /api/payments/verify - Verifying payment");
+    logger.info(
+      { traceId, razorpayOrderId: body!.razorpayOrderId },
+      "POST /api/payments/verify - Verifying payment",
+    );
 
     const result = await verifyAndCompletePayment({
       razorpayOrderId: body!.razorpayOrderId,
@@ -30,7 +36,10 @@ export const POST = withAssociation(
       razorpaySignature: body!.razorpaySignature,
     });
 
-    logger.info({ traceId, razorpayOrderId: body!.razorpayOrderId }, "POST /api/payments/verify - Success");
+    logger.info(
+      { traceId, razorpayOrderId: body!.razorpayOrderId },
+      "POST /api/payments/verify - Success",
+    );
 
     return SuccessResponse(
       {

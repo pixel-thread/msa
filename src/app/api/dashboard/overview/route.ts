@@ -4,10 +4,13 @@ import { getDashboardOverview } from "@feature/dashboard/services/dashboard.serv
 import { logger } from "@src/shared/logger/server";
 
 export const GET = withAssociation({}, async (association, { traceId }) => {
-  logger.info({
-    traceId,
-    associationId: association.id,
-  }, "GET /api/dashboard/overview - Request started");
+  logger.info(
+    {
+      traceId,
+      associationId: association.id,
+    },
+    "GET /api/dashboard/overview - Request started",
+  );
 
   const data = await getDashboardOverview(association.id);
 

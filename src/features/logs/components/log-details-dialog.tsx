@@ -15,7 +15,10 @@ interface LogDetailsDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const levelBadgeVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+const levelBadgeVariant: Record<
+  string,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
   error: "destructive",
   warn: "secondary",
   info: "default",
@@ -61,9 +64,7 @@ export function LogDetailsDialog({
 
           <div>
             <span className="text-sm font-medium">Timestamp:</span>
-            <p className="mt-1 text-sm">
-              {formatDate(entry.createdAt)}
-            </p>
+            <p className="mt-1 text-sm">{formatDate(entry.createdAt)}</p>
           </div>
 
           <div>

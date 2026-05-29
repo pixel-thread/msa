@@ -37,9 +37,7 @@ export function useLedgerEntriesColumns({
       header: "Status",
       cell: ({ row }) => (
         <Badge
-          variant={
-            statusBadgeVariant[row.original.approvalStatus] ?? "outline"
-          }
+          variant={statusBadgeVariant[row.original.approvalStatus] ?? "outline"}
         >
           {row.original.approvalStatus}
         </Badge>

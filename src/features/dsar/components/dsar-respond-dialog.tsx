@@ -146,10 +146,7 @@ export function DsarRespondDialog({
           <Button type="button" variant="outline" onClick={handleClose}>
             Cancel
           </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={respondMutation.isPending}
-          >
+          <Button onClick={handleSubmit} disabled={respondMutation.isPending}>
             {respondMutation.isPending ? "Submitting..." : "Submit Response"}
           </Button>
         </DialogFooter>

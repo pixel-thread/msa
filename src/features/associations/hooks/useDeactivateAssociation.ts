@@ -6,8 +6,7 @@ export function useDeactivateAssociation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) =>
-      http.post(`/associations/${id}/deactivate`),
+    mutationFn: (id: string) => http.post(`/associations/${id}/deactivate`),
     onSuccess: (data) => {
       if (data.success) {
         toast.success("Association deactivated successfully");

@@ -20,10 +20,16 @@ const UserPaymentsQuerySchema = z.object({
 export const GET = withAssociation(
   { params: UserPaymentsParamsSchema, query: UserPaymentsQuerySchema },
   async (association, { params, query, traceId }, request) => {
-    logger.info({ traceId, userId: params?.userId }, "GET /api/payments/users/[userId] - Request started");
+    logger.info(
+      { traceId, userId: params?.userId },
+      "GET /api/payments/users/[userId] - Request started",
+    );
 
     await withRole(request, UserRole.FINANCE);
-    logger.info({ traceId }, "GET /api/payments/users/[userId] - User authorized");
+    logger.info(
+      { traceId },
+      "GET /api/payments/users/[userId] - User authorized",
+    );
 
     if (!params) {
       throw new ValidationError("Missing user ID parameter");
@@ -41,7 +47,10 @@ export const GET = withAssociation(
       throw new NotFoundError("User not found in this association");
     }
 
-    logger.info({ traceId, userId }, "GET /api/payments/users/[userId] - Fetching transactions");
+    logger.info(
+      { traceId, userId },
+      "GET /api/payments/users/[userId] - Fetching transactions",
+    );
 
     const [transactions, total, summary] = await Promise.all([
       prisma.paymentTransaction.findMany({
@@ -70,7 +79,10 @@ export const GET = withAssociation(
       getUserContributionSummary(userId),
     ]);
 
-    logger.info({ traceId, userId, count: transactions.length, total }, "GET /api/payments/users/[userId] - Success");
+    logger.info(
+      { traceId, userId, count: transactions.length, total },
+      "GET /api/payments/users/[userId] - Success",
+    );
 
     return SuccessResponse({
       data: {

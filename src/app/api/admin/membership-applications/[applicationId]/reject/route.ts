@@ -12,22 +12,34 @@ import { logger } from "@src/shared/logger/server";
 export const POST = withValidation(
   { params: MembershipApplicationParamsSchema, body: RejectApplicationSchema },
   async (req, _ctx, { params, body, traceId }) => {
-    logger.info({ traceId, applicationId: params?.applicationId }, "POST /api/admin/membership-applications/[applicationId]/reject - Request started");
+    logger.info(
+      { traceId, applicationId: params?.applicationId },
+      "POST /api/admin/membership-applications/[applicationId]/reject - Request started",
+    );
 
     const applicationId = params?.applicationId;
 
     if (!applicationId) {
-      logger.error({ traceId }, "POST /api/admin/membership-applications/[applicationId]/reject - Application not found (missing params)");
+      logger.error(
+        { traceId },
+        "POST /api/admin/membership-applications/[applicationId]/reject - Application not found (missing params)",
+      );
       throw new NotFoundError("Application not found");
     }
 
     const user = await withRole(req, UserRole.SECRETARY);
-    logger.info({ traceId, userId: user.id, roles: user.role }, "POST /api/admin/membership-applications/[applicationId]/reject - User authorized");
+    logger.info(
+      { traceId, userId: user.id, roles: user.role },
+      "POST /api/admin/membership-applications/[applicationId]/reject - User authorized",
+    );
 
     const userId = req.headers.get("x-user-id");
 
     if (!userId) {
-      logger.error({ traceId }, "POST /api/admin/membership-applications/[applicationId]/reject - User not found (missing x-user-id header)");
+      logger.error(
+        { traceId },
+        "POST /api/admin/membership-applications/[applicationId]/reject - User not found (missing x-user-id header)",
+      );
       throw new NotFoundError("User not found");
     }
 
@@ -37,7 +49,10 @@ export const POST = withValidation(
       reviewedBy: userId,
     });
 
-    logger.info({ traceId, applicationId }, "POST /api/admin/membership-applications/[applicationId]/reject - Success");
+    logger.info(
+      { traceId, applicationId },
+      "POST /api/admin/membership-applications/[applicationId]/reject - Success",
+    );
 
     return SuccessResponse({
       message: "Application rejected successfully.",

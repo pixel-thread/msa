@@ -17,10 +17,13 @@ const HistoryQuerySchema = z.object({
 export const GET = withAssociation(
   { query: HistoryQuerySchema },
   async (association, { query, traceId }, req) => {
-    logger.info({
-      traceId,
-      associationId: association.id,
-    }, "GET /api/consent/history - Request started");
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+      },
+      "GET /api/consent/history - Request started",
+    );
 
     const userId = req.headers.get("x-user-id");
 

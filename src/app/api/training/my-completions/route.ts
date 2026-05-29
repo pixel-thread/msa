@@ -12,10 +12,16 @@ const TrainingCompletionQuerySchema = z.object({
 export const GET = withAssociation(
   { query: TrainingCompletionQuerySchema },
   async (association, { query, traceId }, request) => {
-    logger.info({ traceId, associationId: association.id }, "GET /training/my-completions - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "GET /training/my-completions - Request started",
+    );
 
     const user = await withRole(request, UserRole.MEMBER);
-    logger.info({ traceId, userId: user.id }, "GET /training/my-completions - User authorized");
+    logger.info(
+      { traceId, userId: user.id },
+      "GET /training/my-completions - User authorized",
+    );
 
     const page = query?.page;
 

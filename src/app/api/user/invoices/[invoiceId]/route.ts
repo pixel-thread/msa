@@ -13,17 +13,23 @@ const InvoiceRouteParams = z.object({
 export const GET = withAssociation(
   { params: InvoiceRouteParams },
   async (association, { params, traceId }, req) => {
-    logger.info({
-      traceId,
-      associationId: association.id,
-    }, "GET /api/user/invoices/[invoiceId] - Request started");
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+      },
+      "GET /api/user/invoices/[invoiceId] - Request started",
+    );
 
     const user = await withRole(req, UserRole.MEMBER);
 
-    logger.info({
-      traceId,
-      userId: user.id,
-    }, "GET /api/user/invoices/[invoiceId] - User authorized");
+    logger.info(
+      {
+        traceId,
+        userId: user.id,
+      },
+      "GET /api/user/invoices/[invoiceId] - User authorized",
+    );
 
     const userId = req.headers.get("x-user-id");
 
@@ -37,10 +43,13 @@ export const GET = withAssociation(
       },
     });
 
-    logger.info({
-      traceId,
-      invoiceId: params?.invoiceId,
-    }, "GET /api/user/invoices/[invoiceId] - Success");
+    logger.info(
+      {
+        traceId,
+        invoiceId: params?.invoiceId,
+      },
+      "GET /api/user/invoices/[invoiceId] - Success",
+    );
 
     return SuccessResponse({
       data: invoices,

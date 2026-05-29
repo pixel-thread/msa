@@ -308,6 +308,7 @@ Type pairs **CoinbaseDisplay** for hero headlines with **CoinbaseSans** for body
 The page rhythm rotates three modes: bright white editorial sections, soft-gray elevation bands, and **full-bleed dark editorial heroes** carrying layered product-UI mockup cards. The dark hero with floating dashboard mockups is the single most distinctive component.
 
 **Key Characteristics:**
+
 - Single accent color: `{colors.primary}` (#0052ff Coinbase Blue) carries every primary CTA, wordmark, and inline brand link. Used scarcely.
 - Modest display weights — CoinbaseDisplay at weight 400, never 700+.
 - Editorial pill geometry: every CTA is `{rounded.pill}` (100px), every asset glyph is `{rounded.full}`, every card is `{rounded.xl}` (24px). Sharp corners absent.
@@ -318,12 +319,14 @@ The page rhythm rotates three modes: bright white editorial sections, soft-gray 
 ## Colors
 
 ### Brand & Accent
+
 - **Coinbase Blue** (`{colors.primary}` — #0052ff): The single brand color. Every primary CTA pill, the Coinbase wordmark, and inline brand links.
 - **Coinbase Blue Active** (`{colors.primary-active}` — #003ecc): Press-state darken on the primary pill.
 - **Coinbase Blue Disabled** (`{colors.primary-disabled}` — #a8b8cc): Faded-blue tint for disabled CTAs.
 - **Accent Yellow** (`{colors.accent-yellow}` — #f4b000): A small sub-brand accent used very sparingly on Bitcoin/asset glyph fills inside feature cards. Illustrative-only, not an action color.
 
 ### Surface
+
 - **Canvas** (`{colors.canvas}` — #ffffff): The default page floor.
 - **Surface Soft** (`{colors.surface-soft}` — #f7f7f7): Subtle alternating band surface.
 - **Surface Strong** (`{colors.surface-strong}` — #eef0f3): The light-gray fill behind secondary buttons, search pills, asset-icon plates.
@@ -331,10 +334,12 @@ The page rhythm rotates three modes: bright white editorial sections, soft-gray 
 - **Surface Dark Elevated** (`{colors.surface-dark-elevated}` — #16181c): One step lighter, used for floating product-UI mockup cards inside dark heroes.
 
 ### Hairlines
+
 - **Hairline** (`{colors.hairline}` — #dee1e6): Default 1px divider on white surfaces.
 - **Hairline Soft** (`{colors.hairline-soft}` — #eef0f3): Lighter divider — same hex as `{colors.surface-strong}`.
 
 ### Text
+
 - **Ink** (`{colors.ink}` — #0a0b0d): Display headings, primary nav, body emphasis.
 - **Body** (`{colors.body}` — #5b616e): Default running-text — slightly cool gray.
 - **Body Strong** (`{colors.body-strong}` — #0a0b0d): Same as ink, used for stronger emphasis.
@@ -345,44 +350,49 @@ The page rhythm rotates three modes: bright white editorial sections, soft-gray 
 - **On Dark Soft** (`{colors.on-dark-soft}` — #a8acb3): Muted off-white for secondary text on dark.
 
 ### Trading Semantics
+
 - **Semantic Up** (`{colors.semantic-up}` — #05b169): "Price up" green, text color only.
 - **Semantic Down** (`{colors.semantic-down}` — #cf202f): "Price down" red, text color only.
 
 ## Typography
 
 ### Font Family
+
 The system runs **CoinbaseDisplay** (display headlines), **CoinbaseSans** (body, navigation, captions, buttons), **CoinbaseIcons** (icon font), and **CoinbaseMono** for tabular numerical data. Fallback stack: `-apple-system, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`.
 
 The display/body split is functional: CoinbaseDisplay carries hero headlines only; CoinbaseSans carries everything else.
 
 ### Hierarchy
 
-| Token | Size | Weight | Line Height | Letter Spacing | Use |
-|---|---|---|---|---|---|
-| `{typography.display-mega}` | 80px | 400 | 1.0 | -2px | Homepage hero h1 |
-| `{typography.display-xl}` | 64px | 400 | 1.0 | -1.6px | Subsidiary heroes |
-| `{typography.display-lg}` | 52px | 400 | 1.0 | -1.3px | Section heads |
-| `{typography.display-md}` | 44px | 400 | 1.09 | -1px | CTA-band headlines |
-| `{typography.display-sm}` | 36px | 400 | 1.11 | -0.5px | Sub-section heads — CoinbaseSans |
-| `{typography.title-lg}` | 32px | 400 | 1.13 | -0.4px | Card group titles |
-| `{typography.title-md}` | 18px | 600 | 1.33 | 0 | Component titles, asset row primary |
-| `{typography.title-sm}` | 16px | 600 | 1.25 | 0 | List labels |
-| `{typography.body-md}` | 16px | 400 | 1.5 | 0 | Default body |
-| `{typography.body-strong}` | 16px | 700 | 1.5 | 0 | Emphasized body |
-| `{typography.body-sm}` | 14px | 400 | 1.5 | 0 | Footer body |
-| `{typography.caption}` | 13px | 400 | 1.5 | 0 | Photo captions |
-| `{typography.caption-strong}` | 12px | 600 | 1.5 | 0 | Badge pill labels |
-| `{typography.number-display}` | 18px | 500 | 1.4 | 0 | Asset prices, percent changes — CoinbaseMono |
-| `{typography.button}` | 16px | 600 | 1.15 | 0 | Standard CTA pill |
-| `{typography.nav-link}` | 14px | 500 | 1.4 | 0 | Top-nav menu items |
+| Token                         | Size | Weight | Line Height | Letter Spacing | Use                                          |
+| ----------------------------- | ---- | ------ | ----------- | -------------- | -------------------------------------------- |
+| `{typography.display-mega}`   | 80px | 400    | 1.0         | -2px           | Homepage hero h1                             |
+| `{typography.display-xl}`     | 64px | 400    | 1.0         | -1.6px         | Subsidiary heroes                            |
+| `{typography.display-lg}`     | 52px | 400    | 1.0         | -1.3px         | Section heads                                |
+| `{typography.display-md}`     | 44px | 400    | 1.09        | -1px           | CTA-band headlines                           |
+| `{typography.display-sm}`     | 36px | 400    | 1.11        | -0.5px         | Sub-section heads — CoinbaseSans             |
+| `{typography.title-lg}`       | 32px | 400    | 1.13        | -0.4px         | Card group titles                            |
+| `{typography.title-md}`       | 18px | 600    | 1.33        | 0              | Component titles, asset row primary          |
+| `{typography.title-sm}`       | 16px | 600    | 1.25        | 0              | List labels                                  |
+| `{typography.body-md}`        | 16px | 400    | 1.5         | 0              | Default body                                 |
+| `{typography.body-strong}`    | 16px | 700    | 1.5         | 0              | Emphasized body                              |
+| `{typography.body-sm}`        | 14px | 400    | 1.5         | 0              | Footer body                                  |
+| `{typography.caption}`        | 13px | 400    | 1.5         | 0              | Photo captions                               |
+| `{typography.caption-strong}` | 12px | 600    | 1.5         | 0              | Badge pill labels                            |
+| `{typography.number-display}` | 18px | 500    | 1.4         | 0              | Asset prices, percent changes — CoinbaseMono |
+| `{typography.button}`         | 16px | 600    | 1.15        | 0              | Standard CTA pill                            |
+| `{typography.nav-link}`       | 14px | 500    | 1.4         | 0              | Top-nav menu items                           |
 
 ### Principles
+
 - **Display weight stays at 400.** The single most distinctive typographic choice — signals "calm institutional brand" rather than "trading-platform urgency."
 - **Negative letter-spacing on display only.** Display uses -1px to -2px tracking; body stays at 0.
 - **CoinbaseMono on every number.** Asset prices, percent changes — anything tabular renders in CoinbaseMono.
 
 ### Note on Font Substitutes
+
 CoinbaseDisplay, CoinbaseSans, and CoinbaseMono are licensed Coinbase typefaces.
+
 - **CoinbaseDisplay → Inter** at weight 400, letter-spacing -1.5%.
 - **CoinbaseSans → Inter** at weight 400/600.
 - **CoinbaseMono → JetBrains Mono** or **Geist Mono** at weight 500.
@@ -390,30 +400,34 @@ CoinbaseDisplay, CoinbaseSans, and CoinbaseMono are licensed Coinbase typefaces.
 ## Layout
 
 ### Spacing System
+
 - **Base unit:** 4px.
 - **Tokens:** `{spacing.xxs}` 4px · `{spacing.xs}` 8px · `{spacing.sm}` 12px · `{spacing.base}` 16px · `{spacing.md}` 20px · `{spacing.lg}` 24px · `{spacing.xl}` 32px · `{spacing.xxl}` 48px · `{spacing.section}` 96px.
 - **Section padding:** `{spacing.section}` (96px) for every major editorial band.
 - **Card internal padding:** `{spacing.xl}` (32px) for feature cards and product-UI mockups.
 
 ### Grid & Container
+
 - **Max content width:** ~1200px centered. Hero photography full-bleed.
 - **Editorial body:** Single 12-column grid.
 - **Feature card grids:** 2-up at desktop for hero splits, 3-up for benefit grids.
 - **Footer:** 6-column link list at desktop.
 
 ### Whitespace Philosophy
+
 Generous editorial pacing — closer to Bloomberg or the Financial Times than to a trading dashboard. 96px between bands; cards inside bands sit 24px apart. Density lives behind login walls, not on marketing.
 
 ## Elevation & Depth
 
-| Level | Treatment | Use |
-|---|---|---|
-| Flat | No shadow, no border | 80% of surfaces |
-| Hairline border | 1px `{colors.hairline}` | Feature card outlines on white |
-| Soft drop | `0 4px 12px rgba(0, 0, 0, 0.04)` | Single shadow tier — hovered cards |
-| Photographic | Full-bleed product-UI mockups | Hero depth |
+| Level           | Treatment                        | Use                                |
+| --------------- | -------------------------------- | ---------------------------------- |
+| Flat            | No shadow, no border             | 80% of surfaces                    |
+| Hairline border | 1px `{colors.hairline}`          | Feature card outlines on white     |
+| Soft drop       | `0 4px 12px rgba(0, 0, 0, 0.04)` | Single shadow tier — hovered cards |
+| Photographic    | Full-bleed product-UI mockups    | Hero depth                         |
 
 ### Decorative Depth
+
 - **Layered product-UI cards inside dark heroes** is the most distinctive decorative pattern — a `{component.product-ui-card-dark}` floats above a darker base canvas, often with a second smaller card overlapping at an angle.
 - **Geometric brand illustrations** carry illustrative depth where shadows would otherwise.
 
@@ -421,16 +435,16 @@ Generous editorial pacing — closer to Bloomberg or the Financial Times than to
 
 ### Border Radius Scale
 
-| Token | Value | Use |
-|---|---|---|
-| `{rounded.none}` | 0px | Reserved (essentially unused) |
-| `{rounded.xs}` | 4px | Inline tags |
-| `{rounded.sm}` | 8px | Compact rows |
-| `{rounded.md}` | 12px | Form inputs |
-| `{rounded.lg}` | 16px | Mid-size cards |
-| `{rounded.xl}` | 24px | Feature cards, product-UI mockups, pricing tiers |
-| `{rounded.pill}` | 100px | All CTA buttons, search pills, badges |
-| `{rounded.full}` | 9999px | Asset icon circles, avatars |
+| Token            | Value  | Use                                              |
+| ---------------- | ------ | ------------------------------------------------ |
+| `{rounded.none}` | 0px    | Reserved (essentially unused)                    |
+| `{rounded.xs}`   | 4px    | Inline tags                                      |
+| `{rounded.sm}`   | 8px    | Compact rows                                     |
+| `{rounded.md}`   | 12px   | Form inputs                                      |
+| `{rounded.lg}`   | 16px   | Mid-size cards                                   |
+| `{rounded.xl}`   | 24px   | Feature cards, product-UI mockups, pricing tiers |
+| `{rounded.pill}` | 100px  | All CTA buttons, search pills, badges            |
+| `{rounded.full}` | 9999px | Asset icon circles, avatars                      |
 
 Pill for interactive, card-radius (24px) for containers, full circle for icons. Sharp corners absent.
 
@@ -511,6 +525,7 @@ Pill for interactive, card-radius (24px) for containers, full circle for icons. 
 ## Do's and Don'ts
 
 ### Do
+
 - Reserve `{colors.primary}` (Coinbase Blue) for primary CTAs, wordmark, brand-glyph illustrations, inline accent links.
 - Set every CTA as `{rounded.pill}` (100px); every asset glyph as `{rounded.full}`.
 - Keep CoinbaseDisplay headlines at weight 400.
@@ -519,6 +534,7 @@ Pill for interactive, card-radius (24px) for containers, full circle for icons. 
 - Pair every dark hero with a layered product-UI mockup card stack.
 
 ### Don't
+
 - Don't introduce a secondary brand color. Coinbase Blue is the only action color; trading green/red are semantic-only.
 - Don't bold display copy — display sits at weight 400; bolding shifts the brand voice.
 - Don't add drop shadow tiers — system has one shadow tier.
@@ -531,20 +547,22 @@ Pill for interactive, card-radius (24px) for containers, full circle for icons. 
 
 ### Breakpoints
 
-| Name | Width | Key Changes |
-|---|---|---|
-| Mobile | < 640px | Hero h1 80→40px; feature card grid 1-up; asset row stacks; nav collapses to hamburger; layered product-UI cards collapse to single card. |
-| Tablet | 640–1024px | Hero h1 64px; feature card grid 2-up; asset rows stay horizontal but compress columns. |
-| Desktop | 1024–1280px | Full hero h1 80px; feature card grid 3-up; full asset row layout. |
-| Wide | > 1280px | Content caps at 1200px; hero photography full-bleed. |
+| Name    | Width       | Key Changes                                                                                                                              |
+| ------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Mobile  | < 640px     | Hero h1 80→40px; feature card grid 1-up; asset row stacks; nav collapses to hamburger; layered product-UI cards collapse to single card. |
+| Tablet  | 640–1024px  | Hero h1 64px; feature card grid 2-up; asset rows stay horizontal but compress columns.                                                   |
+| Desktop | 1024–1280px | Full hero h1 80px; feature card grid 3-up; full asset row layout.                                                                        |
+| Wide    | > 1280px    | Content caps at 1200px; hero photography full-bleed.                                                                                     |
 
 ### Touch Targets
+
 - Primary CTA pill at 44px height — at WCAG AAA.
 - Larger hero pill (`{component.button-pill-cta}`) at 56px — well above AAA.
 - Asset icon circles at 32px — borderline; padded 8px row creates effective 48px tap zone.
 - Search pill at 44px height — at AAA.
 
 ### Collapsing Strategy
+
 - Top nav switches to hamburger sheet below 768px. Sign Up CTA stays visible.
 - Hero h1 steps down: 80 → 64 → 52 → 44 → 36px on smallest screens.
 - Layered product-UI mockup cards collapse from 2-3 stacked into a single card on mobile.

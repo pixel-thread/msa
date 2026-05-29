@@ -111,7 +111,8 @@ export function ApplicationReviewDialog({
 
   if (!application) return null;
 
-  const fullName = `${application.firstName ?? ""} ${application.lastName}`.trim();
+  const fullName =
+    `${application.firstName ?? ""} ${application.lastName}`.trim();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -216,7 +217,7 @@ export function ApplicationReviewDialog({
                         <Button
                           variant="outline"
                           className={cn(
-                           "pl-3 text-left font-normal",
+                            "pl-3 text-left font-normal",
                             !field.value && "text-muted-foreground",
                           )}
                         >

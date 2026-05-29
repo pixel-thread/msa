@@ -13,12 +13,12 @@ interface SubmitDsarTicketProps {
 
 /**
  * Submits a new Data Subject Access Request (DSAR) ticket.
- * 
+ *
  * This service performs the following:
  * 1. Generates a unique, human-readable ticket number (DSAR-YYYY-RANDOM).
  * 2. Creates the DsarTicket record with a default 21-day response deadline (handled by DB).
  * 3. Records a DSAR_SUBMIT action in the immutable AuditLog.
- * 
+ *
  * @param {SubmitDsarTicketProps} props - The association ID, user ID, and ticket data.
  * @returns {Promise<DsarTicket>} The created DSAR ticket.
  */

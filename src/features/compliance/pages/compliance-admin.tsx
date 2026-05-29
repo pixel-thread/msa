@@ -54,8 +54,6 @@ export default function ComplianceAdminPage() {
     }
   }, [deletingRecord, deleteComplianceCheck]);
 
-  
-
   return (
     <>
       <div className="flex items-center justify-between">
@@ -102,11 +100,7 @@ export default function ComplianceAdminPage() {
         columns={columns}
       />
 
-      <DataTablePagination
-        meta={meta}
-        onPageChange={setPage}
-        label="checks"
-      />
+      <DataTablePagination meta={meta} onPageChange={setPage} label="checks" />
 
       <ComplianceDetailDialog
         record={detailRecord}

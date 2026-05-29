@@ -40,7 +40,7 @@ model User {
 model PushToken {
   id        String   @id @default(uuid())
   token     String   @unique
-  userId    String?  
+  userId    String?
   user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -70,8 +70,8 @@ git commit -m "feat: add PushToken model to schema"
 - [ ] **Step 1: Implement `ExpoNotificationService`**
 
 ```typescript
-import { Expo, ExpoPushMessage, ExpoPushTicket } from 'expo-server-sdk';
-import { prisma } from './prisma';
+import { Expo, ExpoPushMessage, ExpoPushTicket } from "expo-server-sdk";
+import { prisma } from "./prisma";
 
 let expo = new Expo();
 
@@ -80,7 +80,7 @@ export class ExpoNotificationService {
     tokens: string[],
     title: string,
     body: string,
-    data?: any
+    data?: any,
   ) {
     const messages: ExpoPushMessage[] = [];
     for (const pushToken of tokens) {
@@ -90,7 +90,7 @@ export class ExpoNotificationService {
       }
       messages.push({
         to: pushToken,
-        sound: 'default',
+        sound: "default",
         title,
         body,
         data,
@@ -105,7 +105,7 @@ export class ExpoNotificationService {
         const ticketChunk = await expo.sendPushNotificationsAsync(chunk);
         tickets.push(...ticketChunk);
       } catch (error) {
-        console.error('Error sending push notification chunk:', error);
+        console.error("Error sending push notification chunk:", error);
       }
     }
 
@@ -133,13 +133,14 @@ git commit -m "feat: implement ExpoNotificationService wrapper"
 
 ```typescript
 // src/app/api/notifications/register/route.ts
-import { NextResponse } from 'next/server';
-import { prisma } from '@/shared/lib/prisma';
+import { NextResponse } from "next/server";
+import { prisma } from "@/shared/lib/prisma";
 
 export async function POST(req: Request) {
   try {
     const { token } = await req.json();
-    if (!token) return NextResponse.json({ error: 'Token is required' }, { status: 400 });
+    if (!token)
+      return NextResponse.json({ error: "Token is required" }, { status: 400 });
 
     const pushToken = await prisma.pushToken.upsert({
       where: { token },
@@ -149,7 +150,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json(pushToken);
   } catch (error) {
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
 ```
@@ -158,17 +162,19 @@ export async function POST(req: Request) {
 
 ```typescript
 // src/app/api/notifications/link/route.ts
-import { NextResponse } from 'next/server';
-import { prisma } from '@/shared/lib/prisma';
-import { getAuth } from '@/shared/api/auth'; // Hypothetical auth helper
+import { NextResponse } from "next/server";
+import { prisma } from "@/shared/lib/prisma";
+import { getAuth } from "@/shared/api/auth"; // Hypothetical auth helper
 
 export async function POST(req: Request) {
   try {
     const auth = await getAuth(req);
-    if (!auth?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth?.user)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { token } = await req.json();
-    if (!token) return NextResponse.json({ error: 'Token is required' }, { status: 400 });
+    if (!token)
+      return NextResponse.json({ error: "Token is required" }, { status: 400 });
 
     const pushToken = await prisma.pushToken.update({
       where: { token },
@@ -177,7 +183,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json(pushToken);
   } catch (error) {
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
 ```
@@ -198,17 +207,18 @@ git commit -m "feat: add notification registration API routes"
 - [ ] **Step 1: Trigger notification on meeting assignment**
 
 Find where `MeetingAttendee` is created and add:
+
 ```typescript
 const userTokens = await prisma.pushToken.findMany({
   where: { userId },
-  select: { token: true }
+  select: { token: true },
 });
 
 if (userTokens.length > 0) {
   await ExpoNotificationService.sendPushNotifications(
-    userTokens.map(t => t.token),
-    'New Meeting Assigned',
-    `You have been assigned to: ${meeting.title}`
+    userTokens.map((t) => t.token),
+    "New Meeting Assigned",
+    `You have been assigned to: ${meeting.title}`,
   );
 }
 ```

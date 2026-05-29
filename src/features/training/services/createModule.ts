@@ -8,7 +8,11 @@ interface CreateModuleProps {
   data: CreateTrainingModuleInput;
 }
 
-export async function createModule({ associationId, actorId, data }: CreateModuleProps) {
+export async function createModule({
+  associationId,
+  actorId,
+  data,
+}: CreateModuleProps) {
   return await prisma.$transaction(async (tx) => {
     const trainingModule = await tx.trainingModule.create({
       data: {
@@ -29,7 +33,7 @@ export async function createModule({ associationId, actorId, data }: CreateModul
     });
 
     const targetRoles = data.requiredForRoles || [UserRole.MEMBER];
-    
+
     if (targetRoles.length > 0) {
       const usersToAssign = await tx.user.findMany({
         where: {

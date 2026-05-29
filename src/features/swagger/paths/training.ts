@@ -3,7 +3,8 @@ export const trainingPaths = {
     get: {
       tags: ["Training"],
       summary: "List training modules",
-      description: "Retrieve training modules for an association with pagination",
+      description:
+        "Retrieve training modules for an association with pagination",
       parameters: [
         {
           name: "page",
@@ -37,7 +38,14 @@ export const trainingPaths = {
                   type: "array",
                   items: {
                     type: "string",
-                    enum: ["SUPER_ADMIN", "PRESIDENT", "SECRETARY", "FINANCE", "DPO", "MEMBER"],
+                    enum: [
+                      "SUPER_ADMIN",
+                      "PRESIDENT",
+                      "SECRETARY",
+                      "FINANCE",
+                      "DPO",
+                      "MEMBER",
+                    ],
                   },
                 },
                 isActive: { type: "boolean", default: true },
@@ -97,7 +105,14 @@ export const trainingPaths = {
                   type: "array",
                   items: {
                     type: "string",
-                    enum: ["SUPER_ADMIN", "PRESIDENT", "SECRETARY", "FINANCE", "DPO", "MEMBER"],
+                    enum: [
+                      "SUPER_ADMIN",
+                      "PRESIDENT",
+                      "SECRETARY",
+                      "FINANCE",
+                      "DPO",
+                      "MEMBER",
+                    ],
                   },
                 },
                 isActive: { type: "boolean" },
@@ -168,7 +183,8 @@ export const trainingPaths = {
     post: {
       tags: ["Training"],
       summary: "Assign a user to a module",
-      description: "Assign a single user to a training module (requires DPO or higher)",
+      description:
+        "Assign a single user to a training module (requires DPO or higher)",
       parameters: [
         {
           name: "moduleId",
@@ -200,7 +216,8 @@ export const trainingPaths = {
     put: {
       tags: ["Training"],
       summary: "Bulk assign users",
-      description: "Bulk assign users to a training module (requires DPO or higher)",
+      description:
+        "Bulk assign users to a training module (requires DPO or higher)",
       parameters: [
         {
           name: "moduleId",
@@ -306,7 +323,8 @@ export const trainingPaths = {
     get: {
       tags: ["Training"],
       summary: "List assigned users with completion status",
-      description: "Get all assigned users for a module with their completion status (requires SECRETARY or higher)",
+      description:
+        "Get all assigned users for a module with their completion status (requires SECRETARY or higher)",
       parameters: [
         {
           name: "moduleId",
@@ -326,7 +344,8 @@ export const trainingPaths = {
     post: {
       tags: ["Training"],
       summary: "Admin mark assignment as complete",
-      description: "Admin marks a user's assignment as complete (requires SECRETARY or higher)",
+      description:
+        "Admin marks a user's assignment as complete (requires SECRETARY or higher)",
       parameters: [
         {
           name: "moduleId",
@@ -382,7 +401,8 @@ export const trainingPaths = {
     post: {
       tags: ["Training"],
       summary: "Create a training supplement",
-      description: "Add a supplement to a training module (requires DPO or higher). Accepts multipart/form-data with a file and a metadata JSON string.",
+      description:
+        "Add a supplement to a training module (requires DPO or higher). Accepts multipart/form-data with a file and a metadata JSON string.",
       parameters: [
         {
           name: "moduleId",
@@ -462,7 +482,8 @@ export const trainingPaths = {
     patch: {
       tags: ["Training"],
       summary: "Update a training supplement",
-      description: "Update a supplement (requires DPO or higher). Accepts multipart/form-data with an optional file and a required metadata JSON string.",
+      description:
+        "Update a supplement (requires DPO or higher). Accepts multipart/form-data with an optional file and a required metadata JSON string.",
       parameters: [
         {
           name: "moduleId",
@@ -486,11 +507,13 @@ export const trainingPaths = {
                 file: {
                   type: "string",
                   format: "binary",
-                  description: "Optional new supplement file to replace the existing one",
+                  description:
+                    "Optional new supplement file to replace the existing one",
                 },
                 metadata: {
                   type: "string",
-                  description: "JSON string containing supplement metadata fields to update",
+                  description:
+                    "JSON string containing supplement metadata fields to update",
                   schema: {
                     type: "object",
                     properties: {
@@ -520,7 +543,8 @@ export const trainingPaths = {
     delete: {
       tags: ["Training"],
       summary: "Delete a training supplement",
-      description: "Delete a supplement and its associated file from storage (requires DPO or higher)",
+      description:
+        "Delete a supplement and its associated file from storage (requires DPO or higher)",
       parameters: [
         {
           name: "moduleId",
@@ -562,7 +586,8 @@ export const trainingPaths = {
     get: {
       tags: ["Training"],
       summary: "List all completions",
-      description: "Retrieve all training completions with optional filters (requires SECRETARY or higher)",
+      description:
+        "Retrieve all training completions with optional filters (requires SECRETARY or higher)",
       parameters: [
         {
           name: "moduleId",
@@ -589,7 +614,8 @@ export const trainingPaths = {
     post: {
       tags: ["Training"],
       summary: "Admin record completion",
-      description: "Admin records a completion for a user (requires SECRETARY or higher)",
+      description:
+        "Admin records a completion for a user (requires SECRETARY or higher)",
       requestBody: {
         required: true,
         content: {
@@ -636,7 +662,8 @@ export const trainingPaths = {
     post: {
       tags: ["Training"],
       summary: "Create a training certificate",
-      description: "Upload a certificate for a user on a training module (requires DPO or higher). Accepts multipart/form-data with a file and a metadata JSON string.",
+      description:
+        "Upload a certificate for a user on a training module (requires DPO or higher). Accepts multipart/form-data with a file and a metadata JSON string.",
       parameters: [
         {
           name: "moduleId",
@@ -665,10 +692,25 @@ export const trainingPaths = {
                     type: "object",
                     required: ["userId"],
                     properties: {
-                      userId: { type: "string", format: "uuid", description: "User to issue the certificate to" },
-                      certificateNumber: { type: "string", description: "Optional certificate number" },
-                      issuedAt: { type: "string", format: "date-time", description: "Issue date (defaults to now)" },
-                      thumbnailUrl: { type: "string", format: "uri", description: "Optional thumbnail URL" },
+                      userId: {
+                        type: "string",
+                        format: "uuid",
+                        description: "User to issue the certificate to",
+                      },
+                      certificateNumber: {
+                        type: "string",
+                        description: "Optional certificate number",
+                      },
+                      issuedAt: {
+                        type: "string",
+                        format: "date-time",
+                        description: "Issue date (defaults to now)",
+                      },
+                      thumbnailUrl: {
+                        type: "string",
+                        format: "uri",
+                        description: "Optional thumbnail URL",
+                      },
                     },
                   },
                 },
@@ -711,7 +753,8 @@ export const trainingPaths = {
     patch: {
       tags: ["Training"],
       summary: "Update a training certificate",
-      description: "Update a certificate (requires DPO or higher). Accepts multipart/form-data with an optional file and a required metadata JSON string.",
+      description:
+        "Update a certificate (requires DPO or higher). Accepts multipart/form-data with an optional file and a required metadata JSON string.",
       parameters: [
         {
           name: "moduleId",
@@ -735,11 +778,13 @@ export const trainingPaths = {
                 file: {
                   type: "string",
                   format: "binary",
-                  description: "Optional new certificate file to replace the existing one",
+                  description:
+                    "Optional new certificate file to replace the existing one",
                 },
                 metadata: {
                   type: "string",
-                  description: "JSON string containing certificate metadata fields to update",
+                  description:
+                    "JSON string containing certificate metadata fields to update",
                   schema: {
                     type: "object",
                     properties: {
@@ -763,7 +808,8 @@ export const trainingPaths = {
     delete: {
       tags: ["Training"],
       summary: "Delete a training certificate",
-      description: "Delete a certificate and its associated file from storage (requires DPO or higher)",
+      description:
+        "Delete a certificate and its associated file from storage (requires DPO or higher)",
       parameters: [
         {
           name: "moduleId",

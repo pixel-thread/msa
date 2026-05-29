@@ -74,4 +74,3 @@ export async function sendAnnouncementNotifications(
     logger.error({ error }, "Failed to send announcement notifications:");
   }
 }
-

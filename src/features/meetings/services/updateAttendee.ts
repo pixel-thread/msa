@@ -30,10 +30,13 @@ export async function updateAttendee({
     throw new NotFoundError("Meeting");
   }
 
-  logger.debug({
-    meetingId,
-    userId,
-  }, "Update Attendee");
+  logger.debug(
+    {
+      meetingId,
+      userId,
+    },
+    "Update Attendee",
+  );
   const attendance = await prisma.meetingAttendee.findUnique({
     where: {
       meetingId_userId: {

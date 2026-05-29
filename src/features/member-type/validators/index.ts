@@ -16,4 +16,3 @@ export const MemberTypeParamsSchema = z.object({
 
 export type CreateMemberTypeInput = z.infer<typeof CreateMemberTypeSchema>;
 export type UpdateMemberTypeInput = z.infer<typeof UpdateMemberTypeSchema>;
-

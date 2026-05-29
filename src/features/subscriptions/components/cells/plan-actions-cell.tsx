@@ -10,21 +10,17 @@ interface PlanActionsCellProps {
   onEdit: (plan: SubscriptionPlan) => void;
 }
 
-export function PlanActionsCell({ plan, onDelete, onEdit }: PlanActionsCellProps) {
+export function PlanActionsCell({
+  plan,
+  onDelete,
+  onEdit,
+}: PlanActionsCellProps) {
   return (
     <div className="flex items-center gap-2 justify-end">
-      <Button
-        size="sm"
-        variant="ghost"
-        onClick={() => onEdit(plan)}
-      >
+      <Button size="sm" variant="ghost" onClick={() => onEdit(plan)}>
         <Pencil className="h-4 w-4" />
       </Button>
-      <Button
-        size="sm"
-        variant="ghost"
-        onClick={() => onDelete(plan.id)}
-      >
+      <Button size="sm" variant="ghost" onClick={() => onDelete(plan.id)}>
         <Trash2 className="h-4 w-4 text-destructive" />
       </Button>
     </div>

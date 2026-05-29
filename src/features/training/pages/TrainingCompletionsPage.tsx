@@ -7,9 +7,7 @@ import { ArrowLeft, Award } from "lucide-react";
 import { Button } from "@src/shared/components/ui/button";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import { DataTable } from "@src/shared/components/data-table";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import { useTrainingModule } from "../hooks/useTrainingModules";
 import { useTrainingCompletions } from "../hooks/completions/useTrainingCompletions";
 import { useTrainingCompletionsColumns } from "../hooks/completions/useTrainingCompletionsColumns";
@@ -25,8 +23,11 @@ export function TrainingCompletionsPage() {
   const { module: trainingModule, isLoading: isModuleLoading } =
     useTrainingModule(moduleId);
 
-  const { completions, meta, isLoading: isCompletionsLoading } =
-    useTrainingCompletions(moduleId, { page });
+  const {
+    completions,
+    meta,
+    isLoading: isCompletionsLoading,
+  } = useTrainingCompletions(moduleId, { page });
 
   const { columns } = useTrainingCompletionsColumns();
 
@@ -46,10 +47,7 @@ export function TrainingCompletionsPage() {
           The training module you are trying to access does not exist or has
           been removed.
         </p>
-        <Button
-          onClick={() => router.push("/training")}
-          className=""
-        >
+        <Button onClick={() => router.push("/training")} className="">
           Back to Portal
         </Button>
       </div>

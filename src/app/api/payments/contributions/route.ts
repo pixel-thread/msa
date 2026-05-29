@@ -20,7 +20,9 @@ import { buildPagination } from "@src/shared/utils/build-pagination";
 
 const ContributionsQuerySchema = z.object({
   page: pageNumberValidation,
-  status: z.enum(Object.values(ContributionStatus) as [string, ...string[]]).optional(),
+  status: z
+    .enum(Object.values(ContributionStatus) as [string, ...string[]])
+    .optional(),
   userId: z.uuid().optional(),
   year: z.coerce.number().int().min(2020).max(2100).optional(),
   month: z.coerce.number().int().min(1).max(12).optional(),
@@ -36,10 +38,16 @@ const ContributionsQuerySchema = z.object({
 export const GET = withAssociation(
   { query: ContributionsQuerySchema },
   async (association, { query, traceId }, request) => {
-    logger.info({ traceId, query }, "GET /api/payments/contributions - Request started");
+    logger.info(
+      { traceId, query },
+      "GET /api/payments/contributions - Request started",
+    );
 
     await withRole(request, UserRole.FINANCE);
-    logger.info({ traceId }, "GET /api/payments/contributions - User authorized");
+    logger.info(
+      { traceId },
+      "GET /api/payments/contributions - User authorized",
+    );
 
     if (!query) {
       throw new ValidationError("Invalid query parameters");
@@ -97,7 +105,10 @@ export const GET = withAssociation(
       prisma.contributionPeriod.count({ where }),
     ]);
 
-    logger.info({ traceId, count: contributions.length }, "GET /api/payments/contributions - Success");
+    logger.info(
+      { traceId, count: contributions.length },
+      "GET /api/payments/contributions - Success",
+    );
 
     return SuccessResponse({
       data: contributions,
@@ -119,12 +130,21 @@ export const GET = withAssociation(
 export const POST = withAssociation(
   { body: GenerateContributionsSchema },
   async (association, { body, traceId }, request) => {
-    logger.info({ traceId, year: body!.year, month: body!.month }, "POST /api/payments/contributions - Request started");
+    logger.info(
+      { traceId, year: body!.year, month: body!.month },
+      "POST /api/payments/contributions - Request started",
+    );
 
     await withRole(request, UserRole.FINANCE);
-    logger.info({ traceId }, "POST /api/payments/contributions - User authorized");
+    logger.info(
+      { traceId },
+      "POST /api/payments/contributions - User authorized",
+    );
 
-    logger.info({ traceId, year: body!.year, month: body!.month }, "POST /api/payments/contributions - Generating contributions");
+    logger.info(
+      { traceId, year: body!.year, month: body!.month },
+      "POST /api/payments/contributions - Generating contributions",
+    );
     const count = await generateMonthlyContributions(
       association.id,
       body!.year,
@@ -134,7 +154,10 @@ export const POST = withAssociation(
     // Also mark overdue contributions while we're at it
     const overdueCount = await markOverdueContributions(association.id);
 
-    logger.info({ traceId, generated: count, markedOverdue: overdueCount }, "POST /api/payments/contributions - Success");
+    logger.info(
+      { traceId, generated: count, markedOverdue: overdueCount },
+      "POST /api/payments/contributions - Success",
+    );
 
     return SuccessResponse(
       {
@@ -159,17 +182,26 @@ export const POST = withAssociation(
 export const PATCH = withAssociation(
   { body: WaiveContributionSchema },
   async (_association, { body, traceId }, request) => {
-    logger.info({ traceId, contributionPeriodId: body!.contributionPeriodId }, "PATCH /api/payments/contributions - Request started");
+    logger.info(
+      { traceId, contributionPeriodId: body!.contributionPeriodId },
+      "PATCH /api/payments/contributions - Request started",
+    );
 
     await withRole(request, UserRole.FINANCE);
-    logger.info({ traceId }, "PATCH /api/payments/contributions - User authorized");
+    logger.info(
+      { traceId },
+      "PATCH /api/payments/contributions - User authorized",
+    );
 
     const waived = await waiveContribution(
       body!.contributionPeriodId,
       body!.reason,
     );
 
-    logger.info({ traceId, contributionPeriodId: body!.contributionPeriodId }, "PATCH /api/payments/contributions - Success");
+    logger.info(
+      { traceId, contributionPeriodId: body!.contributionPeriodId },
+      "PATCH /api/payments/contributions - Success",
+    );
 
     return SuccessResponse(
       {

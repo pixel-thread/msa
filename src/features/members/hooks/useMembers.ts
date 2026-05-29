@@ -13,8 +13,7 @@ export function useMembers(options: UseMembersOptions = {}) {
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["members", page, status],
-    queryFn: () =>
-      http.get<User[]>(`/members?page=${page}&status=${status}`),
+    queryFn: () => http.get<User[]>(`/members?page=${page}&status=${status}`),
   });
 
   return {

@@ -101,9 +101,7 @@ export default function AnnouncementDetailPage() {
                 <Pin className="h-5 w-5 text-amber-500" />
               </span>
             )}
-            <Badge
-              variant={statusVariants[announcement.status] || "outline"}
-            >
+            <Badge variant={statusVariants[announcement.status] || "outline"}>
               {announcement.status}
             </Badge>
             <Badge

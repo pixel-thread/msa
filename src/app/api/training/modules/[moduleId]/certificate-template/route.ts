@@ -31,11 +31,17 @@ export const POST = withAssociation(
       throw new ForbiddenError("Invalid module ID");
     }
 
-    logger.info({ traceId, associationId: association.id }, "POST /training/modules/{moduleId}/certificate-template - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "POST /training/modules/{moduleId}/certificate-template - Request started",
+    );
 
     const { moduleId } = params;
     const user = await withRole(request, UserRole.DPO);
-    logger.info({ traceId, userId: user.id }, "POST /training/modules/{moduleId}/certificate-template - User authorized");
+    logger.info(
+      { traceId, userId: user.id },
+      "POST /training/modules/{moduleId}/certificate-template - User authorized",
+    );
 
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
@@ -75,7 +81,10 @@ export const POST = withAssociation(
       fileId: fileRecord.id,
     });
 
-    logger.info({ traceId, templateId: template.id }, "POST /training/modules/{moduleId}/certificate-template - Success");
+    logger.info(
+      { traceId, templateId: template.id },
+      "POST /training/modules/{moduleId}/certificate-template - Success",
+    );
     return SuccessResponse({ data: template }, 201);
   },
 );
@@ -94,11 +103,17 @@ export const DELETE = withAssociation(
       throw new ForbiddenError("Invalid module ID");
     }
 
-    logger.info({ traceId, associationId: association.id }, "DELETE /training/modules/{moduleId}/certificate-template - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "DELETE /training/modules/{moduleId}/certificate-template - Request started",
+    );
 
     const { moduleId } = params;
     const user = await withRole(request, UserRole.DPO);
-    logger.info({ traceId, userId: user.id }, "DELETE /training/modules/{moduleId}/certificate-template - User authorized");
+    logger.info(
+      { traceId, userId: user.id },
+      "DELETE /training/modules/{moduleId}/certificate-template - User authorized",
+    );
 
     await deleteCertificateTemplate({
       associationId: association.id,
@@ -106,7 +121,10 @@ export const DELETE = withAssociation(
       actorId: user.id,
     });
 
-    logger.info({ traceId, moduleId }, "DELETE /training/modules/{moduleId}/certificate-template - Success");
+    logger.info(
+      { traceId, moduleId },
+      "DELETE /training/modules/{moduleId}/certificate-template - Success",
+    );
     return SuccessResponse({
       data: { success: true, message: "Certificate template removed" },
     });

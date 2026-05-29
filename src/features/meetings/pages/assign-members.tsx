@@ -13,18 +13,10 @@ import {
   CardContent,
 } from "@src/shared/components/ui/card";
 import { Button } from "@src/shared/components/ui/button";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import { DataTable } from "@src/shared/components/data-table";
 import { useMeetingAttendeesColumns } from "@src/features/meetings/hooks/useMeetingAttendeesColumns";
-import {
-  Users,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  UserPlus,
-} from "lucide-react";
+import { Users, CheckCircle2, XCircle, Clock, UserPlus } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import http from "@src/shared/utils/http";
 import { toast } from "sonner";

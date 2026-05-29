@@ -43,10 +43,16 @@ export const GET = withAssociation(
       throw new ForbiddenError("Invalid module ID");
     }
 
-    logger.info({ traceId, associationId: association.id }, "GET /training/modules/{moduleId}/assign - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "GET /training/modules/{moduleId}/assign - Request started",
+    );
 
     await withRole(request, UserRole.SECRETARY);
-    logger.info({ traceId }, "GET /training/modules/{moduleId}/assign - User authorized");
+    logger.info(
+      { traceId },
+      "GET /training/modules/{moduleId}/assign - User authorized",
+    );
 
     const { moduleId } = params;
     const page = query?.page || 1;
@@ -57,7 +63,10 @@ export const GET = withAssociation(
       page,
     });
 
-    logger.info({ traceId }, "GET /training/modules/{moduleId}/assign - Success");
+    logger.info(
+      { traceId },
+      "GET /training/modules/{moduleId}/assign - Success",
+    );
     return SuccessResponse({
       data: result.data,
       meta: buildPagination(result.total, page),
@@ -75,11 +84,17 @@ export const POST = withAssociation(
       throw new ForbiddenError("Invalid request body");
     }
 
-    logger.info({ traceId, associationId: association.id }, "POST /training/modules/{moduleId}/assign - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "POST /training/modules/{moduleId}/assign - Request started",
+    );
 
     const { moduleId } = params;
     const user = await withRole(request, UserRole.DPO);
-    logger.info({ traceId, userId: user.id }, "POST /training/modules/{moduleId}/assign - User authorized");
+    logger.info(
+      { traceId, userId: user.id },
+      "POST /training/modules/{moduleId}/assign - User authorized",
+    );
 
     try {
       const assignment = await assignTraining({
@@ -89,7 +104,10 @@ export const POST = withAssociation(
         assignedById: user.id,
       });
 
-      logger.info({ traceId, userId: body.userId }, "POST /training/modules/{moduleId}/assign - Success");
+      logger.info(
+        { traceId, userId: body.userId },
+        "POST /training/modules/{moduleId}/assign - Success",
+      );
       return SuccessResponse({ data: assignment }, 201);
     } catch (error) {
       if (error instanceof Error) {
@@ -110,11 +128,17 @@ export const PUT = withAssociation(
       throw new ForbiddenError("Invalid request body");
     }
 
-    logger.info({ traceId, associationId: association.id }, "PUT /training/modules/{moduleId}/assign - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "PUT /training/modules/{moduleId}/assign - Request started",
+    );
 
     const { moduleId } = params;
     const user = await withRole(request, UserRole.DPO);
-    logger.info({ traceId, userId: user.id }, "PUT /training/modules/{moduleId}/assign - User authorized");
+    logger.info(
+      { traceId, userId: user.id },
+      "PUT /training/modules/{moduleId}/assign - User authorized",
+    );
 
     try {
       const result = await bulkAssignTraining({
@@ -124,7 +148,10 @@ export const PUT = withAssociation(
         assignedById: user.id,
       });
 
-      logger.info({ traceId, userCount: body.userIds.length }, "PUT /training/modules/{moduleId}/assign - Success");
+      logger.info(
+        { traceId, userCount: body.userIds.length },
+        "PUT /training/modules/{moduleId}/assign - Success",
+      );
       return SuccessResponse({ data: result }, 201);
     } catch (error) {
       if (error instanceof Error) {
@@ -145,11 +172,17 @@ export const DELETE = withAssociation(
       throw new ForbiddenError("Invalid request body");
     }
 
-    logger.info({ traceId, associationId: association.id }, "DELETE /training/modules/{moduleId}/assign - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "DELETE /training/modules/{moduleId}/assign - Request started",
+    );
 
     const { moduleId } = params;
     const user = await withRole(request, UserRole.DPO);
-    logger.info({ traceId, userId: user.id }, "DELETE /training/modules/{moduleId}/assign - User authorized");
+    logger.info(
+      { traceId, userId: user.id },
+      "DELETE /training/modules/{moduleId}/assign - User authorized",
+    );
 
     try {
       const result = await removeTrainingAssignment({
@@ -159,7 +192,10 @@ export const DELETE = withAssociation(
         removedById: user.id,
       });
 
-      logger.info({ traceId, userId: body.userId }, "DELETE /training/modules/{moduleId}/assign - Success");
+      logger.info(
+        { traceId, userId: body.userId },
+        "DELETE /training/modules/{moduleId}/assign - Success",
+      );
       return SuccessResponse({ data: result });
     } catch (error) {
       if (error instanceof Error) {
@@ -180,11 +216,17 @@ export const PATCH = withAssociation(
       throw new ForbiddenError("Invalid request body");
     }
 
-    logger.info({ traceId, associationId: association.id }, "PATCH /training/modules/{moduleId}/assign - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "PATCH /training/modules/{moduleId}/assign - Request started",
+    );
 
     const { moduleId } = params;
     const user = await withRole(request, UserRole.DPO);
-    logger.info({ traceId, userId: user.id }, "PATCH /training/modules/{moduleId}/assign - User authorized");
+    logger.info(
+      { traceId, userId: user.id },
+      "PATCH /training/modules/{moduleId}/assign - User authorized",
+    );
 
     try {
       const result = await bulkRemoveTrainingAssignment({
@@ -194,7 +236,10 @@ export const PATCH = withAssociation(
         removedById: user.id,
       });
 
-      logger.info({ traceId, userCount: body.userIds.length }, "PATCH /training/modules/{moduleId}/assign - Success");
+      logger.info(
+        { traceId, userCount: body.userIds.length },
+        "PATCH /training/modules/{moduleId}/assign - Success",
+      );
       return SuccessResponse({ data: result });
     } catch (error) {
       if (error instanceof Error) {

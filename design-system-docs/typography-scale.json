@@ -167,9 +167,18 @@
   "text_color_variants": {
     "description": "Color tokens available to the Text component via CVA",
     "available_colors": [
-      "default", "ink", "body", "body-strong", "muted", "muted-soft",
-      "primary", "on-primary", "on-dark", "on-dark-soft",
-      "semantic-up", "semantic-down"
+      "default",
+      "ink",
+      "body",
+      "body-strong",
+      "muted",
+      "muted-soft",
+      "primary",
+      "on-primary",
+      "on-dark",
+      "on-dark-soft",
+      "semantic-up",
+      "semantic-down"
     ]
   },
 

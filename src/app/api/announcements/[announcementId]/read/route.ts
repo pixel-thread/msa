@@ -13,7 +13,10 @@ const RouteParams = z.object({
 export const POST = withAssociation(
   { params: RouteParams },
   async (association, { params, traceId }, request: NextRequest) => {
-    logger.info({ traceId, announcementId: params?.announcementId }, "POST /api/announcements/[id]/read - Request started");
+    logger.info(
+      { traceId, announcementId: params?.announcementId },
+      "POST /api/announcements/[id]/read - Request started",
+    );
 
     const announcementId = params?.announcementId;
 
@@ -23,7 +26,10 @@ export const POST = withAssociation(
 
     const userId = request.headers.get("x-user-id")!;
     await withRole(request, UserRole.MEMBER);
-    logger.info({ traceId, userId, announcementId }, "POST /api/announcements/[id]/read - User authorized");
+    logger.info(
+      { traceId, userId, announcementId },
+      "POST /api/announcements/[id]/read - User authorized",
+    );
 
     const readReceipt = await markAnnouncementRead({
       announcementId,
@@ -31,7 +37,10 @@ export const POST = withAssociation(
       associationId: association.id,
     });
 
-    logger.info({ traceId, announcementId }, "POST /api/announcements/[id]/read - Success");
+    logger.info(
+      { traceId, announcementId },
+      "POST /api/announcements/[id]/read - Success",
+    );
 
     return SuccessResponse({
       data: readReceipt,

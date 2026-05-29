@@ -16,12 +16,21 @@ export const POST = withAssociationFormData(
     params: AnnouncementRouteParams,
   },
   async (association, { formData, params, traceId }, request) => {
-    logger.info({ traceId, announcementId: params?.announcementId }, "POST /api/announcements/[id]/upload - Request started");
+    logger.info(
+      { traceId, announcementId: params?.announcementId },
+      "POST /api/announcements/[id]/upload - Request started",
+    );
 
     const user = await withRole(request, UserRole.SECRETARY);
-    logger.info({ traceId, userId: user.id, announcementId: params?.announcementId }, "POST /api/announcements/[id]/upload - User authorized");
+    logger.info(
+      { traceId, userId: user.id, announcementId: params?.announcementId },
+      "POST /api/announcements/[id]/upload - User authorized",
+    );
 
-    logger.info({ traceId, announcementId: params?.announcementId }, "POST /api/announcements/[id]/upload - Uploading image");
+    logger.info(
+      { traceId, announcementId: params?.announcementId },
+      "POST /api/announcements/[id]/upload - Uploading image",
+    );
 
     const { announcement, oldStorageKey } = await uploadAnnouncementImage({
       announcementId: params!.announcementId,
@@ -34,11 +43,17 @@ export const POST = withAssociationFormData(
       try {
         await deleteFromBucket(oldStorageKey);
       } catch (error) {
-        logger.error({ error, traceId }, "POST /api/announcements/[id]/upload - Failed to delete old image");
+        logger.error(
+          { error, traceId },
+          "POST /api/announcements/[id]/upload - Failed to delete old image",
+        );
       }
     }
 
-    logger.info({ traceId, announcementId: params?.announcementId }, "POST /api/announcements/[id]/upload - Success");
+    logger.info(
+      { traceId, announcementId: params?.announcementId },
+      "POST /api/announcements/[id]/upload - Success",
+    );
 
     return SuccessResponse({ data: announcement }, 200);
   },

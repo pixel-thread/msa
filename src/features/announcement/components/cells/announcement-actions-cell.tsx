@@ -17,18 +17,10 @@ export function AnnouncementActionsCell({
 }: AnnouncementActionsCellProps) {
   return (
     <div className="flex items-center gap-2">
-      <Button
-        size="sm"
-        variant="ghost"
-        onClick={() => onEdit(announcement)}
-      >
+      <Button size="sm" variant="ghost" onClick={() => onEdit(announcement)}>
         <Pencil className="h-4 w-4" />
       </Button>
-      <Button
-        size="sm"
-        variant="ghost"
-        onClick={() => onDelete(announcement)}
-      >
+      <Button size="sm" variant="ghost" onClick={() => onDelete(announcement)}>
         <Trash2 className="h-4 w-4" />
       </Button>
     </div>

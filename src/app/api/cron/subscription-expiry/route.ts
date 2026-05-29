@@ -48,9 +48,12 @@ export async function GET(request: Request) {
       results,
     });
   } catch (error) {
-    logger.error({
-      error,
-    }, "GET /api/cron/subscription-expiry - Unhandled error");
+    logger.error(
+      {
+        error,
+      },
+      "GET /api/cron/subscription-expiry - Unhandled error",
+    );
     return NextResponse.json(
       {
         error: "Internal server error",

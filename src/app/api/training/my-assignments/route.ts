@@ -13,10 +13,16 @@ const TrainingAssignmentQuerySchema = z.object({
 export const GET = withAssociation(
   { query: TrainingAssignmentQuerySchema },
   async (association, { query, traceId }, request) => {
-    logger.info({ traceId, associationId: association.id }, "GET /training/my-assignments - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "GET /training/my-assignments - Request started",
+    );
 
     const user = await withRole(request, UserRole.MEMBER);
-    logger.info({ traceId, userId: user.id }, "GET /training/my-assignments - User authorized");
+    logger.info(
+      { traceId, userId: user.id },
+      "GET /training/my-assignments - User authorized",
+    );
 
     const page = query?.page;
 

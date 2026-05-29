@@ -12,10 +12,23 @@ export const authPaths = {
               type: "object",
               required: ["email", "password", "name"],
               properties: {
-                email: { type: "string", format: "email", description: "User email address" },
-                password: { type: "string", minLength: 8, description: "Password (min 8 chars, 1 uppercase, 1 number, 1 special)" },
+                email: {
+                  type: "string",
+                  format: "email",
+                  description: "User email address",
+                },
+                password: {
+                  type: "string",
+                  minLength: 8,
+                  description:
+                    "Password (min 8 chars, 1 uppercase, 1 number, 1 special)",
+                },
                 name: { type: "string", description: "Full name" },
-                associationId: { type: "string", format: "uuid", description: "Association ID (optional)" },
+                associationId: {
+                  type: "string",
+                  format: "uuid",
+                  description: "Association ID (optional)",
+                },
               },
             },
           },
@@ -59,7 +72,8 @@ export const authPaths = {
     post: {
       tags: ["Authentication"],
       summary: "Sign in to an existing account",
-      description: "Authenticate with email and password. Returns tokens or MFA required response.",
+      description:
+        "Authenticate with email and password. Returns tokens or MFA required response.",
       requestBody: {
         required: true,
         content: {
@@ -118,7 +132,12 @@ export const authPaths = {
               type: "object",
               required: ["code"],
               properties: {
-                code: { type: "string", minLength: 6, maxLength: 6, description: "6-digit MFA code" },
+                code: {
+                  type: "string",
+                  minLength: 6,
+                  maxLength: 6,
+                  description: "6-digit MFA code",
+                },
               },
             },
           },
@@ -136,7 +155,8 @@ export const authPaths = {
     post: {
       tags: ["Authentication"],
       summary: "Refresh access token",
-      description: "Use refresh token to get a new access token. Automatically rotates the refresh token.",
+      description:
+        "Use refresh token to get a new access token. Automatically rotates the refresh token.",
       security: [],
       responses: {
         "200": { description: "Token refreshed successfully" },
@@ -186,7 +206,8 @@ export const authPaths = {
     post: {
       tags: ["Authentication"],
       summary: "Request password reset",
-      description: "Send a password reset email to the user's registered email address",
+      description:
+        "Send a password reset email to the user's registered email address",
       security: [],
       requestBody: {
         required: true,
@@ -221,8 +242,15 @@ export const authPaths = {
               type: "object",
               required: ["token", "password"],
               properties: {
-                token: { type: "string", description: "Reset token from email" },
-                password: { type: "string", minLength: 8, description: "New password" },
+                token: {
+                  type: "string",
+                  description: "Reset token from email",
+                },
+                password: {
+                  type: "string",
+                  minLength: 8,
+                  description: "New password",
+                },
               },
             },
           },
@@ -238,7 +266,8 @@ export const authPaths = {
     post: {
       tags: ["Authentication"],
       summary: "Change password (authenticated)",
-      description: "Change the current user's password. Requires authentication.",
+      description:
+        "Change the current user's password. Requires authentication.",
       requestBody: {
         required: true,
         content: {
@@ -247,8 +276,15 @@ export const authPaths = {
               type: "object",
               required: ["currentPassword", "newPassword"],
               properties: {
-                currentPassword: { type: "string", description: "Current password" },
-                newPassword: { type: "string", minLength: 8, description: "New password" },
+                currentPassword: {
+                  type: "string",
+                  description: "Current password",
+                },
+                newPassword: {
+                  type: "string",
+                  minLength: 8,
+                  description: "New password",
+                },
               },
             },
           },
@@ -265,7 +301,8 @@ export const authPaths = {
     post: {
       tags: ["MFA"],
       summary: "Start MFA setup",
-      description: "Initiate MFA setup by verifying password and sending verification code to email",
+      description:
+        "Initiate MFA setup by verifying password and sending verification code to email",
       requestBody: {
         required: true,
         content: {
@@ -274,7 +311,10 @@ export const authPaths = {
               type: "object",
               required: ["password"],
               properties: {
-                password: { type: "string", description: "Current password to verify" },
+                password: {
+                  type: "string",
+                  description: "Current password to verify",
+                },
               },
             },
           },
@@ -343,7 +383,8 @@ export const authPaths = {
     post: {
       tags: ["MFA"],
       summary: "Resend MFA verification code",
-      description: "Resend the 6-digit MFA verification code (60 second cooldown)",
+      description:
+        "Resend the 6-digit MFA verification code (60 second cooldown)",
       responses: {
         "200": { description: "Verification code sent" },
         "429": { description: "Please wait before requesting another code" },
@@ -354,7 +395,8 @@ export const authPaths = {
     post: {
       tags: ["Authentication"],
       summary: "Resend MFA code during sign-in",
-      description: "Resend the 6-digit MFA verification code during the sign-in flow (60 second cooldown)",
+      description:
+        "Resend the 6-digit MFA verification code during the sign-in flow (60 second cooldown)",
       security: [],
       responses: {
         "200": {

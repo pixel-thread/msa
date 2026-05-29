@@ -5,8 +5,12 @@ import { buildPagination } from "@src/shared/utils/build-pagination";
 export async function findAuditLogs(
   associationId: string,
   query: AuditLogQuery,
-): Promise<{ logs: AuditLogEntry[]; pagination: ReturnType<typeof buildPagination> }> {
-  const { page, limit, action, resourceType, actorId, fromDate, toDate } = query;
+): Promise<{
+  logs: AuditLogEntry[];
+  pagination: ReturnType<typeof buildPagination>;
+}> {
+  const { page, limit, action, resourceType, actorId, fromDate, toDate } =
+    query;
 
   const where: Record<string, unknown> = { associationId };
 

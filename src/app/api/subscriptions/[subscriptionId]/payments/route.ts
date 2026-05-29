@@ -19,17 +19,23 @@ const SubscriptionQuerySchema = z.object({
 export const GET = withAssociation(
   { params: SubscriptionParamsSchema, query: SubscriptionQuerySchema },
   async (association, { query, params, traceId }, request) => {
-    logger.info({
-      traceId,
-      associationId: association.id,
-    }, "GET /api/subscriptions/[subscriptionId]/payments - Request started");
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+      },
+      "GET /api/subscriptions/[subscriptionId]/payments - Request started",
+    );
 
     const user = await withRole(request, UserRole.MEMBER);
 
-    logger.info({
-      traceId,
-      userId: user.id,
-    }, "GET /api/subscriptions/[subscriptionId]/payments - User authorized");
+    logger.info(
+      {
+        traceId,
+        userId: user.id,
+      },
+      "GET /api/subscriptions/[subscriptionId]/payments - User authorized",
+    );
 
     const page = query?.page || 1;
     const subscriptionId = params?.subscriptionId;
@@ -68,11 +74,14 @@ export const GET = withAssociation(
       }),
     ]);
 
-    logger.info({
-      traceId,
-      subscriptionId,
-      count: data.length,
-    }, "GET /api/subscriptions/[subscriptionId]/payments - Success");
+    logger.info(
+      {
+        traceId,
+        subscriptionId,
+        count: data.length,
+      },
+      "GET /api/subscriptions/[subscriptionId]/payments - Success",
+    );
 
     return SuccessResponse({
       data: data,

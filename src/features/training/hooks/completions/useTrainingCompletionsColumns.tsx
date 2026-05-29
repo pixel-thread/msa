@@ -75,9 +75,7 @@ export function useTrainingCompletionsColumns(options?: {
     {
       id: "actions",
       header: "Actions",
-      cell: () => (
-        <span className="text-xs text-muted-foreground">—</span>
-      ),
+      cell: () => <span className="text-xs text-muted-foreground">—</span>,
     },
   );
 

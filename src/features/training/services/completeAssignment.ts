@@ -73,7 +73,10 @@ export async function completeAssignment({
     let certUrl = certificateUrl;
     let certFileId = certificateFileId;
 
-    if (certificateOption === "global" && assignment.module.certificateTemplate?.certificateUrl) {
+    if (
+      certificateOption === "global" &&
+      assignment.module.certificateTemplate?.certificateUrl
+    ) {
       certUrl = assignment.module.certificateTemplate.certificateUrl;
       certFileId = assignment.module.certificateTemplate.fileId || undefined;
     }
@@ -168,9 +171,7 @@ export async function getAssignedUsers({
     },
   });
 
-  const completionMap = new Map(
-    completions.map((c) => [c.userId, c])
-  );
+  const completionMap = new Map(completions.map((c) => [c.userId, c]));
 
   return {
     data: assignments.map((assignment) => ({
@@ -187,8 +188,12 @@ export async function getAssignedUsers({
       completion: completionMap.has(assignment.userId)
         ? {
             id: completionMap.get(assignment.userId)!.id,
-            scorePercent: completionMap.get(assignment.userId)!.scorePercent?.toNumber() ?? null,
-            completedAt: completionMap.get(assignment.userId)!.completedAt.toISOString(),
+            scorePercent:
+              completionMap.get(assignment.userId)!.scorePercent?.toNumber() ??
+              null,
+            completedAt: completionMap
+              .get(assignment.userId)!
+              .completedAt.toISOString(),
           }
         : null,
     })),

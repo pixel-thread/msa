@@ -20,4 +20,3 @@ export interface AuditLogQuery {
   fromDate?: Date;
   toDate?: Date;
 }
-

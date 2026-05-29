@@ -56,7 +56,9 @@ export const usePlanTableColumns = ({
       header: "Effective From",
       cell: ({ row }) => (
         <span className="text-right text-muted-foreground text-sm block ml-auto">
-          {formatDate(row.original.activeVersion?.effectiveFrom ?? row.original.createdAt)}
+          {formatDate(
+            row.original.activeVersion?.effectiveFrom ?? row.original.createdAt,
+          )}
         </span>
       ),
     },

@@ -36,10 +36,16 @@ export const GET = withAssociation(
       throw new ForbiddenError("Invalid module ID");
     }
 
-    logger.info({ traceId, associationId: association.id }, "GET /training/modules/{moduleId}/supplements - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "GET /training/modules/{moduleId}/supplements - Request started",
+    );
 
     await withRole(request, UserRole.MEMBER);
-    logger.info({ traceId }, "GET /training/modules/{moduleId}/supplements - User authorized");
+    logger.info(
+      { traceId },
+      "GET /training/modules/{moduleId}/supplements - User authorized",
+    );
 
     const { moduleId } = params;
 
@@ -48,7 +54,10 @@ export const GET = withAssociation(
       moduleId,
     });
 
-    logger.info({ traceId }, "GET /training/modules/{moduleId}/supplements - Success");
+    logger.info(
+      { traceId },
+      "GET /training/modules/{moduleId}/supplements - Success",
+    );
     return SuccessResponse({ data: supplements });
   },
 );
@@ -61,10 +70,16 @@ export const POST = withAssociationFormData(
   async (association, { formData, params, traceId }, request) => {
     const { moduleId } = params!;
 
-    logger.info({ traceId, associationId: association.id, moduleId }, "POST /training/modules/{moduleId}/supplements - Request started");
+    logger.info(
+      { traceId, associationId: association.id, moduleId },
+      "POST /training/modules/{moduleId}/supplements - Request started",
+    );
 
     const user = await withRole(request, UserRole.DPO);
-    logger.info({ traceId, userId: user.id }, "POST /training/modules/{moduleId}/supplements - User authorized");
+    logger.info(
+      { traceId, userId: user.id },
+      "POST /training/modules/{moduleId}/supplements - User authorized",
+    );
 
     const { file, metadata } = formData;
 
@@ -97,7 +112,10 @@ export const POST = withAssociationFormData(
       fileId: fileRecord.id,
     });
 
-    logger.info({ traceId, supplementId: supplement.id }, "POST /training/modules/{moduleId}/supplements - Success");
+    logger.info(
+      { traceId, supplementId: supplement.id },
+      "POST /training/modules/{moduleId}/supplements - Success",
+    );
     return SuccessResponse({ data: supplement }, 201);
   },
 );

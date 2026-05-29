@@ -20,9 +20,15 @@ const DPO_ROLE: UserRole = UserRole.DPO;
 export const GET = withAssociation(
   { query: ComplianceCheckQuerySchema },
   async (association, { query, traceId }, req) => {
-    logger.info({ traceId, associationId: association.id }, "GET /api/compliance/checks - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "GET /api/compliance/checks - Request started",
+    );
     const user = await withRole(req, DPO_ROLE);
-    logger.info({ traceId, userId: user.id, roles: user.role }, "GET /api/compliance/checks - User authorized");
+    logger.info(
+      { traceId, userId: user.id, roles: user.role },
+      "GET /api/compliance/checks - User authorized",
+    );
 
     const where: Record<string, unknown> = {};
 
@@ -51,7 +57,10 @@ export const GET = withAssociation(
 
     const total = await prisma.complianceCheck.count({ where });
 
-    logger.info({ traceId, count: checks.length }, "GET /api/compliance/checks - Success");
+    logger.info(
+      { traceId, count: checks.length },
+      "GET /api/compliance/checks - Success",
+    );
 
     return SuccessResponse({
       data: checks,
@@ -63,9 +72,15 @@ export const GET = withAssociation(
 export const POST = withAssociation(
   {},
   async (association, { traceId }, request) => {
-    logger.info({ traceId, associationId: association.id }, "POST /api/compliance/checks - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "POST /api/compliance/checks - Request started",
+    );
     const user = await withRole(request, DPO_ROLE);
-    logger.info({ traceId, userId: user.id, roles: user.role }, "POST /api/compliance/checks - User authorized");
+    logger.info(
+      { traceId, userId: user.id, roles: user.role },
+      "POST /api/compliance/checks - User authorized",
+    );
 
     let checkTypes: string[] = ALL_CHECK_TYPES;
     const body = await request.json().catch(() => ({}));
@@ -98,7 +113,10 @@ export const POST = withAssociation(
       data: checksData as Prisma.ComplianceCheckCreateManyArgs["data"],
     });
 
-    logger.info({ traceId, count: results.length }, "POST /api/compliance/checks - Success");
+    logger.info(
+      { traceId, count: results.length },
+      "POST /api/compliance/checks - Success",
+    );
 
     return SuccessResponse({ data: results }, 201);
   },

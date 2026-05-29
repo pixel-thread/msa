@@ -10,10 +10,20 @@ import { logger } from "@src/shared/logger/server";
 export const POST = withAssociation(
   { body: AddAssociationMemberSchema },
   async (_, { body, traceId }, req) => {
-    logger.info({ traceId, targetUserId: body?.user_id, targetAssociationId: body?.association_id }, "POST /api/admin/associations/[id]/member - Request started");
-    
+    logger.info(
+      {
+        traceId,
+        targetUserId: body?.user_id,
+        targetAssociationId: body?.association_id,
+      },
+      "POST /api/admin/associations/[id]/member - Request started",
+    );
+
     const user = await withRole(req, UserRole.SUPER_ADMIN);
-    logger.info({ traceId, userId: user.id, roles: user.role }, "POST /api/admin/associations/[id]/member - User authorized");
+    logger.info(
+      { traceId, userId: user.id, roles: user.role },
+      "POST /api/admin/associations/[id]/member - User authorized",
+    );
 
     const [targetUser, association] = await Promise.all([
       prisma.user.findUnique({
@@ -30,17 +40,30 @@ export const POST = withAssociation(
     ]);
 
     if (!targetUser) {
-      logger.error({ traceId, targetUserId: body?.user_id }, "POST /api/admin/associations/[id]/member - User not found");
+      logger.error(
+        { traceId, targetUserId: body?.user_id },
+        "POST /api/admin/associations/[id]/member - User not found",
+      );
       throw new NotFoundError("User not found");
     }
 
     if (!association) {
-      logger.error({ traceId, targetAssociationId: body?.association_id }, "POST /api/admin/associations/[id]/member - Association not found");
+      logger.error(
+        { traceId, targetAssociationId: body?.association_id },
+        "POST /api/admin/associations/[id]/member - Association not found",
+      );
       throw new NotFoundError("Association not found");
     }
 
     if (body?.association_id === targetUser.associationId) {
-      logger.error({ traceId, targetUserId: body?.user_id, associationId: body?.association_id }, "POST /api/admin/associations/[id]/member - User already under the target association");
+      logger.error(
+        {
+          traceId,
+          targetUserId: body?.user_id,
+          associationId: body?.association_id,
+        },
+        "POST /api/admin/associations/[id]/member - User already under the target association",
+      );
       throw new ConflictError("User already under the target association");
     }
 
@@ -63,7 +86,14 @@ export const POST = withAssociation(
       // Notify president of high role user that new user join the association
     }
 
-    logger.info({ traceId, targetUserId: body?.user_id, associationId: body?.association_id }, "POST /api/admin/associations/[id]/member - Success");
+    logger.info(
+      {
+        traceId,
+        targetUserId: body?.user_id,
+        associationId: body?.association_id,
+      },
+      "POST /api/admin/associations/[id]/member - Success",
+    );
 
     return SuccessResponse({
       data: updatedUser,

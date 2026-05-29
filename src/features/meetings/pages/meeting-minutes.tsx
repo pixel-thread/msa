@@ -13,9 +13,7 @@ import {
   DeleteMinuteDialog,
 } from "@src/features/meetings/components";
 import { DataTable } from "@src/shared/components/data-table";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import { useMeetingMinutesColumns } from "@src/features/meetings/hooks/useMeetingMinutesColumns";
 import { Button } from "@src/shared/components/ui/button";
 import { ArrowLeft, FileText, Plus } from "lucide-react";

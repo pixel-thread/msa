@@ -1,11 +1,16 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@src/shared/components/ui/card"
-import { Users, IndianRupee, Clock, CreditCard } from "lucide-react"
-import type { DashboardOverview } from "@feature/dashboard/services/dashboard.service"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@src/shared/components/ui/card";
+import { Users, IndianRupee, Clock, CreditCard } from "lucide-react";
+import type { DashboardOverview } from "@feature/dashboard/services/dashboard.service";
 
 interface StatsCardsProps {
-  stats: DashboardOverview["stats"]
+  stats: DashboardOverview["stats"];
 }
 
 export function StatsCards({ stats }: StatsCardsProps) {
@@ -46,7 +51,7 @@ export function StatsCards({ stats }: StatsCardsProps) {
       subtitle: "Joined this month",
       icon: CreditCard,
     },
-  ]
+  ];
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -65,5 +70,5 @@ export function StatsCards({ stats }: StatsCardsProps) {
         </Card>
       ))}
     </div>
-  )
+  );
 }

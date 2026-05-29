@@ -75,10 +75,7 @@ export default function PaymentProvidersPage() {
             Manage payment gateway integrations (Razorpay, Stripe, etc.)
           </p>
         </div>
-        <Button
-          onClick={() => setCreateDialogOpen(true)}
-          className="h-10"
-        >
+        <Button onClick={() => setCreateDialogOpen(true)} className="h-10">
           <Plus className="mr-2 h-4 w-4" />
           Add Provider
         </Button>
@@ -103,13 +100,17 @@ export default function PaymentProvidersPage() {
 
       <EditProviderDialog
         open={!!editingId}
-        onOpenChange={(open) => { if (!open) setEditingId(null); }}
+        onOpenChange={(open) => {
+          if (!open) setEditingId(null);
+        }}
         providerId={editingId ?? ""}
       />
 
       <ProviderDetailDialog
         open={!!detailId}
-        onOpenChange={(open) => { if (!open) setDetailId(null); }}
+        onOpenChange={(open) => {
+          if (!open) setDetailId(null);
+        }}
         providerId={detailId ?? ""}
         onEdit={(id) => {
           setDetailId(null);

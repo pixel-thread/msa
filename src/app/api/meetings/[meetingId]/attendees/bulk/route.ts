@@ -9,7 +9,10 @@ import { logger } from "@src/shared/logger/server";
 export const POST = withAssociation(
   { body: BulkAssignAttendeesSchema },
   async (association, { body, traceId }, request, { params }) => {
-    logger.info({ traceId, associationId: association.id }, "POST /api/meetings/[meetingId]/attendees/bulk - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "POST /api/meetings/[meetingId]/attendees/bulk - Request started",
+    );
 
     const user = await withRole(request, UserRole.SECRETARY);
 
@@ -19,9 +22,15 @@ export const POST = withAssociation(
 
     const { meetingId } = (await params) as { meetingId: string };
 
-    logger.info({ traceId, userId: user.id, role: user.role, meetingId }, "POST /api/meetings/[meetingId]/attendees/bulk - User authorized");
+    logger.info(
+      { traceId, userId: user.id, role: user.role, meetingId },
+      "POST /api/meetings/[meetingId]/attendees/bulk - User authorized",
+    );
 
-    logger.info({ traceId, meetingId }, "POST /api/meetings/[meetingId]/attendees/bulk - Bulk assigning attendees");
+    logger.info(
+      { traceId, meetingId },
+      "POST /api/meetings/[meetingId]/attendees/bulk - Bulk assigning attendees",
+    );
 
     await bulkAssignAttendees({
       meetingId,
@@ -29,7 +38,10 @@ export const POST = withAssociation(
       userIds: body.userIds,
     });
 
-    logger.info({ traceId, meetingId }, "POST /api/meetings/[meetingId]/attendees/bulk - Success");
+    logger.info(
+      { traceId, meetingId },
+      "POST /api/meetings/[meetingId]/attendees/bulk - Success",
+    );
 
     return SuccessResponse({
       data: null,

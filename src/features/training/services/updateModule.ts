@@ -9,7 +9,12 @@ interface UpdateModuleProps {
   data: UpdateTrainingModuleInput;
 }
 
-export async function updateModule({ associationId, moduleId, actorId, data }: UpdateModuleProps) {
+export async function updateModule({
+  associationId,
+  moduleId,
+  actorId,
+  data,
+}: UpdateModuleProps) {
   return await prisma.$transaction(async (tx) => {
     const oldModule = await tx.trainingModule.findUniqueOrThrow({
       where: { id: moduleId, associationId },

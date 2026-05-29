@@ -6,19 +6,30 @@ import { z } from "zod";
 import { logger } from "@src/shared/logger/server";
 
 const OnboardingSchema = z.object({
-  dateOfJoiningGovt: z.string().datetime().refine((d) => new Date(d) < new Date(), "Cannot be in the future"),
-  dateOfJoiningAssociation: z.string().datetime().refine((d) => new Date(d) < new Date(), "Cannot be in the future"),
-  mobile: z.string().regex(/^[6-9]\d{9}$/, "Valid Indian mobile number required"),
+  dateOfJoiningGovt: z
+    .string()
+    .datetime()
+    .refine((d) => new Date(d) < new Date(), "Cannot be in the future"),
+  dateOfJoiningAssociation: z
+    .string()
+    .datetime()
+    .refine((d) => new Date(d) < new Date(), "Cannot be in the future"),
+  mobile: z
+    .string()
+    .regex(/^[6-9]\d{9}$/, "Valid Indian mobile number required"),
   designation: z.string().min(2).max(100).trim(),
 });
 
 export const POST = withAssociation(
   { body: OnboardingSchema },
   async (association, { body, traceId }, request) => {
-    logger.info({
-      traceId,
-      associationId: association.id,
-    }, "POST /api/members/onboarding - Request started");
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+      },
+      "POST /api/members/onboarding - Request started",
+    );
 
     const userId = request.headers.get("x-user-id");
 
@@ -43,10 +54,13 @@ export const POST = withAssociation(
       },
     });
 
-    logger.info({
-      traceId,
-      userId: user.id,
-    }, "POST /api/members/onboarding - Success");
+    logger.info(
+      {
+        traceId,
+        userId: user.id,
+      },
+      "POST /api/members/onboarding - Success",
+    );
 
     return SuccessResponse({
       data: {
@@ -60,5 +74,5 @@ export const POST = withAssociation(
       },
       message: "Onboarding completed successfully",
     });
-  }
+  },
 );

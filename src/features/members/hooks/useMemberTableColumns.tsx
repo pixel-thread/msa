@@ -7,7 +7,11 @@ import { NameCell } from "@src/features/members/components/cells/name-cell";
 import { AssociationCell } from "@src/features/members/components/cells/association-cell";
 
 interface UseMemberTableColumnsOptions {
-  onRoleChange: (memberId: string, role: string, action: "add" | "remove") => void;
+  onRoleChange: (
+    memberId: string,
+    role: string,
+    action: "add" | "remove",
+  ) => void;
   onStatusChange: (memberId: string, status: string) => void;
   onAssociationChange: (memberId: string, associationId: string) => void;
 }

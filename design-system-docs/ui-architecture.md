@@ -104,6 +104,7 @@ src/
 ```
 
 **Key details:**
+
 - `ThemeProvider` wraps `TooltipProvider` so tooltips can respond to theme changes
 - `QueryProvider` is inside theme context (no theme dependency, but logical order)
 - `AuthProvider` is inside query context (may use queries)
@@ -186,9 +187,7 @@ export default function FeaturePage() {
       />
 
       {/* 6. Pagination */}
-      {meta && (
-        <DataTablePagination meta={meta} onPageChange={setPage} />
-      )}
+      {meta && <DataTablePagination meta={meta} onPageChange={setPage} />}
     </>
   );
 }
@@ -199,6 +198,7 @@ export default function FeaturePage() {
 ## File Organization Conventions
 
 ### Component File Structure
+
 ```
 ui/button.tsx          # Single component per file
 ui/card.tsx            # Compound component (Card, CardHeader, CardContent, etc.)
@@ -206,12 +206,21 @@ ui/sidebar.tsx         # Complex compound with context provider
 ```
 
 ### Component Export Pattern
+
 ```tsx
 // Named exports for compound components
-export { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription };
+export {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+};
 ```
 
 ### Icon Import Convention
+
 ```tsx
 // HugeIcons (primary icon set)
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -225,11 +234,13 @@ import { DesktopIcon } from "@radix-ui/react-icons";
 ```
 
 ### Import Aliases (from tsconfig.json)
+
 ```
 @src/*  →  src/*
 ```
 
 ### Styling Approach
+
 - **CSS variables** in `globals.css` for theme tokens
 - **Tailwind v4 utilities** for component styling
 - **CVA** for variant-driven component APIs
@@ -241,36 +252,38 @@ import { DesktopIcon } from "@radix-ui/react-icons";
 ## Component Categories
 
 ### Primitives (53 in `src/shared/components/ui/`)
+
 Build on Radix UI primitives, provide consistent styling and API:
 
-| Category | Components |
-|----------|-----------|
-| Navigation | sidebar, breadcrumb, navigation-menu, tabs, pagination |
-| Layout | card, separator, scroll-area |
-| Form | button, input, textarea, select, checkbox, switch, radio-group, slider, label, form, field, input-group, input-otp, native-select |
-| Feedback | alert, alert-dialog, dialog, sheet, drawer, sonner, skeleton, spinner, progress, empty, table-skeleton |
-| Overlay | dropdown-menu, popover, hover-card, tooltip, menubar |
-| Display | text, badge, avatar, table, calendar, carousel, chart |
-| Data | combobox, toggle, toggle-group, button-group |
-| Utility | collapsible, direction, item |
+| Category   | Components                                                                                                                        |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Navigation | sidebar, breadcrumb, navigation-menu, tabs, pagination                                                                            |
+| Layout     | card, separator, scroll-area                                                                                                      |
+| Form       | button, input, textarea, select, checkbox, switch, radio-group, slider, label, form, field, input-group, input-otp, native-select |
+| Feedback   | alert, alert-dialog, dialog, sheet, drawer, sonner, skeleton, spinner, progress, empty, table-skeleton                            |
+| Overlay    | dropdown-menu, popover, hover-card, tooltip, menubar                                                                              |
+| Display    | text, badge, avatar, table, calendar, carousel, chart                                                                             |
+| Data       | combobox, toggle, toggle-group, button-group                                                                                      |
+| Utility    | collapsible, direction, item                                                                                                      |
 
 ### Composite Components (12 in `src/shared/components/`)
+
 Compose primitives into feature-ready patterns:
 
-| Component | Composes | Purpose |
-|-----------|----------|---------|
-| app-sidebar | Sidebar + NavMain + NavUser + TeamSwitcher | Full sidebar assembly |
-| dashboard-layout | SidebarProvider + AppSidebar + SidebarInset | Page-level layout wrapper |
-| data-table | Card + Table + Loading + Empty | Reusable data display |
-| data-table-filters | Card + Input + Combobox | Search/filter bar |
-| data-table-pagination | Button + Text | Page navigation |
-| section-cards | Card grid | Dashboard stat display |
-| nav-main | Collapsible + SidebarMenu | Primary navigation |
-| nav-user | SidebarMenu + DropdownMenu | User menu |
-| public-header | Navigation links | Landing page header |
-| public-footer | Link groups | Landing page footer |
-| chart-area-interactive | Chart + ToggleGroup | Interactive time series |
-| team-switcher | Select + Avatar | Association selector |
+| Component              | Composes                                    | Purpose                   |
+| ---------------------- | ------------------------------------------- | ------------------------- |
+| app-sidebar            | Sidebar + NavMain + NavUser + TeamSwitcher  | Full sidebar assembly     |
+| dashboard-layout       | SidebarProvider + AppSidebar + SidebarInset | Page-level layout wrapper |
+| data-table             | Card + Table + Loading + Empty              | Reusable data display     |
+| data-table-filters     | Card + Input + Combobox                     | Search/filter bar         |
+| data-table-pagination  | Button + Text                               | Page navigation           |
+| section-cards          | Card grid                                   | Dashboard stat display    |
+| nav-main               | Collapsible + SidebarMenu                   | Primary navigation        |
+| nav-user               | SidebarMenu + DropdownMenu                  | User menu                 |
+| public-header          | Navigation links                            | Landing page header       |
+| public-footer          | Link groups                                 | Landing page footer       |
+| chart-area-interactive | Chart + ToggleGroup                         | Interactive time series   |
+| team-switcher          | Select + Avatar                             | Association selector      |
 
 ---
 

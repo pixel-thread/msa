@@ -24,10 +24,16 @@ export const GET = withAssociation(
       throw new ForbiddenError("Invalid module ID");
     }
 
-    logger.info({ traceId, associationId: association.id }, "GET /training/modules/{moduleId}/certificates - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "GET /training/modules/{moduleId}/certificates - Request started",
+    );
 
     await withRole(request, UserRole.MEMBER);
-    logger.info({ traceId }, "GET /training/modules/{moduleId}/certificates - User authorized");
+    logger.info(
+      { traceId },
+      "GET /training/modules/{moduleId}/certificates - User authorized",
+    );
 
     const { moduleId } = params;
 
@@ -36,7 +42,10 @@ export const GET = withAssociation(
       moduleId,
     });
 
-    logger.info({ traceId }, "GET /training/modules/{moduleId}/certificates - Success");
+    logger.info(
+      { traceId },
+      "GET /training/modules/{moduleId}/certificates - Success",
+    );
     return SuccessResponse({ data: certificates });
   },
 );
@@ -48,12 +57,18 @@ export const POST = withAssociation(
       throw new ForbiddenError("Invalid module ID");
     }
 
-    logger.info({ traceId, associationId: association.id }, "POST /training/modules/{moduleId}/certificates - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "POST /training/modules/{moduleId}/certificates - Request started",
+    );
 
     const { moduleId } = params;
 
     const user = await withRole(request, UserRole.DPO);
-    logger.info({ traceId, userId: user.id }, "POST /training/modules/{moduleId}/certificates - User authorized");
+    logger.info(
+      { traceId, userId: user.id },
+      "POST /training/modules/{moduleId}/certificates - User authorized",
+    );
 
     const formData = await request.formData();
 
@@ -66,7 +81,10 @@ export const POST = withAssociation(
     }
 
     let metadata: z.infer<typeof CreateTrainingCertificateSchema>;
-    logger.info({ traceId }, "POST /training/modules/{moduleId}/certificates - Parsing metadata");
+    logger.info(
+      { traceId },
+      "POST /training/modules/{moduleId}/certificates - Parsing metadata",
+    );
     try {
       const parsed = JSON.parse(metadataRaw);
       metadata = CreateTrainingCertificateSchema.parse(parsed);
@@ -81,16 +99,22 @@ export const POST = withAssociation(
       throw new BadRequestError("File is empty");
     }
 
-    logger.info({ traceId }, "POST /training/modules/{moduleId}/certificates - Uploading file");
+    logger.info(
+      { traceId },
+      "POST /training/modules/{moduleId}/certificates - Uploading file",
+    );
     const uploadResult = await uploadToBucket(
       file,
       `certificates/${association.slug}/${moduleId}`,
     );
 
-    logger.info({
-      traceId,
-      storedName: uploadResult.key,
-    }, "POST /training/modules/{moduleId}/certificates - Creating file record");
+    logger.info(
+      {
+        traceId,
+        storedName: uploadResult.key,
+      },
+      "POST /training/modules/{moduleId}/certificates - Creating file record",
+    );
     const fileRecord = await prisma.file.create({
       data: {
         associationId: association.id,
@@ -106,7 +130,10 @@ export const POST = withAssociation(
       },
     });
 
-    logger.info({ traceId }, "POST /training/modules/{moduleId}/certificates - Creating certificate record");
+    logger.info(
+      { traceId },
+      "POST /training/modules/{moduleId}/certificates - Creating certificate record",
+    );
     const certificate = await createCertificate({
       associationId: association.id,
       moduleId,
@@ -116,7 +143,10 @@ export const POST = withAssociation(
       fileId: fileRecord.id,
     });
 
-    logger.info({ traceId, certificateId: certificate.id }, "POST /training/modules/{moduleId}/certificates - Success");
+    logger.info(
+      { traceId, certificateId: certificate.id },
+      "POST /training/modules/{moduleId}/certificates - Success",
+    );
     return SuccessResponse({ data: certificate }, 201);
   },
 );

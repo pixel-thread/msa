@@ -48,7 +48,10 @@ export const POST = withAssociation(
       });
     });
 
-    logger.info({ traceId, planId: updated.id }, "Default plan updated successfully");
+    logger.info(
+      { traceId, planId: updated.id },
+      "Default plan updated successfully",
+    );
 
     return SuccessResponse({ data: updated });
   },

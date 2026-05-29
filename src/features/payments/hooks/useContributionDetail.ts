@@ -8,9 +8,7 @@ export function useContributionDetail(contributionId: string | undefined) {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["contribution-detail", contributionId],
     queryFn: () =>
-      http.get<ContributionPeriod>(
-        `/payments/contributions/${contributionId}`,
-      ),
+      http.get<ContributionPeriod>(`/payments/contributions/${contributionId}`),
     enabled: !!contributionId,
   });
 

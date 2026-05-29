@@ -16,10 +16,16 @@ const TraingModuleQuerySchema = z.object({
 export const GET = withAssociation(
   { query: TraingModuleQuerySchema },
   async (association, { query, traceId }, request) => {
-    logger.info({ traceId, associationId: association.id }, "GET /training/modules - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "GET /training/modules - Request started",
+    );
 
     const user = await withRole(request, UserRole.MEMBER);
-    logger.info({ traceId, userId: user.id, role: user.role }, "GET /training/modules - User authorized");
+    logger.info(
+      { traceId, userId: user.id, role: user.role },
+      "GET /training/modules - User authorized",
+    );
 
     const isManager =
       hasHighRoleAccess(user.role) || user.role.includes(UserRole.DPO);
@@ -63,10 +69,16 @@ export const POST = withAssociation(
       throw new ForbiddenError("Invalid request body");
     }
 
-    logger.info({ traceId, associationId: association.id }, "POST /training/modules - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "POST /training/modules - Request started",
+    );
 
     const user = await withRole(request, UserRole.DPO); // DPO or higher
-    logger.info({ traceId, userId: user.id }, "POST /training/modules - User authorized");
+    logger.info(
+      { traceId, userId: user.id },
+      "POST /training/modules - User authorized",
+    );
 
     const trainingModule = await createModule({
       associationId: association.id,
@@ -74,7 +86,10 @@ export const POST = withAssociation(
       data: body,
     });
 
-    logger.info({ traceId, moduleId: trainingModule.id }, "POST /training/modules - Success");
+    logger.info(
+      { traceId, moduleId: trainingModule.id },
+      "POST /training/modules - Success",
+    );
     return SuccessResponse({ data: trainingModule }, 201);
   },
 );

@@ -4,16 +4,25 @@ import { buildPagination } from "@src/shared/utils/build-pagination";
 import { UserRole } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
 import { PAGE_SIZE } from "@src/shared/constants";
-import { ComplaintQuerySchema, CreateComplaintSchema } from "@src/features/compliance/validators";
+import {
+  ComplaintQuerySchema,
+  CreateComplaintSchema,
+} from "@src/features/compliance/validators";
 import { createComplaint } from "@src/features/compliance/services";
 import { logger } from "@src/shared/logger/server";
 
 export const GET = withAssociation(
   { query: ComplaintQuerySchema },
   async (association, { query, traceId }, req) => {
-    logger.info({ traceId, associationId: association.id }, "GET /api/compliance - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "GET /api/compliance - Request started",
+    );
     const user = await withRole(req, UserRole.DPO);
-    logger.info({ traceId, userId: user.id, roles: user.role }, "GET /api/compliance - User authorized");
+    logger.info(
+      { traceId, userId: user.id, roles: user.role },
+      "GET /api/compliance - User authorized",
+    );
 
     const where: Record<string, unknown> = {
       associationId: association.id,
@@ -52,7 +61,10 @@ export const GET = withAssociation(
 
     const total = await prisma.complaint.count({ where });
 
-    logger.info({ traceId, count: complaints.length }, "GET /api/compliance - Success");
+    logger.info(
+      { traceId, count: complaints.length },
+      "GET /api/compliance - Success",
+    );
 
     return SuccessResponse({
       data: complaints,
@@ -64,7 +76,10 @@ export const GET = withAssociation(
 export const POST = withAssociation(
   { body: CreateComplaintSchema },
   async (association, { body, traceId }, request) => {
-    logger.info({ traceId, associationId: association.id }, "POST /api/compliance - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "POST /api/compliance - Request started",
+    );
     const userId = request.headers.get("x-user-id")!;
 
     const complaint = await createComplaint({
@@ -73,7 +88,10 @@ export const POST = withAssociation(
       data: body!,
     });
 
-    logger.info({ traceId, complaintId: complaint.id }, "POST /api/compliance - Success");
+    logger.info(
+      { traceId, complaintId: complaint.id },
+      "POST /api/compliance - Success",
+    );
 
     return SuccessResponse({ data: complaint }, 201);
   },

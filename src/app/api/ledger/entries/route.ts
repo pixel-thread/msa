@@ -14,17 +14,23 @@ import { logger } from "@src/shared/logger/server";
 export const GET = withAssociation(
   { query: LedgerQueryParams },
   async (association, { query, traceId }, request) => {
-    logger.info({
-      traceId,
-      associationId: association.id,
-    }, "GET /api/ledger/entries - Request started");
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+      },
+      "GET /api/ledger/entries - Request started",
+    );
 
     const user = await withRole(request, UserRole.FINANCE);
 
-    logger.info({
-      traceId,
-      userId: user.id,
-    }, "GET /api/ledger/entries - User authorized");
+    logger.info(
+      {
+        traceId,
+        userId: user.id,
+      },
+      "GET /api/ledger/entries - User authorized",
+    );
 
     const { page = 1 } = query || {};
     const skip = (page - 1) * PAGE_SIZE;
@@ -42,10 +48,13 @@ export const GET = withAssociation(
       prisma.ledgerEntry.count(),
     ]);
 
-    logger.info({
-      traceId,
-      count: entries.length,
-    }, "GET /api/ledger/entries - Success");
+    logger.info(
+      {
+        traceId,
+        count: entries.length,
+      },
+      "GET /api/ledger/entries - Success",
+    );
 
     return SuccessResponse({
       data: entries,
@@ -57,17 +66,23 @@ export const GET = withAssociation(
 export const POST = withAssociation(
   { body: CreateLedgerEntrySchema },
   async (association, { body, traceId }, request) => {
-    logger.info({
-      traceId,
-      associationId: association.id,
-    }, "POST /api/ledger/entries - Request started");
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+      },
+      "POST /api/ledger/entries - Request started",
+    );
 
     const user = await withRole(request, UserRole.FINANCE);
 
-    logger.info({
-      traceId,
-      userId: user.id,
-    }, "POST /api/ledger/entries - User authorized");
+    logger.info(
+      {
+        traceId,
+        userId: user.id,
+      },
+      "POST /api/ledger/entries - User authorized",
+    );
 
     const userId = request.headers.get("x-user-id")!;
 
@@ -93,10 +108,13 @@ export const POST = withAssociation(
       },
     });
 
-    logger.info({
-      traceId,
-      entryId: entry.id,
-    }, "POST /api/ledger/entries - Success");
+    logger.info(
+      {
+        traceId,
+        entryId: entry.id,
+      },
+      "POST /api/ledger/entries - Success",
+    );
 
     return SuccessResponse({ data: entry }, 201);
   },

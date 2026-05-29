@@ -101,7 +101,9 @@ export function EditMemberTypeDialog({
                       value={field.value ?? ""}
                       onChange={(e) =>
                         field.onChange(
-                          e.target.value ? parseInt(e.target.value, 10) : undefined,
+                          e.target.value
+                            ? parseInt(e.target.value, 10)
+                            : undefined,
                         )
                       }
                     />
@@ -118,7 +120,10 @@ export function EditMemberTypeDialog({
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Regular Member, Senior Member" {...field} />
+                    <Input
+                      placeholder="e.g., Regular Member, Senior Member"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

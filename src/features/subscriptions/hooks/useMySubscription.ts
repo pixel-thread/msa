@@ -5,8 +5,7 @@ import { Subscription } from "../types";
 export function useMySubscription(page: number = 1) {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["my-subscription", page],
-    queryFn: () =>
-      http.get<Subscription>(`/subscriptions/my?page=${page}`),
+    queryFn: () => http.get<Subscription>(`/subscriptions/my?page=${page}`),
   });
 
   return {

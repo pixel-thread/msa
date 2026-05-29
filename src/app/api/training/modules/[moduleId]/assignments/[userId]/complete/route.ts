@@ -27,11 +27,17 @@ export const POST = withAssociation(
       throw new ForbiddenError("Invalid parameters");
     }
 
-    logger.info({ traceId, associationId: association.id }, "POST /training/modules/{moduleId}/assignments/{userId}/complete - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "POST /training/modules/{moduleId}/assignments/{userId}/complete - Request started",
+    );
 
     const { moduleId, userId } = params;
     const actor = await withRole(request, UserRole.SECRETARY);
-    logger.info({ traceId, userId: actor.id }, "POST /training/modules/{moduleId}/assignments/{userId}/complete - User authorized");
+    logger.info(
+      { traceId, userId: actor.id },
+      "POST /training/modules/{moduleId}/assignments/{userId}/complete - User authorized",
+    );
 
     const contentType = request.headers.get("content-type") || "";
 
@@ -105,7 +111,10 @@ export const POST = withAssociation(
         certificateFileId = fileRecord.id;
       }
 
-      logger.info({ traceId, moduleId, targetUserId: userId }, "POST /training/modules/{moduleId}/assignments/{userId}/complete - Completing assignment");
+      logger.info(
+        { traceId, moduleId, targetUserId: userId },
+        "POST /training/modules/{moduleId}/assignments/{userId}/complete - Completing assignment",
+      );
 
       const result = await completeAssignment({
         associationId: association.id,
@@ -119,7 +128,10 @@ export const POST = withAssociation(
         certificateNumber,
       });
 
-      logger.info({ traceId }, "POST /training/modules/{moduleId}/assignments/{userId}/complete - Success");
+      logger.info(
+        { traceId },
+        "POST /training/modules/{moduleId}/assignments/{userId}/complete - Success",
+      );
       return SuccessResponse({ data: result }, 201);
     } catch (error) {
       if (error instanceof Error) {

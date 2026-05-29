@@ -23,7 +23,10 @@ export const POST = withValidation(
 
     const passwordValidation = validatePasswordStrength(password);
     if (!passwordValidation.valid) {
-      logger.error({ traceId }, "POST /api/auth/reset-password - Invalid password strength input");
+      logger.error(
+        { traceId },
+        "POST /api/auth/reset-password - Invalid password strength input",
+      );
       throw new ValidationError(
         "Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, and one number",
       );
@@ -39,7 +42,10 @@ export const POST = withValidation(
     });
 
     if (!user) {
-      logger.error({ traceId }, "POST /api/auth/reset-password - Invalid or expired reset token");
+      logger.error(
+        { traceId },
+        "POST /api/auth/reset-password - Invalid or expired reset token",
+      );
       throw new UnauthorizedError("Invalid or expired reset token");
     }
 
@@ -58,7 +64,10 @@ export const POST = withValidation(
 
     await deleteRefreshTokens({ where: { userId: user.id } });
 
-    logger.info({ traceId, userId: user.id }, "POST /api/auth/reset-password - Success");
+    logger.info(
+      { traceId, userId: user.id },
+      "POST /api/auth/reset-password - Success",
+    );
 
     return SuccessResponse({
       data: true,

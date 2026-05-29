@@ -30,7 +30,9 @@ export const usePlanVersionColumns = (): {
       header: "Billing Cycle",
       cell: ({ row }) => (
         <Badge
-          variant={row.original.billingCycle === "YEARLY" ? "default" : "secondary"}
+          variant={
+            row.original.billingCycle === "YEARLY" ? "default" : "secondary"
+          }
           className="capitalize"
         >
           {row.original.billingCycle.toLowerCase()}
@@ -51,7 +53,9 @@ export const usePlanVersionColumns = (): {
       header: "Effective To",
       cell: ({ row }) => (
         <span className="text-sm text-muted-foreground">
-          {row.original.effectiveTo ? formatDate(row.original.effectiveTo) : "—"}
+          {row.original.effectiveTo
+            ? formatDate(row.original.effectiveTo)
+            : "—"}
         </span>
       ),
     },

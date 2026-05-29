@@ -2,12 +2,12 @@
 
 ## File Change Summary
 
-| File | Action | Lines |
-|---|---|---|
-| `src/shared/lib/cache.ts` | Create | ~40 |
-| `src/shared/lib/user-cache.ts` | Create | ~30 |
-| `src/app/api/auth/me/route.ts` | Modify | ~15 |
-| `src/shared/middleware/withSecurityHeaders.middleware.ts` | Modify | ~15 |
+| File                                                      | Action | Lines |
+| --------------------------------------------------------- | ------ | ----- |
+| `src/shared/lib/cache.ts`                                 | Create | ~40   |
+| `src/shared/lib/user-cache.ts`                            | Create | ~30   |
+| `src/app/api/auth/me/route.ts`                            | Modify | ~15   |
+| `src/shared/middleware/withSecurityHeaders.middleware.ts` | Modify | ~15   |
 
 **Total**: 2 new files, 2 modified files, ~100 lines of code
 
@@ -21,6 +21,7 @@
 ## Step 1: Create `src/shared/lib/cache.ts`
 
 Abstracted cache client wrapping Upstash Redis with:
+
 - `CacheClient` interface for future backend swapping
 - JSON serialization/deserialization
 - `mfsa:` key prefix for namespacing
@@ -29,6 +30,7 @@ Abstracted cache client wrapping Upstash Redis with:
 ## Step 2: Create `src/shared/lib/user-cache.ts`
 
 User-specific cache helpers:
+
 - `getUserCacheKey(userId: string): string` — returns `mfsa:user:{userId}`
 - `getCachedUser(userId: string): Promise<User | null>` — reads from cache
 - `cacheUser(userId: string, userData: User): Promise<void>` — writes to cache
@@ -38,6 +40,7 @@ User-specific cache helpers:
 ## Step 3: Modify `src/app/api/auth/me/route.ts`
 
 Add caching flow:
+
 1. Get `userId` from `x-user-id` header (already validated by middleware)
 2. Try `getCachedUser(userId)`
 3. If cache hit → return `SuccessResponse(cachedUser)`
@@ -49,11 +52,13 @@ Add caching flow:
 Add security headers:
 
 **Global** (all responses):
+
 - `Permissions-Policy: camera=(), microphone=(), geolocation=()`
 - `Cross-Origin-Opener-Policy: same-origin`
 - `Cross-Origin-Resource-Policy: same-origin`
 
 **Conditional** (if `x-user-id` header present — authenticated request):
+
 - `Cache-Control: no-store, no-cache, must-revalidate, private`
 - `Pragma: no-cache`
 
@@ -69,6 +74,7 @@ Detection: `req.headers.get("x-user-id")` — set by `withAuth` middleware befor
 ## Rollback Plan
 
 If issues arise:
+
 1. Remove caching from `/api/auth/me` route (revert to direct DB query)
 2. Security headers can remain (they are additive and non-breaking)
 3. No database migrations or schema changes to roll back

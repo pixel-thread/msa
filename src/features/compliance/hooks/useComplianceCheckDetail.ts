@@ -13,8 +13,8 @@ export function useComplianceCheckDetail(checkId: string | null) {
 
   return {
     check:
-      (data as ApiResponse<ComplianceRecord>)?.data as ComplianceRecord | null ??
-      null,
+      ((data as ApiResponse<ComplianceRecord>)
+        ?.data as ComplianceRecord | null) ?? null,
     isLoading,
     error,
   };

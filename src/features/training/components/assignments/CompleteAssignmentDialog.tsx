@@ -22,7 +22,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@src/shared/components/ui/form";
-import { RadioGroup, RadioGroupItem } from "@src/shared/components/ui/radio-group";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@src/shared/components/ui/radio-group";
 import { Label } from "@src/shared/components/ui/label";
 import { Paperclip, X, Globe, Upload, Ban } from "lucide-react";
 
@@ -39,7 +42,11 @@ interface CompleteAssignmentDialogProps {
   userId: string;
   userName: string;
   moduleId: string;
-  certificateTemplate: { id: string; certificateUrl: string; name: string } | null;
+  certificateTemplate: {
+    id: string;
+    certificateUrl: string;
+    name: string;
+  } | null;
   onComplete: (data: {
     userId: string;
     scorePercent?: number;
@@ -100,7 +107,8 @@ export function CompleteAssignmentDialog({
                 <span className="font-medium text-ink">User:</span> {userName}
               </p>
               <p className="text-sm text-body mt-1">
-                <span className="font-medium text-ink">Module ID:</span> {moduleId}
+                <span className="font-medium text-ink">Module ID:</span>{" "}
+                {moduleId}
               </p>
             </div>
 
@@ -118,7 +126,11 @@ export function CompleteAssignmentDialog({
                       max={100}
                       {...field}
                       onChange={(e) =>
-                        field.onChange(e.target.value ? parseInt(e.target.value, 10) : undefined)
+                        field.onChange(
+                          e.target.value
+                            ? parseInt(e.target.value, 10)
+                            : undefined,
+                        )
                       }
                     />
                   </FormControl>
@@ -146,10 +158,15 @@ export function CompleteAssignmentDialog({
                     >
                       <div className="flex items-center space-x-2 border border-hairline rounded-md p-3">
                         <RadioGroupItem value="none" id="cert-none" />
-                        <Label htmlFor="cert-none" className="flex items-center gap-2 cursor-pointer">
+                        <Label
+                          htmlFor="cert-none"
+                          className="flex items-center gap-2 cursor-pointer"
+                        >
                           <Ban className="h-4 w-4 text-muted-foreground" />
                           <div>
-                            <span className="text-sm font-medium">No certificate</span>
+                            <span className="text-sm font-medium">
+                              No certificate
+                            </span>
                             <p className="text-xs text-muted-foreground">
                               Mark complete without issuing a certificate
                             </p>
@@ -160,10 +177,15 @@ export function CompleteAssignmentDialog({
                       {certificateTemplate && (
                         <div className="flex items-center space-x-2 border border-hairline rounded-md p-3">
                           <RadioGroupItem value="global" id="cert-global" />
-                          <Label htmlFor="cert-global" className="flex items-center gap-2 cursor-pointer">
+                          <Label
+                            htmlFor="cert-global"
+                            className="flex items-center gap-2 cursor-pointer"
+                          >
                             <Globe className="h-4 w-4 text-primary" />
                             <div>
-                              <span className="text-sm font-medium">Use template certificate</span>
+                              <span className="text-sm font-medium">
+                                Use template certificate
+                              </span>
                               <p className="text-xs text-muted-foreground">
                                 {certificateTemplate.name}
                               </p>
@@ -174,10 +196,15 @@ export function CompleteAssignmentDialog({
 
                       <div className="flex items-center space-x-2 border border-hairline rounded-md p-3">
                         <RadioGroupItem value="custom" id="cert-custom" />
-                        <Label htmlFor="cert-custom" className="flex items-center gap-2 cursor-pointer">
+                        <Label
+                          htmlFor="cert-custom"
+                          className="flex items-center gap-2 cursor-pointer"
+                        >
                           <Upload className="h-4 w-4 text-primary" />
                           <div>
-                            <span className="text-sm font-medium">Upload custom certificate</span>
+                            <span className="text-sm font-medium">
+                              Upload custom certificate
+                            </span>
                             <p className="text-xs text-muted-foreground">
                               Upload a personalized certificate file
                             </p>

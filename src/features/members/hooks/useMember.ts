@@ -24,4 +24,3 @@ export function useMember(memberId: string) {
     error,
   };
 }
-

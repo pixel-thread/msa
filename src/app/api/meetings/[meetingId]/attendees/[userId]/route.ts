@@ -16,7 +16,15 @@ const AttendeeParamsSchema = z.object({
 export const PATCH = withAssociation(
   { params: AttendeeParamsSchema, body: UpdateAttendeeSchema },
   async (association, { params, body, traceId }, request) => {
-    logger.info({ traceId, meetingId: params?.meetingId, targetUserId: params?.userId, associationId: association.id }, "PATCH /api/meetings/[meetingId]/attendees/[userId] - Request started");
+    logger.info(
+      {
+        traceId,
+        meetingId: params?.meetingId,
+        targetUserId: params?.userId,
+        associationId: association.id,
+      },
+      "PATCH /api/meetings/[meetingId]/attendees/[userId] - Request started",
+    );
 
     if (!params) {
       throw new ForbiddenError("Invalid parameters");
@@ -28,7 +36,16 @@ export const PATCH = withAssociation(
     const user = await withRole(request, UserRole.MEMBER);
     const requestingUserId = request.headers.get("x-user-id")!;
 
-    logger.info({ traceId, userId: user.id, role: user.role, meetingId: params.meetingId, targetUserId: params.userId }, "PATCH /api/meetings/[meetingId]/attendees/[userId] - User authorized");
+    logger.info(
+      {
+        traceId,
+        userId: user.id,
+        role: user.role,
+        meetingId: params.meetingId,
+        targetUserId: params.userId,
+      },
+      "PATCH /api/meetings/[meetingId]/attendees/[userId] - User authorized",
+    );
 
     const isAdmin = hasHighRoleAccess(user.role);
     const isSelfUpdate = params.userId === requestingUserId;
@@ -37,7 +54,10 @@ export const PATCH = withAssociation(
       throw new ForbiddenError("You can only update your own RSVP");
     }
 
-    logger.info({ traceId, meetingId: params.meetingId, targetUserId: params.userId }, "PATCH /api/meetings/[meetingId]/attendees/[userId] - Updating attendee");
+    logger.info(
+      { traceId, meetingId: params.meetingId, targetUserId: params.userId },
+      "PATCH /api/meetings/[meetingId]/attendees/[userId] - Updating attendee",
+    );
 
     const updated = await updateAttendee({
       meetingId: params.meetingId,
@@ -47,7 +67,10 @@ export const PATCH = withAssociation(
       isAdminUpdate: isAdmin,
     });
 
-    logger.info({ traceId, meetingId: params.meetingId, targetUserId: params.userId }, "PATCH /api/meetings/[meetingId]/attendees/[userId] - Success");
+    logger.info(
+      { traceId, meetingId: params.meetingId, targetUserId: params.userId },
+      "PATCH /api/meetings/[meetingId]/attendees/[userId] - Success",
+    );
 
     return SuccessResponse({ data: updated });
   },
@@ -56,7 +79,15 @@ export const PATCH = withAssociation(
 export const DELETE = withAssociation(
   { params: AttendeeParamsSchema },
   async (association, { params, traceId }, request) => {
-    logger.info({ traceId, meetingId: params?.meetingId, targetUserId: params?.userId, associationId: association.id }, "DELETE /api/meetings/[meetingId]/attendees/[userId] - Request started");
+    logger.info(
+      {
+        traceId,
+        meetingId: params?.meetingId,
+        targetUserId: params?.userId,
+        associationId: association.id,
+      },
+      "DELETE /api/meetings/[meetingId]/attendees/[userId] - Request started",
+    );
 
     if (!params) {
       throw new ForbiddenError("Invalid parameters");
@@ -70,9 +101,21 @@ export const DELETE = withAssociation(
       );
     }
 
-    logger.info({ traceId, userId: user.id, role: user.role, meetingId: params.meetingId, targetUserId: params.userId }, "DELETE /api/meetings/[meetingId]/attendees/[userId] - User authorized");
+    logger.info(
+      {
+        traceId,
+        userId: user.id,
+        role: user.role,
+        meetingId: params.meetingId,
+        targetUserId: params.userId,
+      },
+      "DELETE /api/meetings/[meetingId]/attendees/[userId] - User authorized",
+    );
 
-    logger.info({ traceId, meetingId: params.meetingId, targetUserId: params.userId }, "DELETE /api/meetings/[meetingId]/attendees/[userId] - Removing attendee");
+    logger.info(
+      { traceId, meetingId: params.meetingId, targetUserId: params.userId },
+      "DELETE /api/meetings/[meetingId]/attendees/[userId] - Removing attendee",
+    );
 
     await removeAttendee({
       meetingId: params.meetingId,
@@ -80,7 +123,10 @@ export const DELETE = withAssociation(
       userId: params.userId,
     });
 
-    logger.info({ traceId, meetingId: params.meetingId, targetUserId: params.userId }, "DELETE /api/meetings/[meetingId]/attendees/[userId] - Success");
+    logger.info(
+      { traceId, meetingId: params.meetingId, targetUserId: params.userId },
+      "DELETE /api/meetings/[meetingId]/attendees/[userId] - Success",
+    );
 
     return SuccessResponse({
       data: { success: true },

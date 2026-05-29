@@ -20,18 +20,27 @@ export const GET = withAssociation(
       throw new ForbiddenError("Invalid module ID");
     }
 
-    logger.info({ traceId, associationId: association.id }, "GET /training/modules/{moduleId}/complete - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "GET /training/modules/{moduleId}/complete - Request started",
+    );
 
     const { moduleId } = params;
     await withRole(req, UserRole.MEMBER);
-    logger.info({ traceId }, "GET /training/modules/{moduleId}/complete - User authorized");
+    logger.info(
+      { traceId },
+      "GET /training/modules/{moduleId}/complete - User authorized",
+    );
 
     const data = await findManyCompletions({
       associationId: association.id,
       moduleId,
     });
 
-    logger.info({ traceId }, "GET /training/modules/{moduleId}/complete - Success");
+    logger.info(
+      { traceId },
+      "GET /training/modules/{moduleId}/complete - Success",
+    );
     return SuccessResponse({ data: data.completions, meta: data.pagination });
   },
 );
@@ -46,12 +55,18 @@ export const POST = withAssociation(
       throw new ForbiddenError("Invalid request body");
     }
 
-    logger.info({ traceId, associationId: association.id }, "POST /training/modules/{moduleId}/complete - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "POST /training/modules/{moduleId}/complete - Request started",
+    );
 
     const { moduleId } = params;
 
     const user = await withRole(request, UserRole.SUPER_ADMIN);
-    logger.info({ traceId, userId: user.id }, "POST /training/modules/{moduleId}/complete - User authorized");
+    logger.info(
+      { traceId, userId: user.id },
+      "POST /training/modules/{moduleId}/complete - User authorized",
+    );
 
     const completion = await recordCompletion({
       associationId: association.id,
@@ -60,7 +75,10 @@ export const POST = withAssociation(
       data: body,
     });
 
-    logger.info({ traceId, completionId: completion.id }, "POST /training/modules/{moduleId}/complete - Success");
+    logger.info(
+      { traceId, completionId: completion.id },
+      "POST /training/modules/{moduleId}/complete - Success",
+    );
     return SuccessResponse({ data: completion }, 201);
   },
 );

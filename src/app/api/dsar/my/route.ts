@@ -10,11 +10,11 @@ import { logger } from "@src/shared/logger/server";
  * @apiGroup DSAR
  * @apiDescription Retrieves a paginated list of DSAR tickets filed by the authenticated member.
  * Results are strictly scoped to the current user and their association.
- * 
+ *
  * @apiQuery {Number} [page=1] Page number for pagination.
  * @apiQuery {String} [status] Filter by ticket status.
  * @apiQuery {String} [requestType] Filter by request type.
- * 
+ *
  * @apiSuccess {Object[]} data List of DsarTicket objects.
  * @apiSuccess {Object} meta Pagination metadata.
  * @apiPermission MEMBER
@@ -22,10 +22,13 @@ import { logger } from "@src/shared/logger/server";
 export const GET = withAssociation(
   { query: DsarQuerySchema },
   async (association, { query, traceId }, request) => {
-    logger.info({
-      traceId,
-      associationId: association.id,
-    }, "GET /api/dsar/my - Request started");
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+      },
+      "GET /api/dsar/my - Request started",
+    );
 
     const userId = request.headers.get("x-user-id")!;
 
@@ -41,12 +44,15 @@ export const GET = withAssociation(
       },
     });
 
-    logger.info({
-      traceId,
-      userId,
-      count: result.tickets.length,
-    }, "GET /api/dsar/my - Success");
+    logger.info(
+      {
+        traceId,
+        userId,
+        count: result.tickets.length,
+      },
+      "GET /api/dsar/my - Success",
+    );
 
     return SuccessResponse({ data: result.tickets, meta: result.pagination });
-  }
+  },
 );

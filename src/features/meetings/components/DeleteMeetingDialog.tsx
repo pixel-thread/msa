@@ -21,7 +21,12 @@ interface DeleteMeetingDialogProps {
   onSuccess?: () => void;
 }
 
-export function DeleteMeetingDialog({ meeting, open, onOpenChange, onSuccess }: DeleteMeetingDialogProps) {
+export function DeleteMeetingDialog({
+  meeting,
+  open,
+  onOpenChange,
+  onSuccess,
+}: DeleteMeetingDialogProps) {
   const queryClient = useQueryClient();
 
   const deleteMutation = useMutation({
@@ -59,7 +64,8 @@ export function DeleteMeetingDialog({ meeting, open, onOpenChange, onSuccess }: 
           </div>
           <DialogDescription className="pt-2">
             Are you sure you want to delete <strong>{meeting?.title}</strong>?
-            This action cannot be undone and will remove all associated attendees, agenda items, and minutes.
+            This action cannot be undone and will remove all associated
+            attendees, agenda items, and minutes.
           </DialogDescription>
         </DialogHeader>
 

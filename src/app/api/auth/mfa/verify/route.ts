@@ -18,10 +18,16 @@ export const POST = withValidation(
   { body: VerifyMfaSchema },
   async (request, _ctx, { body, traceId }) => {
     const userId = request.headers.get("x-user-id");
-    logger.info({ traceId, userId }, "POST /api/auth/mfa/verify - Request started");
+    logger.info(
+      { traceId, userId },
+      "POST /api/auth/mfa/verify - Request started",
+    );
 
     if (!userId) {
-      logger.error({ traceId }, "POST /api/auth/mfa/verify - Unauthorized (missing x-user-id)");
+      logger.error(
+        { traceId },
+        "POST /api/auth/mfa/verify - Unauthorized (missing x-user-id)",
+      );
       throw new UnauthorizedError("Unauthorized");
     }
 
@@ -40,12 +46,18 @@ export const POST = withValidation(
     });
 
     if (!verificationCode) {
-      logger.error({ traceId, userId }, "POST /api/auth/mfa/verify - Invalid or expired verification code");
+      logger.error(
+        { traceId, userId },
+        "POST /api/auth/mfa/verify - Invalid or expired verification code",
+      );
       throw new UnauthorizedError("Invalid or expired verification code");
     }
 
     if (verificationCode.attempts >= env.OTP_MAX_ATTEMPTS) {
-      logger.error({ traceId, userId, verificationCodeId: verificationCode.id }, "POST /api/auth/mfa/verify - Too many attempts");
+      logger.error(
+        { traceId, userId, verificationCodeId: verificationCode.id },
+        "POST /api/auth/mfa/verify - Too many attempts",
+      );
       throw new TooManyRequestsError(
         "Too many attempts. Please request a new code",
       );
@@ -57,7 +69,10 @@ export const POST = withValidation(
         data: { attempts: { increment: 1 } },
       });
 
-      logger.error({ traceId, userId, verificationCodeId: verificationCode.id }, "POST /api/auth/mfa/verify - Invalid verification code input");
+      logger.error(
+        { traceId, userId, verificationCodeId: verificationCode.id },
+        "POST /api/auth/mfa/verify - Invalid verification code input",
+      );
       throw new UnauthorizedError("Invalid verification code");
     }
 

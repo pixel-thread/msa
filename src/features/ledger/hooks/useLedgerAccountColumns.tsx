@@ -7,9 +7,7 @@ export function useLedgerAccountColumns() {
       accessorKey: "code",
       header: "Code",
       cell: ({ row }) => (
-        <span className="text-sm font-mono text-ink">
-          {row.original.code}
-        </span>
+        <span className="text-sm font-mono text-ink">{row.original.code}</span>
       ),
     },
     {

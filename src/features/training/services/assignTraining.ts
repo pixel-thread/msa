@@ -78,12 +78,12 @@ export async function assignTraining({
     }
 
     const hasMatchingRole = trainingModule.requiredForRoles.some((role) =>
-      user.role.includes(role)
+      user.role.includes(role),
     );
 
     if (!hasMatchingRole) {
       throw new Error(
-        "User's role does not match the required roles for this training module"
+        "User's role does not match the required roles for this training module",
       );
     }
 
@@ -152,12 +152,17 @@ export async function bulkAssignTraining({
       throw new Error("No valid users found");
     }
 
-    const validAssignments: { moduleId: string; userId: string; assignedById: string; status: "ASSIGNED" }[] = [];
+    const validAssignments: {
+      moduleId: string;
+      userId: string;
+      assignedById: string;
+      status: "ASSIGNED";
+    }[] = [];
     const skippedUsers: string[] = [];
 
     for (const user of users) {
       const hasMatchingRole = trainingModule.requiredForRoles.some((role) =>
-        user.role.includes(role)
+        user.role.includes(role),
       );
 
       if (hasMatchingRole) {
@@ -185,7 +190,7 @@ export async function bulkAssignTraining({
 
       const existingUserIds = new Set(existingAssignments.map((a) => a.userId));
       const newAssignments = validAssignments.filter(
-        (a) => !existingUserIds.has(a.userId)
+        (a) => !existingUserIds.has(a.userId),
       );
 
       if (newAssignments.length > 0) {
@@ -290,7 +295,9 @@ export async function bulkRemoveTrainingAssignment({
 
     const deletedIds = existingAssignments.map((a) => a.id);
     const deletedUserIds = existingAssignments.map((a) => a.userId);
-    const notFoundUserIds = userIds.filter((id) => !deletedUserIds.includes(id));
+    const notFoundUserIds = userIds.filter(
+      (id) => !deletedUserIds.includes(id),
+    );
 
     await tx.trainingAssignment.deleteMany({
       where: { id: { in: deletedIds } },

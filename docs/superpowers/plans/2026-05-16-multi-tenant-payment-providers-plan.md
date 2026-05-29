@@ -103,14 +103,14 @@ export const PaymentProviderIdSchema = z.object({
 
 **Routes:**
 
-| Method | Path                                   | Handler      |
-| ------ | -------------------------------------- | ------------ |
-| POST   | /api/payments/providers                | upsert       |
-| GET    | /api/payments/providers                | list         |
-| GET    | /api/payments/providers/:id            | get          |
-| PATCH  | /api/payments/providers/:id            | update       |
-| DELETE | /api/payments/providers/:id            | delete       |
-| POST   | /api/payments/providers/:id/activate   | activate     |
+| Method | Path                                 | Handler  |
+| ------ | ------------------------------------ | -------- |
+| POST   | /api/payments/providers              | upsert   |
+| GET    | /api/payments/providers              | list     |
+| GET    | /api/payments/providers/:id          | get      |
+| PATCH  | /api/payments/providers/:id          | update   |
+| DELETE | /api/payments/providers/:id          | delete   |
+| POST   | /api/payments/providers/:id/activate | activate |
 
 **Auth:**
 
@@ -324,4 +324,3 @@ Testing & Validation
 - After migration, env vars become fallback (optional)
 - All secrets encrypted using existing AES-256-GCM implementation
 - No new npm dependencies required
-

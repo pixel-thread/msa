@@ -16,7 +16,10 @@ function formatResourceId(id: string | null): string {
   return id.length > 8 ? `${id.slice(0, 8)}...` : id;
 }
 
-const actionBadgeVariants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+const actionBadgeVariants: Record<
+  string,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
   CREATE: "default",
   UPDATE: "secondary",
   DELETE: "destructive",
@@ -24,7 +27,9 @@ const actionBadgeVariants: Record<string, "default" | "secondary" | "destructive
   LOGOUT: "outline",
 };
 
-function getActionBadgeVariant(action: string): "default" | "secondary" | "destructive" | "outline" {
+function getActionBadgeVariant(
+  action: string,
+): "default" | "secondary" | "destructive" | "outline" {
   for (const [key, variant] of Object.entries(actionBadgeVariants)) {
     if (action.startsWith(key)) return variant;
   }
@@ -35,7 +40,9 @@ interface UseAuditLogColumnsOptions {
   onViewDetails?: (entry: AuditLogEntry) => void;
 }
 
-export function useAuditLogColumns({ onViewDetails }: UseAuditLogColumnsOptions = {}) {
+export function useAuditLogColumns({
+  onViewDetails,
+}: UseAuditLogColumnsOptions = {}) {
   const columns: ColumnDef<AuditLogEntry>[] = [
     {
       accessorKey: "action",

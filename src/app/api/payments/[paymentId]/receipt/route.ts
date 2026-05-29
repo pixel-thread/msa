@@ -15,7 +15,10 @@ import { ForbiddenError, NotFoundError } from "@src/shared/errors";
 export const GET = withAssociation(
   {},
   async (association, { traceId }, request, context) => {
-    logger.info({ traceId }, "GET /api/payments/[id]/receipt - Request started");
+    logger.info(
+      { traceId },
+      "GET /api/payments/[id]/receipt - Request started",
+    );
 
     const params = await context.params;
     const paymentId = params?.paymentId;
@@ -25,39 +28,52 @@ export const GET = withAssociation(
     }
 
     const user = await withRole(request, UserRole.MEMBER);
-    logger.info({ traceId, userId: user.id, paymentId }, "GET /api/payments/[id]/receipt - User authorized");
+    logger.info(
+      { traceId, userId: user.id, paymentId },
+      "GET /api/payments/[id]/receipt - User authorized",
+    );
 
     const transaction = await getTransactionById(paymentId, association.id);
 
     if (!transaction) {
       throw new NotFoundError("Transaction");
     }
-    
-    const adminRoles: UserRole[] = [UserRole.FINANCE, UserRole.SECRETARY, UserRole.PRESIDENT, UserRole.SUPER_ADMIN];
-    const isFinance = user.role.some(r => adminRoles.includes(r));
-    
+
+    const adminRoles: UserRole[] = [
+      UserRole.FINANCE,
+      UserRole.SECRETARY,
+      UserRole.PRESIDENT,
+      UserRole.SUPER_ADMIN,
+    ];
+    const isFinance = user.role.some((r) => adminRoles.includes(r));
+
     if (!isFinance && transaction.userId !== user.id) {
-      throw new ForbiddenError("You do not have permission to view this receipt");
+      throw new ForbiddenError(
+        "You do not have permission to view this receipt",
+      );
     }
 
     const receiptData = {
       receiptNumber: transaction.receiptNumber || transaction.id,
       paidAt: transaction.paidAt,
-      memberInfo: { 
-        name: transaction.user.name, 
-        membershipNumber: transaction.user.membershipNumber 
+      memberInfo: {
+        name: transaction.user.name,
+        membershipNumber: transaction.user.membershipNumber,
       },
       associationInfo: { name: association.name },
       amount: transaction.amount,
       method: transaction.method,
-      appliedTo: transaction.allocations.map(a => ({
+      appliedTo: transaction.allocations.map((a) => ({
         year: a.contributionPeriod.year,
         month: a.contributionPeriod.month,
-        amount: a.allocatedAmount
-      }))
+        amount: a.allocatedAmount,
+      })),
     };
 
-    logger.info({ traceId, paymentId }, "GET /api/payments/[id]/receipt - Success");
+    logger.info(
+      { traceId, paymentId },
+      "GET /api/payments/[id]/receipt - Success",
+    );
 
     return SuccessResponse({ data: receiptData });
   },

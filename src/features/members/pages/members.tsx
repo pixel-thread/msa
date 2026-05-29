@@ -3,9 +3,7 @@
 import { useUrlFilters } from "@src/shared/hooks";
 
 import { DataTable } from "@src/shared/components/data-table";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import { useMembers } from "@src/features/members/hooks/useMembers";
 import { useMemberTableColumns } from "@src/features/members/hooks/useMemberTableColumns";
@@ -15,7 +13,8 @@ export default function MembersPage() {
   const { page, setPage } = useUrlFilters({ basePath: "/members" });
 
   const { members, meta, isLoading } = useMembers({ page });
-  const { onRoleChange, onStatusChange, onAssociationChange } = useMemberTableActions();
+  const { onRoleChange, onStatusChange, onAssociationChange } =
+    useMemberTableActions();
   const { columns } = useMemberTableColumns({
     onRoleChange,
     onStatusChange,

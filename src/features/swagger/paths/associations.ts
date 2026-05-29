@@ -30,7 +30,8 @@ export const associationPaths = {
     post: {
       tags: ["Associations"],
       summary: "Add member to association",
-      description: "Add an existing user as a member to the association (PRESIDENT only)",
+      description:
+        "Add an existing user as a member to the association (PRESIDENT only)",
       security: [{ bearerAuth: [] }],
       parameters: [
         {
@@ -49,7 +50,11 @@ export const associationPaths = {
               type: "object",
               required: ["memberId"],
               properties: {
-                memberId: { type: "string", format: "uuid", description: "ID of the user to add" },
+                memberId: {
+                  type: "string",
+                  format: "uuid",
+                  description: "ID of the user to add",
+                },
               },
             },
           },

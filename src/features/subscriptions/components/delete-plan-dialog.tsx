@@ -30,7 +30,8 @@ export function DeletePlanDialog({
         <DialogHeader>
           <DialogTitle>Delete Subscription Plan</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete the plan &quot;{plan?.name}&quot;? This action cannot be undone.
+            Are you sure you want to delete the plan &quot;{plan?.name}&quot;?
+            This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
 

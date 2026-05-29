@@ -7,13 +7,8 @@ export function useUpdateAssociation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      id,
-      data,
-    }: {
-      id: string;
-      data: UpdateAssociationInput;
-    }) => http.patch(`/associations/${id}`, data),
+    mutationFn: ({ id, data }: { id: string; data: UpdateAssociationInput }) =>
+      http.patch(`/associations/${id}`, data),
     onSuccess: (data) => {
       if (data.success) {
         toast.success("Association updated successfully");

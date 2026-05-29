@@ -33,7 +33,9 @@ export async function createCertificate({
         moduleId,
         userId: data.userId,
         certificateUrl,
-        ...(data.certificateNumber && { certificateNumber: data.certificateNumber }),
+        ...(data.certificateNumber && {
+          certificateNumber: data.certificateNumber,
+        }),
         ...(data.issuedAt && { issuedAt: new Date(data.issuedAt) }),
         ...(data.thumbnailUrl && { thumbnailUrl: data.thumbnailUrl }),
         ...(fileId && { fileId }),

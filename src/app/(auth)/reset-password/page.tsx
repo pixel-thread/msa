@@ -49,8 +49,7 @@ export default function ResetPasswordPage() {
     try {
       await resetPasswordMutation.mutateAsync(values);
       setIsSuccess(true);
-    } catch {
-    }
+    } catch {}
   };
 
   if (!token) {
@@ -118,10 +117,7 @@ export default function ResetPasswordPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-5"
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               {resetPasswordMutation.isError && (
                 <Alert variant="destructive">
                   <AlertDescription>
@@ -134,9 +130,7 @@ export default function ResetPasswordPage() {
               <FormField
                 control={form.control}
                 name="token"
-                render={({ field }) => (
-                  <input type="hidden" {...field} />
-                )}
+                render={({ field }) => <input type="hidden" {...field} />}
               />
 
               <FormField

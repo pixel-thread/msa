@@ -11,7 +11,10 @@ import { PaymentProviderType } from "@prisma/client";
 export const POST = withAssociation(
   { body: UpsertPaymentProviderSchema },
   async (association, { body, traceId }) => {
-    logger.info({ traceId, provider: body!.provider }, "POST /api/payments/providers - Request started");
+    logger.info(
+      { traceId, provider: body!.provider },
+      "POST /api/payments/providers - Request started",
+    );
 
     const result = await createProvider({
       associationId: association.id,
@@ -22,7 +25,10 @@ export const POST = withAssociation(
       isActive: body!.isActive,
     });
 
-    logger.info({ traceId, providerId: result.id }, "POST /api/payments/providers - Success");
+    logger.info(
+      { traceId, providerId: result.id },
+      "POST /api/payments/providers - Success",
+    );
 
     return SuccessResponse({ data: result }, 201);
   },
@@ -33,7 +39,10 @@ export const GET = withAssociation({}, async (association, { traceId }) => {
 
   const providers = await getProvidersByAssociation(association.id);
 
-  logger.info({ traceId, count: providers.length }, "GET /api/payments/providers - Success");
+  logger.info(
+    { traceId, count: providers.length },
+    "GET /api/payments/providers - Success",
+  );
 
   return SuccessResponse({ data: providers });
 });

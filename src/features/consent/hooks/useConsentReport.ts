@@ -11,8 +11,8 @@ export function useConsentReport() {
 
   return {
     report:
-      ((data as ApiResponse<ConsentSummaryReport[]>)?.data as ConsentSummaryReport[]) ??
-      [],
+      ((data as ApiResponse<ConsentSummaryReport[]>)
+        ?.data as ConsentSummaryReport[]) ?? [],
     isLoading,
     error,
     refetch,

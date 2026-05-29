@@ -12,12 +12,15 @@ export class SftpStorageProvider implements StorageProvider {
   // Uploads a file to /uploads/<folder>/<timestamp>-<name>, returns key + CDN URL.
   async upload(params: UploadParams): Promise<UploadResult> {
     const sftp = new SftpClient("upload-client");
-    logger.debug({
-      host: env.SFTP_HOST,
-      port: env.SFTP_PORT,
-      username: env.SFTP_USERNAME,
-      readyTimeout: env.SFTP_TIMEOUT,
-    }, "[Storage] SFTP connecting...");
+    logger.debug(
+      {
+        host: env.SFTP_HOST,
+        port: env.SFTP_PORT,
+        username: env.SFTP_USERNAME,
+        readyTimeout: env.SFTP_TIMEOUT,
+      },
+      "[Storage] SFTP connecting...",
+    );
 
     try {
       await sftp.connect({

@@ -4,9 +4,7 @@ import { useState } from "react";
 import { useUrlFilters } from "@src/shared/hooks";
 
 import { DataTable } from "@src/shared/components/data-table";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import { usePlans } from "@src/features/subscriptions/hooks/usePlans";
 import { usePlanTableColumns } from "@src/features/subscriptions/hooks/usePlanTableColumns";
@@ -19,10 +17,13 @@ import { SubscriptionPlan } from "@src/features/subscriptions/types";
 export default function PlansPage() {
   const { page, setPage } = useUrlFilters({ basePath: "/subscriptions/plans" });
   const [editingPlan, setEditingPlan] = useState<SubscriptionPlan | null>(null);
-  const [deletingPlan, setDeletingPlan] = useState<SubscriptionPlan | null>(null);
+  const [deletingPlan, setDeletingPlan] = useState<SubscriptionPlan | null>(
+    null,
+  );
 
   const { plans, meta, isLoading } = usePlans({ page });
-  const { onStatusChange, onDelete, onSetDefault, isPending } = usePlanTableActions();
+  const { onStatusChange, onDelete, onSetDefault, isPending } =
+    usePlanTableActions();
   const { columns } = usePlanTableColumns({
     onStatusChange,
     onSetDefault,
@@ -67,11 +68,7 @@ export default function PlansPage() {
 
       <DataTable loading={isLoading} data={plans} columns={columns} />
 
-      <DataTablePagination
-        meta={meta}
-        onPageChange={setPage}
-        label="plans"
-      />
+      <DataTablePagination meta={meta} onPageChange={setPage} label="plans" />
 
       <EditPlanDialog
         plan={editingPlan}

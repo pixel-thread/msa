@@ -64,7 +64,8 @@ export function useDsarColumns({
       header: "Type",
       cell: ({ row }) => (
         <span className="text-sm">
-          {requestTypeLabels[row.original.requestType] || row.original.requestType}
+          {requestTypeLabels[row.original.requestType] ||
+            row.original.requestType}
         </span>
       ),
     },
@@ -78,7 +79,8 @@ export function useDsarColumns({
         >
           {row.original.status === "IN_PROGRESS"
             ? "In Progress"
-            : row.original.status.charAt(0) + row.original.status.slice(1).toLowerCase()}
+            : row.original.status.charAt(0) +
+              row.original.status.slice(1).toLowerCase()}
         </Badge>
       ),
     },
@@ -88,9 +90,7 @@ export function useDsarColumns({
       cell: ({ row }) => {
         const assigned = row.original.assignedTo;
         return (
-          <span className="text-sm text-body">
-            {assigned?.name || "-"}
-          </span>
+          <span className="text-sm text-body">{assigned?.name || "-"}</span>
         );
       },
     },

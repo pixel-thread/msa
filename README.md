@@ -40,5 +40,6 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 Detailed documentation for all API routes can be found in [.agents/docs/API_DOC.md](.agents/docs/API_DOC.md).
 
 The API also supports:
+
 - **OpenAPI Spec (JSON):** `/api/docs`
 - **Swagger UI:** `/api/docs/ui`

@@ -11,10 +11,16 @@ export const GET = withAssociation(
   { query: ComplaintQuerySchema },
   async (association, { query, traceId }, req) => {
     const userId = req.headers.get("x-user-id");
-    logger.info({ traceId, associationId: association.id, userId }, "GET /api/compliance/my - Request started");
+    logger.info(
+      { traceId, associationId: association.id, userId },
+      "GET /api/compliance/my - Request started",
+    );
 
     if (!userId) {
-      logger.error({ traceId }, "GET /api/compliance/my - Unauthorized (missing x-user-id)");
+      logger.error(
+        { traceId },
+        "GET /api/compliance/my - Unauthorized (missing x-user-id)",
+      );
       throw new UnauthorizedError("Unauthorized");
     }
 
@@ -56,7 +62,10 @@ export const GET = withAssociation(
 
     const total = await prisma.complaint.count({ where });
 
-    logger.info({ traceId, count: complaints.length }, "GET /api/compliance/my - Success");
+    logger.info(
+      { traceId, count: complaints.length },
+      "GET /api/compliance/my - Success",
+    );
 
     return SuccessResponse({
       data: complaints,

@@ -37,25 +37,35 @@ export function ConsentDetailDialog({
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-xs font-medium text-body uppercase tracking-wider">Member</p>
-              <p className="text-sm text-ink mt-1">{record.user?.name || "Unknown"}</p>
+              <p className="text-xs font-medium text-body uppercase tracking-wider">
+                Member
+              </p>
+              <p className="text-sm text-ink mt-1">
+                {record.user?.name || "Unknown"}
+              </p>
               {record.user?.email && (
                 <p className="text-xs text-body">{record.user.email}</p>
               )}
             </div>
             <div>
-              <p className="text-xs font-medium text-body uppercase tracking-wider">User ID</p>
+              <p className="text-xs font-medium text-body uppercase tracking-wider">
+                User ID
+              </p>
               <p className="text-sm text-ink mt-1 font-mono">{record.userId}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-xs font-medium text-body uppercase tracking-wider">Purpose</p>
+              <p className="text-xs font-medium text-body uppercase tracking-wider">
+                Purpose
+              </p>
               <p className="text-sm text-ink mt-1">{record.purpose}</p>
             </div>
             <div>
-              <p className="text-xs font-medium text-body uppercase tracking-wider">Status</p>
+              <p className="text-xs font-medium text-body uppercase tracking-wider">
+                Status
+              </p>
               <div className="mt-1">
                 <Badge
                   variant="outline"
@@ -65,7 +75,9 @@ export function ConsentDetailDialog({
                       : "bg-[#FEF3F2] text-[#B42318] border-[#FECDCA]"
                   }
                 >
-                  {record.status === ConsentStatus.GRANTED ? "Granted" : "Withdrawn"}
+                  {record.status === ConsentStatus.GRANTED
+                    ? "Granted"
+                    : "Withdrawn"}
                 </Badge>
               </div>
             </div>
@@ -73,11 +85,17 @@ export function ConsentDetailDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-xs font-medium text-body uppercase tracking-wider">Channel</p>
-              <p className="text-sm text-ink mt-1 capitalize">{record.channel}</p>
+              <p className="text-xs font-medium text-body uppercase tracking-wider">
+                Channel
+              </p>
+              <p className="text-sm text-ink mt-1 capitalize">
+                {record.channel}
+              </p>
             </div>
             <div>
-              <p className="text-xs font-medium text-body uppercase tracking-wider">Date</p>
+              <p className="text-xs font-medium text-body uppercase tracking-wider">
+                Date
+              </p>
               <p className="text-sm text-ink mt-1">
                 {new Date(record.createdAt).toLocaleString("en-IN")}
               </p>
@@ -86,13 +104,17 @@ export function ConsentDetailDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-xs font-medium text-body uppercase tracking-wider">IP Address</p>
+              <p className="text-xs font-medium text-body uppercase tracking-wider">
+                IP Address
+              </p>
               <p className="text-sm text-ink mt-1 font-mono">
                 {record.ipAddress || "—"}
               </p>
             </div>
             <div>
-              <p className="text-xs font-medium text-body uppercase tracking-wider">User Agent</p>
+              <p className="text-xs font-medium text-body uppercase tracking-wider">
+                User Agent
+              </p>
               <p className="text-xs text-ink mt-1 break-words">
                 {record.userAgent || "—"}
               </p>
@@ -100,7 +122,9 @@ export function ConsentDetailDialog({
           </div>
 
           <div>
-            <p className="text-xs font-medium text-body uppercase tracking-wider">Receipt ID</p>
+            <p className="text-xs font-medium text-body uppercase tracking-wider">
+              Receipt ID
+            </p>
             <p className="text-sm text-ink mt-1 font-mono">{record.id}</p>
           </div>
         </div>

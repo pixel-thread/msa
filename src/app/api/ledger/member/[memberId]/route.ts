@@ -15,17 +15,23 @@ const QuerySchema = z.object({
 export const GET = withAssociation(
   { query: QuerySchema },
   async (association, { query, traceId }, request, { params }) => {
-    logger.info({
-      traceId,
-      associationId: association.id,
-    }, "GET /api/ledger/member/[memberId] - Request started");
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+      },
+      "GET /api/ledger/member/[memberId] - Request started",
+    );
 
     const user = await withRole(request, UserRole.FINANCE);
 
-    logger.info({
-      traceId,
-      userId: user.id,
-    }, "GET /api/ledger/member/[memberId] - User authorized");
+    logger.info(
+      {
+        traceId,
+        userId: user.id,
+      },
+      "GET /api/ledger/member/[memberId] - User authorized",
+    );
 
     const { memberId } = (await params) as { memberId: string };
     const page = query?.page || 1;
@@ -46,11 +52,14 @@ export const GET = withAssociation(
       prisma.ledgerEntry.count({ where }),
     ]);
 
-    logger.info({
-      traceId,
-      memberId,
-      count: memberLedger.length,
-    }, "GET /api/ledger/member/[memberId] - Success");
+    logger.info(
+      {
+        traceId,
+        memberId,
+        count: memberLedger.length,
+      },
+      "GET /api/ledger/member/[memberId] - Success",
+    );
 
     return SuccessResponse({
       data: memberLedger,

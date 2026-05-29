@@ -15,10 +15,13 @@ export const POST = withAssociation(
     body: ConsentUpdateSchema.omit({ action: true }),
   },
   async (association, { body, traceId }, request) => {
-    logger.info({
-      traceId,
-      associationId: association.id,
-    }, "POST /api/consent/revoke - Request started");
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+      },
+      "POST /api/consent/revoke - Request started",
+    );
 
     const userId = request.headers.get("x-user-id");
     if (!userId) throw new UnauthorizedError("Unauthorized");
@@ -40,10 +43,13 @@ export const POST = withAssociation(
       userAgent,
     );
 
-    logger.info({
-      traceId,
-      userId,
-    }, "POST /api/consent/revoke - Consent revoked successfully");
+    logger.info(
+      {
+        traceId,
+        userId,
+      },
+      "POST /api/consent/revoke - Consent revoked successfully",
+    );
 
     return SuccessResponse({
       message: "Consent revoked successfully",

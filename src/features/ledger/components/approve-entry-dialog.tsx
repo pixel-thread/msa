@@ -47,8 +47,7 @@ export function ApproveEntryDialog({
 
         <div className=" border border-hairline bg-surface-soft p-4">
           <p className="text-sm text-ink">
-            <span className="font-medium">Description:</span>{" "}
-            {entryDescription}
+            <span className="font-medium">Description:</span> {entryDescription}
           </p>
         </div>
 

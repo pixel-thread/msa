@@ -77,7 +77,9 @@ export function CreateMemberTypeDialog() {
                       type="number"
                       min={1}
                       {...field}
-                      onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
+                      onChange={(e) =>
+                        field.onChange(parseInt(e.target.value, 10))
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -92,7 +94,10 @@ export function CreateMemberTypeDialog() {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Regular Member, Senior Member" {...field} />
+                    <Input
+                      placeholder="e.g., Regular Member, Senior Member"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

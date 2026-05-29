@@ -97,9 +97,7 @@ export function useSubscriptionPaymentColumns() {
             ))}
           </div>
         ) : (
-          <span className="text-xs text-muted-foreground">
-            No allocations
-          </span>
+          <span className="text-xs text-muted-foreground">No allocations</span>
         );
       },
     },

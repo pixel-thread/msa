@@ -3,9 +3,7 @@
 import { useState, useMemo } from "react";
 import { useUrlFilters } from "@src/shared/hooks";
 import { DataTable } from "@src/shared/components/data-table";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import { useAnnouncementsList } from "@src/features/announcement/hooks/useAnnouncementsList";
 import { useDeleteAnnouncement } from "@src/features/announcement/hooks/useDeleteAnnouncement";

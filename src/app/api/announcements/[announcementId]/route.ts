@@ -20,7 +20,10 @@ const RouteParams = z.object({
 export const GET = withAssociation(
   { params: RouteParams },
   async (association, { params, traceId }, request) => {
-    logger.info({ traceId, announcementId: params?.announcementId }, "GET /api/announcements/[id] - Request started");
+    logger.info(
+      { traceId, announcementId: params?.announcementId },
+      "GET /api/announcements/[id] - Request started",
+    );
 
     const announcementId = params?.announcementId;
 
@@ -29,14 +32,20 @@ export const GET = withAssociation(
     }
 
     await withRole(request, UserRole.MEMBER);
-    logger.info({ traceId, announcementId }, "GET /api/announcements/[id] - User authorized");
+    logger.info(
+      { traceId, announcementId },
+      "GET /api/announcements/[id] - User authorized",
+    );
 
     const announcement = await findUniqueAnnouncement({
       announcementId,
       associationId: association.id,
     });
 
-    logger.info({ traceId, announcementId }, "GET /api/announcements/[id] - Success");
+    logger.info(
+      { traceId, announcementId },
+      "GET /api/announcements/[id] - Success",
+    );
 
     return SuccessResponse({
       data: announcement,
@@ -62,13 +71,19 @@ export const PUT = withAssociation(
 
     const userId = request.headers.get("x-user-id")!;
     const user = await withRole(request, UserRole.MEMBER);
-    logger.info({ traceId, userId, announcementId }, "PUT /api/announcements/[id] - User authorized");
+    logger.info(
+      { traceId, userId, announcementId },
+      "PUT /api/announcements/[id] - User authorized",
+    );
 
     if (!hasHighRoleAccess(user.role)) {
       throw new ForbiddenError("Only high role users can update announcements");
     }
 
-    logger.info({ traceId, announcementId }, "PUT /api/announcements/[id] - Updating announcement");
+    logger.info(
+      { traceId, announcementId },
+      "PUT /api/announcements/[id] - Updating announcement",
+    );
 
     const announcement = await updateAnnouncement({
       announcementId,
@@ -89,7 +104,10 @@ export const PUT = withAssociation(
       },
     });
 
-    logger.info({ traceId, announcementId }, "PUT /api/announcements/[id] - Success");
+    logger.info(
+      { traceId, announcementId },
+      "PUT /api/announcements/[id] - Success",
+    );
 
     return SuccessResponse({ data: announcement });
   },
@@ -98,7 +116,10 @@ export const PUT = withAssociation(
 export const DELETE = withAssociation(
   { params: RouteParams },
   async (association, { params, traceId }, request: NextRequest) => {
-    logger.info({ traceId, announcementId: params?.announcementId }, "DELETE /api/announcements/[id] - Request started");
+    logger.info(
+      { traceId, announcementId: params?.announcementId },
+      "DELETE /api/announcements/[id] - Request started",
+    );
 
     const announcementId = params?.announcementId;
 
@@ -107,13 +128,19 @@ export const DELETE = withAssociation(
     }
     const userId = request.headers.get("x-user-id")!;
     const user = await withRole(request, UserRole.MEMBER);
-    logger.info({ traceId, userId, announcementId }, "DELETE /api/announcements/[id] - User authorized");
+    logger.info(
+      { traceId, userId, announcementId },
+      "DELETE /api/announcements/[id] - User authorized",
+    );
 
     if (!hasHighRoleAccess(user.role)) {
       throw new ForbiddenError("Only high role users can delete announcements");
     }
 
-    logger.info({ traceId, announcementId }, "DELETE /api/announcements/[id] - Deleting announcement");
+    logger.info(
+      { traceId, announcementId },
+      "DELETE /api/announcements/[id] - Deleting announcement",
+    );
 
     await deleteAnnouncement({
       announcementId,
@@ -121,7 +148,10 @@ export const DELETE = withAssociation(
       authorId: userId,
     });
 
-    logger.info({ traceId, announcementId }, "DELETE /api/announcements/[id] - Success");
+    logger.info(
+      { traceId, announcementId },
+      "DELETE /api/announcements/[id] - Success",
+    );
 
     return SuccessResponse({ data: { success: true } });
   },
@@ -130,7 +160,10 @@ export const DELETE = withAssociation(
 export const PATCH = withAssociation(
   { params: RouteParams },
   async (association, { params, traceId }, request) => {
-    logger.info({ traceId, announcementId: params?.announcementId }, "PATCH /api/announcements/[id] - Request started");
+    logger.info(
+      { traceId, announcementId: params?.announcementId },
+      "PATCH /api/announcements/[id] - Request started",
+    );
 
     const announcementId = params?.announcementId;
 
@@ -139,7 +172,10 @@ export const PATCH = withAssociation(
     }
     const userId = request.headers.get("x-user-id")!;
     const user = await withRole(request, UserRole.MEMBER);
-    logger.info({ traceId, userId, announcementId }, "PATCH /api/announcements/[id] - User authorized");
+    logger.info(
+      { traceId, userId, announcementId },
+      "PATCH /api/announcements/[id] - User authorized",
+    );
 
     if (!hasHighRoleAccess(user.role)) {
       throw new ForbiddenError(
@@ -150,7 +186,10 @@ export const PATCH = withAssociation(
     const body = await request.json();
     const action = body.action;
 
-    logger.info({ traceId, announcementId, action }, "PATCH /api/announcements/[id] - Processing action");
+    logger.info(
+      { traceId, announcementId, action },
+      "PATCH /api/announcements/[id] - Processing action",
+    );
 
     if (action === "publish") {
       const announcement = await updateAnnouncement({
@@ -162,7 +201,10 @@ export const PATCH = withAssociation(
           publishedAt: new Date(),
         },
       });
-      logger.info({ traceId, announcementId }, "PATCH /api/announcements/[id] - Published");
+      logger.info(
+        { traceId, announcementId },
+        "PATCH /api/announcements/[id] - Published",
+      );
       return SuccessResponse({ data: announcement });
     }
 
@@ -175,7 +217,10 @@ export const PATCH = withAssociation(
           status: AnnouncementStatus.ARCHIVED,
         },
       });
-      logger.info({ traceId, announcementId }, "PATCH /api/announcements/[id] - Archived");
+      logger.info(
+        { traceId, announcementId },
+        "PATCH /api/announcements/[id] - Archived",
+      );
       return SuccessResponse({ data: announcement });
     }
 
@@ -189,7 +234,10 @@ export const PATCH = withAssociation(
           publishedAt: null,
         },
       });
-      logger.info({ traceId, announcementId }, "PATCH /api/announcements/[id] - Unpublished");
+      logger.info(
+        { traceId, announcementId },
+        "PATCH /api/announcements/[id] - Unpublished",
+      );
       return SuccessResponse({ data: announcement });
     }
 

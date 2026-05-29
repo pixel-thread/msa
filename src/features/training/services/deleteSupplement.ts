@@ -8,7 +8,12 @@ interface DeleteSupplementProps {
   actorId: string;
 }
 
-export async function deleteSupplement({ associationId, moduleId, supplementId, actorId }: DeleteSupplementProps) {
+export async function deleteSupplement({
+  associationId,
+  moduleId,
+  supplementId,
+  actorId,
+}: DeleteSupplementProps) {
   return await prisma.$transaction(async (tx) => {
     const supplement = await tx.trainingSupplement.findFirst({
       where: { id: supplementId, moduleId, module: { associationId } },
@@ -41,6 +46,10 @@ export async function deleteSupplement({ associationId, moduleId, supplementId, 
       },
     });
 
-    return { success: true, message: "Training supplement deleted", storageKey };
+    return {
+      success: true,
+      message: "Training supplement deleted",
+      storageKey,
+    };
   });
 }

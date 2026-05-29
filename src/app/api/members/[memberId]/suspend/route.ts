@@ -14,17 +14,23 @@ const SuspenseUserRouteParams = z.object({
 export const POST = withAssociation(
   { params: SuspenseUserRouteParams },
   async (association, { params, traceId }, req) => {
-    logger.info({
-      traceId,
-      associationId: association.id,
-    }, "POST /api/members/[memberId]/suspend - Request started");
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+      },
+      "POST /api/members/[memberId]/suspend - Request started",
+    );
 
     const user = await withRole(req, UserRole.PRESIDENT);
 
-    logger.info({
-      traceId,
-      userId: user.id,
-    }, "POST /api/members/[memberId]/suspend - User authorized");
+    logger.info(
+      {
+        traceId,
+        userId: user.id,
+      },
+      "POST /api/members/[memberId]/suspend - User authorized",
+    );
 
     const target = await findUniqueMember({ where: { id: params?.memberId } });
 
@@ -40,11 +46,17 @@ export const POST = withAssociation(
       data: { status: "SUSPENDED" },
     });
 
-    logger.info({
-      traceId,
-      memberId: params?.memberId,
-    }, "POST /api/members/[memberId]/suspend - Success");
+    logger.info(
+      {
+        traceId,
+        memberId: params?.memberId,
+      },
+      "POST /api/members/[memberId]/suspend - Success",
+    );
 
-    return SuccessResponse({ data: updatedMember,message:"Member suspended successfully" });
+    return SuccessResponse({
+      data: updatedMember,
+      message: "Member suspended successfully",
+    });
   },
 );

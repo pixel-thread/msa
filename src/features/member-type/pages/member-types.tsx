@@ -2,9 +2,7 @@
 
 import { useState } from "react";
 import { DataTable } from "@src/shared/components/data-table";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import { useMemberTypesList } from "@src/features/member-type/hooks/useMemberTypesList";
 import { useDeleteMemberType } from "@src/features/member-type/hooks/useDeleteMemberType";
 import { useMemberTypeColumns } from "@src/features/member-type/hooks/useMemberTypeColumns";
@@ -23,8 +21,11 @@ interface MemberType {
 }
 
 export default function MemberTypesPage() {
-  const [editingMemberType, setEditingMemberType] = useState<MemberType | null>(null);
-  const [deletingMemberType, setDeletingMemberType] = useState<MemberType | null>(null);
+  const [editingMemberType, setEditingMemberType] = useState<MemberType | null>(
+    null,
+  );
+  const [deletingMemberType, setDeletingMemberType] =
+    useState<MemberType | null>(null);
 
   const { memberTypes, isLoading } = useMemberTypesList();
   const deleteMemberType = useDeleteMemberType();

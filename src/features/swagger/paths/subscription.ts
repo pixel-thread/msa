@@ -28,7 +28,11 @@ export const subscriptionPaths = {
                 description: { type: "string" },
                 amount: { type: "number" },
                 currency: { type: "string", default: "INR" },
-                billingCycle: { type: "string", enum: ["MONTHLY", "YEARLY"], default: "YEARLY" },
+                billingCycle: {
+                  type: "string",
+                  enum: ["MONTHLY", "YEARLY"],
+                  default: "YEARLY",
+                },
                 features: { type: "object" },
               },
             },
@@ -100,7 +104,8 @@ export const subscriptionPaths = {
     post: {
       tags: ["Payments"],
       summary: "Record a payment",
-      description: "Record a manual payment and generate ledger entries (Finance/Admin only)",
+      description:
+        "Record a manual payment and generate ledger entries (Finance/Admin only)",
       security: [{ bearerAuth: [] }],
       requestBody: {
         required: true,
@@ -113,8 +118,20 @@ export const subscriptionPaths = {
                 userId: { type: "string", format: "uuid" },
                 subscriptionId: { type: "string", format: "uuid" },
                 amount: { type: "number" },
-                method: { type: "string", enum: ["CASH", "BANK_TRANSFER", "UPI", "CHEQUE", "ONLINE"] },
-                type: { type: "string", enum: ["SUBSCRIPTION", "DONATION", "EVENT_FEE", "BANK_INTEREST", "FAMILY_CONTRIBUTION"] },
+                method: {
+                  type: "string",
+                  enum: ["CASH", "BANK_TRANSFER", "UPI", "CHEQUE", "ONLINE"],
+                },
+                type: {
+                  type: "string",
+                  enum: [
+                    "SUBSCRIPTION",
+                    "DONATION",
+                    "EVENT_FEE",
+                    "BANK_INTEREST",
+                    "FAMILY_CONTRIBUTION",
+                  ],
+                },
                 notes: { type: "string" },
                 receiptNumber: { type: "string" },
                 razorpayOrderId: { type: "string" },

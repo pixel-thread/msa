@@ -3,7 +3,8 @@ export const announcementPaths = {
     get: {
       tags: ["Announcements"],
       summary: "Get all announcements",
-      description: "Retrieve announcements for an association with pagination and filters",
+      description:
+        "Retrieve announcements for an association with pagination and filters",
       parameters: [
         {
           name: "status",
@@ -74,7 +75,14 @@ export const announcementPaths = {
                   type: "array",
                   items: {
                     type: "string",
-                    enum: ["SUPER_ADMIN", "PRESIDENT", "SECRETARY", "FINANCE", "DPO", "MEMBER"],
+                    enum: [
+                      "SUPER_ADMIN",
+                      "PRESIDENT",
+                      "SECRETARY",
+                      "FINANCE",
+                      "DPO",
+                      "MEMBER",
+                    ],
                   },
                   default: [],
                 },
@@ -145,12 +153,27 @@ export const announcementPaths = {
                   type: "array",
                   items: {
                     type: "string",
-                    enum: ["SUPER_ADMIN", "PRESIDENT", "SECRETARY", "FINANCE", "DPO", "MEMBER"],
+                    enum: [
+                      "SUPER_ADMIN",
+                      "PRESIDENT",
+                      "SECRETARY",
+                      "FINANCE",
+                      "DPO",
+                      "MEMBER",
+                    ],
                   },
                 },
                 isPinned: { type: "boolean" },
-                publishedAt: { type: "string", format: "date-time", nullable: true },
-                expiresAt: { type: "string", format: "date-time", nullable: true },
+                publishedAt: {
+                  type: "string",
+                  format: "date-time",
+                  nullable: true,
+                },
+                expiresAt: {
+                  type: "string",
+                  format: "date-time",
+                  nullable: true,
+                },
               },
             },
           },
@@ -200,7 +223,10 @@ export const announcementPaths = {
             schema: {
               type: "object",
               properties: {
-                action: { type: "string", enum: ["publish", "archive", "unpublish"] },
+                action: {
+                  type: "string",
+                  enum: ["publish", "archive", "unpublish"],
+                },
               },
             },
           },

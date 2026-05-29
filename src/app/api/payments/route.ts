@@ -18,7 +18,10 @@ export const GET = withAssociation(
       (query as any) || {},
     );
 
-    logger.info({ traceId, count: result.transactions.length }, "GET /api/payments - Success");
+    logger.info(
+      { traceId, count: result.transactions.length },
+      "GET /api/payments - Success",
+    );
 
     return SuccessResponse({
       data: result.transactions,

@@ -26,18 +26,10 @@ export function MemberTypeActionsCell({
 }: MemberTypeActionsCellProps) {
   return (
     <div className="flex items-center gap-2">
-      <Button
-        size="sm"
-        variant="ghost"
-        onClick={() => onEdit(memberType)}
-      >
+      <Button size="sm" variant="ghost" onClick={() => onEdit(memberType)}>
         <Pencil className="h-4 w-4" />
       </Button>
-      <Button
-        size="sm"
-        variant="ghost"
-        onClick={() => onDelete(memberType)}
-      >
+      <Button size="sm" variant="ghost" onClick={() => onDelete(memberType)}>
         <Trash2 className="h-4 w-4" />
       </Button>
     </div>

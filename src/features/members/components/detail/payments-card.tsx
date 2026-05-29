@@ -7,7 +7,11 @@ import {
 import { User } from "@prisma/client";
 
 interface PaymentsCardProps {
-  member: User & { _count?: { payments?: number }; lastPaymentDate?: string; hasPaid?: boolean };
+  member: User & {
+    _count?: { payments?: number };
+    lastPaymentDate?: string;
+    hasPaid?: boolean;
+  };
 }
 
 export function PaymentsCard({ member }: PaymentsCardProps) {

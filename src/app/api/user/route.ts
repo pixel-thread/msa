@@ -33,10 +33,13 @@ export const POST = withValidation(
 
     const user = await withRole(req, UserRole.MEMBER);
 
-    logger.info({
-      traceId,
-      userId: user.id,
-    }, "POST /api/user - User authorized");
+    logger.info(
+      {
+        traceId,
+        userId: user.id,
+      },
+      "POST /api/user - User authorized",
+    );
 
     const userId = req.headers.get("x-user-id");
 

@@ -22,12 +22,15 @@ export async function GET(request: Request) {
     const totalAtRisk = results.reduce((sum, r) => sum + r.atRisk, 0);
     const processedAssociations = results.filter((r) => r.processed).length;
 
-    logger.info({
-      totalAssociations: results.length,
-      processedAssociations,
-      totalBreached,
-      totalAtRisk,
-    }, "GET /api/cron/dsar-sla - DSAR SLA check completed");
+    logger.info(
+      {
+        totalAssociations: results.length,
+        processedAssociations,
+        totalBreached,
+        totalAtRisk,
+      },
+      "GET /api/cron/dsar-sla - DSAR SLA check completed",
+    );
 
     return NextResponse.json({
       success: true,

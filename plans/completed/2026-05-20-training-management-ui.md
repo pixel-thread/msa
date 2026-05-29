@@ -10,6 +10,7 @@
 Implement the frontend dashboard pages and components for managing and viewing training modules, user assignments, self-completions, and admin-recorded completions.
 
 ## Stack Sync
+
 - React / Next.js 14 App Router
 - React Query (TanStack Query)
 - Zod + react-hook-form

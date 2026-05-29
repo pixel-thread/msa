@@ -1,6 +1,7 @@
 # Subscription Plan Versioning — Implementation Plan
 
 ## Overview
+
 Implement versioned subscription plans so that when an admin changes a plan's price, only new subscribers get the new price. Existing subscribers remain locked to their original price until they manually upgrade.
 
 ---
@@ -10,6 +11,7 @@ Implement versioned subscription plans so that when an admin changes a plan's pr
 ### 1.1 Replace the `SubscriptionPlan` model
 
 **Current fields to REMOVE from SubscriptionPlan:**
+
 - `amount`
 - `currency`
 - `billingCycle`
@@ -18,10 +20,11 @@ Implement versioned subscription plans so that when an admin changes a plan's pr
 - `@@unique([associationId,memberTypeId])`
 
 **New SubscriptionPlan:**
+
 ```prisma
 model SubscriptionPlan {
   id            String   @id @default(uuid())
-  associationId String 
+  associationId String
   name          String
   description   String?
   isActive      Boolean  @default(true)
@@ -29,7 +32,7 @@ model SubscriptionPlan {
   updatedAt     DateTime @updatedAt
 
   association   Association   @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  
+
   versions      SubscriptionPlanVersion[]
   subscriptions Subscription[]
 
@@ -48,16 +51,16 @@ model SubscriptionPlan {
 model SubscriptionPlanVersion {
   id                 String           @id @default(uuid())
   planId             String
-  
+
   amount             Decimal          @db.Decimal(10, 2)
   currency           String           @default("INR")
   billingCycle       String           @default("MONTHLY")
   features           Json
   description        String?
-  
+
   effectiveFrom      DateTime         @default(now())
   effectiveTo        DateTime?        // Null = currently active version
-  
+
   createdAt          DateTime         @default(now())
 
   plan               SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
@@ -74,7 +77,7 @@ model SubscriptionPlanVersion {
 ```prisma
 model Subscription {
   id            String    @id @default(uuid())
-  userId        String    @unique 
+  userId        String    @unique
   planId        String
   planVersionId String    // NEW: links to the locked price version
   status        String    @default("ACTIVE")
@@ -89,7 +92,7 @@ model Subscription {
   user          User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
   plan          SubscriptionPlan        @relation(fields: [planId], references: [id])
   planVersion   SubscriptionPlanVersion @relation(fields: [planVersionId], references: [id])  // NEW
-  
+
   billingHistory SubscriptionBillingHistory[]  // NEW
 
   @@index([status])
@@ -132,7 +135,7 @@ import { prisma } from "@src/shared/lib/prisma";
 
 async function backfill() {
   const plans = await prisma.subscriptionPlan.findMany();
-  
+
   for (const plan of plans) {
     // Create a version from current plan data
     const version = await prisma.subscriptionPlanVersion.create({
@@ -239,7 +242,7 @@ export const PATCH = withAssociation(
 
     const priceFields = ["amount", "currency", "billingCycle", "features"];
     const hasPriceChange = priceFields.some(
-      (field) => body[field as keyof typeof body] !== undefined
+      (field) => body[field as keyof typeof body] !== undefined,
     );
 
     if (hasPriceChange) {
@@ -341,7 +344,9 @@ export const GET = withAssociation({}, async (association, _, request) => {
     versions: undefined,
   }));
 
-  const result = user.memberTypeId ? plansWithActiveVersion : plansWithActiveVersion[0] || null;
+  const result = user.memberTypeId
+    ? plansWithActiveVersion
+    : plansWithActiveVersion[0] || null;
 
   return SuccessResponse({ data: result });
 });
@@ -487,7 +492,11 @@ import { SuccessResponse } from "@utils/responses";
 import { UserRole } from "@prisma/client";
 import { prisma } from "@src/shared/lib/prisma";
 import { z } from "zod";
-import { NotFoundError, ConflictError, ValidationError } from "@src/shared/errors";
+import {
+  NotFoundError,
+  ConflictError,
+  ValidationError,
+} from "@src/shared/errors";
 
 const UpgradeSchema = z.object({
   planId: z.uuid(),
@@ -629,7 +638,9 @@ export type Subscription = {
 export const UpgradeSubscriptionSchema = z.object({
   planId: z.uuid(),
 });
-export type UpgradeSubscriptionInput = z.infer<typeof UpgradeSubscriptionSchema>;
+export type UpgradeSubscriptionInput = z.infer<
+  typeof UpgradeSubscriptionSchema
+>;
 ```
 
 ---
@@ -655,14 +666,14 @@ const billingCycle = subscription.planVersion.billingCycle;
 
 ## Files to Modify Summary
 
-| File | Change |
-|------|--------|
-| `src/shared/lib/prisma/schema.prisma` | Replace subscription models with versioned versions |
-| `src/app/api/subscriptions/plans/route.ts` | Update GET and POST handlers |
-| `src/app/api/subscriptions/plans/[planId]/route.ts` | Update PATCH to create versions on price change |
-| `src/app/api/subscriptions/subscribe/route.ts` | Update to use active version |
-| `src/app/api/subscriptions/my/route.ts` | Include planVersion relation |
-| `src/app/api/subscriptions/upgrade/route.ts` | **NEW** endpoint |
-| `src/features/subscriptions/types/index.ts` | Add version types |
-| `src/features/subscriptions/validators/index.ts` | Add upgrade schema |
-| `src/features/cron/services/subscription-cron.service.ts` | Use planVersion for amounts |
+| File                                                      | Change                                              |
+| --------------------------------------------------------- | --------------------------------------------------- |
+| `src/shared/lib/prisma/schema.prisma`                     | Replace subscription models with versioned versions |
+| `src/app/api/subscriptions/plans/route.ts`                | Update GET and POST handlers                        |
+| `src/app/api/subscriptions/plans/[planId]/route.ts`       | Update PATCH to create versions on price change     |
+| `src/app/api/subscriptions/subscribe/route.ts`            | Update to use active version                        |
+| `src/app/api/subscriptions/my/route.ts`                   | Include planVersion relation                        |
+| `src/app/api/subscriptions/upgrade/route.ts`              | **NEW** endpoint                                    |
+| `src/features/subscriptions/types/index.ts`               | Add version types                                   |
+| `src/features/subscriptions/validators/index.ts`          | Add upgrade schema                                  |
+| `src/features/cron/services/subscription-cron.service.ts` | Use planVersion for amounts                         |

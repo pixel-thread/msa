@@ -46,6 +46,10 @@ export async function deleteCertificate({
       },
     });
 
-    return { success: true, message: "Training certificate deleted", storageKey };
+    return {
+      success: true,
+      message: "Training certificate deleted",
+      storageKey,
+    };
   });
 }

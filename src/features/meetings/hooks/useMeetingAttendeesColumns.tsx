@@ -40,7 +40,10 @@ const getInitials = (name: string) => {
 };
 
 const getRsvpBadge = (status: string | null) => {
-  const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+  const variants: Record<
+    string,
+    "default" | "secondary" | "destructive" | "outline"
+  > = {
     ACCEPTED: "default",
     DECLINED: "destructive",
     PENDING: "outline",

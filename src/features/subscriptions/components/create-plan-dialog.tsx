@@ -139,7 +139,13 @@ export function CreatePlanDialog() {
                   <FormControl>
                     <Input
                       type="datetime-local"
-                      value={field.value instanceof Date ? field.value.toISOString().slice(0, 16) : typeof field.value === "string" ? field.value.slice(0, 16) : ""}
+                      value={
+                        field.value instanceof Date
+                          ? field.value.toISOString().slice(0, 16)
+                          : typeof field.value === "string"
+                            ? field.value.slice(0, 16)
+                            : ""
+                      }
                       onChange={(e) => field.onChange(e.target.value)}
                       onBlur={field.onBlur}
                       ref={field.ref}
@@ -161,7 +167,13 @@ export function CreatePlanDialog() {
                   <FormControl>
                     <Input
                       type="datetime-local"
-                      value={field.value instanceof Date ? field.value.toISOString().slice(0, 16) : typeof field.value === "string" ? field.value.slice(0, 16) : ""}
+                      value={
+                        field.value instanceof Date
+                          ? field.value.toISOString().slice(0, 16)
+                          : typeof field.value === "string"
+                            ? field.value.slice(0, 16)
+                            : ""
+                      }
                       onChange={(e) => field.onChange(e.target.value)}
                       onBlur={field.onBlur}
                       ref={field.ref}

@@ -242,20 +242,20 @@ app/
 
 ### 3.1 Authentication & Identity
 
-| Route                      | Method | Purpose                                          | Roles                    |
-| -------------------------- | ------ | ------------------------------------------------ | ------------------------ |
-| `/api/auth/sign-up`        | POST   | Register new user with email/password            | Public                   |
-| `/api/auth/sign-in`        | POST   | Authenticate with email/password + MFA support    | Public                   |
-| `/api/auth/sign-in/verify`  | POST   | Verify MFA code and issue tokens                | Public                   |
-| `/api/auth/refresh`        | POST   | Refresh access token using refresh token        | Authenticated            |
-| `/api/auth/logout`         | POST   | Invalidate refresh token and clear cookies     | Authenticated            |
-| `/api/auth/me`             | GET    | Current user profile + role + association       | All authenticated        |
-| `/api/auth/forgot-password`| POST   | Request password reset email                   | Public                   |
-| `/api/auth/reset-password` | POST   | Reset password with token                      | Public                   |
-| `/api/auth/change-password`| POST   | Change password (authenticated)                | Authenticated            |
-| `/api/auth/mfa/setup`     | POST   | Start MFA setup (requires password)           | Authenticated            |
-| `/api/auth/mfa/verify`     | POST   | Verify and enable MFA                         | Authenticated            |
-| `/api/auth/mfa/disable`   | POST   | Disable MFA (requires password)               | Authenticated            |
+| Route                       | Method | Purpose                                        | Roles             |
+| --------------------------- | ------ | ---------------------------------------------- | ----------------- |
+| `/api/auth/sign-up`         | POST   | Register new user with email/password          | Public            |
+| `/api/auth/sign-in`         | POST   | Authenticate with email/password + MFA support | Public            |
+| `/api/auth/sign-in/verify`  | POST   | Verify MFA code and issue tokens               | Public            |
+| `/api/auth/refresh`         | POST   | Refresh access token using refresh token       | Authenticated     |
+| `/api/auth/logout`          | POST   | Invalidate refresh token and clear cookies     | Authenticated     |
+| `/api/auth/me`              | GET    | Current user profile + role + association      | All authenticated |
+| `/api/auth/forgot-password` | POST   | Request password reset email                   | Public            |
+| `/api/auth/reset-password`  | POST   | Reset password with token                      | Public            |
+| `/api/auth/change-password` | POST   | Change password (authenticated)                | Authenticated     |
+| `/api/auth/mfa/setup`       | POST   | Start MFA setup (requires password)            | Authenticated     |
+| `/api/auth/mfa/verify`      | POST   | Verify and enable MFA                          | Authenticated     |
+| `/api/auth/mfa/disable`     | POST   | Disable MFA (requires password)                | Authenticated     |
 
 ### 3.2 Associations (Super Admin)
 
@@ -418,7 +418,7 @@ const PUBLIC_ROUTES = [
 ];
 
 function isPublicRoute(pathname: string): boolean {
-  return PUBLIC_ROUTES.some(route => 
+  return PUBLIC_ROUTES.some(route =>
     pathname === route || pathname.startsWith(route + "/")
   );
 }
@@ -619,27 +619,28 @@ The application uses custom JWT-based authentication with the following flow:
 4. **MFA** (`/api/auth/mfa/*`): Email-based 6-digit OTP verification
 
 #### Token Configuration
+
 - **Access Token**: 15 minutes expiry (short-lived for security)
 - **Refresh Token**: 7 days expiry with rotation (new token issued on each use)
 - **MFA OTP**: 6 digits, 5 minutes expiry, max 3 attempts
-    [isSuperAdminRoute, "super_admin"],
-    [isDpoRoute, "dpo"],
-    [isFinanceRoute, "finance"],
-    [isAdminRoute, "secretary"],
+  [isSuperAdminRoute, "super_admin"],
+  [isDpoRoute, "dpo"],
+  [isFinanceRoute, "finance"],
+  [isAdminRoute, "secretary"],
   ];
 
   for (const [matcher, required] of roleGuards) {
-    if (matcher(req) && !hasMinRole(role, required)) {
-      if (pathname.startsWith("/api/")) {
-        return applySecurityHeaders(
-          NextResponse.json(
-            { error: "Insufficient permissions", code: "FORBIDDEN", required },
-            { status: 403 },
-          ),
-        );
-      }
-      return NextResponse.redirect(new URL("/forbidden", req.url));
-    }
+  if (matcher(req) && !hasMinRole(role, required)) {
+  if (pathname.startsWith("/api/")) {
+  return applySecurityHeaders(
+  NextResponse.json(
+  { error: "Insufficient permissions", code: "FORBIDDEN", required },
+  { status: 403 },
+  ),
+  );
+  }
+  return NextResponse.redirect(new URL("/forbidden", req.url));
+  }
   }
 
   // E. Enrich request headers for downstream handlers
@@ -648,8 +649,8 @@ The application uses custom JWT-based authentication with the following flow:
   requestHeaders.set("x-user-role", role);
   requestHeaders.set("x-association-slug", assocSlug);
   requestHeaders.set(
-    "x-trace-id",
-    req.headers.get("x-trace-id") ?? crypto.randomUUID(),
+  "x-trace-id",
+  req.headers.get("x-trace-id") ?? crypto.randomUUID(),
   );
 
   const res = NextResponse.next({ request: { headers: requestHeaders } });
@@ -659,14 +660,15 @@ The application uses custom JWT-based authentication with the following flow:
   res.headers.set("x-trace-id", requestHeaders.get("x-trace-id")!);
 
   return applySecurityHeaders(res);
-});
+  });
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-  ],
+matcher: [
+"/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+],
 };
-```
+
+````
 
 ---
 
@@ -1302,7 +1304,7 @@ model AuditLog {
   @@index([createdAt])
   @@map("audit_logs")
 }
-```
+````
 
 ### 5.2 Row-Level Security
 

@@ -7,24 +7,33 @@ import { logger } from "@src/shared/logger/server";
 export const GET = withAssociation(
   {},
   async (association, { traceId }, request) => {
-    logger.info({
-      traceId,
-      associationId: association.id,
-    }, "GET /api/dsar/admins - Request started");
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+      },
+      "GET /api/dsar/admins - Request started",
+    );
 
     const user = await withRole(request, UserRole.DPO);
 
-    logger.info({
-      traceId,
-      userId: user.id,
-    }, "GET /api/dsar/admins - User authorized");
+    logger.info(
+      {
+        traceId,
+        userId: user.id,
+      },
+      "GET /api/dsar/admins - User authorized",
+    );
 
     const admins = await findAssociationAdmins(association.id);
 
-    logger.info({
-      traceId,
-      count: admins.length,
-    }, "GET /api/dsar/admins - Success");
+    logger.info(
+      {
+        traceId,
+        count: admins.length,
+      },
+      "GET /api/dsar/admins - Success",
+    );
 
     return SuccessResponse({ data: admins });
   },

@@ -21,20 +21,32 @@ const ParamsSchema = z.object({
 export const GET = withValidation(
   { params: ParamsSchema },
   async (req, _ctx, { params, traceId }) => {
-    logger.info({ traceId, id: params?.id }, "GET /api/admin/associations/[id] - Request started");
+    logger.info(
+      { traceId, id: params?.id },
+      "GET /api/admin/associations/[id] - Request started",
+    );
     const user = await withRole(req, UserRole.SUPER_ADMIN);
-    logger.info({ traceId, userId: user.id, roles: user.role }, "GET /api/admin/associations/[id] - User authorized");
+    logger.info(
+      { traceId, userId: user.id, roles: user.role },
+      "GET /api/admin/associations/[id] - User authorized",
+    );
 
     const association = await findUniqueAssociation({
       where: { id: params?.id },
     });
 
     if (!association) {
-      logger.error({ traceId, id: params?.id }, "GET /api/admin/associations/[id] - Association not found");
+      logger.error(
+        { traceId, id: params?.id },
+        "GET /api/admin/associations/[id] - Association not found",
+      );
       throw new NotFoundError("Association not found");
     }
 
-    logger.info({ traceId, id: params?.id }, "GET /api/admin/associations/[id] - Success");
+    logger.info(
+      { traceId, id: params?.id },
+      "GET /api/admin/associations/[id] - Success",
+    );
 
     return SuccessResponse<Association>({
       data: association,
@@ -46,16 +58,25 @@ export const GET = withValidation(
 export const PUT = withValidation(
   { body: CreateAssociationSchema, params: ParamsSchema },
   async (req, _ctx, { body, params, traceId }) => {
-    logger.info({ traceId, id: params?.id, name: body?.name }, "PUT /api/admin/associations/[id] - Request started");
+    logger.info(
+      { traceId, id: params?.id, name: body?.name },
+      "PUT /api/admin/associations/[id] - Request started",
+    );
     const user = await withRole(req, UserRole.SUPER_ADMIN);
-    logger.info({ traceId, userId: user.id, roles: user.role }, "PUT /api/admin/associations/[id] - User authorized");
+    logger.info(
+      { traceId, userId: user.id, roles: user.role },
+      "PUT /api/admin/associations/[id] - User authorized",
+    );
 
     const existing = await findUniqueAssociation({
       where: { id: params?.id },
     });
 
     if (!existing) {
-      logger.error({ traceId, id: params?.id }, "PUT /api/admin/associations/[id] - Association Not Found");
+      logger.error(
+        { traceId, id: params?.id },
+        "PUT /api/admin/associations/[id] - Association Not Found",
+      );
       throw new NotFoundError("Association Not Found");
     }
 
@@ -69,7 +90,10 @@ export const PUT = withValidation(
       });
 
       if (conflict) {
-        logger.error({ traceId, slug: body?.slug, name: body?.name }, "PUT /api/admin/associations/[id] - Association conflict");
+        logger.error(
+          { traceId, slug: body?.slug, name: body?.name },
+          "PUT /api/admin/associations/[id] - Association conflict",
+        );
         throw new ConflictError(
           "Association with this slug or name already exists",
         );
@@ -81,7 +105,10 @@ export const PUT = withValidation(
       data: body as CreateAssociationInput,
     });
 
-    logger.info({ traceId, id: params?.id }, "PUT /api/admin/associations/[id] - Success");
+    logger.info(
+      { traceId, id: params?.id },
+      "PUT /api/admin/associations/[id] - Success",
+    );
 
     return SuccessResponse<Association>(
       { data: updated, message: "Association updated successfully" },
@@ -93,16 +120,25 @@ export const PUT = withValidation(
 export const DELETE = withValidation(
   { params: ParamsSchema },
   async (req, _ctx, { params, traceId }) => {
-    logger.info({ traceId, id: params?.id }, "DELETE /api/admin/associations/[id] - Request started");
+    logger.info(
+      { traceId, id: params?.id },
+      "DELETE /api/admin/associations/[id] - Request started",
+    );
     const user = await withRole(req, UserRole.SUPER_ADMIN);
-    logger.info({ traceId, userId: user.id, roles: user.role }, "DELETE /api/admin/associations/[id] - User authorized");
+    logger.info(
+      { traceId, userId: user.id, roles: user.role },
+      "DELETE /api/admin/associations/[id] - User authorized",
+    );
 
     const existing = await findUniqueAssociation({
       where: { id: params?.id },
     });
 
     if (!existing) {
-      logger.error({ traceId, id: params?.id }, "DELETE /api/admin/associations/[id] - Association Not Found");
+      logger.error(
+        { traceId, id: params?.id },
+        "DELETE /api/admin/associations/[id] - Association Not Found",
+      );
       throw new NotFoundError("Association Not Found");
     }
 
@@ -110,7 +146,10 @@ export const DELETE = withValidation(
       id: params?.id as string,
     });
 
-    logger.info({ traceId, id: params?.id }, "DELETE /api/admin/associations/[id] - Success");
+    logger.info(
+      { traceId, id: params?.id },
+      "DELETE /api/admin/associations/[id] - Success",
+    );
 
     return SuccessResponse<Association>(
       { data: deleted, message: "Association deleted successfully" },

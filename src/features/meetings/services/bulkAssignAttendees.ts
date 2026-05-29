@@ -116,19 +116,21 @@ export async function bulkAssignAttendees({
               title: "New Meeting Assigned",
               body: `You have been assigned to: ${meeting.title}`,
               entityId: meeting.id,
-route: EXPO_ROUTES.MEETINGS.MEETING_DETAIL(meeting.id),
+              route: EXPO_ROUTES.MEETINGS.MEETING_DETAIL(meeting.id),
             },
           );
         }
       }
     } catch (error) {
-      logger.error({
-        meetingId,
-        error,
-      }, "Background notification processing failed");
+      logger.error(
+        {
+          meetingId,
+          error,
+        },
+        "Background notification processing failed",
+      );
     }
   })();
 
   return { assigned, skipped: existingUserIds };
 }
-

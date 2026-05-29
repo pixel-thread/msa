@@ -13,6 +13,7 @@
 ### Task 1: Create Meeting Minutes Collection Route
 
 **Files:**
+
 - Create: `src/app/api/meetings/[meetingId]/minutes/route.ts`
 
 - [ ] **Step 1: Implement the POST handler**
@@ -26,8 +27,8 @@ import { createMeetingMinute } from "@src/features/meetings/services/minutes";
 import { CreateMeetingMinuteSchema } from "@src/features/meetings/validators/minutes";
 import { z } from "zod";
 
-const ParamsSchema = z.object({ 
-  meetingId: z.string().uuid("Invalid meeting ID") 
+const ParamsSchema = z.object({
+  meetingId: z.string().uuid("Invalid meeting ID"),
 });
 
 export const POST = withAssociation(
@@ -35,18 +36,18 @@ export const POST = withAssociation(
   async (association, { params, body }, request) => {
     // Check for administrative roles (Secretary and above)
     await withRole(request, UserRole.SECRETARY);
-    
+
     const minute = await createMeetingMinute({
       meetingId: params!.meetingId,
       associationId: association.id,
-      data: body!
+      data: body!,
     });
 
-    return SuccessResponse({ 
+    return SuccessResponse({
       data: minute,
-      message: "Meeting minute recorded successfully"
+      message: "Meeting minute recorded successfully",
     });
-  }
+  },
 );
 ```
 
@@ -62,6 +63,7 @@ git commit -m "feat: add meeting minutes collection api route"
 ### Task 2: Create Meeting Minute Resource Route
 
 **Files:**
+
 - Create: `src/app/api/meetings/[meetingId]/minutes/[minutesId]/route.ts`
 
 - [ ] **Step 1: Implement the PATCH handler**
@@ -75,9 +77,9 @@ import { updateMeetingMinute } from "@src/features/meetings/services/minutes";
 import { UpdateMeetingMinuteSchema } from "@src/features/meetings/validators/minutes";
 import { z } from "zod";
 
-const ParamsSchema = z.object({ 
+const ParamsSchema = z.object({
   meetingId: z.string().uuid("Invalid meeting ID"),
-  minutesId: z.string().uuid("Invalid minute ID")
+  minutesId: z.string().uuid("Invalid minute ID"),
 });
 
 export const PATCH = withAssociation(
@@ -85,19 +87,19 @@ export const PATCH = withAssociation(
   async (association, { params, body }, request) => {
     // Check for administrative roles (Secretary and above)
     await withRole(request, UserRole.SECRETARY);
-    
+
     const minute = await updateMeetingMinute({
       meetingId: params!.meetingId,
       minuteId: params!.minutesId,
       associationId: association.id,
-      data: body!
+      data: body!,
     });
 
-    return SuccessResponse({ 
+    return SuccessResponse({
       data: minute,
-      message: "Meeting minute updated successfully"
+      message: "Meeting minute updated successfully",
     });
-  }
+  },
 );
 ```
 

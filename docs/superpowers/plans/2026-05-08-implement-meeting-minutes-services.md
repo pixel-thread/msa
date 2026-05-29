@@ -13,6 +13,7 @@
 ### Task 1: Initialize Service File and Export
 
 **Files:**
+
 - Create: `src/features/meetings/services/minutes.ts`
 - Modify: `src/features/meetings/services/index.ts`
 
@@ -21,7 +22,10 @@
 ```typescript
 import { prisma } from "@lib/prisma";
 import { NotFoundError } from "@src/shared/errors";
-import { CreateMeetingMinuteInput, UpdateMeetingMinuteInput } from "../validators/minutes";
+import {
+  CreateMeetingMinuteInput,
+  UpdateMeetingMinuteInput,
+} from "../validators/minutes";
 
 interface CreateMeetingMinuteProps {
   meetingId: string;
@@ -36,11 +40,20 @@ interface UpdateMeetingMinuteProps {
   data: UpdateMeetingMinuteInput;
 }
 
-export async function createMeetingMinute({ meetingId, associationId, data }: CreateMeetingMinuteProps) {
+export async function createMeetingMinute({
+  meetingId,
+  associationId,
+  data,
+}: CreateMeetingMinuteProps) {
   // Stub
 }
 
-export async function updateMeetingMinute({ meetingId, minuteId, associationId, data }: UpdateMeetingMinuteProps) {
+export async function updateMeetingMinute({
+  meetingId,
+  minuteId,
+  associationId,
+  data,
+}: UpdateMeetingMinuteProps) {
   // Stub
 }
 ```
@@ -48,6 +61,7 @@ export async function updateMeetingMinute({ meetingId, minuteId, associationId, 
 - [ ] **Step 2: Export from index.ts**
 
 Modify `src/features/meetings/services/index.ts`:
+
 ```typescript
 export * from "./minutes";
 ```
@@ -62,6 +76,7 @@ git commit -m "feat: initialize meeting minutes services"
 ### Task 2: Implement createMeetingMinute
 
 **Files:**
+
 - Modify: `src/features/meetings/services/minutes.ts`
 - Create: `src/features/meetings/services/__tests__/minutes.test.ts`
 
@@ -74,11 +89,13 @@ import { NotFoundError } from "@src/shared/errors";
 
 describe("createMeetingMinute", () => {
   it("should throw NotFoundError if meeting does not exist or belongs to different association", async () => {
-    await expect(createMeetingMinute({
-      meetingId: "non-existent",
-      associationId: "assoc-1",
-      data: { agendaPoint: "Test", decision: "Test" }
-    })).rejects.toThrow(NotFoundError);
+    await expect(
+      createMeetingMinute({
+        meetingId: "non-existent",
+        associationId: "assoc-1",
+        data: { agendaPoint: "Test", decision: "Test" },
+      }),
+    ).rejects.toThrow(NotFoundError);
   });
 });
 ```
@@ -91,18 +108,22 @@ Expected: FAIL (NotFoundError not thrown or function not implemented)
 - [ ] **Step 3: Implement createMeetingMinute logic**
 
 ```typescript
-export async function createMeetingMinute({ meetingId, associationId, data }: CreateMeetingMinuteProps) {
+export async function createMeetingMinute({
+  meetingId,
+  associationId,
+  data,
+}: CreateMeetingMinuteProps) {
   const meeting = await prisma.meeting.findFirst({
-    where: { id: meetingId, associationId }
+    where: { id: meetingId, associationId },
   });
   if (!meeting) throw new NotFoundError("Meeting");
 
   return await prisma.meetingMinutes.create({
-    data: { 
-      ...data, 
+    data: {
+      ...data,
       meetingId,
-      actionItems: data.actionItems as any 
-    }
+      actionItems: data.actionItems as any,
+    },
   });
 }
 ```
@@ -110,10 +131,10 @@ export async function createMeetingMinute({ meetingId, associationId, data }: Cr
 - [ ] **Step 4: Add success test case**
 
 ```typescript
-  it("should create meeting minute if meeting exists and belongs to association", async () => {
-    // Mock prisma responses if possible or use real DB in test env
-    // For now, assume integration test setup or just verify the calls
-  });
+it("should create meeting minute if meeting exists and belongs to association", async () => {
+  // Mock prisma responses if possible or use real DB in test env
+  // For now, assume integration test setup or just verify the calls
+});
 ```
 
 - [ ] **Step 5: Run tests and verify they pass**
@@ -130,6 +151,7 @@ git commit -m "feat: implement createMeetingMinute service"
 ### Task 3: Implement updateMeetingMinute
 
 **Files:**
+
 - Modify: `src/features/meetings/services/minutes.ts`
 - Modify: `src/features/meetings/services/__tests__/minutes.test.ts`
 
@@ -138,12 +160,14 @@ git commit -m "feat: implement createMeetingMinute service"
 ```typescript
 describe("updateMeetingMinute", () => {
   it("should throw NotFoundError if minute does not exist or association mismatch", async () => {
-    await expect(updateMeetingMinute({
-      meetingId: "meeting-1",
-      minuteId: "non-existent",
-      associationId: "assoc-1",
-      data: { decision: "Updated" }
-    })).rejects.toThrow(NotFoundError);
+    await expect(
+      updateMeetingMinute({
+        meetingId: "meeting-1",
+        minuteId: "non-existent",
+        associationId: "assoc-1",
+        data: { decision: "Updated" },
+      }),
+    ).rejects.toThrow(NotFoundError);
   });
 });
 ```
@@ -155,13 +179,18 @@ Run: `npx vitest src/features/meetings/services/__tests__/minutes.test.ts`
 - [ ] **Step 3: Implement updateMeetingMinute logic**
 
 ```typescript
-export async function updateMeetingMinute({ meetingId, minuteId, associationId, data }: UpdateMeetingMinuteProps) {
+export async function updateMeetingMinute({
+  meetingId,
+  minuteId,
+  associationId,
+  data,
+}: UpdateMeetingMinuteProps) {
   const minute = await prisma.meetingMinutes.findFirst({
-    where: { 
-      id: minuteId, 
-      meetingId, 
-      meeting: { associationId } 
-    }
+    where: {
+      id: minuteId,
+      meetingId,
+      meeting: { associationId },
+    },
   });
   if (!minute) throw new NotFoundError("Meeting Minute");
 
@@ -169,8 +198,8 @@ export async function updateMeetingMinute({ meetingId, minuteId, associationId, 
     where: { id: minuteId },
     data: {
       ...data,
-      actionItems: data.actionItems ? (data.actionItems as any) : undefined
-    }
+      actionItems: data.actionItems ? (data.actionItems as any) : undefined,
+    },
   });
 }
 ```

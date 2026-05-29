@@ -3,7 +3,8 @@ export const paymentPaths = {
     get: {
       tags: ["Payments"],
       summary: "Get user payment history",
-      description: "Get the authenticated user's payment history with contribution allocations",
+      description:
+        "Get the authenticated user's payment history with contribution allocations",
       security: [{ bearerAuth: [] }],
       parameters: [
         {
@@ -99,7 +100,8 @@ export const paymentPaths = {
     post: {
       tags: ["Payments"],
       summary: "Generate monthly contributions",
-      description: "Generate monthly contribution period rows for all active members (FINANCE role required)",
+      description:
+        "Generate monthly contribution period rows for all active members (FINANCE role required)",
       security: [{ bearerAuth: [] }],
       requestBody: {
         required: true,
@@ -137,7 +139,8 @@ export const paymentPaths = {
     patch: {
       tags: ["Payments"],
       summary: "Waive contribution",
-      description: "Waive a contribution period for a member (FINANCE role required)",
+      description:
+        "Waive a contribution period for a member (FINANCE role required)",
       security: [{ bearerAuth: [] }],
       requestBody: {
         required: true,
@@ -187,7 +190,11 @@ export const paymentPaths = {
           "application/json": {
             schema: {
               type: "object",
-              required: ["razorpayOrderId", "razorpayPaymentId", "razorpaySignature"],
+              required: [
+                "razorpayOrderId",
+                "razorpayPaymentId",
+                "razorpaySignature",
+              ],
               properties: {
                 razorpayOrderId: { type: "string" },
                 razorpayPaymentId: { type: "string" },

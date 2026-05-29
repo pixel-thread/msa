@@ -42,7 +42,9 @@ export function PersonalInfoCard({ member }: PersonalInfoCardProps) {
             <div className="flex items-start gap-3">
               <Mail className="mt-0.5 h-4 w-4 text-muted-foreground" />
               <div>
-                <p className="text-xs font-medium text-muted-foreground">Email</p>
+                <p className="text-xs font-medium text-muted-foreground">
+                  Email
+                </p>
                 <p className="text-sm text-ink">{member.email}</p>
               </div>
             </div>
@@ -50,7 +52,9 @@ export function PersonalInfoCard({ member }: PersonalInfoCardProps) {
             <div className="flex items-start gap-3">
               <Phone className="mt-0.5 h-4 w-4 text-muted-foreground" />
               <div>
-                <p className="text-xs font-medium text-muted-foreground">Mobile</p>
+                <p className="text-xs font-medium text-muted-foreground">
+                  Mobile
+                </p>
                 <p className="text-sm text-ink">
                   {member.mobile || "Not provided"}
                 </p>
@@ -72,7 +76,9 @@ export function PersonalInfoCard({ member }: PersonalInfoCardProps) {
             <div className="flex items-start gap-3">
               <Briefcase className="mt-0.5 h-4 w-4 text-muted-foreground" />
               <div>
-                <p className="text-xs font-medium text-muted-foreground">Designation</p>
+                <p className="text-xs font-medium text-muted-foreground">
+                  Designation
+                </p>
                 <p className="text-sm text-ink">
                   {member.designation || "Not provided"}
                 </p>

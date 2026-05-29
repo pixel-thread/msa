@@ -45,10 +45,10 @@ export function ContributionDetailPage() {
           </h1>
           <p className="mt-1 text-base text-body">
             {contribution.user?.name || "Member"} &mdash;{" "}
-            {new Date(contribution.year, contribution.month - 1).toLocaleDateString(
-              "en-IN",
-              { month: "long", year: "numeric" },
-            )}
+            {new Date(
+              contribution.year,
+              contribution.month - 1,
+            ).toLocaleDateString("en-IN", { month: "long", year: "numeric" })}
           </p>
         </div>
       </div>

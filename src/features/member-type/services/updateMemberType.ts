@@ -48,4 +48,3 @@ export async function updateMemberType({
     return memberType;
   });
 }
-

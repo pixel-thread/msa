@@ -523,4 +523,3 @@ src/
 8. ✅ Migration script works for existing associations
 9. ✅ No secrets exposed in API responses
 10. ✅ Backwards compatible during rollout
-

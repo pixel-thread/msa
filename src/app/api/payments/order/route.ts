@@ -22,7 +22,10 @@ export const POST = withAssociation(
     logger.info({ traceId }, "POST /api/payments/order - Request started");
 
     const user = await withRole(request, UserRole.MEMBER);
-    logger.info({ traceId, userId: user.id }, "POST /api/payments/order - User authorized");
+    logger.info(
+      { traceId, userId: user.id },
+      "POST /api/payments/order - User authorized",
+    );
     const typeId = user?.memberTypeId;
 
     const associationActivePaymentProvider = getActiveProvider(association.id);
@@ -85,7 +88,14 @@ export const POST = withAssociation(
 
     const activeVersion = selectedPlan.versions[0];
 
-    logger.info({ traceId, userId: user.id, amount: parseInt(activeVersion.amount.toFixed(2)) }, "POST /api/payments/order - Creating payment order");
+    logger.info(
+      {
+        traceId,
+        userId: user.id,
+        amount: parseInt(activeVersion.amount.toFixed(2)),
+      },
+      "POST /api/payments/order - Creating payment order",
+    );
 
     const orderDetails = await createPaymentOrder({
       associationId: association.id,
@@ -94,7 +104,10 @@ export const POST = withAssociation(
       notes: body!.notes,
     });
 
-    logger.info({ traceId, orderId: (orderDetails as any).id }, "POST /api/payments/order - Success");
+    logger.info(
+      { traceId, orderId: (orderDetails as any).id },
+      "POST /api/payments/order - Success",
+    );
 
     return SuccessResponse({ data: orderDetails }, 201);
   },

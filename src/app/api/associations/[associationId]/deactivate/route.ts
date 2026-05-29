@@ -14,20 +14,32 @@ const ParamsSchema = z.object({
 export const POST = withValidation(
   { params: ParamsSchema },
   async (req, _ctx, { params, traceId }) => {
-    logger.info({ traceId, associationId: params?.associationId }, "POST /api/associations/[associationId]/deactivate - Request started");
+    logger.info(
+      { traceId, associationId: params?.associationId },
+      "POST /api/associations/[associationId]/deactivate - Request started",
+    );
     const user = await withRole(req, UserRole.SUPER_ADMIN);
-    logger.info({ traceId, userId: user.id, roles: user.role }, "POST /api/associations/[associationId]/deactivate - User authorized");
+    logger.info(
+      { traceId, userId: user.id, roles: user.role },
+      "POST /api/associations/[associationId]/deactivate - User authorized",
+    );
 
     const userId = req.headers.get("x-user-id");
 
     if (!userId) {
-      logger.error({ traceId }, "POST /api/associations/[associationId]/deactivate - Unauthorized (missing x-user-id header)");
+      logger.error(
+        { traceId },
+        "POST /api/associations/[associationId]/deactivate - Unauthorized (missing x-user-id header)",
+      );
       throw new UnauthorizedError("Unauthorized");
     }
 
     const associationId = params?.associationId;
     if (!associationId) {
-      logger.error({ traceId }, "POST /api/associations/[associationId]/deactivate - Association ID is required");
+      logger.error(
+        { traceId },
+        "POST /api/associations/[associationId]/deactivate - Association ID is required",
+      );
       throw new UnauthorizedError("Association ID is required");
     }
 
@@ -36,7 +48,10 @@ export const POST = withValidation(
     });
 
     if (!isAssociationExist) {
-      logger.error({ traceId, associationId }, "POST /api/associations/[associationId]/deactivate - Association not found");
+      logger.error(
+        { traceId, associationId },
+        "POST /api/associations/[associationId]/deactivate - Association not found",
+      );
       throw new Error("Association not found");
     }
 
@@ -45,7 +60,10 @@ export const POST = withValidation(
       data: { isActive: false },
     });
 
-    logger.info({ traceId, associationId }, "POST /api/associations/[associationId]/deactivate - Success");
+    logger.info(
+      { traceId, associationId },
+      "POST /api/associations/[associationId]/deactivate - Success",
+    );
 
     return SuccessResponse({
       data: updatedAssociation,

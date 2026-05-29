@@ -56,7 +56,9 @@ export function DsarSlaCards() {
           className={` border ${card.border} ${card.bg} p-5`}
         >
           <p className="text-sm font-medium text-body">{card.title}</p>
-          <p className={`text-[32px] font-semibold leading-tight mt-1 ${card.text}`}>
+          <p
+            className={`text-[32px] font-semibold leading-tight mt-1 ${card.text}`}
+          >
             {card.value}
           </p>
           <p className="text-xs text-body mt-1">{card.label}</p>

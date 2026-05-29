@@ -9,12 +9,21 @@ import { logger } from "@src/shared/logger/server";
 export const GET = withAssociation(
   { params: ComplianceCheckParamsSchema },
   async (association, { params, traceId }, request) => {
-    logger.info({ traceId, associationId: association.id, checkId: params?.checkId }, "GET /api/compliance/checks/[checkId] - Request started");
+    logger.info(
+      { traceId, associationId: association.id, checkId: params?.checkId },
+      "GET /api/compliance/checks/[checkId] - Request started",
+    );
     const user = await withRole(request, UserRole.DPO);
-    logger.info({ traceId, userId: user.id, roles: user.role }, "GET /api/compliance/checks/[checkId] - User authorized");
+    logger.info(
+      { traceId, userId: user.id, roles: user.role },
+      "GET /api/compliance/checks/[checkId] - User authorized",
+    );
 
     if (!params) {
-      logger.error({ traceId }, "GET /api/compliance/checks/[checkId] - Invalid check ID");
+      logger.error(
+        { traceId },
+        "GET /api/compliance/checks/[checkId] - Invalid check ID",
+      );
       throw new BadRequestError("Invalid check ID");
     }
 
@@ -23,11 +32,17 @@ export const GET = withAssociation(
     });
 
     if (!check) {
-      logger.error({ traceId, checkId: params.checkId }, "GET /api/compliance/checks/[checkId] - Compliance check not found");
+      logger.error(
+        { traceId, checkId: params.checkId },
+        "GET /api/compliance/checks/[checkId] - Compliance check not found",
+      );
       throw new NotFoundError("Compliance check not found");
     }
 
-    logger.info({ traceId, checkId: params.checkId }, "GET /api/compliance/checks/[checkId] - Success");
+    logger.info(
+      { traceId, checkId: params.checkId },
+      "GET /api/compliance/checks/[checkId] - Success",
+    );
 
     return SuccessResponse({ data: check });
   },
@@ -36,12 +51,21 @@ export const GET = withAssociation(
 export const DELETE = withAssociation(
   { params: ComplianceCheckParamsSchema },
   async (association, { params, traceId }, request) => {
-    logger.info({ traceId, associationId: association.id, checkId: params?.checkId }, "DELETE /api/compliance/checks/[checkId] - Request started");
+    logger.info(
+      { traceId, associationId: association.id, checkId: params?.checkId },
+      "DELETE /api/compliance/checks/[checkId] - Request started",
+    );
     const user = await withRole(request, UserRole.DPO);
-    logger.info({ traceId, userId: user.id, roles: user.role }, "DELETE /api/compliance/checks/[checkId] - User authorized");
+    logger.info(
+      { traceId, userId: user.id, roles: user.role },
+      "DELETE /api/compliance/checks/[checkId] - User authorized",
+    );
 
     if (!params) {
-      logger.error({ traceId }, "DELETE /api/compliance/checks/[checkId] - Invalid check ID");
+      logger.error(
+        { traceId },
+        "DELETE /api/compliance/checks/[checkId] - Invalid check ID",
+      );
       throw new BadRequestError("Invalid check ID");
     }
 
@@ -50,7 +74,10 @@ export const DELETE = withAssociation(
     });
 
     if (!existing) {
-      logger.error({ traceId, checkId: params.checkId }, "DELETE /api/compliance/checks/[checkId] - Compliance check not found");
+      logger.error(
+        { traceId, checkId: params.checkId },
+        "DELETE /api/compliance/checks/[checkId] - Compliance check not found",
+      );
       throw new NotFoundError("Compliance check not found");
     }
 
@@ -58,7 +85,10 @@ export const DELETE = withAssociation(
       where: { id: params.checkId },
     });
 
-    logger.info({ traceId, checkId: params.checkId }, "DELETE /api/compliance/checks/[checkId] - Success");
+    logger.info(
+      { traceId, checkId: params.checkId },
+      "DELETE /api/compliance/checks/[checkId] - Success",
+    );
 
     return SuccessResponse({
       data: null,

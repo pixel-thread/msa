@@ -32,18 +32,24 @@ export const GET = withAssociation(
         versions: plan.versions,
       }));
 
-      logger.info({
-        traceId,
-        count: plans.length,
-      }, "Admin plans fetched successfully");
+      logger.info(
+        {
+          traceId,
+          count: plans.length,
+        },
+        "Admin plans fetched successfully",
+      );
 
       return SuccessResponse({ data: plansWithActiveVersion });
     }
 
-    logger.info({
-      traceId,
-      memberTypeId: user.memberTypeId,
-    }, "Fetching plans for member");
+    logger.info(
+      {
+        traceId,
+        memberTypeId: user.memberTypeId,
+      },
+      "Fetching plans for member",
+    );
 
     const whereClause: Record<string, unknown> = {
       associationId: association.id,
@@ -98,10 +104,13 @@ export const GET = withAssociation(
         versions: undefined,
       }));
 
-      logger.info({
-        traceId,
-        planId: defaultPlan[0]?.id,
-      }, "Returning default plan");
+      logger.info(
+        {
+          traceId,
+          planId: defaultPlan[0]?.id,
+        },
+        "Returning default plan",
+      );
 
       return SuccessResponse({ data: plansWithActiveVersion[0] || null });
     }

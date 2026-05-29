@@ -8,10 +8,16 @@ import { logger } from "@src/shared/logger/server";
 export const GET = withAssociation(
   { query: GetMembershipApplicationsQuerySchema },
   async (_association, { query, traceId }, req) => {
-    logger.info({ traceId, status: query?.status }, "GET /api/admin/membership-applications - Request started");
-    
+    logger.info(
+      { traceId, status: query?.status },
+      "GET /api/admin/membership-applications - Request started",
+    );
+
     const user = await withRole(req, UserRole.SECRETARY);
-    logger.info({ traceId, userId: user.id, roles: user.role }, "GET /api/admin/membership-applications - User authorized");
+    logger.info(
+      { traceId, userId: user.id, roles: user.role },
+      "GET /api/admin/membership-applications - User authorized",
+    );
 
     const status = query?.status;
     const page = query?.page || 1;
@@ -23,7 +29,10 @@ export const GET = withAssociation(
       page,
     });
 
-    logger.info({ traceId, count: result.data.length }, "GET /api/admin/membership-applications - Success");
+    logger.info(
+      { traceId, count: result.data.length },
+      "GET /api/admin/membership-applications - Success",
+    );
 
     return SuccessResponse({ data: result.data, meta: result.pagination });
   },

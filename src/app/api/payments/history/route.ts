@@ -14,7 +14,10 @@ import { PaymentHistoryQuerySchema } from "@feature/payments/validators";
 export const GET = withAssociation(
   { query: PaymentHistoryQuerySchema },
   async (_association, { query, traceId }, request) => {
-    logger.info({ traceId, query }, "GET /api/payments/history - Request started");
+    logger.info(
+      { traceId, query },
+      "GET /api/payments/history - Request started",
+    );
     const userId = request.headers.get("x-user-id")!;
     const page = query?.page ?? 1;
 
@@ -23,7 +26,10 @@ export const GET = withAssociation(
       getUserContributionSummary(userId),
     ]);
 
-    logger.info({ traceId, count: history.transactions.length }, "GET /api/payments/history - Success");
+    logger.info(
+      { traceId, count: history.transactions.length },
+      "GET /api/payments/history - Success",
+    );
 
     return SuccessResponse({
       data: {

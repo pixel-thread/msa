@@ -13,7 +13,10 @@ export const notificationPaths = {
               type: "object",
               required: ["token"],
               properties: {
-                token: { type: "string", description: "Push notification token" },
+                token: {
+                  type: "string",
+                  description: "Push notification token",
+                },
               },
             },
           },
@@ -53,7 +56,10 @@ export const notificationPaths = {
               type: "object",
               required: ["token"],
               properties: {
-                token: { type: "string", description: "Push notification token" },
+                token: {
+                  type: "string",
+                  description: "Push notification token",
+                },
               },
             },
           },

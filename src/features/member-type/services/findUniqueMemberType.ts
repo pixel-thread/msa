@@ -5,7 +5,10 @@ interface FindUniqueMemberTypeProps {
   memberTypeId: string;
 }
 
-export async function findUniqueMemberType({ associationId, memberTypeId }: FindUniqueMemberTypeProps) {
+export async function findUniqueMemberType({
+  associationId,
+  memberTypeId,
+}: FindUniqueMemberTypeProps) {
   return await prisma.memberType.findFirst({
     where: { id: memberTypeId, associationId },
     include: {

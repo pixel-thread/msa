@@ -16,16 +16,30 @@ const ParamsSchema = z.object({
 export const GET = withAssociation(
   { params: ParamsSchema },
   async (_association, { params, traceId }, req) => {
-    logger.info({ traceId, meetingId: params?.meetingId }, "GET /api/meetings/[meetingId]/minutes - Request started");
+    logger.info(
+      { traceId, meetingId: params?.meetingId },
+      "GET /api/meetings/[meetingId]/minutes - Request started",
+    );
 
     const user = await withRole(req, UserRole.MEMBER);
-    logger.info({ traceId, userId: user.id, role: user.role, meetingId: params?.meetingId }, "GET /api/meetings/[meetingId]/minutes - User authorized");
+    logger.info(
+      {
+        traceId,
+        userId: user.id,
+        role: user.role,
+        meetingId: params?.meetingId,
+      },
+      "GET /api/meetings/[meetingId]/minutes - User authorized",
+    );
 
     const minuites = await getMeetingMinuites({
       where: { meetingId: params?.meetingId },
     });
 
-    logger.info({ traceId, meetingId: params?.meetingId, count: minuites.length }, "GET /api/meetings/[meetingId]/minutes - Success");
+    logger.info(
+      { traceId, meetingId: params?.meetingId, count: minuites.length },
+      "GET /api/meetings/[meetingId]/minutes - Success",
+    );
 
     return SuccessResponse({
       data: minuites,
@@ -37,13 +51,27 @@ export const GET = withAssociation(
 export const POST = withAssociation(
   { params: ParamsSchema, body: CreateMeetingMinuteSchema },
   async (association, { params, body, traceId }, request) => {
-    logger.info({ traceId, meetingId: params?.meetingId, associationId: association.id }, "POST /api/meetings/[meetingId]/minutes - Request started");
+    logger.info(
+      { traceId, meetingId: params?.meetingId, associationId: association.id },
+      "POST /api/meetings/[meetingId]/minutes - Request started",
+    );
 
     // Check for administrative roles (Secretary and above)
     const user = await withRole(request, UserRole.SECRETARY);
-    logger.info({ traceId, userId: user.id, role: user.role, meetingId: params?.meetingId }, "POST /api/meetings/[meetingId]/minutes - User authorized");
+    logger.info(
+      {
+        traceId,
+        userId: user.id,
+        role: user.role,
+        meetingId: params?.meetingId,
+      },
+      "POST /api/meetings/[meetingId]/minutes - User authorized",
+    );
 
-    logger.info({ traceId, meetingId: params?.meetingId }, "POST /api/meetings/[meetingId]/minutes - Creating meeting minute");
+    logger.info(
+      { traceId, meetingId: params?.meetingId },
+      "POST /api/meetings/[meetingId]/minutes - Creating meeting minute",
+    );
 
     const minute = await createMeetingMinute({
       meetingId: params!.meetingId,
@@ -51,7 +79,10 @@ export const POST = withAssociation(
       data: body!,
     });
 
-    logger.info({ traceId, meetingId: params!.meetingId }, "POST /api/meetings/[meetingId]/minutes - Success");
+    logger.info(
+      { traceId, meetingId: params!.meetingId },
+      "POST /api/meetings/[meetingId]/minutes - Success",
+    );
 
     return SuccessResponse({
       data: minute,

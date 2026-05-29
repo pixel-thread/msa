@@ -69,7 +69,9 @@ const RESOURCE_TYPES = [
 ] as const;
 
 export default function AuditLogsPage() {
-  const { filters, page, setPage, setFilters } = useUrlFilters({ basePath: "/audit-logs" });
+  const { filters, page, setPage, setFilters } = useUrlFilters({
+    basePath: "/audit-logs",
+  });
 
   const [selectedEntry, setSelectedEntry] = useState<AuditLogEntry | null>(
     null,

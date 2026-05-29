@@ -12,7 +12,10 @@ const ParamsSchema = z.object({
 export const GET = withAssociation(
   { params: ParamsSchema },
   async (association, { params, traceId }) => {
-    logger.info({ traceId, contributionId: params!.contributionId }, "GET /api/payments/contributions/[contributionId] - Request started");
+    logger.info(
+      { traceId, contributionId: params!.contributionId },
+      "GET /api/payments/contributions/[contributionId] - Request started",
+    );
     const contribution = await prisma.contributionPeriod.findFirst({
       where: {
         id: params!.contributionId,
@@ -48,7 +51,10 @@ export const GET = withAssociation(
       throw new NotFoundError("Contribution not found");
     }
 
-    logger.info({ traceId, contributionId: params!.contributionId }, "GET /api/payments/contributions/[contributionId] - Success");
+    logger.info(
+      { traceId, contributionId: params!.contributionId },
+      "GET /api/payments/contributions/[contributionId] - Success",
+    );
 
     return SuccessResponse({ data: contribution });
   },

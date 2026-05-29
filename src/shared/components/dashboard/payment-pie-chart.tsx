@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { Pie, PieChart, Cell } from "recharts"
+import { Pie, PieChart, Cell } from "recharts";
 
 import {
   Card,
@@ -8,14 +8,14 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@src/shared/components/ui/card"
+} from "@src/shared/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
-} from "@src/shared/components/ui/chart"
-import type { DashboardOverview } from "@feature/dashboard/services/dashboard.service"
+} from "@src/shared/components/ui/chart";
+import type { DashboardOverview } from "@feature/dashboard/services/dashboard.service";
 
 const COLORS = [
   "var(--color-pie-1)",
@@ -23,16 +23,16 @@ const COLORS = [
   "var(--color-pie-3)",
   "var(--color-pie-4)",
   "var(--color-pie-5)",
-]
+];
 
 const chartConfig = {
   count: {
     label: "Count",
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 interface PaymentPieChartProps {
-  data: DashboardOverview["paymentMethodDistribution"]
+  data: DashboardOverview["paymentMethodDistribution"];
 }
 
 export function PaymentPieChart({ data }: PaymentPieChartProps) {
@@ -73,5 +73,5 @@ export function PaymentPieChart({ data }: PaymentPieChartProps) {
         </ChartContainer>
       </CardContent>
     </Card>
-  )
+  );
 }

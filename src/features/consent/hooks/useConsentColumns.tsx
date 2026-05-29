@@ -11,10 +11,8 @@ interface UseConsentColumnsOptions {
 }
 
 const statusStyles: Record<ConsentStatus, string> = {
-  [ConsentStatus.GRANTED]:
-    "bg-[#ECFDF3] text-[#067647] border-[#ABEFC6]",
-  [ConsentStatus.WITHDRAWN]:
-    "bg-[#FEF3F2] text-[#B42318] border-[#FECDCA]",
+  [ConsentStatus.GRANTED]: "bg-[#ECFDF3] text-[#067647] border-[#ABEFC6]",
+  [ConsentStatus.WITHDRAWN]: "bg-[#FEF3F2] text-[#B42318] border-[#FECDCA]",
 };
 
 const purposeLabels: Record<string, string> = {
@@ -63,7 +61,9 @@ export function useConsentColumns({
           variant="outline"
           className={`text-xs font-medium ${statusStyles[row.original.status]}`}
         >
-          {row.original.status === ConsentStatus.GRANTED ? "Granted" : "Withdrawn"}
+          {row.original.status === ConsentStatus.GRANTED
+            ? "Granted"
+            : "Withdrawn"}
         </Badge>
       ),
     },

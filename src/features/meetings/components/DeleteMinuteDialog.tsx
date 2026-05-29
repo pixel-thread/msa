@@ -19,7 +19,13 @@ interface DeleteMinuteDialogProps {
   isDeleting: boolean;
 }
 
-export function DeleteMinuteDialog({ minute, open, onOpenChange, onConfirm, isDeleting }: DeleteMinuteDialogProps) {
+export function DeleteMinuteDialog({
+  minute,
+  open,
+  onOpenChange,
+  onConfirm,
+  isDeleting,
+}: DeleteMinuteDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[450px]">
@@ -31,8 +37,9 @@ export function DeleteMinuteDialog({ minute, open, onOpenChange, onConfirm, isDe
             <DialogTitle>Delete Minute</DialogTitle>
           </div>
           <DialogDescription className="pt-2">
-            Are you sure you want to delete the minute for <strong>{minute?.agendaPoint}</strong>?
-            This action cannot be undone.
+            Are you sure you want to delete the minute for{" "}
+            <strong>{minute?.agendaPoint}</strong>? This action cannot be
+            undone.
           </DialogDescription>
         </DialogHeader>
 

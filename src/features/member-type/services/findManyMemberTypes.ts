@@ -4,7 +4,9 @@ interface FindManyMemberTypesProps {
   associationId: string;
 }
 
-export async function findManyMemberTypes({ associationId }: FindManyMemberTypesProps) {
+export async function findManyMemberTypes({
+  associationId,
+}: FindManyMemberTypesProps) {
   return await prisma.memberType.findMany({
     where: { associationId },
     orderBy: { level: "asc" },

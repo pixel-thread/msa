@@ -18,7 +18,10 @@ const GetAllCompletionsQuerySchema = z.object({
 export const GET = withAssociation(
   { query: GetAllCompletionsQuerySchema },
   async (association, { query, traceId }, request) => {
-    logger.info({ traceId, associationId: association.id }, "GET /training/completions - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "GET /training/completions - Request started",
+    );
 
     await withRole(request, UserRole.SECRETARY);
     logger.info({ traceId }, "GET /training/completions - User authorized");
@@ -53,10 +56,16 @@ export const POST = withAssociation(
       throw new ForbiddenError("Invalid request body");
     }
 
-    logger.info({ traceId, associationId: association.id }, "POST /training/completions - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "POST /training/completions - Request started",
+    );
 
     const admin = await withRole(request, UserRole.SECRETARY);
-    logger.info({ traceId, userId: admin.id }, "POST /training/completions - User authorized");
+    logger.info(
+      { traceId, userId: admin.id },
+      "POST /training/completions - User authorized",
+    );
 
     const completion = await adminRecordCompletion({
       associationId: association.id,
@@ -64,7 +73,10 @@ export const POST = withAssociation(
       data: body,
     });
 
-    logger.info({ traceId, completionId: completion.id }, "POST /training/completions - Success");
+    logger.info(
+      { traceId, completionId: completion.id },
+      "POST /training/completions - Success",
+    );
     return SuccessResponse({ data: completion }, 201);
   },
 );

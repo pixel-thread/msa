@@ -13,6 +13,7 @@
 ### Task 1: Update Agenda Item Validators
 
 **Files:**
+
 - Modify: `src/features/meetings/validators/agenda-items.ts`
 
 - [ ] **Step 1: Implement UpdateAgendaItemSchema and AgendaOperationSchema**
@@ -40,28 +41,32 @@ export const UpdateAgendaItemSchema = CreateAgendaItemSchema.partial();
 export type UpdateAgendaItemInput = z.infer<typeof UpdateAgendaItemSchema>;
 
 export const AgendaOperationSchema = z.object({
-  operations: z.array(z.discriminatedUnion("type", [
-    z.object({ 
-      type: z.literal("CREATE"), 
-      data: CreateAgendaItemSchema 
-    }),
-    z.object({ 
-      type: z.literal("UPDATE"), 
-      id: z.string().uuid("Invalid ID format"), 
-      data: UpdateAgendaItemSchema 
-    }),
-    z.object({ 
-      type: z.literal("DELETE"), 
-      id: z.string().uuid("Invalid ID format") 
-    }),
-    z.object({ 
-      type: z.literal("REORDER"), 
-      mappings: z.array(z.object({ 
-        id: z.string().uuid("Invalid ID format"), 
-        order: z.number().int().positive() 
-      })) 
-    })
-  ]))
+  operations: z.array(
+    z.discriminatedUnion("type", [
+      z.object({
+        type: z.literal("CREATE"),
+        data: CreateAgendaItemSchema,
+      }),
+      z.object({
+        type: z.literal("UPDATE"),
+        id: z.string().uuid("Invalid ID format"),
+        data: UpdateAgendaItemSchema,
+      }),
+      z.object({
+        type: z.literal("DELETE"),
+        id: z.string().uuid("Invalid ID format"),
+      }),
+      z.object({
+        type: z.literal("REORDER"),
+        mappings: z.array(
+          z.object({
+            id: z.string().uuid("Invalid ID format"),
+            order: z.number().int().positive(),
+          }),
+        ),
+      }),
+    ]),
+  ),
 });
 
 export type AgendaOperationInput = z.infer<typeof AgendaOperationSchema>;
@@ -76,6 +81,7 @@ export type AgendaOperationInput = z.infer<typeof AgendaOperationSchema>;
 ### Task 2: Create Meeting Minutes Validators
 
 **Files:**
+
 - Create: `src/features/meetings/validators/minutes.ts`
 
 - [ ] **Step 1: Implement CreateMeetingMinuteSchema and UpdateMeetingMinuteSchema**
@@ -86,22 +92,31 @@ import { z } from "zod";
 export const CreateMeetingMinuteSchema = z.object({
   agendaPoint: z.string().min(1, "Agenda point is required"),
   decision: z.string().min(1, "Decision is required"),
-  actionItems: z.array(z.object({
-    assigneeId: z.string().uuid("Invalid assignee ID").optional(),
-    task: z.string().min(1, "Task description is required"),
-    dueDate: z.string().datetime("Invalid date format").optional()
-  })).optional()
+  actionItems: z
+    .array(
+      z.object({
+        assigneeId: z.string().uuid("Invalid assignee ID").optional(),
+        task: z.string().min(1, "Task description is required"),
+        dueDate: z.string().datetime("Invalid date format").optional(),
+      }),
+    )
+    .optional(),
 });
 
-export type CreateMeetingMinuteInput = z.infer<typeof CreateMeetingMinuteSchema>;
+export type CreateMeetingMinuteInput = z.infer<
+  typeof CreateMeetingMinuteSchema
+>;
 
 export const UpdateMeetingMinuteSchema = CreateMeetingMinuteSchema.partial();
-export type UpdateMeetingMinuteInput = z.infer<typeof UpdateMeetingMinuteSchema>;
+export type UpdateMeetingMinuteInput = z.infer<
+  typeof UpdateMeetingMinuteSchema
+>;
 ```
 
 ### Task 3: Export Validators from Index
 
 **Files:**
+
 - Modify: `src/features/meetings/validators/index.ts`
 
 - [ ] **Step 1: Add export for minutes**

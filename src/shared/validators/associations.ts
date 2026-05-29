@@ -41,9 +41,7 @@ export const CreateAssociationSchema = z.object({
     })
     .optional(),
 
-  logo: z
-    .string()
-    .optional(),
+  logo: z.string().optional(),
 
   country: z
     .string()
@@ -58,9 +56,7 @@ export const CreateAssociationSchema = z.object({
     })
     .optional(),
 
-  contactPhone: z
-    .string()
-    .optional(),
+  contactPhone: z.string().optional(),
 
   primaryColor: z
     .string()
@@ -78,4 +74,3 @@ export const CreateAssociationSchema = z.object({
 });
 
 export type CreateAssociationInput = z.infer<typeof CreateAssociationSchema>;
-

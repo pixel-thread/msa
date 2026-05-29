@@ -139,8 +139,16 @@ export const adminPaths = {
               type: "object",
               required: ["user_id", "association_id"],
               properties: {
-                user_id: { type: "string", format: "uuid", description: "ID of the user to move" },
-                association_id: { type: "string", format: "uuid", description: "ID of the target association" },
+                user_id: {
+                  type: "string",
+                  format: "uuid",
+                  description: "ID of the user to move",
+                },
+                association_id: {
+                  type: "string",
+                  format: "uuid",
+                  description: "ID of the target association",
+                },
               },
             },
           },

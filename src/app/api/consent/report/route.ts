@@ -10,24 +10,33 @@ import { logger } from "@src/shared/logger/server";
  * Retrieves the consent report for the association.
  * Roles: DPO, PRESIDENT, SUPER_ADMIN
  */
-export const GET = withAssociation({}, async (association, { traceId }, req) => {
-  logger.info({
-    traceId,
-    associationId: association.id,
-  }, "GET /api/consent/report - Request started");
+export const GET = withAssociation(
+  {},
+  async (association, { traceId }, req) => {
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+      },
+      "GET /api/consent/report - Request started",
+    );
 
-  const user = await withRole(req, UserRole.DPO);
+    const user = await withRole(req, UserRole.DPO);
 
-  logger.info({
-    traceId,
-    userId: user.id,
-  }, "GET /api/consent/report - User authorized");
+    logger.info(
+      {
+        traceId,
+        userId: user.id,
+      },
+      "GET /api/consent/report - User authorized",
+    );
 
-  const report = await ConsentService.getConsentReport(association.id);
+    const report = await ConsentService.getConsentReport(association.id);
 
-  logger.info({ traceId }, "GET /api/consent/report - Success");
+    logger.info({ traceId }, "GET /api/consent/report - Success");
 
-  return SuccessResponse({
-    data: report,
-  });
-});
+    return SuccessResponse({
+      data: report,
+    });
+  },
+);

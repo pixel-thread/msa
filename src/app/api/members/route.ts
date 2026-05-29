@@ -15,23 +15,31 @@ const QuerySchema = z.object({
 export const GET = withAssociation(
   { query: QuerySchema },
   async (association, { query, traceId }, request) => {
-    logger.info({
-      traceId,
-      associationId: association.id,
-    }, "GET /api/members - Request started");
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+      },
+      "GET /api/members - Request started",
+    );
 
     const user = await withRole(request, UserRole.SECRETARY);
 
-    logger.info({
-      traceId,
-      userId: user.id,
-    }, "GET /api/members - User authorized");
+    logger.info(
+      {
+        traceId,
+        userId: user.id,
+      },
+      "GET /api/members - User authorized",
+    );
 
     const page = query?.page;
     const status = query?.status;
     const search = query?.search;
 
-    const baseWhere: Record<string, unknown> = { associationId: association.id };
+    const baseWhere: Record<string, unknown> = {
+      associationId: association.id,
+    };
     if (status) baseWhere.status = status;
 
     let members;
@@ -53,10 +61,13 @@ export const GET = withAssociation(
       });
     }
 
-    logger.info({
-      traceId,
-      count: members.data.length,
-    }, "GET /api/members - Success");
+    logger.info(
+      {
+        traceId,
+        count: members.data.length,
+      },
+      "GET /api/members - Success",
+    );
 
     return SuccessResponse({
       data: members.data,

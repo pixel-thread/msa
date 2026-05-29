@@ -22,25 +22,40 @@ const UserContributionsQuerySchema = z.object({
 });
 
 export const GET = withAssociation(
-  { params: UserContributionsParamsSchema, query: UserContributionsQuerySchema },
+  {
+    params: UserContributionsParamsSchema,
+    query: UserContributionsQuerySchema,
+  },
   async (association, { params, query, traceId }, request) => {
-    logger.info({ traceId, userId: params?.userId }, "GET /api/payments/users/[userId]/contributions - Request started");
+    logger.info(
+      { traceId, userId: params?.userId },
+      "GET /api/payments/users/[userId]/contributions - Request started",
+    );
 
     await withRole(request, UserRole.FINANCE);
-    logger.info({ traceId }, "GET /api/payments/users/[userId]/contributions - User authorized");
+    logger.info(
+      { traceId },
+      "GET /api/payments/users/[userId]/contributions - User authorized",
+    );
 
     if (!params) {
       throw new ValidationError("Missing user ID parameter");
     }
 
     const { userId } = params as { userId: string };
-    const { page = 1, fromYear, fromMonth, toYear, toMonth } = query as {
+    const {
+      page = 1,
+      fromYear,
+      fromMonth,
+      toYear,
+      toMonth,
+    } = (query as {
       page?: number;
       fromYear?: number;
       fromMonth?: number;
       toYear?: number;
       toMonth?: number;
-    } || {};
+    }) || {};
 
     const user = await prisma.user.findUnique({
       where: { id: userId, associationId: association.id },
@@ -57,17 +72,24 @@ export const GET = withAssociation(
     };
 
     if (fromYear && fromMonth) {
-      whereClause.AND = whereClause.AND ? [...(whereClause.AND as unknown[]), {
-        OR: [
-          { year: { gt: fromYear } },
-          { year: fromYear, month: { gte: fromMonth } },
-        ],
-      }] : [{
-        OR: [
-          { year: { gt: fromYear } },
-          { year: fromYear, month: { gte: fromMonth } },
-        ],
-      }];
+      whereClause.AND = whereClause.AND
+        ? [
+            ...(whereClause.AND as unknown[]),
+            {
+              OR: [
+                { year: { gt: fromYear } },
+                { year: fromYear, month: { gte: fromMonth } },
+              ],
+            },
+          ]
+        : [
+            {
+              OR: [
+                { year: { gt: fromYear } },
+                { year: fromYear, month: { gte: fromMonth } },
+              ],
+            },
+          ];
     }
 
     if (toYear && toMonth) {
@@ -84,7 +106,10 @@ export const GET = withAssociation(
 
     const skip = (page - 1) * PAGE_SIZE;
 
-    logger.info({ traceId, userId }, "GET /api/payments/users/[userId]/contributions - Fetching contributions");
+    logger.info(
+      { traceId, userId },
+      "GET /api/payments/users/[userId]/contributions - Fetching contributions",
+    );
 
     const [contributions, total, summary] = await Promise.all([
       prisma.contributionPeriod.findMany({
@@ -114,7 +139,10 @@ export const GET = withAssociation(
       getUserContributionSummary(userId),
     ]);
 
-    logger.info({ traceId, userId, count: contributions.length, total }, "GET /api/payments/users/[userId]/contributions - Success");
+    logger.info(
+      { traceId, userId, count: contributions.length, total },
+      "GET /api/payments/users/[userId]/contributions - Success",
+    );
 
     return SuccessResponse({
       data: {

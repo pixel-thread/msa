@@ -43,7 +43,10 @@ import {
   AddCertificateDialog,
   RemoveCertificateAlertDialog,
 } from "../components";
-import { useUploadCertificateTemplate, useRemoveCertificateTemplate } from "../hooks";
+import {
+  useUploadCertificateTemplate,
+  useRemoveCertificateTemplate,
+} from "../hooks";
 import type { TrainingModuleListItem } from "../types";
 import { RemoveSupplementAlertDialog } from "../components/supplements/RemoveSupplementAlertDialog";
 import { RemoveModuleAlertDialog } from "../components/RemoveModuleAlertDialog";
@@ -112,10 +115,8 @@ export function TrainingDetailPage() {
       supplements: supplements || [],
     });
 
-  const {
-    certificates,
-    isLoading: isCertificatesLoading,
-  } = useTrainingCertificates(moduleId);
+  const { certificates, isLoading: isCertificatesLoading } =
+    useTrainingCertificates(moduleId);
 
   const { certificateColumns, certificateToDelete, setCertificateToDelete } =
     useTrainingCertificatesColumns({
@@ -314,7 +315,10 @@ export function TrainingDetailPage() {
                 onClick={() => {
                   const formData = new FormData();
                   formData.append("file", templateFile);
-                  formData.append("name", trainingModule.title + " Certificate");
+                  formData.append(
+                    "name",
+                    trainingModule.title + " Certificate",
+                  );
                   uploadTemplate(formData, {
                     onSuccess: (res) => {
                       if (res.success) setTemplateFile(null);

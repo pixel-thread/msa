@@ -15,10 +15,16 @@ const UpdateAgendaItemSchema = z.object({
 export const PATCH = withAssociation(
   { body: UpdateAgendaItemSchema },
   async (association, { body, traceId }, request, { params }) => {
-    logger.info({ traceId, associationId: association.id }, "PATCH /api/meetings/[meetingId]/agenda/[itemId] - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "PATCH /api/meetings/[meetingId]/agenda/[itemId] - Request started",
+    );
 
     const user = await withRole(request, UserRole.SECRETARY);
-    logger.info({ traceId, userId: user.id, role: user.role }, "PATCH /api/meetings/[meetingId]/agenda/[itemId] - User authorized");
+    logger.info(
+      { traceId, userId: user.id, role: user.role },
+      "PATCH /api/meetings/[meetingId]/agenda/[itemId] - User authorized",
+    );
 
     if (!body) {
       throw new ValidationError("Invalid body");
@@ -26,7 +32,10 @@ export const PATCH = withAssociation(
 
     const { itemId } = (await params) as { itemId: string };
 
-    logger.info({ traceId, itemId }, "PATCH /api/meetings/[meetingId]/agenda/[itemId] - Updating agenda item");
+    logger.info(
+      { traceId, itemId },
+      "PATCH /api/meetings/[meetingId]/agenda/[itemId] - Updating agenda item",
+    );
 
     const item = await prisma.agendaItem.update({
       where: {
@@ -35,29 +44,47 @@ export const PATCH = withAssociation(
       data: body,
     });
 
-    logger.info({ traceId, itemId }, "PATCH /api/meetings/[meetingId]/agenda/[itemId] - Success");
+    logger.info(
+      { traceId, itemId },
+      "PATCH /api/meetings/[meetingId]/agenda/[itemId] - Success",
+    );
 
     return SuccessResponse({ data: item });
-  }
+  },
 );
 
-export const DELETE = withAssociation({}, async (association, { traceId }, request, { params }) => {
-  logger.info({ traceId, associationId: association.id }, "DELETE /api/meetings/[meetingId]/agenda/[itemId] - Request started");
+export const DELETE = withAssociation(
+  {},
+  async (association, { traceId }, request, { params }) => {
+    logger.info(
+      { traceId, associationId: association.id },
+      "DELETE /api/meetings/[meetingId]/agenda/[itemId] - Request started",
+    );
 
-  const user = await withRole(request, UserRole.SECRETARY);
-  logger.info({ traceId, userId: user.id, role: user.role }, "DELETE /api/meetings/[meetingId]/agenda/[itemId] - User authorized");
+    const user = await withRole(request, UserRole.SECRETARY);
+    logger.info(
+      { traceId, userId: user.id, role: user.role },
+      "DELETE /api/meetings/[meetingId]/agenda/[itemId] - User authorized",
+    );
 
-  const { itemId } = (await params) as { itemId: string };
+    const { itemId } = (await params) as { itemId: string };
 
-  logger.info({ traceId, itemId }, "DELETE /api/meetings/[meetingId]/agenda/[itemId] - Deleting agenda item");
+    logger.info(
+      { traceId, itemId },
+      "DELETE /api/meetings/[meetingId]/agenda/[itemId] - Deleting agenda item",
+    );
 
-  const item = await prisma.agendaItem.delete({
-    where: {
-      id: itemId,
-    },
-  });
+    const item = await prisma.agendaItem.delete({
+      where: {
+        id: itemId,
+      },
+    });
 
-  logger.info({ traceId, itemId }, "DELETE /api/meetings/[meetingId]/agenda/[itemId] - Success");
+    logger.info(
+      { traceId, itemId },
+      "DELETE /api/meetings/[meetingId]/agenda/[itemId] - Success",
+    );
 
-  return SuccessResponse({ data: item });
-});
+    return SuccessResponse({ data: item });
+  },
+);

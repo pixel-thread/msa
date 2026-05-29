@@ -40,23 +40,17 @@ export function useMembershipApplicationColumns({
     {
       accessorKey: "phone",
       header: "Phone",
-      cell: ({ row }) => (
-        <span className="text-sm">{row.original.phone}</span>
-      ),
+      cell: ({ row }) => <span className="text-sm">{row.original.phone}</span>,
     },
     {
       accessorKey: "age",
       header: "Age",
-      cell: ({ row }) => (
-        <span className="text-sm">{row.original.age}</span>
-      ),
+      cell: ({ row }) => <span className="text-sm">{row.original.age}</span>,
     },
     {
       accessorKey: "gender",
       header: "Gender",
-      cell: ({ row }) => (
-        <span className="text-sm">{row.original.gender}</span>
-      ),
+      cell: ({ row }) => <span className="text-sm">{row.original.gender}</span>,
     },
     {
       accessorKey: "location",
@@ -64,9 +58,7 @@ export function useMembershipApplicationColumns({
       cell: ({ row }) => {
         const { city, state } = row.original;
         const location = [city, state].filter(Boolean).join(", ");
-        return (
-          <span className="text-sm">{location || "—"}</span>
-        );
+        return <span className="text-sm">{location || "—"}</span>;
       },
     },
     {
@@ -80,7 +72,9 @@ export function useMembershipApplicationColumns({
           REJECTED: "bg-red-100 text-red-800",
         };
         return (
-          <span className={`inline-flex items-center px-2.5 py-0.5 text-xs font-medium ${statusColors[status] ?? "bg-gray-100 text-gray-800"}`}>
+          <span
+            className={`inline-flex items-center px-2.5 py-0.5 text-xs font-medium ${statusColors[status] ?? "bg-gray-100 text-gray-800"}`}
+          >
             {status}
           </span>
         );

@@ -1,8 +1,5 @@
 import { prisma } from "@lib/prisma";
-import {
-  withAssociationFormData,
-  withRole,
-} from "@src/shared/api";
+import { withAssociationFormData, withRole } from "@src/shared/api";
 import { SuccessResponse } from "@utils/responses";
 import { NotFoundError } from "@src/shared/errors";
 import { UserRole } from "@prisma/client";
@@ -19,7 +16,10 @@ const LogoFormSchema = z.object({
     .instanceof(File, { message: "Logo file is required" })
     .refine((f) => f.size > 0, "File is empty")
     .refine(
-      (f) => ["image/png", "image/jpeg", "image/webp", "image/svg+xml"].includes(f.type),
+      (f) =>
+        ["image/png", "image/jpeg", "image/webp", "image/svg+xml"].includes(
+          f.type,
+        ),
       "Logo must be a PNG, JPEG, WebP, or SVG image",
     ),
 });
@@ -30,17 +30,26 @@ export const POST = withAssociationFormData(
     formData: LogoFormSchema,
   },
   async (association, { formData, traceId }, request) => {
-    logger.info({ traceId, associationId: association.id }, "POST /api/associations/[associationId]/logo - Request started");
+    logger.info(
+      { traceId, associationId: association.id },
+      "POST /api/associations/[associationId]/logo - Request started",
+    );
 
     const user = await withRole(request, UserRole.SUPER_ADMIN);
-    logger.info({ traceId, userId: user.id }, "POST /api/associations/[associationId]/logo - User authorized");
+    logger.info(
+      { traceId, userId: user.id },
+      "POST /api/associations/[associationId]/logo - User authorized",
+    );
 
     const existing = await prisma.association.findUnique({
       where: { id: association.id },
     });
 
     if (!existing) {
-      logger.error({ traceId, associationId: association.id }, "POST /api/associations/[associationId]/logo - Association not found");
+      logger.error(
+        { traceId, associationId: association.id },
+        "POST /api/associations/[associationId]/logo - Association not found",
+      );
       throw new NotFoundError("Association not found");
     }
 
@@ -55,7 +64,10 @@ export const POST = withAssociationFormData(
       data: { logo: uploadResult.url },
     });
 
-    logger.info({ traceId, associationId: association.id }, "POST /api/associations/[associationId]/logo - Success");
+    logger.info(
+      { traceId, associationId: association.id },
+      "POST /api/associations/[associationId]/logo - Success",
+    );
 
     return SuccessResponse(
       {

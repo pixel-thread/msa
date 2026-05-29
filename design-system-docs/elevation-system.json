@@ -29,9 +29,14 @@
     "default_float": {
       "classes": "shadow-md ring-1 ring-foreground/10",
       "components": [
-        "DropdownMenuContent", "SelectContent", "ComboboxContent",
-        "DialogContent", "SheetContent", "PopoverContent",
-        "HoverCardContent", "TooltipContent",
+        "DropdownMenuContent",
+        "SelectContent",
+        "ComboboxContent",
+        "DialogContent",
+        "SheetContent",
+        "PopoverContent",
+        "HoverCardContent",
+        "TooltipContent",
         "DropdownMenuSubContent"
       ]
     },

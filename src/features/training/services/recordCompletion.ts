@@ -1,5 +1,8 @@
 import { prisma } from "@lib/prisma";
-import { RecordCompletionInput, AdminRecordCompletionInput } from "../validators/training";
+import {
+  RecordCompletionInput,
+  AdminRecordCompletionInput,
+} from "../validators/training";
 import { AuditAction, Prisma } from "@prisma/client";
 
 interface RecordCompletionProps {
@@ -9,7 +12,12 @@ interface RecordCompletionProps {
   data: RecordCompletionInput;
 }
 
-export async function recordCompletion({ associationId, userId, moduleId, data }: RecordCompletionProps) {
+export async function recordCompletion({
+  associationId,
+  userId,
+  moduleId,
+  data,
+}: RecordCompletionProps) {
   return await prisma.$transaction(async (tx) => {
     await tx.trainingModule.findUniqueOrThrow({
       where: { id: moduleId, associationId },
@@ -49,7 +57,11 @@ interface AdminRecordCompletionProps {
   data: AdminRecordCompletionInput;
 }
 
-export async function adminRecordCompletion({ associationId, actorId, data }: AdminRecordCompletionProps) {
+export async function adminRecordCompletion({
+  associationId,
+  actorId,
+  data,
+}: AdminRecordCompletionProps) {
   return await prisma.$transaction(async (tx) => {
     const { userId, moduleId, scorePercent } = data;
 

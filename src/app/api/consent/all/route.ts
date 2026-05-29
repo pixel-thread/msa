@@ -14,17 +14,23 @@ import { logger } from "@src/shared/logger/server";
 export const GET = withAssociation(
   { query: AllConsentRecordsQuerySchema },
   async (association, { query, traceId }, req) => {
-    logger.info({
-      traceId,
-      associationId: association.id,
-    }, "GET /api/consent/all - Request started");
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+      },
+      "GET /api/consent/all - Request started",
+    );
 
     const user = await withRole(req, UserRole.DPO);
 
-    logger.info({
-      traceId,
-      userId: user.id,
-    }, "GET /api/consent/all - User authorized");
+    logger.info(
+      {
+        traceId,
+        userId: user.id,
+      },
+      "GET /api/consent/all - User authorized",
+    );
 
     const page = query?.page ?? 1;
     const { records, total } = await ConsentService.getAllConsentRecords(
@@ -32,10 +38,13 @@ export const GET = withAssociation(
       query,
     );
 
-    logger.info({
-      traceId,
-      count: records.length,
-    }, "GET /api/consent/all - Success");
+    logger.info(
+      {
+        traceId,
+        count: records.length,
+      },
+      "GET /api/consent/all - Success",
+    );
 
     return SuccessResponse({
       data: records,

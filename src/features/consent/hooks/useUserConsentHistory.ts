@@ -13,8 +13,8 @@ export function useUserConsentHistory(userId: string | null) {
 
   return {
     records:
-      ((data as ApiResponse<ConsentReceiptRecord[]>)?.data as ConsentReceiptRecord[]) ??
-      [],
+      ((data as ApiResponse<ConsentReceiptRecord[]>)
+        ?.data as ConsentReceiptRecord[]) ?? [],
     isLoading,
     error,
   };

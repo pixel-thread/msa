@@ -18,18 +18,24 @@ const UserQuerySchema = z.object({
 export const GET = withAssociation(
   { params: UserParamsSchema, query: UserQuerySchema },
   async (association, { params, query, traceId }, request) => {
-    logger.info({
-      traceId,
-      associationId: association.id,
-      targetUserId: params?.userId,
-    }, "GET /api/consent/users/[userId] - Request started");
+    logger.info(
+      {
+        traceId,
+        associationId: association.id,
+        targetUserId: params?.userId,
+      },
+      "GET /api/consent/users/[userId] - Request started",
+    );
 
     const user = await withRole(request, UserRole.DPO);
 
-    logger.info({
-      traceId,
-      userId: user.id,
-    }, "GET /api/consent/users/[userId] - User authorized");
+    logger.info(
+      {
+        traceId,
+        userId: user.id,
+      },
+      "GET /api/consent/users/[userId] - User authorized",
+    );
 
     if (!params) throw new BadRequestError("Invalid user ID");
     const page = query?.page || 1;
@@ -43,10 +49,13 @@ export const GET = withAssociation(
       throw new NotFoundError("No consent records found for this user");
     }
 
-    logger.info({
-      traceId,
-      count: data.records.length,
-    }, "GET /api/consent/users/[userId] - Success");
+    logger.info(
+      {
+        traceId,
+        count: data.records.length,
+      },
+      "GET /api/consent/users/[userId] - Success",
+    );
 
     return SuccessResponse({ data: data.records, meta: data.pagination });
   },

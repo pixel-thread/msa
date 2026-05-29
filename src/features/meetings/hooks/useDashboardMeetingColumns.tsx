@@ -62,4 +62,3 @@ export const useDashboardMeetingColumns = (): {
   const columns: ColumnDef<DashboardMeeting>[] = [...baseColumns];
   return { columns };
 };
-

@@ -32,8 +32,8 @@ export function DeleteAnnouncementDialog({
         <DialogHeader>
           <DialogTitle>Delete Announcement</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete &quot;{announcement.title}&quot;? This
-            action cannot be undone.
+            Are you sure you want to delete &quot;{announcement.title}&quot;?
+            This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
 

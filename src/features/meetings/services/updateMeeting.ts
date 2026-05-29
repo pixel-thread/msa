@@ -14,7 +14,11 @@ interface UpdateMeetingProps {
   };
 }
 
-export async function updateMeeting({ meetingId, associationId, data }: UpdateMeetingProps) {
+export async function updateMeeting({
+  meetingId,
+  associationId,
+  data,
+}: UpdateMeetingProps) {
   const existing = await prisma.meeting.findFirst({
     where: { id: meetingId, associationId },
   });

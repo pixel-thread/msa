@@ -17,7 +17,14 @@ export async function findUniqueAnnouncement({
         select: { id: true, name: true, imageUrl: true },
       },
       imageFile: {
-        select: { id: true, url: true, originalName: true, mimeType: true, sizeBytes: true, thumbnailUrl: true },
+        select: {
+          id: true,
+          url: true,
+          originalName: true,
+          mimeType: true,
+          sizeBytes: true,
+          thumbnailUrl: true,
+        },
       },
       readReceipts: {
         take: 10,
@@ -40,4 +47,3 @@ export async function findUniqueAnnouncement({
 
   return announcement;
 }
-

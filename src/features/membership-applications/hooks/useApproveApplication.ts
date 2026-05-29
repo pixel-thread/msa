@@ -14,15 +14,20 @@ export function useApproveApplication() {
 
   return useMutation({
     mutationFn: (data: ApproveApplicationData) =>
-      http.post(`/admin/membership-applications/${data.applicationId}/approve`, {
-        memberTypeId: data.memberTypeId,
-        role: data.role,
-        dateOfJoiningGovt: data.dateOfJoiningGovt,
-      }),
+      http.post(
+        `/admin/membership-applications/${data.applicationId}/approve`,
+        {
+          memberTypeId: data.memberTypeId,
+          role: data.role,
+          dateOfJoiningGovt: data.dateOfJoiningGovt,
+        },
+      ),
     onSuccess: (response) => {
       if (response.success) {
         toast.success(response.message);
-        queryClient.invalidateQueries({ queryKey: ["membership-applications"] });
+        queryClient.invalidateQueries({
+          queryKey: ["membership-applications"],
+        });
         queryClient.invalidateQueries({ queryKey: ["members"] });
         return;
       }

@@ -54,11 +54,7 @@ export function CreateEntryDialog({
     setLines(lines.filter((_, i) => i !== index));
   };
 
-  const updateLine = (
-    index: number,
-    field: keyof LineInput,
-    value: string,
-  ) => {
+  const updateLine = (index: number, field: keyof LineInput, value: string) => {
     const updated = [...lines];
     updated[index] = { ...updated[index], [field]: value };
     setLines(updated);

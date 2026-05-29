@@ -26,14 +26,20 @@ export const POST = withValidation(
       request.cookies.get("refresh_token")?.value || bodyToken;
 
     if (!refreshCookie) {
-      logger.error({ traceId }, "POST /api/auth/refresh - Refresh token not found");
+      logger.error(
+        { traceId },
+        "POST /api/auth/refresh - Refresh token not found",
+      );
       throw new UnauthorizedError("Refresh token not found");
     }
 
     try {
       await verifyRefreshToken(refreshCookie);
     } catch {
-      logger.error({ traceId }, "POST /api/auth/refresh - Invalid refresh token signature");
+      logger.error(
+        { traceId },
+        "POST /api/auth/refresh - Invalid refresh token signature",
+      );
       throw new UnauthorizedError("Invalid refresh token");
     }
 
@@ -47,7 +53,10 @@ export const POST = withValidation(
     }>(GRACE_PERIOD_KEY);
 
     if (cachedTokens) {
-      logger.info({ traceId }, "POST /api/auth/refresh - Success (grace period cached tokens returned)");
+      logger.info(
+        { traceId },
+        "POST /api/auth/refresh - Success (grace period cached tokens returned)",
+      );
       const response = SuccessResponse({
         message: "Token refreshed successfully",
         data: {
@@ -81,7 +90,10 @@ export const POST = withValidation(
     });
 
     if (!storedToken || !storedToken.userId) {
-      logger.error({ traceId }, "POST /api/auth/refresh - Invalid refresh token (not found in DB)");
+      logger.error(
+        { traceId },
+        "POST /api/auth/refresh - Invalid refresh token (not found in DB)",
+      );
       throw new UnauthorizedError("Invalid refresh token");
     }
 
@@ -91,7 +103,10 @@ export const POST = withValidation(
       // don't trigger the family revocation fail-safe to prevent logging out the user
       // due to a parallel API request race condition.
       if (Date.now() - storedToken.revokedAt.getTime() > gracePeriodMs) {
-        logger.warn({ traceId, userId: storedToken.userId }, "POST /api/auth/refresh - Revoking all family tokens (potential reuse attack)");
+        logger.warn(
+          { traceId, userId: storedToken.userId },
+          "POST /api/auth/refresh - Revoking all family tokens (potential reuse attack)",
+        );
         await revokedRefreshTokens({
           where: { userId: storedToken.userId },
         });
@@ -100,14 +115,20 @@ export const POST = withValidation(
     }
 
     if (storedToken.expiresAt < new Date()) {
-      logger.error({ traceId, userId: storedToken.userId }, "POST /api/auth/refresh - Refresh token expired");
+      logger.error(
+        { traceId, userId: storedToken.userId },
+        "POST /api/auth/refresh - Refresh token expired",
+      );
       throw new UnauthorizedError("Refresh token has expired");
     }
 
     const user = storedToken.user;
 
     if (user.status !== "ACTIVE") {
-      logger.error({ traceId, userId: user.id }, "POST /api/auth/refresh - User is not active");
+      logger.error(
+        { traceId, userId: user.id },
+        "POST /api/auth/refresh - User is not active",
+      );
       throw new UnauthorizedError("User is not active");
     }
 
@@ -166,9 +187,11 @@ export const POST = withValidation(
       path: "/",
     });
 
-    logger.info({ traceId, userId: user.id }, "POST /api/auth/refresh - Success");
+    logger.info(
+      { traceId, userId: user.id },
+      "POST /api/auth/refresh - Success",
+    );
 
     return response;
   },
 );
-

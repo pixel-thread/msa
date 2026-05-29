@@ -124,8 +124,6 @@ export default function ContributionsPage() {
     },
   });
 
-  
-
   const months = [
     { value: "1", label: "January" },
     { value: "2", label: "February" },
@@ -158,10 +156,7 @@ export default function ContributionsPage() {
         </Button>
       </div>
 
-      <DataTableFilters
-        fields={filterFields}
-        onFilterChange={setFilters}
-      />
+      <DataTableFilters fields={filterFields} onFilterChange={setFilters} />
 
       <DataTable columns={columns} data={contributions} loading={isLoading} />
 

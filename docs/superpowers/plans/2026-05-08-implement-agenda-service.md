@@ -13,6 +13,7 @@
 ### Task 1: Create Implementation File
 
 **Files:**
+
 - Create: `src/features/meetings/services/processAgendaOperations.ts`
 
 - [ ] **Step 1: Write initial service with just validation**
@@ -29,15 +30,19 @@ interface ProcessAgendaOperationsProps {
   operations: AgendaOperationInput["operations"];
 }
 
-export async function processAgendaOperations({ meetingId, associationId, operations }: ProcessAgendaOperationsProps) {
+export async function processAgendaOperations({
+  meetingId,
+  associationId,
+  operations,
+}: ProcessAgendaOperationsProps) {
   const meeting = await prisma.meeting.findFirst({
-    where: { id: meetingId, associationId }
+    where: { id: meetingId, associationId },
   });
 
   if (!meeting) throw new NotFoundError("Meeting");
-  
+
   // Implementation for operations will be added in steps
-  return []; 
+  return [];
 }
 ```
 
@@ -52,7 +57,7 @@ async function main() {
     await processAgendaOperations({
       meetingId: "non-existent-id",
       associationId: "any-association",
-      operations: []
+      operations: [],
     });
     console.log("FAIL: Should have thrown NotFoundError");
   } catch (error: any) {
@@ -82,6 +87,7 @@ git commit -m "feat: initial agenda operations service with validation"
 ### Task 2: Implement Operations in Transaction
 
 **Files:**
+
 - Modify: `src/features/meetings/services/processAgendaOperations.ts`
 
 - [ ] **Step 1: Implement the transaction with all operations**
@@ -98,9 +104,13 @@ interface ProcessAgendaOperationsProps {
   operations: AgendaOperationInput["operations"];
 }
 
-export async function processAgendaOperations({ meetingId, associationId, operations }: ProcessAgendaOperationsProps) {
+export async function processAgendaOperations({
+  meetingId,
+  associationId,
+  operations,
+}: ProcessAgendaOperationsProps) {
   const meeting = await prisma.meeting.findFirst({
-    where: { id: meetingId, associationId }
+    where: { id: meetingId, associationId },
   });
 
   if (!meeting) throw new NotFoundError("Meeting");
@@ -109,37 +119,37 @@ export async function processAgendaOperations({ meetingId, associationId, operat
     for (const op of operations) {
       switch (op.type) {
         case "CREATE":
-          await tx.agendaItem.create({ 
-            data: { 
-              ...op.data, 
-              meetingId 
-            } 
+          await tx.agendaItem.create({
+            data: {
+              ...op.data,
+              meetingId,
+            },
           });
           break;
         case "UPDATE":
-          await tx.agendaItem.update({ 
-            where: { id: op.id, meetingId }, 
-            data: op.data 
+          await tx.agendaItem.update({
+            where: { id: op.id, meetingId },
+            data: op.data,
           });
           break;
         case "DELETE":
-          await tx.agendaItem.delete({ 
-            where: { id: op.id, meetingId } 
+          await tx.agendaItem.delete({
+            where: { id: op.id, meetingId },
           });
           break;
         case "REORDER":
           for (const mapping of op.mappings) {
-            await tx.agendaItem.update({ 
-              where: { id: mapping.id, meetingId }, 
-              data: { order: mapping.order } 
+            await tx.agendaItem.update({
+              where: { id: mapping.id, meetingId },
+              data: { order: mapping.order },
             });
           }
           break;
       }
     }
-    return await tx.agendaItem.findMany({ 
-      where: { meetingId }, 
-      orderBy: { order: "asc" } 
+    return await tx.agendaItem.findMany({
+      where: { meetingId },
+      orderBy: { order: "asc" },
     });
   });
 }
@@ -155,6 +165,7 @@ git commit -m "feat: implement agenda operations in transaction"
 ### Task 3: Register Service
 
 **Files:**
+
 - Modify: `src/features/meetings/services/index.ts`
 
 - [ ] **Step 1: Export the new service**

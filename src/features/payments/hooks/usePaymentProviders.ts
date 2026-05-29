@@ -21,7 +21,8 @@ export function usePaymentProviders() {
 export function useProviderDetail(providerId: string | undefined) {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["payment-provider", providerId],
-    queryFn: () => http.get<ProviderResponse>(`/payments/providers/${providerId}`),
+    queryFn: () =>
+      http.get<ProviderResponse>(`/payments/providers/${providerId}`),
     enabled: !!providerId,
   });
 
@@ -62,7 +63,9 @@ export function useUpdateProvider(providerId: string) {
     }) => http.patch(`/payments/providers/${providerId}`, input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["payment-providers"] });
-      queryClient.invalidateQueries({ queryKey: ["payment-provider", providerId] });
+      queryClient.invalidateQueries({
+        queryKey: ["payment-provider", providerId],
+      });
     },
   });
 }

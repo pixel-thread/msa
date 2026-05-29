@@ -20,9 +20,7 @@ export function PlanDefaultCell({ plan, onSetDefault }: PlanDefaultCellProps) {
         className="h-8 w-8 p-0"
         title={plan.isDefault ? "Default plan" : "Set as default plan"}
       >
-        <Star
-          className={`h-4 w-4 ${plan.isDefault ? "fill-current" : ""}`}
-        />
+        <Star className={`h-4 w-4 ${plan.isDefault ? "fill-current" : ""}`} />
       </Button>
     </div>
   );

@@ -19,7 +19,11 @@ interface CreateMeetingProps {
   };
 }
 
-export async function createMeeting({ associationId, createdById, data }: CreateMeetingProps) {
+export async function createMeeting({
+  associationId,
+  createdById,
+  data,
+}: CreateMeetingProps) {
   return await prisma.meeting.create({
     data: {
       associationId,

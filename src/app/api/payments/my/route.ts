@@ -12,7 +12,10 @@ export const GET = withAssociation(
     logger.info({ traceId, query }, "GET /api/payments/my - Request started");
 
     const user = await withRole(request, UserRole.MEMBER);
-    logger.info({ traceId, userId: user.id }, "GET /api/payments/my - User authorized");
+    logger.info(
+      { traceId, userId: user.id },
+      "GET /api/payments/my - User authorized",
+    );
     const userId = request.headers.get("x-user-id")!;
 
     const { page = 1, pageSize = 20 } = query || {};
@@ -36,7 +39,10 @@ export const GET = withAssociation(
       }),
     ]);
 
-    logger.info({ traceId, count: payments.length, total }, "GET /api/payments/my - Success");
+    logger.info(
+      { traceId, count: payments.length, total },
+      "GET /api/payments/my - Success",
+    );
 
     return SuccessResponse({
       data: payments,

@@ -111,5 +111,9 @@ export const UpdateTrainingCertificateSchema = z.object({
   thumbnailUrl: z.string().url("Invalid thumbnail URL").optional(),
 });
 
-export type CreateTrainingCertificateInput = z.infer<typeof CreateTrainingCertificateSchema>;
-export type UpdateTrainingCertificateInput = z.infer<typeof UpdateTrainingCertificateSchema>;
+export type CreateTrainingCertificateInput = z.infer<
+  typeof CreateTrainingCertificateSchema
+>;
+export type UpdateTrainingCertificateInput = z.infer<
+  typeof UpdateTrainingCertificateSchema
+>;

@@ -1,10 +1,10 @@
-import { Spinner } from "@src/shared/components/ui/spinner"
-import { cn } from "@src/shared/lib/utils"
+import { Spinner } from "@src/shared/components/ui/spinner";
+import { cn } from "@src/shared/lib/utils";
 
 interface LoadingProps {
-  fullScreen?: boolean
-  label?: string
-  className?: string
+  fullScreen?: boolean;
+  label?: string;
+  className?: string;
 }
 
 function Loading({ fullScreen = true, label, className }: LoadingProps) {
@@ -21,7 +21,7 @@ function Loading({ fullScreen = true, label, className }: LoadingProps) {
       <Spinner className="size-8" />
       {label && <p className="text-sm text-muted-foreground">{label}</p>}
     </div>
-  )
+  );
 }
 
-export { Loading }
+export { Loading };

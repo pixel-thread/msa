@@ -11,9 +11,7 @@ import {
   CardTitle,
 } from "@src/shared/components/ui/card";
 import { DataTable } from "@src/shared/components/data-table";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import { useMeetingTableColumns } from "../hooks/useMeetingTableColumns";
 import { useMeetings } from "../hooks";
 

@@ -7,9 +7,7 @@ import { Award, ArrowLeft } from "lucide-react";
 import { Button } from "@src/shared/components/ui/button";
 import { DataTablePagination } from "@src/shared/components/data-table-pagination";
 import { DataTable } from "@src/shared/components/data-table";
-import {
-  DataTableFilters,
-} from "@src/shared/components/data-table-filters";
+import { DataTableFilters } from "@src/shared/components/data-table-filters";
 import {
   useTrainingCompletionsColumns,
   useTrainingCompletions,
@@ -17,7 +15,9 @@ import {
 
 export function TrainingAllCompletionsPage() {
   const router = useRouter();
-  const { page, setPage } = useUrlFilters({ basePath: "/training/completions" });
+  const { page, setPage } = useUrlFilters({
+    basePath: "/training/completions",
+  });
 
   const { completions, meta, isLoading } = useTrainingCompletions(null, {
     page,
