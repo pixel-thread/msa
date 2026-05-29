@@ -89,11 +89,11 @@ export function DataTableFilters({ fields, onFilterChange, defaultValues }: Data
   };
 
   return (
-    <Card className="gap-3 p-4 flex-row">
+    <Card className="gap-3 p-4 flex-row overflow-x-auto">
       {fields.map((f) => {
         if (f.type === 'search') {
           return (
-            <div key={f.id} className="relative flex-1 min-w-[200px]">
+            <div key={f.id} className="relative flex-1 min-w-[200px] shrink-0">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder={f.placeholder}
@@ -106,7 +106,7 @@ export function DataTableFilters({ fields, onFilterChange, defaultValues }: Data
         }
         if (f.type === 'daterange') {
           return (
-            <div key={f.id} className="flex items-center gap-2">
+            <div key={f.id} className="flex items-center gap-2 shrink-0">
               <span className="text-sm text-muted-foreground whitespace-nowrap">{f.label}:</span>
               <Input
                 type="datetime-local"
@@ -140,7 +140,7 @@ export function DataTableFilters({ fields, onFilterChange, defaultValues }: Data
             value={values[f.id]}
             onValueChange={(v) => setValues((prev) => ({ ...prev, [f.id]: v }))}
           >
-            <SelectTrigger className="w-[160px] h-10">
+            <SelectTrigger className="w-[160px] h-10 shrink-0">
               <SelectValue placeholder={f.label} />
             </SelectTrigger>
             <SelectContent>
@@ -154,11 +154,11 @@ export function DataTableFilters({ fields, onFilterChange, defaultValues }: Data
           </Select>
         );
       })}
-      <Button variant="default" onClick={applyFilters} className="h-10">
+      <Button variant="default" onClick={applyFilters} className="h-10 shrink-0">
         <Filter className="mr-2 h-4 w-4" />
         Apply
       </Button>
-      <Button variant="outline" onClick={resetFilters} className="h-10">
+      <Button variant="outline" onClick={resetFilters} className="h-10 shrink-0">
         Reset
       </Button>
     </Card>
