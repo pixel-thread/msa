@@ -135,11 +135,11 @@ const TESTIMONIALS = [
   },
 ];
 const HERO_DESCRIPTION = [
-  "A unified DPDP Compliant platform for Meghalaya Finance Service Association",
+  "A unified DPDP Compliant platform for Meghalaya Finance Service Association.",
 
-  "Manage memberships, meetings, finances, compliances and trainings with robust security feature.",
+  "Manage memberships, meetings, finances, compliances and trainings with robust security features.",
 
-  "Design to allow other service Association to adopt the platform and onboard activities on plug and play mode.",
+  "Designed to allow other service Association to adopt the platform and onboard activities on plug and play mode.",
 ];
 export default function Home() {
   const {} = useQuery({
