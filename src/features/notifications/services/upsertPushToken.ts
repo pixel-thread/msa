@@ -1,3 +1,4 @@
+import 'server-only';
 import { prisma } from '@src/shared/lib/prisma';
 
 export async function upsertPushToken(token: string, userId?: string) {
