@@ -58,7 +58,7 @@ Content-Type: application/json
 GET {{NEXT_PUBLIC_API_BASE_URL}}/auth/me
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
-x-user-id: {{userId}}
+x-trace-id: {{traceId}}
 
 ###
 # @name Logout

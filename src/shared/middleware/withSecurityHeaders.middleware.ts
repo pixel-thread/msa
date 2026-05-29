@@ -1,10 +1,12 @@
+import { getTraceId } from "../utils";
 import type { MiddlewareFn } from "./chain";
 
 export const withSecurityHeaders: MiddlewareFn = async (req, next, _event) => {
+  const traceId = getTraceId(req);
   const response = await next(req);
 
   const headers = response.headers;
-
+  headers.set("x-trace-id", traceId);
   headers.set("X-DNS-Prefetch-Control", "on");
   headers.set(
     "Strict-Transport-Security",
@@ -16,10 +18,7 @@ export const withSecurityHeaders: MiddlewareFn = async (req, next, _event) => {
   headers.set("X-Permitted-Cross-Domain-Policies", "none");
 
   // Global security headers
-  headers.set(
-    "Permissions-Policy",
-    "camera=(), microphone=(), geolocation=()",
-  );
+  headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   headers.set("Cross-Origin-Opener-Policy", "same-origin");
   headers.set("Cross-Origin-Resource-Policy", "same-origin");
 
