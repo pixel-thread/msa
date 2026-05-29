@@ -3,6 +3,7 @@
 import { useUrlFilters } from '@src/shared/hooks';
 
 import { DataTable } from '@src/shared/components/data-table';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { DataTableFilters } from '@src/shared/components/data-table-filters';
 import { DataTablePagination } from '@src/shared/components/data-table-pagination';
 import { useMembers } from '@src/features/members/hooks/useMembers';
@@ -22,12 +23,10 @@ export default function MembersPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">Members</h1>
-          <p className="mt-1 text-base text-body">Manage and view all association members</p>
-        </div>
-      </div>
+      <SectionHeader
+        title="Members"
+        description="Manage and view all association members"
+      />
 
       <DataTableFilters
         fields={[

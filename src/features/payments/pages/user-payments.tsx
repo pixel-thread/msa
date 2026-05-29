@@ -11,6 +11,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@src/shared/components
 import { Badge } from '@src/shared/components/ui/badge';
 import { Separator } from '@src/shared/components/ui/separator';
 import { Button } from '@src/shared/components/ui/button';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { CreditCard, Clock, AlertCircle, Receipt } from 'lucide-react';
 import Link from 'next/link';
 
@@ -62,20 +63,18 @@ export function UserPaymentsPage() {
 
   return (
     <>
-      <div className="flex items-center gap-4">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            {user.name}
-          </h1>
-          <p className="mt-1 text-base text-body">
+      <SectionHeader
+        title={user.name}
+        description={
+          <>
             Payment history and contribution summary
             {user.email && <span className="ml-2 text-muted-foreground">({user.email})</span>}
             {user.membershipNumber && (
               <span className="ml-2 text-muted-foreground">#{user.membershipNumber}</span>
             )}
-          </p>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       {summary && (
         <div className="grid gap-4 md:grid-cols-4">

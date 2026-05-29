@@ -5,6 +5,7 @@ import { useUrlFilters } from '@src/shared/hooks';
 import { DataTable } from '@src/shared/components/data-table';
 import { DataTableFilters } from '@src/shared/components/data-table-filters';
 import { Button } from '@src/shared/components/ui/button';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { Plus } from 'lucide-react';
 import { useMeetings } from '@src/features/meetings/hooks';
 import { useMeetingTableColumns } from '@src/features/meetings/hooks/useMeetingTableColumns';
@@ -23,18 +24,15 @@ export default function MeetingsPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Meetings
-          </h1>
-          <p className="mt-1 text-base text-body">Manage and view all association meetings</p>
-        </div>
+      <SectionHeader
+        title="Meetings"
+        description="Manage and view all association meetings"
+      >
         <Button onClick={() => setCreateOpen(true)} variant={'default'}>
           <Plus className="mr-2 h-4 w-4" />
           Create Meeting
         </Button>
-      </div>
+      </SectionHeader>
 
       <CreateMeetingDialog open={createOpen} onOpenChange={setCreateOpen} />
 

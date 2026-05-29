@@ -10,6 +10,7 @@ import { DataTable } from '@src/shared/components/data-table';
 import { useContributionPeriodColumns } from '@src/features/payments/hooks/useContributionPeriodColumns';
 import { DataTablePagination } from '@src/shared/components/data-table-pagination';
 import { Button } from '@src/shared/components/ui/button';
+import { SectionHeader } from '@src/shared/components/section-header';
 import {
   Dialog,
   DialogContent,
@@ -136,20 +137,15 @@ export default function ContributionsPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Contributions
-          </h1>
-          <p className="mt-1 text-base text-body">
-            Manage monthly contribution periods for all members
-          </p>
-        </div>
+      <SectionHeader
+        title="Contributions"
+        description="Manage monthly contribution periods for all members"
+      >
         <Button onClick={() => setGenerateDialogOpen(true)} className="h-10">
           <Plus className="mr-2 h-4 w-4" />
           Generate Contributions
         </Button>
-      </div>
+      </SectionHeader>
 
       <DataTableFilters fields={filterFields} onFilterChange={setFilters} />
 

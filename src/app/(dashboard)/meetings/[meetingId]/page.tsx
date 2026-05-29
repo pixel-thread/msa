@@ -12,6 +12,7 @@ import { useMeetingAttendees } from '@src/features/meetings/hooks';
 import { Card, CardHeader, CardTitle, CardContent } from '@src/shared/components/ui/card';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { Separator } from '@src/shared/components/ui/separator';
 import { formatDate } from '@src/shared/utils';
 import {
@@ -81,55 +82,45 @@ export default function MeetingDetailPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-                {meeting.title}
-              </h1>
-              {getStatusBadge(meeting.status)}
-              {getTypeBadge(meeting.type)}
-            </div>
-            <p className="mt-1 text-base text-body">Meeting details and agenda</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link href={`/meetings/${meetingId}/minutes`}>
-            <Button
-              variant="outline"
-              className="h-11 border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
-            >
-              <ClipboardList className="mr-2 h-4 w-4" />
-              Minutes
-            </Button>
-          </Link>
-          <Link href={`/meetings/${meetingId}/assign`}>
-            <Button
-              variant="outline"
-              className="h-11 border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
-            >
-              <Users className="mr-2 h-4 w-4" />
-              Manage Attendees
-            </Button>
-          </Link>
+      <SectionHeader
+        title={meeting.title}
+        titleBadges={<>{getStatusBadge(meeting.status)}{getTypeBadge(meeting.type)}</>}
+        description="Meeting details and agenda"
+      >
+        <Link href={`/meetings/${meetingId}/minutes`}>
           <Button
             variant="outline"
-            onClick={() => setDeleteOpen(true)}
-            className="h-11 border-hairline bg-canvas px-5 text-sm font-medium text-red-600 hover:bg-red-50 hover:border-red-200"
+            className="h-11 border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
           >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Delete
+            <ClipboardList className="mr-2 h-4 w-4" />
+            Minutes
           </Button>
+        </Link>
+        <Link href={`/meetings/${meetingId}/assign`}>
           <Button
-            onClick={() => setEditOpen(true)}
-            className="h-11 bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-active"
+            variant="outline"
+            className="h-11 border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
           >
-            <Pencil className="mr-2 h-4 w-4" />
-            Edit Meeting
+            <Users className="mr-2 h-4 w-4" />
+            Manage Attendees
           </Button>
-        </div>
-      </div>
+        </Link>
+        <Button
+          variant="outline"
+          onClick={() => setDeleteOpen(true)}
+          className="h-11 border-hairline bg-canvas px-5 text-sm font-medium text-red-600 hover:bg-red-50 hover:border-red-200"
+        >
+          <Trash2 className="mr-2 h-4 w-4" />
+          Delete
+        </Button>
+        <Button
+          onClick={() => setEditOpen(true)}
+          className="h-11 bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-active"
+        >
+          <Pencil className="mr-2 h-4 w-4" />
+          Edit Meeting
+        </Button>
+      </SectionHeader>
 
       <div className="grid gap-6 md:grid-cols-3">
         <Card className=" border-hairline bg-surface-card md:col-span-2">

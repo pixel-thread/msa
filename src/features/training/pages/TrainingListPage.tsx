@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUrlFilters } from '@src/shared/hooks';
 import { DataTable } from '@src/shared/components/data-table';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { Button } from '@src/shared/components/ui/button';
 import { DataTableFilters } from '@src/shared/components/data-table-filters';
 import { Plus, Award } from 'lucide-react';
@@ -39,16 +40,10 @@ export function TrainingListPage() {
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Training Modules
-          </h1>
-          <p className="mt-1 text-base text-body">
-            Manage training modules, assign them to members, and record scores.
-          </p>
-        </div>
-      </div>
+      <SectionHeader
+        title="Training Modules"
+        description="Manage training modules, assign them to members, and record scores."
+      />
 
       <div className="flex items-center justify-between gap-4 mb-6">
         <DataTableFilters

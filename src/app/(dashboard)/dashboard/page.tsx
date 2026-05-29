@@ -1,6 +1,7 @@
 'use client';
 
 import { useDashboard } from '@src/shared/hooks/use-dashboard';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { StatsCards } from '@src/shared/components/dashboard/stats-cards';
 import { RevenueAreaChart } from '@src/shared/components/dashboard/revenue-area-chart';
 import { MemberBarChart } from '@src/shared/components/dashboard/member-bar-chart';
@@ -16,12 +17,10 @@ export default function DashboardPage() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Dashboard
-          </h1>
-          <p className="mt-1 text-base text-body">Association analytics and overview</p>
-        </div>
+        <SectionHeader
+          title="Dashboard"
+          description="Association analytics and overview"
+        />
         <DashboardSkeleton />
       </div>
     );
@@ -48,10 +47,10 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">Dashboard</h1>
-        <p className="mt-1 text-base text-body">Association analytics and overview</p>
-      </div>
+      <SectionHeader
+        title="Dashboard"
+        description="Association analytics and overview"
+      />
 
       <StatsCards stats={data.stats} />
 

@@ -8,6 +8,7 @@ import { useApproveEntry } from '../hooks/useApproveEntry';
 import { Card, CardContent } from '@src/shared/components/ui/card';
 import { Button } from '@src/shared/components/ui/button';
 import { Badge } from '@src/shared/components/ui/badge';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { DataTable } from '@src/shared/components/data-table';
 import { DataTableFilters } from '@src/shared/components/data-table-filters';
 import { useLedgerLineColumns } from '../hooks/useLedgerLineColumns';
@@ -85,15 +86,15 @@ export default function LedgerEntryDetailPage() {
         <Button variant="ghost" size="icon" onClick={() => router.push('/ledger/entries')}>
           <ArrowLeftIcon className="h-5 w-5" />
         </Button>
-        <div className="flex-1">
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Entry Details
-          </h1>
-          <p className="mt-1 text-base text-body">{entry.description}</p>
-        </div>
-        <Badge variant={statusVariant as 'default' | 'secondary' | 'destructive' | 'outline'}>
-          {entry.approvalStatus}
-        </Badge>
+        <SectionHeader
+          title="Entry Details"
+          description={entry.description}
+          className="flex-1"
+        >
+          <Badge variant={statusVariant as 'default' | 'secondary' | 'destructive' | 'outline'}>
+            {entry.approvalStatus}
+          </Badge>
+        </SectionHeader>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">

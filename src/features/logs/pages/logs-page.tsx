@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { useUrlFilters } from '@src/shared/hooks';
 import { DataTable } from '@src/shared/components/data-table';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { DataTablePagination } from '@src/shared/components/data-table-pagination';
 import { DataTableFilters } from '@src/shared/components/data-table-filters';
 import { useLogs } from '@src/features/logs/hooks/useLogs';
@@ -66,16 +67,10 @@ export default function LogsPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            App Logs
-          </h1>
-          <p className="mt-1 text-base text-body">
-            View application logs, errors, and tracing information
-          </p>
-        </div>
-      </div>
+      <SectionHeader
+        title="App Logs"
+        description="View application logs, errors, and tracing information"
+      />
 
       <DataTableFilters
         key={`filters-${searchFilter}-${levelFilter}-${sortByFilter}-${dateFromFilter}-${dateToFilter}`}

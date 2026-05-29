@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { DataTable } from '@src/shared/components/data-table';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { DataTableFilters } from '@src/shared/components/data-table-filters';
 import { useComplianceChecks, useDeleteComplianceCheck, useComplianceColumns } from '../hooks';
 import { ComplianceDetailDialog } from '../components/compliance-detail-dialog';
@@ -45,17 +46,12 @@ export default function ComplianceAdminPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Compliance Management
-          </h1>
-          <p className="mt-1 text-base text-body">
-            Monitor, run, and review compliance checks across your association
-          </p>
-        </div>
+      <SectionHeader
+        title="Compliance Management"
+        description="Monitor, run, and review compliance checks across your association"
+      >
         <TriggerChecksDialog />
-      </div>
+      </SectionHeader>
 
       <ComplianceStatusCards />
 

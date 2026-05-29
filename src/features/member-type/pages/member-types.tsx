@@ -6,6 +6,7 @@ import { DataTableFilters } from '@src/shared/components/data-table-filters';
 import { useMemberTypesList } from '@src/features/member-type/hooks/useMemberTypesList';
 import { useDeleteMemberType } from '@src/features/member-type/hooks/useDeleteMemberType';
 import { useMemberTypeColumns } from '@src/features/member-type/hooks/useMemberTypeColumns';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { CreateMemberTypeDialog } from '@src/features/member-type/components/create-member-type-dialog';
 import { EditMemberTypeDialog } from '@src/features/member-type/components/edit-member-type-dialog';
 import { DeleteMemberTypeDialog } from '@src/features/member-type/components/delete-member-type-dialog';
@@ -42,15 +43,12 @@ export default function MemberTypesPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Member Types
-          </h1>
-          <p className="mt-1 text-base text-body">Manage member type levels for your association</p>
-        </div>
+      <SectionHeader
+        title="Member Types"
+        description="Manage member type levels for your association"
+      >
         <CreateMemberTypeDialog />
-      </div>
+      </SectionHeader>
 
       <DataTableFilters
         fields={[

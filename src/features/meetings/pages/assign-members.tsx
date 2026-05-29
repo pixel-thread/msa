@@ -8,6 +8,7 @@ import { ManageAttendeesDialog } from '@src/features/meetings/components/ManageA
 import { useMembers } from '@src/features/members/hooks/useMembers';
 import { Card, CardHeader, CardTitle, CardContent } from '@src/shared/components/ui/card';
 import { Button } from '@src/shared/components/ui/button';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { DataTableFilters } from '@src/shared/components/data-table-filters';
 import { DataTable } from '@src/shared/components/data-table';
 import { useMeetingAttendeesColumns } from '@src/features/meetings/hooks/useMeetingAttendeesColumns';
@@ -123,14 +124,10 @@ export default function AssignMembersPage() {
 
   return (
     <>
-      <div className="flex items-center gap-4">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            {meeting.title}
-          </h1>
-          <p className="mt-1 text-base text-body">Manage meeting attendees and assignments</p>
-        </div>
-      </div>
+      <SectionHeader
+        title={meeting.title}
+        description="Manage meeting attendees and assignments"
+      />
 
       <div className="grid gap-4 md:grid-cols-4">
         <Card className=" border-hairline bg-surface-card">

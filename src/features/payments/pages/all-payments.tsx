@@ -9,6 +9,7 @@ import { usePaymentTransactionColumns } from '@src/features/payments/hooks/usePa
 import { DataTablePagination } from '@src/shared/components/data-table-pagination';
 import { useUrlFilters } from '@src/shared/hooks';
 import { Button } from '@src/shared/components/ui/button';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { Plus } from 'lucide-react';
 
 export default function AllPaymentsPage() {
@@ -26,18 +27,15 @@ export default function AllPaymentsPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            All Payments
-          </h1>
-          <p className="mt-1 text-base text-body">View and manage all payment transactions</p>
-        </div>
+      <SectionHeader
+        title="All Payments"
+        description="View and manage all payment transactions"
+      >
         <Button onClick={() => setRecordDialogOpen(true)} className="h-10">
           <Plus className="mr-2 h-4 w-4" />
           Record Payment
         </Button>
-      </div>
+      </SectionHeader>
 
       <DataTableFilters
         fields={[

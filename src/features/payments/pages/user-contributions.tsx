@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useUserContributions } from '@src/features/payments/hooks/useUserContributions';
 import { Card, CardHeader, CardTitle, CardContent } from '@src/shared/components/ui/card';
 import { Button } from '@src/shared/components/ui/button';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { DataTable } from '@src/shared/components/data-table';
 import { DataTableFilters } from '@src/shared/components/data-table-filters';
 import { useUserContributionColumns } from '@src/features/payments/hooks/useUserContributionColumns';
@@ -64,17 +65,15 @@ export function UserContributionsPage() {
 
   return (
     <>
-      <div className="flex items-center gap-4">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            {user.name} - Contributions
-          </h1>
-          <p className="mt-1 text-base text-body">
+      <SectionHeader
+        title={`${user.name} - Contributions`}
+        description={
+          <>
             Monthly contribution breakdown
             {user.email && <span className="ml-2 text-muted-foreground">({user.email})</span>}
-          </p>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       {summary && (
         <div className="grid gap-4 md:grid-cols-4">

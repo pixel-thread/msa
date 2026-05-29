@@ -3,6 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import { usePaymentDetail } from '@src/features/payments/hooks/usePaymentDetail';
 import { Button } from '@src/shared/components/ui/button';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { Card, CardHeader, CardTitle, CardContent } from '@src/shared/components/ui/card';
 import { Separator } from '@src/shared/components/ui/separator';
 import { User, CreditCard } from 'lucide-react';
@@ -42,15 +43,12 @@ export function PaymentDetailPage() {
 
   return (
     <>
-      <div className="flex items-center gap-4">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Payment Details
-          </h1>
-          <p className="mt-1 text-base text-body">Transaction ID: {payment.id.slice(0, 8)}...</p>
-        </div>
-        <div className="ml-auto">{getStatusBadge(payment.status)}</div>
-      </div>
+      <SectionHeader
+        title="Payment Details"
+        description={`Transaction ID: ${payment.id.slice(0, 8)}...`}
+      >
+        {getStatusBadge(payment.status)}
+      </SectionHeader>
 
       <div className="grid gap-6 md:grid-cols-3">
         <Card className=" border-hairline bg-surface-card md:col-span-2">

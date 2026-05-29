@@ -6,6 +6,7 @@ import { usePlans } from '@src/features/subscriptions/hooks/usePlans';
 import { Button } from '@src/shared/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@src/shared/components/ui/card';
 import { Badge } from '@src/shared/components/ui/badge';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { Separator } from '@src/shared/components/ui/separator';
 import { DataTable } from '@src/shared/components/data-table';
 import { formatDate } from '@src/shared/utils';
@@ -56,17 +57,14 @@ export function PlanDetailPage() {
 
   return (
     <>
-      <div className="flex items-center gap-4">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            {plan.name}
-          </h1>
-          <p className="mt-1 text-base text-body">Subscription plan details</p>
-        </div>
-        <Badge variant={plan.isActive ? 'default' : 'secondary'} className="ml-2">
+      <SectionHeader
+        title={plan.name}
+        description="Subscription plan details"
+      >
+        <Badge variant={plan.isActive ? 'default' : 'secondary'}>
           {plan.isActive ? 'Active' : 'Inactive'}
         </Badge>
-      </div>
+      </SectionHeader>
 
       <div className="grid gap-6 md:grid-cols-3">
         <Card className=" border-hairline bg-surface-card md:col-span-2">

@@ -9,6 +9,7 @@ import { useMarkAnnouncementRead } from '@src/features/announcement/hooks/useMar
 import { Card, CardHeader, CardTitle, CardContent } from '@src/shared/components/ui/card';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { Separator } from '@src/shared/components/ui/separator';
 import { formatDate } from '@src/shared/utils';
 import { ArrowLeft, Pencil, Trash2, Eye, Pin, User, Calendar, Flag, BarChart3 } from 'lucide-react';
@@ -72,12 +73,10 @@ export default function AnnouncementDetailPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-              {announcement.title}
-            </h1>
+      <SectionHeader
+        title={announcement.title}
+        titleBadges={
+          <>
             {announcement.isPinned && (
               <span title="Pinned">
                 <Pin className="h-5 w-5 text-amber-500" />
@@ -89,36 +88,35 @@ export default function AnnouncementDetailPage() {
             <Badge variant={priorityVariants[announcement.priority] || 'outline'}>
               {announcement.priority}
             </Badge>
-          </div>
-          <p className="mt-1 text-base text-body">Announcement details</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            onClick={() => markAsRead.mutate()}
-            disabled={markAsRead.isPending}
-            className="h-11 border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
-          >
-            <Eye className="mr-2 h-4 w-4" />
-            {markAsRead.isPending ? 'Marking...' : 'Mark as Read'}
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => setDeleteOpen(true)}
-            className="h-11 border-hairline bg-canvas px-5 text-sm font-medium text-red-600 hover:bg-red-50 hover:border-red-200"
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Delete
-          </Button>
-          <Button
-            onClick={() => setEditOpen(true)}
-            className="h-11 bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-active"
-          >
-            <Pencil className="mr-2 h-4 w-4" />
-            Edit
-          </Button>
-        </div>
-      </div>
+          </>
+        }
+        description="Announcement details"
+      >
+        <Button
+          variant="outline"
+          onClick={() => markAsRead.mutate()}
+          disabled={markAsRead.isPending}
+          className="h-11 border-hairline bg-canvas px-5 text-sm font-medium text-ink hover:bg-surface-strong"
+        >
+          <Eye className="mr-2 h-4 w-4" />
+          {markAsRead.isPending ? 'Marking...' : 'Mark as Read'}
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => setDeleteOpen(true)}
+          className="h-11 border-hairline bg-canvas px-5 text-sm font-medium text-red-600 hover:bg-red-50 hover:border-red-200"
+        >
+          <Trash2 className="mr-2 h-4 w-4" />
+          Delete
+        </Button>
+        <Button
+          onClick={() => setEditOpen(true)}
+          className="h-11 bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-active"
+        >
+          <Pencil className="mr-2 h-4 w-4" />
+          Edit
+        </Button>
+      </SectionHeader>
 
       <div className="grid gap-6 md:grid-cols-3">
         <Card className=" border-hairline bg-surface-card md:col-span-2">

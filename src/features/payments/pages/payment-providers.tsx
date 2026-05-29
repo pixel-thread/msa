@@ -9,6 +9,7 @@ import { DataTable } from '@src/shared/components/data-table';
 import { DataTableFilters } from '@src/shared/components/data-table-filters';
 import { usePaymentProviderColumns } from '@src/features/payments/hooks/usePaymentProviderColumns';
 import { Button } from '@src/shared/components/ui/button';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -66,20 +67,15 @@ export default function PaymentProvidersPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Payment Providers
-          </h1>
-          <p className="mt-1 text-base text-body">
-            Manage payment gateway integrations (Razorpay, Stripe, etc.)
-          </p>
-        </div>
+      <SectionHeader
+        title="Payment Providers"
+        description="Manage payment gateway integrations (Razorpay, Stripe, etc.)"
+      >
         <Button onClick={() => setCreateDialogOpen(true)} className="h-10">
           <Plus className="mr-2 h-4 w-4" />
           Add Provider
         </Button>
-      </div>
+      </SectionHeader>
 
       <DataTableFilters
         fields={[

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useUrlFilters } from '@src/shared/hooks';
 
 import { DataTable } from '@src/shared/components/data-table';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { DataTableFilters } from '@src/shared/components/data-table-filters';
 import { Button } from '@src/shared/components/ui/button';
 import { useMembershipApplications } from '../hooks/useMembershipApplications';
@@ -38,14 +39,10 @@ export function MembershipApplicationsPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Membership Applications
-          </h1>
-          <p className="mt-1 text-base text-body">Review and manage new membership applications</p>
-        </div>
-      </div>
+      <SectionHeader
+        title="Membership Applications"
+        description="Review and manage new membership applications"
+      />
 
       <DataTableFilters
         fields={[

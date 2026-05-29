@@ -3,6 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 
 import { useMember } from '@src/features/members/hooks/useMember';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { Button } from '@src/shared/components/ui/button';
 import { PersonalInfoCard } from '@src/features/members/components/detail/personal-info-card';
 import { StatusCard } from '@src/features/members/components/detail/status-card';
@@ -43,14 +44,10 @@ export function MemberDetailPage() {
 
   return (
     <>
-      <div className="flex items-center gap-4">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            {member.name}
-          </h1>
-          <p className="mt-1 text-base text-body">Member details and activity</p>
-        </div>
-      </div>
+      <SectionHeader
+        title={member.name}
+        description="Member details and activity"
+      />
 
       <div className="grid gap-6 md:grid-cols-3">
         <PersonalInfoCard member={member} />

@@ -7,6 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@src/shared/components
 import { Avatar, AvatarImage, AvatarFallback } from '@src/shared/components/ui/avatar';
 import { Badge } from '@src/shared/components/ui/badge';
 import { Button } from '@src/shared/components/ui/button';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { Input } from '@src/shared/components/ui/input';
 import { Textarea } from '@src/shared/components/ui/textarea';
 import { Skeleton } from '@src/shared/components/ui/skeleton';
@@ -132,13 +133,10 @@ export default function AssociationDetailPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Association Settings
-          </h1>
-          <p className="mt-1 text-base text-body">Manage your association profile and branding</p>
-        </div>
+      <SectionHeader
+        title="Association Settings"
+        description="Manage your association profile and branding"
+      >
         {!isEditing ? (
           <Button onClick={() => setIsEditing(true)}>
             <Pencil className="mr-2 h-4 w-4" />
@@ -156,7 +154,7 @@ export default function AssociationDetailPage() {
             </Button>
           </div>
         )}
-      </div>
+      </SectionHeader>
 
       <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
         <Card size="sm">

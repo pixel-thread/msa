@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { DataTable } from '@src/shared/components/data-table';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { DataTableFilters } from '@src/shared/components/data-table-filters';
 import { useDsarTickets, useDeleteDsarTicket, useDsarColumns } from '../hooks';
 import { DsarDetailDialog } from '../components/dsar-detail-dialog';
@@ -66,16 +67,10 @@ export default function DsarAdminPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            DSAR Management
-          </h1>
-          <p className="mt-1 text-base text-body">
-            Manage data subject access requests across your association
-          </p>
-        </div>
-      </div>
+      <SectionHeader
+        title="DSAR Management"
+        description="Manage data subject access requests across your association"
+      />
 
       <DsarSlaCards />
 

@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useUrlFilters } from '@src/shared/hooks';
 import { DataTable } from '@src/shared/components/data-table';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { DataTableFilters } from '@src/shared/components/data-table-filters';
 import { DataTablePagination } from '@src/shared/components/data-table-pagination';
 import { useAnnouncementsList } from '@src/features/announcement/hooks/useAnnouncementsList';
@@ -45,15 +46,12 @@ export default function AnnouncementsPage({ status }: AnnouncementsPageProps) {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Announcements
-          </h1>
-          <p className="mt-1 text-base text-body">Manage announcements for your association</p>
-        </div>
+      <SectionHeader
+        title="Announcements"
+        description="Manage announcements for your association"
+      >
         <CreateAnnouncementDialog />
-      </div>
+      </SectionHeader>
 
       <DataTableFilters
         fields={[

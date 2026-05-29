@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { DataTable } from '@src/shared/components/data-table';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { DataTableFilters } from '@src/shared/components/data-table-filters';
 import { useConsentRecords, useDeleteConsentReceipt, useConsentColumns } from '../hooks';
 import { ConsentDetailDialog } from '../components/consent-detail-dialog';
@@ -47,16 +48,10 @@ export default function ConsentAdminPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Consent Management
-          </h1>
-          <p className="mt-1 text-base text-body">
-            View, manage, and track member consent records across all purposes
-          </p>
-        </div>
-      </div>
+      <SectionHeader
+        title="Consent Management"
+        description="View, manage, and track member consent records across all purposes"
+      />
 
       <ConsentReportCards />
 

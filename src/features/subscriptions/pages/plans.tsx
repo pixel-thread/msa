@@ -9,6 +9,7 @@ import { DataTablePagination } from '@src/shared/components/data-table-paginatio
 import { usePlans } from '@src/features/subscriptions/hooks/usePlans';
 import { usePlanTableColumns } from '@src/features/subscriptions/hooks/usePlanTableColumns';
 import { usePlanTableActions } from '@src/features/subscriptions/hooks/usePlanTableActions';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { CreatePlanDialog } from '@src/features/subscriptions/components/create-plan-dialog';
 import { EditPlanDialog } from '@src/features/subscriptions/components/edit-plan-dialog';
 import { DeletePlanDialog } from '@src/features/subscriptions/components/delete-plan-dialog';
@@ -40,15 +41,12 @@ export default function PlansPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Subscription Plans
-          </h1>
-          <p className="mt-1 text-base text-body">Manage subscription plans for your association</p>
-        </div>
+      <SectionHeader
+        title="Subscription Plans"
+        description="Manage subscription plans for your association"
+      >
         <CreatePlanDialog />
-      </div>
+      </SectionHeader>
 
       <DataTableFilters
         fields={[

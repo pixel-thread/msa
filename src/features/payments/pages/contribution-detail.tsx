@@ -3,6 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useContributionDetail } from '@src/features/payments/hooks/useContributionDetail';
 import { Button } from '@src/shared/components/ui/button';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { ContributionDetail } from '@src/features/payments/components/contribution-detail';
 import { ArrowLeft } from 'lucide-react';
 
@@ -38,20 +39,13 @@ export function ContributionDetailPage() {
 
   return (
     <>
-      <div className="flex items-center gap-4">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Contribution Details
-          </h1>
-          <p className="mt-1 text-base text-body">
-            {contribution.user?.name || 'Member'} &mdash;{' '}
-            {new Date(contribution.year, contribution.month - 1).toLocaleDateString('en-IN', {
-              month: 'long',
-              year: 'numeric',
-            })}
-          </p>
-        </div>
-      </div>
+      <SectionHeader
+        title="Contribution Details"
+        description={`${contribution.user?.name || 'Member'} \u2014 ${new Date(contribution.year, contribution.month - 1).toLocaleDateString('en-IN', {
+          month: 'long',
+          year: 'numeric',
+        })}`}
+      />
 
       <ContributionDetail contribution={contribution} />
 

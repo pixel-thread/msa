@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useUrlFilters } from '@src/shared/hooks';
 import { DataTable } from '@src/shared/components/data-table';
 import { Button } from '@src/shared/components/ui/button';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { DataTableFilters } from '@src/shared/components/data-table-filters';
 import { useLedgerEntries, type LedgerEntryResponse } from '../hooks/useLedgerEntries';
 import { useLedgerEntriesColumns } from '../hooks/useLedgerEntriesColumns';
@@ -45,18 +46,15 @@ export default function LedgerEntriesPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Ledger Entries
-          </h1>
-          <p className="mt-1 text-base text-body">View and manage all ledger transactions</p>
-        </div>
+      <SectionHeader
+        title="Ledger Entries"
+        description="View and manage all ledger transactions"
+      >
         <Button onClick={() => setCreateOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Create Entry
         </Button>
-      </div>
+      </SectionHeader>
 
       <DataTableFilters
         fields={[

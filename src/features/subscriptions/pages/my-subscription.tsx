@@ -4,6 +4,7 @@ import { useUrlFilters } from '@src/shared/hooks';
 import { useQuery } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import { Card, CardContent } from '@src/shared/components/ui/card';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { formattedAmount } from '@src/shared/utils';
 import { DataTable } from '@src/shared/components/data-table';
 import { DataTableFilters } from '@src/shared/components/data-table-filters';
@@ -82,16 +83,10 @@ export function MySubscriptionPage() {
 
   return (
     <>
-      <div className="flex items-center gap-4">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Payment History
-          </h1>
-          <p className="mt-1 text-base text-body">
-            View your payment transactions and contribution history
-          </p>
-        </div>
-      </div>
+      <SectionHeader
+        title="Payment History"
+        description="View your payment transactions and contribution history"
+      />
 
       {summary && (
         <div className="grid gap-4 md:grid-cols-3">

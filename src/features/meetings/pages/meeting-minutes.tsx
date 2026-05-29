@@ -16,6 +16,7 @@ import { DataTable } from '@src/shared/components/data-table';
 import { DataTableFilters } from '@src/shared/components/data-table-filters';
 import { useMeetingMinutesColumns } from '@src/features/meetings/hooks/useMeetingMinutesColumns';
 import { Button } from '@src/shared/components/ui/button';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { ArrowLeft, FileText, Plus } from 'lucide-react';
 import Link from 'next/link';
 import type {
@@ -93,22 +94,15 @@ export default function MeetingMinutesPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div>
-            <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-              {meeting.title} - Minutes
-            </h1>
-            <p className="mt-1 text-base text-body">
-              Record and manage meeting minutes and decisions
-            </p>
-          </div>
-        </div>
+      <SectionHeader
+        title={`${meeting.title} - Minutes`}
+        description="Record and manage meeting minutes and decisions"
+      >
         <Button onClick={() => setCreateOpen(true)} className="h-10">
           <Plus className="mr-2 h-4 w-4" />
           Add Minute
         </Button>
-      </div>
+      </SectionHeader>
 
       <div className=" border border-hairline bg-surface-card">
         <div className="p-4">

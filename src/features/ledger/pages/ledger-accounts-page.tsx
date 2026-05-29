@@ -6,6 +6,7 @@ import { DataTable } from '@src/shared/components/data-table';
 import { DataTableFilters } from '@src/shared/components/data-table-filters';
 import { Card, CardContent } from '@src/shared/components/ui/card';
 import { Button } from '@src/shared/components/ui/button';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { CreateAccountDialog } from '../components/create-account-dialog';
 import { useLedgerAccountColumns } from '../hooks/useLedgerAccountColumns';
 import { Plus, BanknoteIcon } from 'lucide-react';
@@ -20,20 +21,15 @@ export default function LedgerAccountsPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Chart of Accounts
-          </h1>
-          <p className="mt-1 text-base text-body">
-            Manage the Chart of Accounts for your association
-          </p>
-        </div>
+      <SectionHeader
+        title="Chart of Accounts"
+        description="Manage the Chart of Accounts for your association"
+      >
         <Button onClick={() => setCreateOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Create Account
         </Button>
-      </div>
+      </SectionHeader>
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card className=" border-hairline bg-surface-card">

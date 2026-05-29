@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react';
 import { useUrlFilters } from '@src/shared/hooks';
 
 import { DataTable } from '@src/shared/components/data-table';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { Card, CardContent } from '@src/shared/components/ui/card';
 import { Input } from '@src/shared/components/ui/input';
 import { DataTableFilters } from '@src/shared/components/data-table-filters';
@@ -102,14 +103,10 @@ export default function AuditLogsPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Audit Logs
-          </h1>
-          <p className="mt-1 text-base text-body">View activity logs and audit trail</p>
-        </div>
-      </div>
+      <SectionHeader
+        title="Audit Logs"
+        description="View activity logs and audit trail"
+      />
 
       <div className="flex flex-cols md:flex-row gap-4">
         <Card className=" w-full border-hairline bg-surface-card">

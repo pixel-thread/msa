@@ -6,6 +6,7 @@ import { DataTableFilters } from '@src/shared/components/data-table-filters';
 import { useAssociationsList } from '@src/features/associations/hooks/useAssociationsList';
 import { useDeactivateAssociation } from '@src/features/associations/hooks/useDeactivateAssociation';
 import { useAssociationColumns } from '@src/features/associations/hooks/useAssociationColumns';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { CreateAssociationDialog } from '@src/features/associations/components/create-association-dialog';
 import { EditAssociationDialog } from '@src/features/associations/components/edit-association-dialog';
 import { DeactivateAssociationDialog } from '@src/features/associations/components/deactivate-association-dialog';
@@ -33,15 +34,12 @@ export default function AssociationsPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Associations
-          </h1>
-          <p className="mt-1 text-base text-body">Manage associations and their settings</p>
-        </div>
+      <SectionHeader
+        title="Associations"
+        description="Manage associations and their settings"
+      >
         <CreateAssociationDialog />
-      </div>
+      </SectionHeader>
 
       <DataTableFilters
         fields={[

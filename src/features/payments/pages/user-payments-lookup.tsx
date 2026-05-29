@@ -8,6 +8,7 @@ import { usePaymentTransactionColumns } from '@src/features/payments/hooks/usePa
 import { useUserPayments } from '@src/features/payments/hooks/useUserPayments';
 import { Card, CardContent } from '@src/shared/components/ui/card';
 import { Button } from '@src/shared/components/ui/button';
+import { SectionHeader } from '@src/shared/components/section-header';
 import { CreditCard, AlertCircle, Receipt, Clock, User } from 'lucide-react';
 import Link from 'next/link';
 import { formattedAmount } from '@src/shared/utils';
@@ -28,16 +29,10 @@ export function UserPaymentsLookupPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-[36px] font-normal leading-tight tracking-tight text-ink">
-            Member Payments
-          </h1>
-          <p className="mt-1 text-base text-body">
-            Search for a member to view their payment history
-          </p>
-        </div>
-      </div>
+      <SectionHeader
+        title="Member Payments"
+        description="Search for a member to view their payment history"
+      />
 
       <div className=" border border-hairline bg-surface-card p-4">
         <MemberSearch onSelect={(member) => setSelectedMember(member)} />
