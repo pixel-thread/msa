@@ -1,7 +1,7 @@
 import { withAssociation, withRole } from '@src/shared/api';
 import { SuccessResponse } from '@utils/responses';
 import { logger } from '@src/shared/logger/server';
-import { UserRole, Prisma } from '@prisma/client';
+import { UserRole } from '@prisma/client';
 import { CreateOrderSchema } from '@feature/payments/validators';
 import { createPaymentOrder } from '@feature/payments/services/payment.service';
 import { findSubscriptionPlans } from '@src/features/payments/services/findSubscriptionPlans';
@@ -41,34 +41,30 @@ export const POST = withAssociation(
       whereClause.memberTypeId = null;
     }
 
-    type PlanWithVersions = Awaited<ReturnType<typeof prisma.subscriptionPlan.findMany>>[number] & {
-      versions: Array<{ amount: number }>;
+    const plansInclude = {
+      versions: {
+        take: 1,
+        orderBy: { createdAt: 'desc' as const },
+      },
     };
 
-    let plans = (await findSubscriptionPlans({
+    let plansRaw = await findSubscriptionPlans({
       where: whereClause as Parameters<typeof findSubscriptionPlans>[0]['where'],
-      include: {
-        versions: {
-          take: 1,
-          orderBy: { createdAt: 'desc' },
-        },
-      },
-    })) as unknown as PlanWithVersions[];
+      include: plansInclude,
+    });
+
+    let plans = plansRaw as unknown as (typeof plansRaw[number] & { versions: Array<{ amount: number }> })[];
 
     if (plans.length === 0) {
-      plans = (await findSubscriptionPlans({
+      plansRaw = await findSubscriptionPlans({
         where: {
           associationId: association.id,
           isDefault: true,
           isActive: true,
         },
-        include: {
-          versions: {
-            take: 1,
-            orderBy: { createdAt: 'desc' },
-          },
-        },
-      })) as unknown as PlanWithVersions[];
+        include: plansInclude,
+      });
+      plans = plansRaw as unknown as typeof plans;
     }
 
     if (plans.length === 0 || !plans[0].versions[0]) {
