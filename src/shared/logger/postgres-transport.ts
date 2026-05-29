@@ -28,10 +28,6 @@ export function createPostgresTransport() {
         const parsed = JSON.parse(raw);
         const { level, time, pid, hostname, msg, ...rest } = parsed;
 
-        if (env.NODE_ENV === "development") {
-          console.log("Postgres log transport Started", parsed);
-        }
-
         await createLogs({
           data: {
             type: PINO_LEVELS[level as number] ?? "info",

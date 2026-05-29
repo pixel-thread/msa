@@ -51,6 +51,8 @@ axiosClient.interceptors.request.use(
     config.headers["x-os-version"] = "unknown";
     config.headers["x-client-version"] = "unknown";
     config.headers["x-device-type"] = "web";
+    config.headers["x-association-slug"] =
+      env.NEXT_PUBLIC_ASSOCIATION_SLUG || "unknown";
     const method = config.method?.toUpperCase();
     const path = config.url;
     if (method && path) {
