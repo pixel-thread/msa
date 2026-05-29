@@ -1,13 +1,12 @@
-import { withRole, withValidation } from '@src/shared/api';
+import { withValidation } from '@src/shared/api';
 import { ValidationError } from '@src/shared/errors';
 import { createLogs, getLogs } from '@src/shared/services/logs';
 import { SuccessResponse } from '@src/shared/utils';
 import { LogIngestSchema, LogQuerySchema } from '@src/shared/validators/logs';
-import { UserRole, type Log } from '@prisma/client';
+import { type Log } from '@prisma/client';
 // import { logger } from "@src/shared/logger/server";
 
 export const GET = withValidation({ query: LogQuerySchema }, async (req, _ctx, { query }) => {
-  await withRole(req, UserRole.SUPER_ADMIN);
   // logger.info({ traceId }, "GET /api/logs - Request started");
 
   const {
