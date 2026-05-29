@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import { UserContributionData } from '../types';
+import { paymentEndpoints } from '../utils/constants/endpoints';
 
 interface UseUserContributionsOptions {
   userId: string;
@@ -20,7 +21,7 @@ export function useUserContributions(options: UseUserContributionsOptions) {
   if (toMonth) params.set('toMonth', String(toMonth));
 
   const queryString = params.toString();
-  const url = `/payments/users/${userId}/contributions${queryString ? `?${queryString}` : ''}`;
+  const url = `${paymentEndpoints.userContributions(userId)}${queryString ? `?${queryString}` : ''}`;
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['user-contributions', userId, queryString],

@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import { ContributionPeriod } from '../types';
+import { paymentEndpoints } from '../utils/constants/endpoints';
 
 interface UseContributionsOptions {
   page?: number;
@@ -22,7 +23,7 @@ export function useContributions(options: UseContributionsOptions = {}) {
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['all-contributions', params.toString()],
-    queryFn: () => http.get<ContributionPeriod[]>(`/payments/contributions?${params.toString()}`),
+    queryFn: () => http.get<ContributionPeriod[]>(`${paymentEndpoints.contributions}?${params.toString()}`),
   });
 
   return {

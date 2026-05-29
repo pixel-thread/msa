@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import { toast } from 'sonner';
+import { dsarEndpoints } from '../utils/constants/endpoints';
 
 interface RespondData {
   status: string;
@@ -15,7 +16,7 @@ export function useRespondToDsarTicket() {
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: RespondData }) =>
-      http.post(`/dsar/${id}/respond`, data),
+      http.post(dsarEndpoints.respond(id), data),
     onSuccess: (response) => {
       if ((response as { success: boolean }).success) {
         toast.success('DSAR ticket responded successfully');

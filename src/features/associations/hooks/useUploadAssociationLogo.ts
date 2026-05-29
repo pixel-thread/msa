@@ -3,6 +3,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import { toast } from 'sonner';
+import { associationsEndpoints } from '../utils/constants/endpoints';
 
 export function useUploadAssociationLogo() {
   const queryClient = useQueryClient();
@@ -11,7 +12,7 @@ export function useUploadAssociationLogo() {
     mutationFn: ({ id, file }: { id: string; file: File }) => {
       const formData = new FormData();
       formData.append('logo', file);
-      return http.post(`/associations/${id}/logo`, formData);
+      return http.post(associationsEndpoints.logo(id), formData);
     },
     onSuccess: (data) => {
       if (data.success) {

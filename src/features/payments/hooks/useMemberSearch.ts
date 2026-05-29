@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
+import { paymentEndpoints } from '../utils/constants/endpoints';
 
 interface MemberSearchResult {
   id: string;
@@ -22,7 +23,7 @@ export function useMemberSearch(query: string) {
   const { data, isLoading } = useQuery({
     queryKey: ['member-search', debouncedQuery],
     queryFn: () =>
-      http.get<MemberSearchResult[]>(`/members?search=${encodeURIComponent(debouncedQuery)}`),
+      http.get<MemberSearchResult[]>(paymentEndpoints.memberSearch(debouncedQuery)),
     enabled: debouncedQuery.length >= 2,
   });
 

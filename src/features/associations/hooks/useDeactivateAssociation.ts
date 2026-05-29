@@ -1,12 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import { toast } from 'sonner';
+import { associationsEndpoints } from '../utils/constants/endpoints';
 
 export function useDeactivateAssociation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => http.post(`/associations/${id}/deactivate`),
+    mutationFn: (id: string) => http.post(associationsEndpoints.deactivate(id)),
     onSuccess: (data) => {
       if (data.success) {
         toast.success('Association deactivated successfully');

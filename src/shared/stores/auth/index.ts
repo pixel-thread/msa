@@ -3,7 +3,7 @@
 import { create } from 'zustand';
 import http from '@src/shared/utils/http';
 import type { UserRole } from '@src/shared/types';
-import { SHARED_ENDPOINTS } from '@src/shared/constants';
+import { sharedEndpoints } from '@src/shared/constants';
 
 export interface AuthUser {
   id: string;
@@ -42,7 +42,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true });
 
     try {
-      const res = await http.get<AuthUser>(SHARED_ENDPOINTS.AUTH.ME);
+      const res = await http.get<AuthUser>(sharedEndpoints.auth.me);
 
       if (!res.success || !res.data) {
         set({ user: null, isSignedIn: false, isLoading: false });
@@ -61,7 +61,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true });
 
     try {
-      const res = await http.post<{ user: AuthUser }>(SHARED_ENDPOINTS.AUTH.MFA_VERIFY, { code });
+      const res = await http.post<{ user: AuthUser }>(sharedEndpoints.auth.mfaVerify, { code });
 
       if (!res.success) {
         throw new Error(res.message);
@@ -78,7 +78,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   resendMfaCode: async () => {
     try {
-      const res = await http.post<{ codeSent: boolean }>(SHARED_ENDPOINTS.AUTH.MFA_RESEND);
+      const res = await http.post<{ codeSent: boolean }>(sharedEndpoints.auth.mfaResend);
       if (!res.success) {
         throw new Error(res.message);
       }
@@ -91,7 +91,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true });
     try {
       const res = await http.post<{ pending: boolean; codeSent: boolean }>(
-        SHARED_ENDPOINTS.AUTH.MFA_SETUP,
+        sharedEndpoints.auth.mfaSetup,
         { password },
       );
       if (!res.success) {
@@ -107,7 +107,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   enableMfa: async (code: string) => {
     set({ isLoading: true });
     try {
-      const res = await http.post<{ user: AuthUser }>(SHARED_ENDPOINTS.AUTH.MFA_VERIFY, { code });
+      const res = await http.post<{ user: AuthUser }>(sharedEndpoints.auth.mfaVerify, { code });
       if (!res.success) {
         throw new Error(res.message);
       }
@@ -123,7 +123,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   disableMfa: async (password: string) => {
     set({ isLoading: true });
     try {
-      const res = await http.post<{ user: AuthUser }>(SHARED_ENDPOINTS.AUTH.MFA_DISABLE, {
+      const res = await http.post<{ user: AuthUser }>(sharedEndpoints.auth.mfaDisable, {
         password,
       });
       if (!res.success) {

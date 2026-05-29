@@ -2,13 +2,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import { toast } from 'sonner';
 import type { UpdateAssociationInput } from '../validators';
+import { associationsEndpoints } from '../utils/constants/endpoints';
 
 export function useUpdateAssociation() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateAssociationInput }) =>
-      http.patch(`/associations/${id}`, data),
+      http.patch(associationsEndpoints.byId(id), data),
     onSuccess: (data) => {
       if (data.success) {
         toast.success('Association updated successfully');

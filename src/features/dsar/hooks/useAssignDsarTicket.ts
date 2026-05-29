@@ -1,13 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import { toast } from 'sonner';
+import { dsarEndpoints } from '../utils/constants/endpoints';
 
 export function useAssignDsarTicket() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ id, assignedToId }: { id: string; assignedToId: string }) =>
-      http.patch(`/dsar/${id}/assign`, { assignedToId }),
+      http.patch(dsarEndpoints.assign(id), { assignedToId }),
     onSuccess: (response) => {
       if ((response as { success: boolean }).success) {
         toast.success('DSAR ticket assigned successfully');
