@@ -177,7 +177,7 @@ export const DRAWER_NAV_MAIN = [
     items: [
       {
         title: "Associations",
-        url: "/associations",
+        url: "/associations/current",
       },
       {
         title: "Member Types",

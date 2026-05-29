@@ -50,18 +50,6 @@ export async function getUserInvoices({
   return await prisma.$transaction([
     prisma.paymentTransaction.findMany({
       where,
-      include: {
-        association: true,
-        user: {
-          select: {
-            name: true,
-            email: true,
-            membershipNumber: true,
-            designation: true,
-          },
-        },
-        allocations: { include: { contributionPeriod: true } },
-      },
       orderBy: {
         createdAt: "desc",
       },

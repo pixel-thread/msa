@@ -141,17 +141,17 @@ export default function Home() {
       <section className="relative mt-16 flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background" />
         <div className="relative mx-auto max-w-5xl px-6 py-24 text-center">
-          <Badge variant="default" className="mb-6 justify-center text-[0.625rem]">
+          <Badge
+            variant="default"
+            className="mb-6 justify-center text-[0.625rem]"
+          >
             Security-First Platform
           </Badge>
-          <Text
-            variant="display-mega"
-            asChild
-            className="mb-6"
-          >
+          <Text variant="display-lg" asChild className="mb-6">
             <h1>
-              Governance for{" "}
-              <span className="text-primary">Finance Associations</span>
+              Meghalaya&nbsp;
+              <span className="text-primary">Finance Service</span>
+              &nbsp;Association
             </h1>
           </Text>
           <Text
@@ -163,7 +163,8 @@ export default function Home() {
             <p>
               A unified, DPDP-compliant platform for Meghalaya Finance Service
               Association and affiliated bodies. Manage memberships, meetings,
-              financial ledgers, and compliance with zero compromise on security.
+              financial ledgers, and compliance with zero compromise on
+              security.
             </p>
           </Text>
           <div className="flex flex-wrap items-center justify-center gap-4">
@@ -174,9 +175,7 @@ export default function Home() {
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <Link href="#features">
-                Explore Features
-              </Link>
+              <Link href="#features">Explore Features</Link>
             </Button>
           </div>
         </div>
@@ -191,7 +190,11 @@ export default function Home() {
                 <Text variant="display-md" color="primary" asChild>
                   <p className="mb-1">{stat.value}</p>
                 </Text>
-                <Text variant="caption-strong" color="muted" transform="uppercase">
+                <Text
+                  variant="caption-strong"
+                  color="muted"
+                  transform="uppercase"
+                >
                   {stat.label}
                 </Text>
               </div>
@@ -220,7 +223,11 @@ export default function Home() {
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map((feature) => (
-              <Card key={feature.title} size="sm" className="group transition-shadow hover:shadow-md">
+              <Card
+                key={feature.title}
+                size="sm"
+                className="group transition-shadow hover:shadow-md"
+              >
                 <CardHeader>
                   <div className="mb-2 flex size-10 items-center justify-center bg-primary/10 text-primary">
                     <HugeiconsIcon icon={feature.icon} className="size-5" />
@@ -264,15 +271,24 @@ export default function Home() {
               </Text>
               <div className="flex flex-wrap gap-6">
                 <div className="flex items-center gap-2">
-                  <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-4 text-semantic-up" />
+                  <HugeiconsIcon
+                    icon={CheckmarkCircle02Icon}
+                    className="size-4 text-semantic-up"
+                  />
                   <Text variant="body-sm">DPDP Act 2023 Compliant</Text>
                 </div>
                 <div className="flex items-center gap-2">
-                  <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-4 text-semantic-up" />
+                  <HugeiconsIcon
+                    icon={CheckmarkCircle02Icon}
+                    className="size-4 text-semantic-up"
+                  />
                   <Text variant="body-sm">AES-256-GCM Encryption</Text>
                 </div>
                 <div className="flex items-center gap-2">
-                  <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-4 text-semantic-up" />
+                  <HugeiconsIcon
+                    icon={CheckmarkCircle02Icon}
+                    className="size-4 text-semantic-up"
+                  />
                   <Text variant="body-sm">Multi-Association Support</Text>
                 </div>
               </div>
@@ -284,7 +300,11 @@ export default function Home() {
                   <Text variant="display-sm" color="primary" asChild>
                     <p className="mb-2">15+</p>
                   </Text>
-                  <Text variant="caption-strong" transform="uppercase" color="muted">
+                  <Text
+                    variant="caption-strong"
+                    transform="uppercase"
+                    color="muted"
+                  >
                     Years Experience
                   </Text>
                 </CardContent>
@@ -294,7 +314,11 @@ export default function Home() {
                   <Text variant="display-sm" color="primary" asChild>
                     <p className="mb-2">500+</p>
                   </Text>
-                  <Text variant="caption-strong" transform="uppercase" color="muted">
+                  <Text
+                    variant="caption-strong"
+                    transform="uppercase"
+                    color="muted"
+                  >
                     Active Members
                   </Text>
                 </CardContent>
@@ -304,7 +328,11 @@ export default function Home() {
                   <Text variant="display-sm" color="primary" asChild>
                     <p className="mb-2">3</p>
                   </Text>
-                  <Text variant="caption-strong" transform="uppercase" color="muted">
+                  <Text
+                    variant="caption-strong"
+                    transform="uppercase"
+                    color="muted"
+                  >
                     Associations
                   </Text>
                 </CardContent>
@@ -314,7 +342,11 @@ export default function Home() {
                   <Text variant="display-sm" color="primary" asChild>
                     <p className="mb-2">100%</p>
                   </Text>
-                  <Text variant="caption-strong" transform="uppercase" color="muted">
+                  <Text
+                    variant="caption-strong"
+                    transform="uppercase"
+                    color="muted"
+                  >
                     Data Protection
                   </Text>
                 </CardContent>
@@ -496,16 +528,15 @@ export default function Home() {
       {/* ─── CTA BANNER ─── */}
       <section className="bg-primary py-24">
         <div className="mx-auto max-w-4xl px-6 text-center">
+          <Text variant="display-md" color="on-primary" asChild>
+            <h2 className="mb-6">Ready to Transform Your Association?</h2>
+          </Text>
           <Text
-            variant="display-md"
+            variant="title-md"
             color="on-primary"
+            className="mb-10 opacity-80"
             asChild
           >
-            <h2 className="mb-6">
-              Ready to Transform Your Association?
-            </h2>
-          </Text>
-          <Text variant="title-md" color="on-primary" className="mb-10 opacity-80" asChild>
             <p className="mx-auto max-w-2xl">
               Join hundreds of finance service professionals already using MFSA
               Connect for secure, compliant association governance.
@@ -635,7 +666,10 @@ export default function Home() {
                 >
                   Message
                 </label>
-                <Textarea id="message" placeholder="Tell us more about your inquiry..." />
+                <Textarea
+                  id="message"
+                  placeholder="Tell us more about your inquiry..."
+                />
               </div>
               <Button variant="default" className="w-full">
                 Send Message

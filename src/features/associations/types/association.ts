@@ -3,9 +3,11 @@ export interface Association {
   slug: string;
   name: string;
   description: string | null;
+  logo: string | null;
   country: string;
   state: string | null;
   contactEmail: string | null;
+  contactPhone: string | null;
   primaryColor: string | null;
   secondaryColor: string | null;
   isActive: boolean;

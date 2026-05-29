@@ -48,8 +48,7 @@ export default function ChangePasswordPage() {
     try {
       await changePasswordMutation.mutateAsync(values);
       setIsSuccess(true);
-    } catch {
-    }
+    } catch {}
   };
 
   if (isSuccess) {
@@ -91,10 +90,7 @@ export default function ChangePasswordPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-5"
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               {changePasswordMutation.isError && (
                 <Alert variant="destructive">
                   <AlertDescription>
@@ -178,12 +174,9 @@ export default function ChangePasswordPage() {
               </Button>
 
               <div className="text-center">
-                <Link
-                  href="/sign-in"
-                  className="text-sm font-medium text-primary hover:text-primary-active"
-                >
-                  Back to sign in
-                </Link>
+                <Button variant={"link"} onClick={() => router.back()}>
+                  Go Back
+                </Button>
               </div>
             </form>
           </Form>

@@ -68,6 +68,7 @@ const allRoles = [
   UserRole.FINANCE,
   UserRole.DPO,
 ];
+const onlySuperAdmin = [UserRole.SUPER_ADMIN];
 
 export const ROUTE_ROLE: RouteRole[] = [
   {
@@ -89,8 +90,14 @@ export const ROUTE_ROLE: RouteRole[] = [
     needAuth: true,
   },
   {
-    url: "/associations/*",
+    url: "/associations/current/*",
     role: nonMemberRoles,
+    redirect: "/forbidden",
+    needAuth: true,
+  },
+  {
+    url: "/associations/*",
+    role: onlySuperAdmin,
     redirect: "/forbidden",
     needAuth: true,
   },

@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import http from "../utils/http";
-import { Association } from "@prisma/client";
 import { useAuthStore } from "../stores";
+import { Association } from "@src/features/associations/types/association";
 
 export function useAssociation() {
   const { isSignedIn } = useAuthStore();
   return useQuery({
-    queryKey: ["association"],
-    queryFn: () => http.get<Association>("/associations"),
+    queryKey: ["associations", "current"],
+    queryFn: () => http.get<Association>("/associations/current"),
     staleTime: 60_000,
     enabled: isSignedIn,
     select: (data) => data.data,

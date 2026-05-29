@@ -1,4 +1,4 @@
-@associationsId=4364ffdc-eb65-45b7-8205-8d121cbb522c
+@associationsId=c5b791b4-f628-477b-b606-557ba3d2dbaa
 @meetingId=505cc596-f978-45fa-b891-9fd3e3a4ad36
 @userId=7e534916-ffcc-467a-811a-b2544840777d
 @test3UserId=9a6043b7-2b58-425a-9912-3275dd4153fe
@@ -11,7 +11,7 @@
 @providerId=REPLACE_WITH_PROVIDER_ID
 @announcementId=6fd37ef7-007b-4a2f-8a04-0932e94b4f2a
 @traceId=6fd37ef7-007b-4a2f-8a04-0932e94b4f2a
-@invoiceId=REPLACE_WITH_INVOICE_ID
+@invoiceId=bb5ffbdd-6652-4c9e-a305-378d51dd3ffd
 @minuitesId=REPLACE_WITH_MINUTES_ID
 @complaintId=REPLACE_WITH_COMPLAINT_ID
 @certificateId=REPLACE_WITH_CERTIFICATE_ID
@@ -1573,13 +1573,14 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Update Association
-PUT {{NEXT_PUBLIC_API_BASE_URL}}/associations/{{associationsId}}
+PATCH {{NEXT_PUBLIC_API_BASE_URL}}/associations/{{associationsId}}
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
   "name": "Updated Association Name",
-  "contactEmail": "updated@association.org"
+  "contactEmail": "updated@association.org",
+  "logo": "https://picsum.photos/200/300"
 }
 
 ###
@@ -1815,7 +1816,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name get user invoices 
-GET {{NEXT_PUBLIC_API_BASE_URL}}/user/invoice/{{invoiceId}}
+GET {{NEXT_PUBLIC_API_BASE_URL}}/user/invoices/{{invoiceId}}
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 

@@ -41,6 +41,10 @@ export const CreateAssociationSchema = z.object({
     })
     .optional(),
 
+  logo: z
+    .string()
+    .optional(),
+
   country: z
     .string()
     .length(2, {
@@ -52,6 +56,10 @@ export const CreateAssociationSchema = z.object({
     .email({
       error: "Please provide a valid email address",
     })
+    .optional(),
+
+  contactPhone: z
+    .string()
     .optional(),
 
   primaryColor: z

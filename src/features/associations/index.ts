@@ -1,1 +1,1 @@
-export { AssociationsPage } from "./pages";
+export { AssociationsPage, AssociationDetailPage } from "./pages";
