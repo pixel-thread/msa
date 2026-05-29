@@ -10,3 +10,4 @@ export * from "./withTraceId.middleware";
 export * from "./with-request-size-limit";
 export * from "./with-bot-protection";
 export * from "./with-csrf.middleware";
+export * from "./withSleep.middleware.ts";
