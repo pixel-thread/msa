@@ -9,25 +9,8 @@ import { DataTableFilters } from '@src/shared/components/data-table-filters';
 import { useLogs } from '@src/features/logs/hooks/useLogs';
 import { useLogColumns } from '@src/features/logs/hooks/useLogColumns';
 import { LogDetailsDialog } from '@src/features/logs/components/log-details-dialog';
+import { LOGS_FILTER_FIELDS } from '@src/features/logs/utils/constants/filters';
 import type { LogEntry } from '@src/features/logs/types';
-
-const LOG_LEVELS = [
-  { value: 'error', label: 'Error' },
-  { value: 'warn', label: 'Warn' },
-  { value: 'info', label: 'Info' },
-  { value: 'debug', label: 'Debug' },
-];
-
-const SORT_OPTIONS = [
-  { value: 'createdAt', label: 'Date' },
-  { value: 'type', label: 'Level' },
-  { value: 'message', label: 'Message' },
-];
-
-const SOURCE_OPTIONS = [
-  { value: 'true', label: 'Backend' },
-  { value: 'false', label: 'Client' },
-];
 
 export default function LogsPage() {
   const { filters, page, setPage, setFilters } = useUrlFilters({
@@ -81,32 +64,7 @@ export default function LogsPage() {
 
       <DataTableFilters
         key={`filters-${searchFilter}-${levelFilter}-${sortByFilter}-${dateFromFilter}-${dateToFilter}-${backendFilter}`}
-        fields={[
-          { type: 'search', id: 'search', placeholder: 'Search message...' },
-          {
-            type: 'select',
-            id: 'level',
-            label: 'Level',
-            options: LOG_LEVELS,
-          },
-          {
-            type: 'daterange',
-            id: 'date',
-            label: 'Date',
-          },
-          {
-            type: 'select',
-            id: 'isBackend',
-            label: 'Source',
-            options: SOURCE_OPTIONS,
-          },
-          {
-            type: 'select',
-            id: 'sortBy',
-            label: 'Sort by',
-            options: SORT_OPTIONS,
-          },
-        ]}
+        fields={LOGS_FILTER_FIELDS}
         defaultValues={{
           search: searchFilter,
           level: levelFilter,

@@ -12,6 +12,7 @@ import {
 import { Button } from '@src/shared/components/ui/button';
 import { Search, Filter } from 'lucide-react';
 import { Card } from '@components/ui/card';
+import type { FilterOption } from '@src/shared/types';
 
 export type FilterField =
   | { type: 'search'; id: string; placeholder?: string }
@@ -19,7 +20,7 @@ export type FilterField =
       type: 'select';
       id: string;
       label: string;
-      options: { value: string; label: string }[];
+      options: FilterOption[];
     }
   | {
       type: 'daterange';
