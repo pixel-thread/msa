@@ -17,6 +17,7 @@ import Razorpay from 'razorpay';
 import { BadRequestError, NotFoundError, PaymentError } from '@src/shared/errors';
 import { logAction } from '@src/shared/services/audit-logs';
 import { PAGE_SIZE } from '@src/shared/constants';
+import { createLedgerEntry } from '@src/features/ledger/services/ledger.service';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -631,83 +632,7 @@ async function allocatePaymentToContributions(
 }
 
 // ---------------------------------------------------------------------------
-// 5. Ledger Entry Creation
-// ---------------------------------------------------------------------------
-
-async function createLedgerEntry(
-  tx: Prisma.TransactionClient,
-  paymentTransactionId: string,
-  amount: number,
-  description: string,
-  createdById: string,
-) {
-  // 1. Fetch the transaction to know its associationId and method
-  const transaction = await tx.paymentTransaction.findUnique({
-    where: { id: paymentTransactionId },
-    select: { associationId: true, method: true },
-  });
-
-  if (!transaction) {
-    throw new Error(`Transaction ${paymentTransactionId} not found during ledger generation.`);
-  }
-
-  // 2. Determine correct Bank/Cash and Revenue accounts by code
-  // If payment method is CASH, debit Cash in Hand ('1001'). Otherwise debit Bank ('1002').
-  const isCash = transaction.method === 'CASH';
-  const debitAccountCode = isCash ? '1001' : '1002';
-  const creditAccountCode = '3001'; // Membership Income
-
-  // 3. Find the corresponding accounts in the Chart of Accounts for this association
-  const [debitAccount, creditAccount] = await Promise.all([
-    tx.account.findFirst({
-      where: {
-        associationId: transaction.associationId,
-        code: debitAccountCode,
-        isActive: true,
-      },
-    }),
-    tx.account.findFirst({
-      where: {
-        associationId: transaction.associationId,
-        code: creditAccountCode,
-        isActive: true,
-      },
-    }),
-  ]);
-
-  if (!debitAccount || !creditAccount) {
-    throw new Error(
-      `Required accounts (debit: ${debitAccountCode}, credit: ${creditAccountCode}) not found in chart of accounts for association ${transaction.associationId}.`
-    );
-  }
-
-  return tx.ledgerEntry.create({
-    data: {
-      paymentTransactionId,
-      description,
-      approvalStatus: 'APPROVED',
-      createdById,
-      approvedById: createdById,
-      lines: {
-        create: [
-          {
-            accountId: debitAccount.id,
-            isDebit: true,
-            amount,
-          },
-          {
-            accountId: creditAccount.id,
-            isDebit: false,
-            amount,
-          },
-        ],
-      },
-    },
-  });
-}
-
-// ---------------------------------------------------------------------------
-// 6. Mark Payment as Failed
+// 5. Mark Payment as Failed
 // ---------------------------------------------------------------------------
 
 export async function markPaymentFailed(razorpayOrderId: string, reason?: string) {
@@ -740,15 +665,7 @@ export async function markPaymentFailed(razorpayOrderId: string, reason?: string
 }
 
 // ---------------------------------------------------------------------------
-// 7. Get All Transactions (Admin)
-// ---------------------------------------------------------------------------
-
-/**
- * Get all transactions for an association with filtering and pagination.
- */
-
-// ---------------------------------------------------------------------------
-// 8. Get Payment History
+// 6. Get Payment History
 // ---------------------------------------------------------------------------
 
 export async function getUserPaymentHistory(userId: string, page = 1) {
@@ -786,7 +703,7 @@ export async function getUserPaymentHistory(userId: string, page = 1) {
 }
 
 // ---------------------------------------------------------------------------
-// 8. Admin Transaction Management
+// 7. Admin Transaction Management
 // ---------------------------------------------------------------------------
 
 /**
@@ -872,7 +789,7 @@ export async function getTransactionById(id: string, associationId: string) {
 }
 
 // ---------------------------------------------------------------------------
-// 9. Financial Statistics
+// 8. Financial Statistics
 // ---------------------------------------------------------------------------
 
 /**
