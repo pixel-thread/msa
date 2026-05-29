@@ -36,6 +36,8 @@ export default function LedgerEntryDetailPage() {
     return account ? `${account.code} - ${account.name}` : accountId;
   };
 
+  const { columns: lineColumns } = useLedgerLineColumns({ getAccountName });
+
   if (entriesLoading || accountsLoading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -71,8 +73,6 @@ export default function LedgerEntryDetailPage() {
     });
   };
 
-  const { columns: lineColumns } = useLedgerLineColumns({ getAccountName });
-
   const statusVariant =
     entry.approvalStatus === 'APPROVED'
       ? 'default'
@@ -82,20 +82,15 @@ export default function LedgerEntryDetailPage() {
 
   return (
     <>
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => router.push('/ledger/entries')}>
-          <ArrowLeftIcon className="h-5 w-5" />
-        </Button>
-        <SectionHeader
-          title="Entry Details"
-          description={entry.description}
-          className="flex-1"
-        >
-          <Badge variant={statusVariant as 'default' | 'secondary' | 'destructive' | 'outline'}>
-            {entry.approvalStatus}
-          </Badge>
-        </SectionHeader>
-      </div>
+      <SectionHeader
+        title="Entry Details"
+        description={entry.description}
+        onBackClick={() => router.push('/ledger/entries')}
+      >
+        <Badge variant={statusVariant as 'default' | 'secondary' | 'destructive' | 'outline'}>
+          {entry.approvalStatus}
+        </Badge>
+      </SectionHeader>
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card className=" border-hairline bg-surface-card">
