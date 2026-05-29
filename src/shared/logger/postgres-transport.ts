@@ -1,6 +1,7 @@
 import "server-only";
 import { Writable } from "stream";
-import { prisma } from "@src/shared/lib/prisma";
+import { createLogs } from "../services";
+import { env } from "@src/env";
 
 const PINO_LEVELS: Record<number, string> = {
   10: "trace",
@@ -27,7 +28,11 @@ export function createPostgresTransport() {
         const parsed = JSON.parse(raw);
         const { level, time, pid, hostname, msg, ...rest } = parsed;
 
-        await prisma.log.create({
+        if (env.NODE_ENV === "development") {
+          console.log("Postgres log transport Started");
+        }
+
+        await createLogs({
           data: {
             type: PINO_LEVELS[level as number] ?? "info",
             message: typeof msg === "string" ? msg : JSON.stringify(msg),

@@ -1721,6 +1721,7 @@ Authorization: Bearer {{TOKEN}}
 # @name Upload Announcement Image
 POST {{NEXT_PUBLIC_API_BASE_URL}}/announcements/{{announcementId}}/upload
 Content-Type: multipart/form-data; boundary=ann
+Authorization: Bearer {{TOKEN}}
 
 --ann
 Content-Disposition: form-data; name="file"; filename="image.png"
