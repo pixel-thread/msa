@@ -24,6 +24,11 @@ const SORT_OPTIONS = [
   { value: 'message', label: 'Message' },
 ];
 
+const SOURCE_OPTIONS = [
+  { value: 'true', label: 'Backend' },
+  { value: 'false', label: 'Client' },
+];
+
 export default function LogsPage() {
   const { filters, page, setPage, setFilters } = useUrlFilters({
     basePath: '/logs',
@@ -37,6 +42,7 @@ export default function LogsPage() {
   const sortByFilter = filters.sortBy ?? '';
   const dateFromFilter = filters.dateFrom ?? '';
   const dateToFilter = filters.dateTo ?? '';
+  const backendFilter = filters.isBackend ?? '';
 
   const {
     logs,
@@ -49,6 +55,7 @@ export default function LogsPage() {
     sortBy: (sortByFilter as 'createdAt' | 'type' | 'message') || undefined,
     startDate: dateFromFilter || undefined,
     endDate: dateToFilter || undefined,
+    isBackend: backendFilter ? backendFilter === 'true' : undefined,
   });
 
   const handleViewDetails = useCallback((entry: LogEntry) => {
@@ -73,7 +80,7 @@ export default function LogsPage() {
       />
 
       <DataTableFilters
-        key={`filters-${searchFilter}-${levelFilter}-${sortByFilter}-${dateFromFilter}-${dateToFilter}`}
+        key={`filters-${searchFilter}-${levelFilter}-${sortByFilter}-${dateFromFilter}-${dateToFilter}-${backendFilter}`}
         fields={[
           { type: 'search', id: 'search', placeholder: 'Search message...' },
           {
@@ -89,6 +96,12 @@ export default function LogsPage() {
           },
           {
             type: 'select',
+            id: 'isBackend',
+            label: 'Source',
+            options: SOURCE_OPTIONS,
+          },
+          {
+            type: 'select',
             id: 'sortBy',
             label: 'Sort by',
             options: SORT_OPTIONS,
@@ -100,6 +113,7 @@ export default function LogsPage() {
           sortBy: sortByFilter,
           dateFrom: dateFromFilter,
           dateTo: dateToFilter,
+          isBackend: backendFilter,
         }}
         onFilterChange={handleFilterChange}
       />

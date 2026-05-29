@@ -34,7 +34,10 @@ export const LogQuerySchema = z.object({
   contentSearch: z.string().optional(),
   startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),
-  isBackend: z.coerce.boolean().optional(),
+  isBackend: z
+    .enum(['true', 'false'])
+    .transform((v) => v === 'true')
+    .optional(),
   ids: z.string().optional(),
   sortBy: z.enum(['createdAt', 'type', 'message']).optional(),
   sortOrder: z.enum(['asc', 'desc']).optional(),

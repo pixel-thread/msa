@@ -47,7 +47,9 @@ export const GET = withValidation({ query: LogQuerySchema }, async (req, _ctx, {
       where.createdAt.gte = new Date(startDate);
     }
     if (endDate) {
-      where.createdAt.lte = new Date(endDate);
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      where.createdAt.lte = end;
     }
   }
 
