@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
-import type { Account } from '@prisma/client';
+import type { Account } from '@src/shared/types';
 
 export function useLedgerAccounts() {
   const { data, isLoading, error, refetch } = useQuery({

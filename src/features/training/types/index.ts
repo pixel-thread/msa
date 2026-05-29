@@ -1,12 +1,40 @@
-import { TrainingModule, TrainingCompletion } from '@prisma/client';
+export interface TrainingModuleWithCompletions {
+  id: string;
+  associationId: string;
+  title: string;
+  description: string | null;
+  content: string;
+  durationMinutes: number | null;
+  requiredForRoles: string[];
+  version: number;
+  isActive: boolean;
+  certificateTemplateId: string | null;
+  createdAt: string;
+  updatedAt: string;
+  completions: TrainingCompletionItem[];
+}
 
-export type TrainingModuleWithCompletions = TrainingModule & {
-  completions: TrainingCompletion[];
-};
-
-export type TrainingCompletionWithModule = TrainingCompletion & {
-  module: TrainingModule;
-};
+export interface TrainingCompletionWithModule {
+  id: string;
+  userId: string;
+  moduleId: string;
+  scorePercent: number | null;
+  completedAt: string;
+  module: {
+    id: string;
+    associationId: string;
+    title: string;
+    description: string | null;
+    content: string;
+    durationMinutes: number | null;
+    requiredForRoles: string[];
+    version: number;
+    isActive: boolean;
+    certificateTemplateId: string | null;
+    createdAt: string;
+    updatedAt: string;
+  };
+}
 
 export interface TrainingModuleListItem {
   id: string;

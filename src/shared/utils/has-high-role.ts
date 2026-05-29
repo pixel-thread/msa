@@ -1,4 +1,4 @@
-import { UserRole } from '@prisma/client';
+import type { UserRole } from '@src/shared/types';
 import { HIGH_ROLE_USERS } from '@src/shared/constants';
 
 export const hasHighRoleAccess = (roles: UserRole | UserRole[]): boolean => {

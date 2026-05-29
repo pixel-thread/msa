@@ -1,4 +1,4 @@
-import { ConsentPurpose, ConsentStatus } from '@prisma/client';
+import type { ConsentPurpose, ConsentStatus } from '@src/shared/types';
 
 /**
  * Represents a user's current consent state for a specific purpose.

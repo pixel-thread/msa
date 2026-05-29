@@ -1,7 +1,6 @@
-import type { UserRole as Role } from '@prisma/client';
-import { UserRole } from '@prisma/client';
+import type { UserRole } from '@src/shared/types';
 
-export const ROLE_HIERARCHY: Record<Role, number> = {
+export const ROLE_HIERARCHY: Record<UserRole, number> = {
   SUPER_ADMIN: 0,
   PRESIDENT: 1,
   SECRETARY: 1,
@@ -11,7 +10,7 @@ export const ROLE_HIERARCHY: Record<Role, number> = {
 };
 
 export const HIGH_ROLE_USERS: UserRole[] = [
-  UserRole.SUPER_ADMIN,
-  UserRole.PRESIDENT,
-  UserRole.SECRETARY,
+  'SUPER_ADMIN',
+  'PRESIDENT',
+  'SECRETARY',
 ];

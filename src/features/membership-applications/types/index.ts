@@ -1,4 +1,4 @@
-import type { ApplicationStatus } from '@prisma/client';
+import type { ApplicationStatus } from '@src/shared/types';
 
 export type MembershipApplicationListItem = {
   id: string;

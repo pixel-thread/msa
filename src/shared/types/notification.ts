@@ -1,6 +1,5 @@
-import { $Enums } from '@prisma/client';
-
-export type NotificationType = $Enums.NotificationType;
+export type { NotificationType } from './enums';
+export { NOTIFICATION_TYPE_VALUES } from './enums';
 
 export interface NotificationDataT {
   id?: string;

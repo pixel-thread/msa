@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 import http from '@src/shared/utils/http';
-import type { UserRole } from '@src/shared/lib/prisma/types';
+import type { UserRole } from '@src/shared/types';
 import { SHARED_ENDPOINTS } from '@src/shared/constants';
 
 export interface AuthUser {

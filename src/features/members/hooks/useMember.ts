@@ -1,9 +1,7 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
-import { User } from '@prisma/client';
-
-type Member = User;
+import type { Member } from '@src/features/members/types';
 
 export function useMember(memberId: string) {
   const {

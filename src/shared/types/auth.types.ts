@@ -1,9 +1,4 @@
-import { UserRole as Role } from '@prisma/client';
-
-/**
- * User roles supported by the application and stored in Clerk publicMetadata.
- */
-export type UserRole = Role;
+export type { UserRole } from './enums';
 
 /**
  * Standardized direction for sorting data.
