@@ -1,3 +1,4 @@
+import 'server-only';
 import { StorageProvider, UploadParams } from '@src/shared/types/storage';
 import { UploadResult } from '@sharedType/storage';
 import { supabase as supabseClient } from '@lib/supabase';

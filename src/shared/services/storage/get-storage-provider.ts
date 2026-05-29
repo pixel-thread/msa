@@ -1,3 +1,4 @@
+import 'server-only';
 import { SupabaseStorageProvider } from './supabase';
 import { SftpStorageProvider } from './sftp';
 import { env } from '@src/env';

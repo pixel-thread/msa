@@ -1,3 +1,4 @@
+import 'server-only';
 import { env } from '@src/env';
 import { logger } from '@src/shared/logger/server';
 import { StorageProvider, UploadParams, UploadResult } from '@src/shared/types/storage';
