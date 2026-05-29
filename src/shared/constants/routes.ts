@@ -16,7 +16,6 @@ export const PUBLIC_ROUTES = [
   "/forgot-password",
   "/reset-password",
   "/forbidden",
-  "/members",
   "/membership-applications",
   "/*",
 ] as const;
@@ -34,7 +33,6 @@ export const API_PUBLIC_ROUTES = [
   "/api/auth/forgot-password",
   "/api/auth/reset-password",
   "/api/payments/webhook",
-  "/api/associations/current",
   "/api/logs",
 ] as const;
 
