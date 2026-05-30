@@ -1,11 +1,5 @@
 # Global & Project Agent Rules
 
-## Global Rules
-
-The global rule file is located at:
-
-~/.gemini/GEMINI.md
-
 These rules apply to all projects by default.
 
 ---
@@ -35,7 +29,6 @@ If a project rule conflicts with a global rule:
 Priority order:
 
 1. Project rules (`.agents/GEMINI.md`)
-2. Global rules (`~/.gemini/GEMINI.md`)
 
 ---
 

@@ -1,7 +1,12 @@
 import { z } from 'zod';
 
+// Re-export from shared validators
 export { CreateAssociationSchema } from '@validator/associations';
 export type { CreateAssociationInput } from '@validator/associations';
+
+// ---------------------------------------------------------------------------
+// Association update schema
+// ---------------------------------------------------------------------------
 
 /** Schema for validating association update requests. Only included fields are updated. */
 export const UpdateAssociationSchema = z.object({

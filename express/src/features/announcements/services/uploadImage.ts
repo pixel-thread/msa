@@ -1,7 +1,12 @@
 import { env } from '@src/env';
 import { prisma } from '@lib/prisma';
+
 import { NotFoundError } from '@src/shared/errors';
 import { uploadToBucket } from '@src/shared/lib/supabase/storage';
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 
 /** Props for uploading an image to an announcement. */
 interface UploadImageProps {
@@ -15,13 +20,21 @@ interface UploadImageProps {
   uploadedById: string;
 }
 
-/** Upload an image for an announcement. Replaces any existing image. */
+// ---------------------------------------------------------------------------
+// Upload announcement image
+// ---------------------------------------------------------------------------
+
+/**
+ * Upload an image for an announcement.
+ * Replaces any existing image by deleting the old file record and storage key.
+ */
 export async function uploadAnnouncementImage({
   announcementId,
   associationId,
   file,
   uploadedById,
 }: UploadImageProps) {
+  // Verify the announcement exists and fetch its current image (if any)
   const announcement = await prisma.announcement.findFirst({
     where: { id: announcementId, associationId },
     include: { imageFile: true },
@@ -34,16 +47,19 @@ export async function uploadAnnouncementImage({
   const oldFileId = announcement.imageFileId;
   const oldStorageKey = announcement.imageFile?.storageKey;
 
+  // Resolve the association slug for the storage path
   const association = await prisma.association.findUnique({
     where: { id: associationId },
     select: { slug: true },
   });
 
+  // Upload the new image to object storage
   const uploadResult = await uploadToBucket(
     file,
     `announcements/${association?.slug ?? associationId}/${announcementId}`,
   );
 
+  // Create a file record for the uploaded image
   const fileRecord = await prisma.file.create({
     data: {
       associationId,
@@ -59,6 +75,7 @@ export async function uploadAnnouncementImage({
     },
   });
 
+  // Attach the new image to the announcement
   const updated = await prisma.announcement.update({
     where: { id: announcementId },
     data: {
@@ -68,6 +85,7 @@ export async function uploadAnnouncementImage({
     include: { imageFile: true },
   });
 
+  // Clean up the old file record if one existed
   if (oldFileId) {
     await prisma.file.delete({ where: { id: oldFileId } });
   }

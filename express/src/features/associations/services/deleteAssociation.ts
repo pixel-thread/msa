@@ -1,9 +1,17 @@
 import { prisma } from '@lib/prisma';
 
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
 /** Parameters for deleting an association. */
 type Props = {
   id: string;
 };
+
+// ---------------------------------------------------------------------------
+// Soft-delete association
+// ---------------------------------------------------------------------------
 
 /** Soft-delete an association by setting its status to DELETED. */
 export async function deleteAssociation(props: Props) {

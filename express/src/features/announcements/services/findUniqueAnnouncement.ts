@@ -1,5 +1,10 @@
 import { prisma } from '@lib/prisma';
+
 import { NotFoundError } from '@src/shared/errors';
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 
 /** Props for fetching a unique announcement. */
 interface FindUniqueAnnouncementProps {
@@ -9,7 +14,15 @@ interface FindUniqueAnnouncementProps {
   associationId: string;
 }
 
-/** Find a single announcement by ID within an association. Throws if not found. */
+// ---------------------------------------------------------------------------
+// Find unique announcement
+// ---------------------------------------------------------------------------
+
+/**
+ * Find a single announcement by ID within an association.
+ * Includes author, image file, read receipts, and read-receipt count.
+ * Throws NotFoundError if the announcement does not exist.
+ */
 export async function findUniqueAnnouncement({
   announcementId,
   associationId,

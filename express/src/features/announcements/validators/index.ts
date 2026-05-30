@@ -1,8 +1,13 @@
 import z from 'zod';
 import { AnnouncementStatus, AnnouncementPriority, UserRole } from '@prisma/client';
+
 import { pageNumberValidation, pageSizeValidation } from '@src/shared/validators/common';
 
 import { MAX_IMAGE_SIZE, ALLOWED_IMAGE_FORMATS, ALLOWED_MIME_TYPES } from '@src/shared/constants';
+
+// ---------------------------------------------------------------------------
+// Schemas for the announcements feature
+// ---------------------------------------------------------------------------
 
 /** Schema for creating a new announcement. */
 export const CreateAnnouncementSchema = z.object({
@@ -40,14 +45,15 @@ export const AnnouncementQuerySchema = z.object({
   search: z.string().optional(),
 });
 
-/** Schema for publishing an announcement with an optional publish date. */
+/** Schema for the publish/archive/unpublish action body. */
 export const PublishAnnouncementSchema = z.object({
   publishedAt: z.coerce.date().optional(),
 });
 
-export type CreateAnnouncementInput = z.infer<typeof CreateAnnouncementSchema>;
-export type UpdateAnnouncementInput = z.infer<typeof UpdateAnnouncementSchema>;
-export type AnnouncementQuery = z.infer<typeof AnnouncementQuerySchema>;
+/** Schema for announcement route parameters (announcementId). */
+export const AnnouncementRouteParams = z.object({
+  announcementId: z.uuid(),
+});
 
 /** Schema for announcement image upload form data. Validates file size, extension, and MIME type. */
 export const AnnouncementUploadFormData = z.object({
@@ -57,6 +63,7 @@ export const AnnouncementUploadFormData = z.object({
     .refine((f) => f.type, { message: 'File type is required' })
     .refine((file) => {
       const extension = file.name.split('.').pop()?.toLowerCase();
+
       return extension && ALLOWED_IMAGE_FORMATS.includes(extension as never);
     }, 'Invalid file extension')
     .refine((f) => ALLOWED_MIME_TYPES.includes(f.type as never), {
@@ -72,7 +79,12 @@ export const AnnouncementUploadFormData = z.object({
     }),
 });
 
-/** Schema for announcement route parameters (announcementId). */
-export const AnnouncementRouteParams = z.object({
-  announcementId: z.uuid(),
-});
+// ---------------------------------------------------------------------------
+// Inferred types
+// ---------------------------------------------------------------------------
+
+export type CreateAnnouncementInput = z.infer<typeof CreateAnnouncementSchema>;
+
+export type UpdateAnnouncementInput = z.infer<typeof UpdateAnnouncementSchema>;
+
+export type AnnouncementQuery = z.infer<typeof AnnouncementQuerySchema>;

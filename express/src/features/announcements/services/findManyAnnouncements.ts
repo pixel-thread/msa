@@ -1,8 +1,12 @@
 import { prisma } from '@lib/prisma';
-import { AnnouncementStatus, AnnouncementPriority } from '@prisma/client';
-import { Prisma } from '@prisma/client';
+import { AnnouncementStatus, AnnouncementPriority, Prisma } from '@prisma/client';
+
 import { PAGE_SIZE } from '@src/shared/constants';
 import { buildPagination } from '@src/shared/utils/build-pagination';
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 
 /** Props for finding announcements with filters and pagination. */
 interface FindManyAnnouncementsProps {
@@ -20,7 +24,14 @@ interface FindManyAnnouncementsProps {
   };
 }
 
-/** Find announcements for an association with optional filtering and pagination. */
+// ---------------------------------------------------------------------------
+// Find many announcements
+// ---------------------------------------------------------------------------
+
+/**
+ * Find announcements for an association with optional filtering and pagination.
+ * Returns announcements ordered by pinned status, then published date, then creation date.
+ */
 export async function findManyAnnouncements({
   associationId,
   filters,
@@ -30,6 +41,7 @@ export async function findManyAnnouncements({
   const limit = PAGE_SIZE;
   const skip = (page - 1) * limit;
 
+  // Build the Prisma where clause from the provided filters
   const where: Prisma.AnnouncementWhereInput = {
     associationId,
     ...(filters?.status && { status: filters.status }),
@@ -43,6 +55,7 @@ export async function findManyAnnouncements({
     }),
   };
 
+  // Fetch matching records and total count in parallel
   const [announcements, total] = await Promise.all([
     prisma.announcement.findMany({
       where,

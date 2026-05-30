@@ -1,22 +1,33 @@
 import { prisma } from '@lib/prisma';
 import { NotificationType, Prisma } from '@prisma/client';
+
 import { ExpoNotificationService } from '@lib/expo';
 import { EXPO_ROUTES } from '@src/shared/constants/expo-route';
 import { createNotification } from '@src/shared/services/notification';
 import { logger } from '@src/shared/logger';
 
+// ---------------------------------------------------------------------------
+// Send push notifications for published announcements
+// ---------------------------------------------------------------------------
+
 /**
  * Send push notifications for a published announcement to all eligible users.
  * Filters by target roles if specified on the announcement.
  */
-export async function sendAnnouncementNotifications(announcementId: string, associationId: string) {
+export async function sendAnnouncementNotifications(
+  announcementId: string,
+  associationId: string,
+) {
   try {
+    // Fetch the announcement to get title, summary, image, target roles etc.
     const announcement = await prisma.announcement.findUnique({
       where: { id: announcementId },
     });
 
     if (!announcement) return;
 
+    // Build the user filter — scope to active members of the association,
+    // optionally filtered by target roles
     const whereClause: Prisma.UserWhereInput = {
       associationId,
       status: 'ACTIVE',
@@ -33,6 +44,7 @@ export async function sendAnnouncementNotifications(announcementId: string, asso
 
     if (users.length === 0) return;
 
+    // For each user, create a notification record and send via Expo
     const notificationPromises = users.map(async (user) => {
       const pushTokens = await prisma.pushToken.findMany({
         where: { userId: user.id },
@@ -41,6 +53,7 @@ export async function sendAnnouncementNotifications(announcementId: string, asso
 
       if (pushTokens.length === 0) return;
 
+      // Persist the notification in the database
       const notification = await createNotification({
         data: {
           userId: user.id,
@@ -55,6 +68,7 @@ export async function sendAnnouncementNotifications(announcementId: string, asso
         },
       });
 
+      // Dispatch push notification via Expo
       await ExpoNotificationService.sendPushNotifications(
         pushTokens.map((t) => t.token),
         announcement.title,
@@ -70,6 +84,7 @@ export async function sendAnnouncementNotifications(announcementId: string, asso
       );
     });
 
+    // Fire all notifications concurrently, tolerating individual failures
     await Promise.allSettled(notificationPromises);
   } catch (error) {
     logger.error({ error }, 'Failed to send announcement notifications:');

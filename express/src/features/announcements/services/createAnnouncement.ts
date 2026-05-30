@@ -1,7 +1,13 @@
 import { prisma } from '@lib/prisma';
 import { AnnouncementStatus, AnnouncementPriority, UserRole } from '@prisma/client';
+
 import { NotFoundError } from '@src/shared/errors';
+
 import { sendAnnouncementNotifications } from './sendAnnouncementNotifications';
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 
 /** Props for creating an announcement. */
 interface CreateAnnouncementProps {
@@ -26,13 +32,21 @@ interface CreateAnnouncementProps {
   sendNotification?: boolean;
 }
 
-/** Create a new announcement. Optionally sends push notifications if published. */
+// ---------------------------------------------------------------------------
+// Create announcement
+// ---------------------------------------------------------------------------
+
+/**
+ * Create a new announcement.
+ * Optionally sends push notifications if the announcement is published.
+ */
 export async function createAnnouncement({
   associationId,
   authorId,
   data,
   sendNotification = false,
 }: CreateAnnouncementProps) {
+  // Verify the author exists within the association
   const author = await prisma.user.findFirst({
     where: { id: authorId, associationId },
   });
@@ -41,6 +55,7 @@ export async function createAnnouncement({
     throw new NotFoundError('Author not found');
   }
 
+  // Persist the announcement record
   const announcement = await prisma.announcement.create({
     data: {
       associationId,
@@ -63,6 +78,7 @@ export async function createAnnouncement({
     },
   });
 
+  // Fire push notifications if the announcement was published immediately
   if (sendNotification && announcement.status === AnnouncementStatus.PUBLISHED) {
     await sendAnnouncementNotifications(announcement.id, associationId);
   }
