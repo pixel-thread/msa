@@ -12,10 +12,11 @@ import { getVerificationCodeFirst } from '@src/features/auth/services/get-verifi
 import { updateVerificationCode } from '@src/features/auth/services/update-verification-code';
 import { createRefreshToken } from '@src/features/auth/services/create-refresh-token';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 export const postSignInVerify: RequestHandler[] = [
   validate({ body: VerifySignInSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'POST /api/auth/sign-in/verify - Request started');
     const { code } = req.body as VerifySignInInput;
@@ -93,5 +94,5 @@ export const postSignInVerify: RequestHandler[] = [
       message: 'Signed in successfully',
       data: { access_token: accessToken, refresh_token: refreshToken },
     });
-  },
+  }),
 ];

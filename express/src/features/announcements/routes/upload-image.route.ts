@@ -7,11 +7,12 @@ import { deleteFromBucket } from '@src/shared/lib/supabase/storage';
 import { validate } from '@src/shared/lib/validate';
 import { AnnouncementRouteParams } from '@src/features/announcements/validators';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** POST handler to upload an image for an announcement. Requires SECRETARY role or higher. */
 export const postUploadImage: RequestHandler[] = [
   validate({ params: AnnouncementRouteParams }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const announcementId = req.params.announcementId;
     logger.info(
@@ -41,5 +42,5 @@ export const postUploadImage: RequestHandler[] = [
     }
     logger.info({ traceId, announcementId }, 'POST /api/announcements/[id]/upload - Success');
     return success(res, { data: announcement }, 200);
-  },
+  }),
 ];

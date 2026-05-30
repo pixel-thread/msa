@@ -7,6 +7,7 @@ import { UserRole } from '@prisma/client';
 import { withRole } from '@src/shared/utils/with-role';
 import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
 import { getFinancialStats } from '@src/features/payments/services/payment.service';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 async function getAssociation(req: Request) {
   const userId = req.userId as string;
@@ -20,7 +21,7 @@ async function getAssociation(req: Request) {
 }
 
 export const paymentStats: RequestHandler[] = [
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'GET /api/payments/stats - Request started');
     const association = await getAssociation(req);
@@ -29,5 +30,5 @@ export const paymentStats: RequestHandler[] = [
     const data = await getFinancialStats(association.id);
     logger.info({ traceId }, 'GET /api/payments/stats - Success');
     return success(res, { data: data.stats, meta: data.pagination });
-  },
+  }),
 ];

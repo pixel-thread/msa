@@ -10,6 +10,7 @@ import { getVerificationCodeFirst } from '@src/features/auth/services/get-verifi
 import { updateVerificationCode } from '@src/features/auth/services/update-verification-code';
 import { updateMember } from '@src/features/members/services/updateMember';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for verifying MFA — expects a 6-digit code. */
 const VerifyMfaSchema = z.object({ code: z.string().length(6, 'Code must be 6 digits') });
@@ -17,7 +18,7 @@ const VerifyMfaSchema = z.object({ code: z.string().length(6, 'Code must be 6 di
 /** POST handler to verify an MFA setup code and enable MFA for the user. */
 export const postMfaVerify: RequestHandler[] = [
   validate({ body: VerifyMfaSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const userId = req.userId as string;
     logger.info({ traceId, userId }, 'POST /api/auth/mfa/verify - Request started');
@@ -51,5 +52,5 @@ export const postMfaVerify: RequestHandler[] = [
 
     logger.info({ traceId, userId }, 'POST /api/auth/mfa/verify - Success');
     return success(res, { message: 'MFA enabled successfully', data: { mfaEnabled: true } });
-  },
+  }),
 ];

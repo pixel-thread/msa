@@ -25,11 +25,12 @@ import { NotFoundError } from '@src/shared/errors';
 import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** GET handler to list compliance checks with optional filters and pagination. */
 export const listChecks: RequestHandler[] = [
   validate({ query: ComplianceCheckQuerySchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -67,13 +68,13 @@ export const listChecks: RequestHandler[] = [
 
     logger.info({ traceId, count: checks.length }, 'GET /compliance/checks - Success');
     return success(res, { data: checks, meta: buildPagination(total, page) });
-  },
+  }),
 ];
 
 /** GET handler to fetch a single compliance check by ID. */
 export const getCheck: RequestHandler[] = [
   validate({ params: ComplianceCheckParamsSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -97,13 +98,13 @@ export const getCheck: RequestHandler[] = [
       'GET /compliance/checks/:checkId - Success',
     );
     return success(res, { data: check });
-  },
+  }),
 ];
 
 /** POST handler to trigger compliance checks. Optionally specify which check types to run. */
 export const runChecks: RequestHandler[] = [
   validate({ body: TriggerComplianceCheckSchema.optional() }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -144,13 +145,13 @@ export const runChecks: RequestHandler[] = [
 
     logger.info({ traceId, count: results.length }, 'POST /compliance/checks - Success');
     return success(res, { data: results }, 201);
-  },
+  }),
 ];
 
 /** DELETE handler to remove a compliance check by ID. */
 export const deleteCheck: RequestHandler[] = [
   validate({ params: ComplianceCheckParamsSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -176,5 +177,5 @@ export const deleteCheck: RequestHandler[] = [
       'DELETE /compliance/checks/:checkId - Success',
     );
     return success(res, { data: null, message: 'Compliance check deleted successfully' });
-  },
+  }),
 ];

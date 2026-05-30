@@ -11,6 +11,7 @@ import { logger } from '@src/shared/logger';
 import { z } from 'zod';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 const MeetingParamsSchema = z.object({
   meetingId: z.string('Invalid meeting ID'),
@@ -19,7 +20,7 @@ const MeetingParamsSchema = z.object({
 /** POST /api/meetings/[meetingId]/attendees - Assign an attendee to a meeting. */
 export const postAddAttendee: RequestHandler[] = [
   validate({ params: MeetingParamsSchema, body: AssignAttendeeSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const meetingId = req.params.meetingId as string;
@@ -51,5 +52,5 @@ export const postAddAttendee: RequestHandler[] = [
 
     logger.info({ traceId, meetingId }, 'POST /api/meetings/[meetingId]/attendees - Success');
     return success(res, { data: attendee }, 201);
-  },
+  }),
 ];

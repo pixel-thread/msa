@@ -13,10 +13,11 @@ import { revokedRefreshTokens } from '@src/features/auth/services/revoked-refres
 import { cacheClient } from '@src/shared/lib/cache';
 import { env } from '@src/env';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 export const postRefresh: RequestHandler[] = [
   validate({ body: RefreshTokenSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'POST /api/auth/refresh - Request started');
     const bodyToken = req.body?.token;
@@ -120,5 +121,5 @@ export const postRefresh: RequestHandler[] = [
       message: 'Token refreshed successfully',
       data: { access_token: newAccessToken, refresh_token: newRefreshToken },
     });
-  },
+  }),
 ];

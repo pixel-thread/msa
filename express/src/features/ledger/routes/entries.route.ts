@@ -13,11 +13,12 @@ import { buildPagination } from '@src/shared/utils';
 import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** GET /api/ledger/entries - List ledger entries (FINANCE role required). */
 export const listEntries: RequestHandler[] = [
   validate({ query: LedgerQueryParams }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -32,13 +33,13 @@ export const listEntries: RequestHandler[] = [
 
     logger.info({ traceId, count: entries.length }, 'GET /api/ledger/entries - Success');
     return success(res, { data: entries, meta: buildPagination(total, page) });
-  },
+  }),
 ];
 
 /** POST /api/ledger/entries - Create a manual ledger entry (FINANCE role required). */
 export const createEntry: RequestHandler[] = [
   validate({ body: CreateLedgerEntrySchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -59,7 +60,7 @@ export const createEntry: RequestHandler[] = [
 
     logger.info({ traceId, entryId: entry.id }, 'POST /api/ledger/entries - Success');
     return success(res, { data: entry }, 201);
-  },
+  }),
 ];
 
 /** POST /api/ledger/entries/:entryId/approve - Approve a ledger entry (PRESIDENT role required). */

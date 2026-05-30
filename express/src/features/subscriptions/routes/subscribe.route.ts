@@ -9,11 +9,12 @@ import { logger } from '@src/shared/logger';
 import { subscribe } from '@feature/subscriptions/services';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** POST /api/subscriptions/subscribe - Subscribe the current user to a plan. */
 export const postSubscribe: RequestHandler[] = [
   validate({ body: SubscribeSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -30,5 +31,5 @@ export const postSubscribe: RequestHandler[] = [
     });
     logger.info({ traceId, subscriptionId: subscription.id }, 'Subscription created');
     return success(res, { data: subscription }, 201);
-  },
+  }),
 ];

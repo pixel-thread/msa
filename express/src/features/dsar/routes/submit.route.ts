@@ -7,6 +7,7 @@ import { prisma } from '@src/shared/lib/prisma';
 import { submitDsarTicket } from '@src/features/dsar/services';
 import { SubmitDsarSchema } from '@src/features/dsar/validators';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 async function getAssociation(req: Request) {
   const userId = req.userId as string;
@@ -22,7 +23,7 @@ async function getAssociation(req: Request) {
 /** POST /api/dsar/submit - Submit a new DSAR ticket. */
 export const submitDsar: RequestHandler[] = [
   validate({ body: SubmitDsarSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -40,5 +41,5 @@ export const submitDsar: RequestHandler[] = [
 
     logger.info({ traceId, userId, ticketId: ticket.id }, 'POST /api/dsar/submit - Success');
     return success(res, { data: ticket }, 201);
-  },
+  }),
 ];

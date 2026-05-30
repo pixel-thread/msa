@@ -11,6 +11,7 @@ import { CreateOrderSchema } from '@src/features/payments/validators';
 import { createPaymentOrder } from '@src/features/payments/services/payment.service';
 import { findSubscriptionPlans } from '@src/features/payments/services/findSubscriptionPlans';
 import { getActiveProvider } from '@src/features/payments/services/payment-provider.service';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 async function getAssociation(req: Request) {
   const userId = req.userId as string;
@@ -25,7 +26,7 @@ async function getAssociation(req: Request) {
 
 export const createOrder: RequestHandler[] = [
   validate({ body: CreateOrderSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'POST /api/payments/order - Request started');
     const association = await getAssociation(req);
@@ -83,5 +84,5 @@ export const createOrder: RequestHandler[] = [
       'POST /api/payments/order - Success',
     );
     return success(res, { data: orderDetails }, 201);
-  },
+  }),
 ];

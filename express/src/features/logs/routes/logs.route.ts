@@ -6,11 +6,12 @@ import { ValidationError } from '@src/shared/errors';
 import { createLogs, createLogsBatch } from '@src/shared/services/logs';
 import { LogIngestSchema, LogBatchSchema } from '@src/shared/validators/logs';
 import { Prisma } from '@prisma/client';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** POST /api/logs - Ingest a single log entry. */
 export const postLog: RequestHandler[] = [
   validate({ body: LogIngestSchema.strict() }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const body = req.body;
     const context = body?.context;
@@ -33,13 +34,13 @@ export const postLog: RequestHandler[] = [
       { data: { id: savedLog.id, traceId }, message: 'Successfully log to server' },
       201,
     );
-  },
+  }),
 ];
 
 /** POST /api/logs/batch - Ingest multiple log entries in a batch. */
 export const postLogBatch: RequestHandler[] = [
   validate({ body: LogBatchSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const { logs } = req.body!;
     await createLogsBatch({
@@ -51,5 +52,5 @@ export const postLogBatch: RequestHandler[] = [
       })),
     });
     return success(res, { data: null, message: 'Logs ingested successfully' }, 201);
-  },
+  }),
 ];

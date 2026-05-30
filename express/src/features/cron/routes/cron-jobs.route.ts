@@ -7,6 +7,7 @@ import {
   runAnonymizeCron,
 } from '@src/features/cron/services';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Verify the CRON secret from authorization header. */
 function verifyCronSecret(req: Request): boolean {
@@ -16,7 +17,7 @@ function verifyCronSecret(req: Request): boolean {
 
 /** POST /api/cron/subscription-expiry - Trigger subscription expiry check (cron job). */
 export const postSubscriptionExpiry: RequestHandler[] = [
-  async (req: Request, res: Response, next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     try {
       logger.info('POST /api/cron/subscription-expiry - Request started');
       if (!verifyCronSecret(req)) {
@@ -50,12 +51,12 @@ export const postSubscriptionExpiry: RequestHandler[] = [
         message: error instanceof Error ? error.message : 'Unknown error',
       });
     }
-  },
+  }),
 ];
 
 /** POST /api/cron/dsar-sla - Trigger DSAR SLA deadline check (cron job). */
 export const postDsarSla: RequestHandler[] = [
-  async (req: Request, res: Response, next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     try {
       logger.info('POST /api/cron/dsar-sla - Request started');
       if (!verifyCronSecret(req)) {
@@ -89,12 +90,12 @@ export const postDsarSla: RequestHandler[] = [
         message: error instanceof Error ? error.message : 'Unknown error',
       });
     }
-  },
+  }),
 ];
 
 /** POST /api/cron/anonymize - Trigger user data anonymization (cron job). */
 export const postAnonymize: RequestHandler[] = [
-  async (req: Request, res: Response, next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     try {
       logger.info('POST /api/cron/anonymize - Request started');
       if (!verifyCronSecret(req)) {
@@ -133,5 +134,5 @@ export const postAnonymize: RequestHandler[] = [
         message: error instanceof Error ? error.message : 'Unknown error',
       });
     }
-  },
+  }),
 ];

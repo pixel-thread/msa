@@ -10,6 +10,7 @@ import { buildPagination } from '@src/shared/utils';
 import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for creating a new account. */
 const CreateAccountSchema = z.object({
@@ -27,7 +28,7 @@ const AccountQuerySchema = z.object({
 /** GET /api/ledger/accounts - List ledger accounts (FINANCE role required). */
 export const listAccounts: RequestHandler[] = [
   validate({ query: AccountQuerySchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -42,13 +43,13 @@ export const listAccounts: RequestHandler[] = [
 
     logger.info({ traceId, count: accounts.length }, 'GET /api/ledger/accounts - Success');
     return success(res, { data: accounts, meta: buildPagination(total, page) });
-  },
+  }),
 ];
 
 /** POST /api/ledger/accounts - Create a new ledger account (FINANCE role required). */
 export const createAccountHandler: RequestHandler[] = [
   validate({ body: CreateAccountSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -62,5 +63,5 @@ export const createAccountHandler: RequestHandler[] = [
 
     logger.info({ traceId, accountId: account.id }, 'POST /api/ledger/accounts - Success');
     return success(res, { data: account }, 201);
-  },
+  }),
 ];

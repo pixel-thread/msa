@@ -14,10 +14,11 @@ import { updateUser } from '@src/features/user/services';
 import { createRefreshToken } from '@src/features/auth/services/create-refresh-token';
 import { createVerificationCode } from '@src/features/auth/services/create-verification-code';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 export const postSignIn: RequestHandler[] = [
   validate({ body: SignInSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const user = await getUserFirst({ where: { email: req.body?.email } });
 
@@ -120,5 +121,5 @@ export const postSignIn: RequestHandler[] = [
       message: 'Signed in successfully',
       data: { access_token: accessToken, refresh_token: refreshToken },
     });
-  },
+  }),
 ];

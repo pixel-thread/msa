@@ -8,6 +8,7 @@ import { BadRequestError, UnauthorizedError } from '@src/shared/errors';
 import { findFirstMember } from '@src/features/members/services/findFirstMember';
 import { updateMember } from '@src/features/members/services/updateMember';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for disabling MFA — requires the user's current password. */
 const DisableMfaSchema = z.object({ password: z.string().min(1, 'Password is required') });
@@ -15,7 +16,7 @@ const DisableMfaSchema = z.object({ password: z.string().min(1, 'Password is req
 /** POST handler to disable MFA for the authenticated user after verifying their password. */
 export const postMfaDisable: RequestHandler[] = [
   validate({ body: DisableMfaSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const userId = req.userId as string;
     logger.info({ traceId, userId }, 'POST /api/auth/mfa/disable - Request started');
@@ -37,5 +38,5 @@ export const postMfaDisable: RequestHandler[] = [
 
     logger.info({ traceId, userId }, 'POST /api/auth/mfa/disable - Success');
     return success(res, { message: 'MFA disabled successfully', data: { mfaEnabled: false } });
-  },
+  }),
 ];

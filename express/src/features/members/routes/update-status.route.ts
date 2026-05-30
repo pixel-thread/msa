@@ -10,6 +10,7 @@ import { findFirstMember } from '@src/features/members/services/findFirstMember'
 import { updateMember } from '@src/features/members/services/updateMember';
 import { logger } from '@src/shared/logger';
 import z from 'zod';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for validating the request body when updating a member's status. */
 const UpdateUserStatusSchema = z.object({
@@ -24,7 +25,7 @@ const UpdateUserStatusParamsSchema = z.object({
 /** Route handler for updating a member's status. Requires PRESIDENT role. */
 export const updateStatus: RequestHandler[] = [
   validate({ body: UpdateUserStatusSchema, params: UpdateUserStatusParamsSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const userId = req.userId as string;
     if (!userId) throw new UnauthorizedError('Unauthorized');
@@ -75,5 +76,5 @@ export const updateStatus: RequestHandler[] = [
     );
 
     return success(res, { data: updatedUser, message: 'User status updated successfully' });
-  },
+  }),
 ];

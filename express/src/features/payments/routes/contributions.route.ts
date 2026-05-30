@@ -27,6 +27,7 @@ import { findContributionPeriods } from '@src/features/payments/services/findCon
 import { findUniqueContributionPeriod } from '@src/features/payments/services/findUniqueContributionPeriod';
 import { pageNumberValidation } from '@src/shared/validators/common';
 import { PAGE_SIZE } from '@src/shared/constants';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 async function getAssociation(req: Request) {
   const userId = req.userId as string;
@@ -53,7 +54,7 @@ const ContributionIdParamsSchema = z.object({
 
 export const listContributions: RequestHandler[] = [
   validate({ query: ContributionsQuerySchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId, query: req.query }, 'GET /api/payments/contributions - Request started');
     const association = await getAssociation(req);
@@ -104,12 +105,12 @@ export const listContributions: RequestHandler[] = [
       'GET /api/payments/contributions - Success',
     );
     return success(res, { data: contributions, meta: buildPagination(total, page) });
-  },
+  }),
 ];
 
 export const generateContributions: RequestHandler[] = [
   validate({ body: GenerateContributionsSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, year: req.body.year, month: req.body.month },
@@ -136,12 +137,12 @@ export const generateContributions: RequestHandler[] = [
       },
       201,
     );
-  },
+  }),
 ];
 
 export const waiveContributionHandler: RequestHandler[] = [
   validate({ body: WaiveContributionSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, contributionPeriodId: req.body.contributionPeriodId },
@@ -156,12 +157,12 @@ export const waiveContributionHandler: RequestHandler[] = [
       'PATCH /api/payments/contributions - Success',
     );
     return success(res, { data: waived, message: 'Contribution period waived successfully' }, 200);
-  },
+  }),
 ];
 
 export const getContribution: RequestHandler[] = [
   validate({ params: ContributionIdParamsSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, contributionId: req.params.contributionId },
@@ -194,5 +195,5 @@ export const getContribution: RequestHandler[] = [
       'GET /api/payments/contributions/[contributionId] - Success',
     );
     return success(res, { data: contribution });
-  },
+  }),
 ];

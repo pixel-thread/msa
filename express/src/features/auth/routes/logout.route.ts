@@ -7,11 +7,12 @@ import { hashToken } from '@src/shared/lib/password';
 import { updateRefreshTokens } from '@src/features/auth/services/update-refresh-tokens';
 import { env } from '@src/env';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** POST handler for logging out. Revokes the refresh token and clears auth cookies. */
 export const postLogout: RequestHandler[] = [
   validate({ body: SignOutSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'POST /api/auth/logout - Request started');
     const bodyToken = req.body?.token || req.cookies?.refresh_token;
@@ -29,5 +30,5 @@ export const postLogout: RequestHandler[] = [
 
     logger.info({ traceId }, 'POST /api/auth/logout - Success');
     return success(res, { message: 'Logged out successfully', data: null });
-  },
+  }),
 ];

@@ -7,6 +7,7 @@ import { ForbiddenError, UnauthorizedError, ValidationError } from '@src/shared/
 import { updateMember } from '@src/features/members/services/updateMember';
 import { logger } from '@src/shared/logger';
 import { z } from 'zod';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for validating the onboarding request body. */
 const OnboardingSchema = z.object({
@@ -25,7 +26,7 @@ const OnboardingSchema = z.object({
 /** Route handler for completing member onboarding (sets initial profile details). */
 export const onboarding: RequestHandler[] = [
   validate({ body: OnboardingSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const userId = req.userId as string;
     if (!userId) throw new UnauthorizedError('Unauthorized');
@@ -79,5 +80,5 @@ export const onboarding: RequestHandler[] = [
       },
       message: 'Onboarding completed successfully',
     });
-  },
+  }),
 ];

@@ -16,6 +16,7 @@ import { getAssociation } from '@src/shared/services/association/get-association
 import { withRole } from '@src/shared/utils/with-role';
 import { logger } from '@src/shared/logger';
 import { z } from 'zod';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for updating a subscription plan (all fields optional). */
 const UpdatePlanSchema = z.object({
@@ -39,20 +40,20 @@ const PlanParamsSchema = z.object({ planId: z.string().uuid() });
 
 /** GET /api/subscriptions/plans - List subscription plans. */
 export const getPlansHandler: RequestHandler[] = [
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const user = await withRole(req, UserRole.MEMBER);
     logger.info({ traceId, role: user.role }, 'GET /api/subscriptions/plans - Fetching plans');
     const data = await getPlans(association.id, user);
     return success(res, { data });
-  },
+  }),
 ];
 
 /** POST /api/subscriptions/plans - Create a new subscription plan (SUPER_ADMIN role required). */
 export const createPlanHandler: RequestHandler[] = [
   validate({ body: CreateSubscriptionPlanSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     await withRole(req, UserRole.SUPER_ADMIN);
@@ -60,13 +61,13 @@ export const createPlanHandler: RequestHandler[] = [
     logger.info({ traceId, name: req.body.name }, 'Creating new plan');
     const plan = await createPlan(association.id, req.body);
     return success(res, { data: plan }, 201);
-  },
+  }),
 ];
 
 /** POST /api/subscriptions/plans/default - Set a plan as the default (SUPER_ADMIN role required). */
 export const setDefaultPlanHandler: RequestHandler[] = [
   validate({ body: SetDefaultPlanSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     await withRole(req, UserRole.SUPER_ADMIN);
@@ -74,13 +75,13 @@ export const setDefaultPlanHandler: RequestHandler[] = [
     logger.info({ traceId, planId: req.body.planId }, 'Setting plan as default');
     const updated = await setDefaultPlan(association.id, req.body.planId);
     return success(res, { data: updated });
-  },
+  }),
 ];
 
 /** PATCH /api/subscriptions/plans/:planId - Update a subscription plan (SUPER_ADMIN role required). */
 export const updatePlanHandler: RequestHandler[] = [
   validate({ body: UpdatePlanSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const user = await withRole(req, UserRole.SUPER_ADMIN);
@@ -93,13 +94,13 @@ export const updatePlanHandler: RequestHandler[] = [
     const updatedPlan = await updatePlan(association.id, planId, req.body);
     logger.info({ traceId, planId }, 'Plan updated successfully');
     return success(res, { data: updatedPlan });
-  },
+  }),
 ];
 
 /** DELETE /api/subscriptions/plans/:planId - Soft-delete a plan (PRESIDENT role required). */
 export const deletePlanHandler: RequestHandler[] = [
   validate({ params: PlanParamsSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const user = await withRole(req, UserRole.PRESIDENT);
@@ -111,5 +112,5 @@ export const deletePlanHandler: RequestHandler[] = [
     const plan = await softDeletePlan(association.id, planId);
     logger.info({ traceId, planId }, 'Plan deleted successfully');
     return success(res, { data: plan, message: 'Plan deleted successfully' });
-  },
+  }),
 ];

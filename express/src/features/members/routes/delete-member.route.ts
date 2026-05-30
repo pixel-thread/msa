@@ -14,6 +14,7 @@ import { findUniqueMember } from '@src/features/members/services/findUniqueMembe
 import { withRole } from '@src/shared/utils/with-role';
 import { logger } from '@src/shared/logger';
 import z from 'zod';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for validating the route parameter containing the member ID. */
 const ParamSchema = z.object({ memberId: z.uuid() });
@@ -21,7 +22,7 @@ const ParamSchema = z.object({ memberId: z.uuid() });
 /** Route handler for soft-deleting a member. Requires SECRETARY role. */
 export const deleteMember: RequestHandler[] = [
   validate({ params: ParamSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const userId = req.userId as string;
     if (!userId) throw new UnauthorizedError('Unauthorized');
@@ -60,5 +61,5 @@ export const deleteMember: RequestHandler[] = [
     logger.info({ traceId, memberId: params.memberId }, 'DELETE /api/members/[memberId] - Success');
 
     return success(res, { data: null, message: 'Member deleted successfully' });
-  },
+  }),
 ];

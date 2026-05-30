@@ -9,13 +9,14 @@ import { logger } from '@src/shared/logger';
 import { z } from 'zod';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 const ParamsSchema = z.object({ meetingId: z.string('Invalid meeting ID') });
 
 /** PATCH /api/meetings/[meetingId]/agenda - Process bulk agenda operations (create/update/delete/reorder). */
 export const patchProcessAgendaOperations: RequestHandler[] = [
   validate({ params: ParamsSchema, body: AgendaOperationSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const meetingId = req.params.meetingId as string;
@@ -42,5 +43,5 @@ export const patchProcessAgendaOperations: RequestHandler[] = [
 
     logger.info({ traceId, meetingId }, 'PATCH /api/meetings/[meetingId]/agenda - Success');
     return success(res, { data: items, message: 'Agenda updated successfully' });
-  },
+  }),
 ];

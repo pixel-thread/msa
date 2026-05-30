@@ -17,6 +17,7 @@ import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
 import { z } from 'zod';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for module ID path parameter. */
 const ModuleParamsSchema = z.object({
@@ -39,7 +40,7 @@ const MetadataSchema = z.object({
 /** GET /training/modules/:moduleId/complete - List completions for a module. */
 export const getModuleCompletions: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
@@ -60,13 +61,13 @@ export const getModuleCompletions: RequestHandler[] = [
     } catch (e) {
       next(e);
     }
-  },
+  }),
 ];
 
 /** POST /training/modules/:moduleId/complete - Record a completion for the current user. */
 export const postModuleComplete: RequestHandler[] = [
   validate({ params: ModuleParamsSchema, body: RecordCompletionSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
@@ -95,13 +96,13 @@ export const postModuleComplete: RequestHandler[] = [
     } catch (e) {
       next(e);
     }
-  },
+  }),
 ];
 
 /** POST /training/modules/:moduleId/assignments/:userId/complete - Mark an assignment as complete (SECRETARY role required). */
 export const postAdminComplete: RequestHandler[] = [
   validate({ params: AssignmentParamsSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
@@ -206,5 +207,5 @@ export const postAdminComplete: RequestHandler[] = [
     } catch (e) {
       next(e);
     }
-  },
+  }),
 ];

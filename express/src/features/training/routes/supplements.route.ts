@@ -21,6 +21,7 @@ import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
 import { z } from 'zod';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for module ID path parameter. */
 const ModuleParamsSchema = z.object({
@@ -36,7 +37,7 @@ const SupplementParamsSchema = z.object({
 /** GET /training/modules/:moduleId/supplements - List supplements for a module. */
 export const getSupplements: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
@@ -57,13 +58,13 @@ export const getSupplements: RequestHandler[] = [
     } catch (e) {
       next(e);
     }
-  },
+  }),
 ];
 
 /** POST /training/modules/:moduleId/supplements - Upload a supplement (DPO role required). */
 export const postSupplement: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
@@ -136,13 +137,13 @@ export const postSupplement: RequestHandler[] = [
     } catch (e) {
       next(e);
     }
-  },
+  }),
 ];
 
 /** GET /training/modules/:moduleId/supplements/:supplementId - Retrieve a single supplement. */
 export const getSupplement: RequestHandler[] = [
   validate({ params: SupplementParamsSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
@@ -170,13 +171,13 @@ export const getSupplement: RequestHandler[] = [
     } catch (e) {
       next(e);
     }
-  },
+  }),
 ];
 
 /** PATCH /training/modules/:moduleId/supplements/:supplementId - Update a supplement (DPO role required). */
 export const updateSupplementHandler: RequestHandler[] = [
   validate({ params: SupplementParamsSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
@@ -266,13 +267,13 @@ export const updateSupplementHandler: RequestHandler[] = [
     } catch (e) {
       next(e);
     }
-  },
+  }),
 ];
 
 /** DELETE /training/modules/:moduleId/supplements/:supplementId - Delete a supplement (DPO role required). */
 export const deleteSupplementHandler: RequestHandler[] = [
   validate({ params: SupplementParamsSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
@@ -310,5 +311,5 @@ export const deleteSupplementHandler: RequestHandler[] = [
     } catch (e) {
       next(e);
     }
-  },
+  }),
 ];

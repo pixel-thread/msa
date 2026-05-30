@@ -10,6 +10,7 @@ import { withRole } from '@src/shared/utils/with-role';
 import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
 import { PaymentHistoryQuerySchema } from '@src/features/payments/validators';
 import { findPaymentTransactions } from '@src/features/payments/services/findPaymentTransactions';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 async function getAssociation(req: Request) {
   const userId = req.userId as string;
@@ -24,7 +25,7 @@ async function getAssociation(req: Request) {
 
 export const myPayments: RequestHandler[] = [
   validate({ query: PaymentHistoryQuerySchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId, query: req.query }, 'GET /api/payments/my - Request started');
     const association = await getAssociation(req);
@@ -40,5 +41,5 @@ export const myPayments: RequestHandler[] = [
     });
     logger.info({ traceId, count: payments.length, total }, 'GET /api/payments/my - Success');
     return success(res, { data: payments, meta: buildPagination(total, page, pageSize) });
-  },
+  }),
 ];

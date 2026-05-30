@@ -11,6 +11,7 @@ import { logger } from '@src/shared/logger';
 import z from 'zod';
 import { auth } from '@src/middleware/auth';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for validating query parameters when listing members. */
 const QuerySchema = z.object({
@@ -23,7 +24,7 @@ const QuerySchema = z.object({
 export const listMembers: RequestHandler[] = [
   auth,
   validate({ query: QuerySchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
 
     const userId: string = (req.userId as string) || '';
@@ -69,5 +70,5 @@ export const listMembers: RequestHandler[] = [
     logger.info({ traceId, count: members.data.length }, 'GET /api/members - Success');
 
     return success(res, { data: members.data, meta: members.pagination });
-  },
+  }),
 ];

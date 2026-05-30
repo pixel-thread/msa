@@ -9,6 +9,7 @@ import { findFirstMember } from '@src/features/members/services/findFirstMember'
 import { logger } from '@src/shared/logger';
 import z from 'zod';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for validating the route parameter containing the member ID. */
 const ParamSchema = z.object({ memberId: z.uuid() });
@@ -16,7 +17,7 @@ const ParamSchema = z.object({ memberId: z.uuid() });
 /** Route handler for retrieving a single member by ID. Requires DPO role. */
 export const getMember: RequestHandler[] = [
   validate({ params: ParamSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const userId = req.userId as string;
 
@@ -76,5 +77,5 @@ export const getMember: RequestHandler[] = [
     logger.info({ traceId, memberId: params.memberId }, 'GET /api/members/[memberId] - Success');
 
     return success(res, { data: member });
-  },
+  }),
 ];

@@ -6,10 +6,11 @@ import { generateComplianceEvidence } from '@src/features/compliance/services';
 import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** GET handler to generate and retrieve compliance evidence for a given number of days. */
 export const getEvidence: RequestHandler[] = [
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -27,5 +28,5 @@ export const getEvidence: RequestHandler[] = [
 
     logger.info({ traceId, associationId: association.id }, 'GET /compliance/evidence - Success');
     return success(res, { data: evidence });
-  },
+  }),
 ];

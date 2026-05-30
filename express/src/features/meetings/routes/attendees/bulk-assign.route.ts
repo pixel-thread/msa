@@ -9,11 +9,12 @@ import { bulkAssignAttendees } from '@src/features/meetings/services/bulkAssignA
 import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** POST /api/meetings/[meetingId]/attendees/bulk - Bulk assign attendees to a meeting. */
 export const postBulkAssignAttendees: RequestHandler[] = [
   validate({ body: BulkAssignAttendeesSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -40,5 +41,5 @@ export const postBulkAssignAttendees: RequestHandler[] = [
 
     logger.info({ traceId, meetingId }, 'POST /api/meetings/[meetingId]/attendees/bulk - Success');
     return success(res, { data: null, message: 'Bulk assignment successful' });
-  },
+  }),
 ];

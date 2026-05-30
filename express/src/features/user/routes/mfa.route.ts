@@ -4,10 +4,11 @@ import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError } from '@src/shared/errors';
 import { getUser, updateUser } from '@src/features/user/services';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** POST handler to toggle MFA enable/disable for the authenticated user. */
 export const toggleMfa: RequestHandler[] = [
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'POST /api/user/mfa - Request started');
 
@@ -29,5 +30,5 @@ export const toggleMfa: RequestHandler[] = [
       data: { mfaEnable: mfaEnabled },
       message: 'MFA updated successfully',
     });
-  },
+  }),
 ];

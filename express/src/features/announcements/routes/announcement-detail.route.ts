@@ -13,11 +13,12 @@ import {
   UpdateAnnouncementSchema,
   PublishAnnouncementSchema,
 } from '@src/features/announcements/validators';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** GET handler to fetch a single announcement by ID. */
 export const getAnnouncement: RequestHandler[] = [
   validate({ params: AnnouncementRouteParams }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const announcementId = req.params.announcementId;
@@ -28,13 +29,13 @@ export const getAnnouncement: RequestHandler[] = [
     const announcement = {} as any;
     logger.info({ traceId, announcementId }, 'GET /api/announcements/[id] - Success');
     return success(res, { data: announcement, message: 'Successfully fetch announcement' });
-  },
+  }),
 ];
 
 /** PUT handler to update an announcement. Requires high-role access. */
 export const putAnnouncement: RequestHandler[] = [
   validate({ params: AnnouncementRouteParams, body: UpdateAnnouncementSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId }, 'PUT /api/announcements/[id] - Request started');
@@ -53,13 +54,13 @@ export const putAnnouncement: RequestHandler[] = [
     const announcement = {} as any;
     logger.info({ traceId, announcementId }, 'PUT /api/announcements/[id] - Success');
     return success(res, { data: announcement });
-  },
+  }),
 ];
 
 /** DELETE handler to remove an announcement. Requires high-role access. */
 export const deleteAnnouncement: RequestHandler[] = [
   validate({ params: AnnouncementRouteParams }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const announcementId = req.params.announcementId;
@@ -79,13 +80,13 @@ export const deleteAnnouncement: RequestHandler[] = [
     );
     logger.info({ traceId, announcementId }, 'DELETE /api/announcements/[id] - Success');
     return success(res, { data: { success: true } });
-  },
+  }),
 ];
 
 /** PATCH handler to publish, archive, or unpublish an announcement. Requires high-role access. */
 export const patchAnnouncement: RequestHandler[] = [
   validate({ params: AnnouncementRouteParams, body: PublishAnnouncementSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const announcementId = req.params.announcementId;
@@ -120,5 +121,5 @@ export const patchAnnouncement: RequestHandler[] = [
       return success(res, { data: announcement });
     }
     throw new ForbiddenError('Invalid action. Use: publish, archive, or unpublish');
-  },
+  }),
 ];

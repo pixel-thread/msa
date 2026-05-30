@@ -9,6 +9,7 @@ import { z } from 'zod';
 import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 const RsvpSchema = z.object({
   status: z.enum(['ACCEPTED', 'DECLINED']),
@@ -22,7 +23,7 @@ const RsvpSchema = z.object({
 /** POST /api/meetings/[meetingId]/rsvp - Submit an RSVP for a meeting. */
 export const postRsvp: RequestHandler[] = [
   validate({ body: RsvpSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const meetingId = req.params.meetingId as string;
@@ -54,5 +55,5 @@ export const postRsvp: RequestHandler[] = [
 
     logger.info({ traceId, meetingId }, 'POST /api/meetings/[meetingId]/rsvp - Success');
     return success(res, { data: updated, message: 'RSVP submitted successfully' });
-  },
+  }),
 ];

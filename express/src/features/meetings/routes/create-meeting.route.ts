@@ -10,11 +10,12 @@ import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
 import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** POST /api/meetings - Create a new meeting with agenda items. */
 export const postCreateMeeting: RequestHandler[] = [
   validate({ body: CreateMeetingSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'POST /api/meetings - Request started');
@@ -49,5 +50,5 @@ export const postCreateMeeting: RequestHandler[] = [
 
     logger.info({ traceId, meetingId: meeting.id }, 'POST /api/meetings - Success');
     return success(res, { data: meeting }, 201);
-  },
+  }),
 ];

@@ -11,6 +11,7 @@ import { logger } from '@src/shared/logger';
 import { z } from 'zod';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 const MeetingParamsSchema = z.object({
   meetingId: z.string('Invalid meeting ID'),
@@ -19,7 +20,7 @@ const MeetingParamsSchema = z.object({
 /** PATCH /api/meetings/[meetingId] - Update a meeting. */
 export const patchUpdateMeeting: RequestHandler[] = [
   validate({ params: MeetingParamsSchema, body: UpdateMeetingSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const meetingId = req.params.meetingId as string;
@@ -52,5 +53,5 @@ export const patchUpdateMeeting: RequestHandler[] = [
 
     logger.info({ traceId, meetingId: meeting.id }, 'PATCH /api/meetings/[meetingId] - Success');
     return success(res, { data: meeting });
-  },
+  }),
 ];

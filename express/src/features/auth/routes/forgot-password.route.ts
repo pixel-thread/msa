@@ -10,11 +10,12 @@ import { env } from '@src/env';
 import { updateUser } from '@src/features/user/services';
 import { getUserFirst } from '@src/shared/services/user/get-user-first';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** POST handler for forgot-password flow. Validates email, generates a reset token, and sends reset email. */
 export const postForgotPassword: RequestHandler[] = [
   validate({ body: ForgotPasswordSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const { email } = req.body as ForgotPasswordInput;
     const user = await getUserFirst({ where: { email } });
 
@@ -40,5 +41,5 @@ export const postForgotPassword: RequestHandler[] = [
     }
 
     return success(res, { message: 'A reset email will be sent', data: null });
-  },
+  }),
 ];

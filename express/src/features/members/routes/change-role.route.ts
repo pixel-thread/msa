@@ -15,6 +15,7 @@ import { withRole } from '@src/shared/utils/with-role';
 import { updateMember } from '@src/features/members/services/updateMember';
 import { logger } from '@src/shared/logger';
 import z from 'zod';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for validating the request body when updating a user's role. */
 const UpdateUserRoleSchema = z.object({
@@ -29,7 +30,7 @@ const UpdateUserRoleParamsSchema = z.object({
 /** Route handler for adding a role to a member. Requires PRESIDENT role. */
 export const addRole: RequestHandler[] = [
   validate({ body: UpdateUserRoleSchema, params: UpdateUserRoleParamsSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const userId = req.userId as string;
     if (!userId) throw new UnauthorizedError('Unauthorized');
@@ -84,13 +85,13 @@ export const addRole: RequestHandler[] = [
     );
 
     return success(res, { data: updatedUser, message: 'User role updated successfully' });
-  },
+  }),
 ];
 
 /** Route handler for removing a role from a member. Requires PRESIDENT role. */
 export const removeRole: RequestHandler[] = [
   validate({ body: UpdateUserRoleSchema, params: UpdateUserRoleParamsSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const userId = req.userId as string;
     if (!userId) throw new UnauthorizedError('Unauthorized');
@@ -142,5 +143,5 @@ export const removeRole: RequestHandler[] = [
     );
 
     return success(res, { data: updatedUser, message: 'User role updated successfully' });
-  },
+  }),
 ];

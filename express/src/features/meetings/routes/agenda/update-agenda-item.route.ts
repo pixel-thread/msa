@@ -9,6 +9,7 @@ import { ValidationError } from '@src/shared/errors';
 import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 const UpdateAgendaItemSchema = z.object({
   title: z.string().min(1).optional(),
@@ -19,7 +20,7 @@ const UpdateAgendaItemSchema = z.object({
 /** PATCH /api/meetings/[meetingId]/agenda/[itemId] - Update an agenda item. */
 export const patchUpdateAgendaItem: RequestHandler[] = [
   validate({ body: UpdateAgendaItemSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -46,5 +47,5 @@ export const patchUpdateAgendaItem: RequestHandler[] = [
 
     logger.info({ traceId, itemId }, 'PATCH /api/meetings/[meetingId]/agenda/[itemId] - Success');
     return success(res, { data: item });
-  },
+  }),
 ];

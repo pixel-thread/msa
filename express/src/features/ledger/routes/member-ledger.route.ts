@@ -10,6 +10,7 @@ import { getMemberEntries } from '@src/features/ledger/services/ledger.service';
 import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for paginated member ledger query. */
 const QuerySchema = z.object({
@@ -19,7 +20,7 @@ const QuerySchema = z.object({
 /** GET /api/ledger/member/:memberId - Retrieve ledger entries for a specific member (FINANCE role required). */
 export const getMemberLedger: RequestHandler[] = [
   validate({ query: QuerySchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -39,5 +40,5 @@ export const getMemberLedger: RequestHandler[] = [
       'GET /api/ledger/member/[memberId] - Success',
     );
     return success(res, { data: entries, meta: buildPagination(total, page) });
-  },
+  }),
 ];

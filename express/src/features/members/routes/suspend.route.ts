@@ -15,6 +15,7 @@ import { withRole } from '@src/shared/utils/with-role';
 import { updateMember } from '@src/features/members/services/updateMember';
 import { logger } from '@src/shared/logger';
 import z from 'zod';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for validating the route parameter containing the member ID to suspend. */
 const SuspenseUserRouteParams = z.object({
@@ -24,7 +25,7 @@ const SuspenseUserRouteParams = z.object({
 /** Route handler for suspending a member. Requires PRESIDENT role. */
 export const suspendMember: RequestHandler[] = [
   validate({ params: SuspenseUserRouteParams }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const userId = req.userId as string;
     if (!userId) throw new UnauthorizedError('Unauthorized');
@@ -75,5 +76,5 @@ export const suspendMember: RequestHandler[] = [
     );
 
     return success(res, { data: updatedMember, message: 'Member suspended successfully' });
-  },
+  }),
 ];

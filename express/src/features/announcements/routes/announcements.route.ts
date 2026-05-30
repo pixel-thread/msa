@@ -13,11 +13,12 @@ import {
   CreateAnnouncementSchema,
   AnnouncementQuerySchema,
 } from '@src/features/announcements/validators';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** GET handler to list announcements with optional filters and pagination. */
 export const getAnnouncements: RequestHandler[] = [
   validate({ query: AnnouncementQuerySchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
 
     logger.info({ traceId, query: req.query }, 'GET /api/announcements - Request started');
@@ -71,13 +72,13 @@ export const getAnnouncements: RequestHandler[] = [
       'GET /api/announcements - Success',
     );
     return success(res, { data: result.announcements, meta: result.pagination });
-  },
+  }),
 ];
 
 /** POST handler to create a new announcement. Requires SECRETARY role or higher. */
 export const postAnnouncement: RequestHandler[] = [
   validate({ body: CreateAnnouncementSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId }, 'POST /api/announcements - Request started');
@@ -101,5 +102,5 @@ export const postAnnouncement: RequestHandler[] = [
     const announcement = {} as any;
     logger.info({ traceId, announcementId: announcement.id }, 'POST /api/announcements - Success');
     return success(res, { data: announcement }, 201);
-  },
+  }),
 ];

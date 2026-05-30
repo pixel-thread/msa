@@ -6,6 +6,7 @@ import { UserRole } from '@prisma/client';
 import { findAssociationAdmins } from '@src/features/dsar/services';
 import { getUniqueUser } from '@src/shared/services/user/get-unique-user';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 const ROLE_HIERARCHY: Record<UserRole, number> = {
   SUPER_ADMIN: 0,
@@ -42,7 +43,7 @@ async function withRole(req: Request, role: UserRole) {
 }
 
 /** GET /api/dsar/admins - List DPO/President/SuperAdmin users in the association. */
-export const listAdmins = async (req: Request, res: Response, _next: NextFunction) => {
+export const listAdmins = asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.traceId as string) || '';
   const association = await getAssociation(req);
   logger.info({ traceId, associationId: association.id }, 'GET /api/dsar/admins - Request started');
@@ -53,4 +54,4 @@ export const listAdmins = async (req: Request, res: Response, _next: NextFunctio
 
   logger.info({ traceId, count: admins.length }, 'GET /api/dsar/admins - Success');
   return success(res, { data: admins });
-};
+});

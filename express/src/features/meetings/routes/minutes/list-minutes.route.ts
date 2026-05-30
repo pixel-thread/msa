@@ -8,6 +8,7 @@ import { logger } from '@src/shared/logger';
 import { z } from 'zod';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 const ParamsSchema = z.object({
   meetingId: z.string('Invalid meeting ID'),
@@ -16,7 +17,7 @@ const ParamsSchema = z.object({
 /** GET /api/meetings/[meetingId]/minutes - List all minutes for a meeting. */
 export const getMinutes: RequestHandler[] = [
   validate({ params: ParamsSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const meetingId = req.params.meetingId as string;
@@ -38,5 +39,5 @@ export const getMinutes: RequestHandler[] = [
       'GET /api/meetings/[meetingId]/minutes - Success',
     );
     return success(res, { data: minutes, message: 'Meeting minutes fetch successfully' });
-  },
+  }),
 ];

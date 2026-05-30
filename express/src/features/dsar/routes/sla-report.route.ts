@@ -6,6 +6,7 @@ import { UserRole } from '@prisma/client';
 import { getDsarSlaStatus } from '@src/features/dsar/services';
 import { getUniqueUser } from '@src/shared/services/user/get-unique-user';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 const ROLE_HIERARCHY: Record<UserRole, number> = {
   SUPER_ADMIN: 0,
@@ -42,7 +43,7 @@ async function withRole(req: Request, role: UserRole) {
 }
 
 /** GET /api/dsar/sla-report - Retrieve DSAR SLA compliance report (DPO role required). */
-export const getSlaReport = async (req: Request, res: Response, _next: NextFunction) => {
+export const getSlaReport = asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.traceId as string) || '';
   const association = await getAssociation(req);
   logger.info(
@@ -56,4 +57,4 @@ export const getSlaReport = async (req: Request, res: Response, _next: NextFunct
 
   logger.info({ traceId }, 'GET /api/dsar/sla-report - Success');
   return success(res, { data: report, message: '' });
-};
+});

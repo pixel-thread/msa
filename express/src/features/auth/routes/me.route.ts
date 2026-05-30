@@ -5,9 +5,10 @@ import { getUniqueUser } from '@src/shared/services/user/get-unique-user';
 import { getAuthCachedUser, cacheAuthUser } from '@src/features/auth/lib/cache';
 import { env } from '@src/env';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** GET handler to fetch the current authenticated user's profile. */
-export const getMe = async (req: Request, res: Response, _next: NextFunction) => {
+export const getMe = asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.traceId as string) || '';
   const userId = req.userId as string;
   logger.info({ traceId, userId }, 'GET /api/auth/me - Request started');
@@ -31,4 +32,4 @@ export const getMe = async (req: Request, res: Response, _next: NextFunction) =>
 
   logger.info({ traceId, userId }, 'GET /api/auth/me - Success');
   return success(res, { message: 'User fetched successfully', data: user });
-};
+});

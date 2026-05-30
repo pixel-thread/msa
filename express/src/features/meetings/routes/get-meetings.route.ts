@@ -13,11 +13,12 @@ import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
 import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** GET /api/meetings - List all meetings for the association. */
 export const getMeetings: RequestHandler[] = [
   validate({ query: MeetingQuerySchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /api/meetings - Request started');
@@ -54,5 +55,5 @@ export const getMeetings: RequestHandler[] = [
     });
     logger.info({ traceId, count: result.meetings.length }, 'GET /api/meetings - Success');
     return success(res, { data: result.meetings, meta: result.pagination });
-  },
+  }),
 ];

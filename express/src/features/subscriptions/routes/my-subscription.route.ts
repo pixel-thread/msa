@@ -9,6 +9,7 @@ import { logger } from '@src/shared/logger';
 import { getMySubscription } from '@feature/subscriptions/services';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for paginated my-subscription query. */
 const MySubscriptionQuerySchema = z.object({
@@ -18,7 +19,7 @@ const MySubscriptionQuerySchema = z.object({
 /** GET /api/subscriptions/my - Retrieve the current user's subscriptions. */
 export const getMySubscriptionHandler: RequestHandler[] = [
   validate({ query: MySubscriptionQuerySchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -30,5 +31,5 @@ export const getMySubscriptionHandler: RequestHandler[] = [
     logger.info({ traceId, userId: user.id }, 'User authorized');
     const result = await getMySubscription(user.id, page);
     return success(res, result);
-  },
+  }),
 ];

@@ -8,10 +8,11 @@ import { AdminRecordCompletionSchema } from '@src/features/training/validators/t
 import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** GET /training/completions - List all completions (SECRETARY role required, with optional filters). */
 export const getCompletions: RequestHandler[] = [
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -34,13 +35,13 @@ export const getCompletions: RequestHandler[] = [
 
     logger.info({ traceId }, 'GET /training/completions - Success');
     return success(res, { data: data.completions, meta: data.pagination });
-  },
+  }),
 ];
 
 /** POST /training/completions - Admin record a completion for a user (SECRETARY role required). */
 export const postCompletion: RequestHandler[] = [
   validate({ body: AdminRecordCompletionSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -58,5 +59,5 @@ export const postCompletion: RequestHandler[] = [
 
     logger.info({ traceId, completionId: completion.id }, 'POST /training/completions - Success');
     return success(res, { data: completion }, 201);
-  },
+  }),
 ];

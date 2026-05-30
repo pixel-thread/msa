@@ -8,10 +8,11 @@ import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
 import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** GET /api/audit-logs - Retrieve paginated audit logs with optional filters and stats. */
 export const getAuditLogs: RequestHandler[] = [
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -43,5 +44,5 @@ export const getAuditLogs: RequestHandler[] = [
     ]);
     logger.info({ traceId, count: logsResult.logs.length }, 'GET /api/audit-logs - Success');
     return success(res, { data: { logs: logsResult.logs, stats }, meta: logsResult.pagination });
-  },
+  }),
 ];

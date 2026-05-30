@@ -12,11 +12,12 @@ import { findFirstAssociation } from '@src/features/associations/services/findFi
 import { findFirstMember } from '@src/features/members/services/findFirstMember';
 import { createMembershipApplication } from '@src/features/membership-applications/services';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** POST handler for user sign-up. Validates the application and creates a pending membership application. */
 export const postSignUp: RequestHandler[] = [
   validate({ body: MembershipApplicationSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId, email: req.body?.email }, 'POST /api/auth/sign-up - Request started');
     const {
@@ -84,5 +85,5 @@ export const postSignUp: RequestHandler[] = [
       },
       201,
     );
-  },
+  }),
 ];

@@ -5,9 +5,10 @@ import { logger } from '@src/shared/logger';
 import { processWebhookEvent } from '@src/features/payments/services/webhook.service';
 import { WebhookSignatureError } from '@src/shared/errors';
 import { logAction } from '@src/shared/services/audit-logs';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 export const webhook: RequestHandler[] = [
-  async (req: Request, res: Response, next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     logger.info('POST /api/payments/webhook - Request started');
     let rawBody: string;
     try {
@@ -50,5 +51,5 @@ export const webhook: RequestHandler[] = [
       }
       return res.status(200).json({ status: 'error', message: 'Webhook processing failed' });
     }
-  },
+  }),
 ];

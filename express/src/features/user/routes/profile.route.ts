@@ -10,10 +10,11 @@ import { withRole } from '@src/shared/utils/with-role';
 import { UpdateUserSchema } from '@src/features/user/validators';
 import { logger } from '@src/shared/logger';
 import z from 'zod';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** GET handler to fetch the authenticated user's profile. */
 export const getProfile: RequestHandler[] = [
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'GET /api/user - Request started');
 
@@ -26,13 +27,13 @@ export const getProfile: RequestHandler[] = [
     logger.info({ traceId, userId }, 'GET /api/user - Success');
 
     return success(res, { data: user, message: 'User fetched successfully' });
-  },
+  }),
 ];
 
 /** POST handler to update the authenticated user's profile. */
 export const updateProfile: RequestHandler[] = [
   validate({ body: UpdateUserSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'POST /api/user - Request started');
 
@@ -68,5 +69,5 @@ export const updateProfile: RequestHandler[] = [
     logger.info({ traceId, userId }, 'POST /api/user - Success');
 
     return success(res, { data: updatedUser, message: 'User updated successfully' });
-  },
+  }),
 ];

@@ -9,10 +9,11 @@ import { updateUser } from '@src/features/user/services';
 import { deleteRefreshTokens } from '@src/features/auth/services/delete-refresh-tokens';
 import { getUniqueUserNoFilter } from '@src/shared/services/user/get-unique-user-no-filter';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 export const postChangePassword: RequestHandler[] = [
   validate({ body: ChangePasswordSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const userId = req.userId as string;
     logger.info({ traceId, userId }, 'POST /api/auth/change-password - Request started');
@@ -40,5 +41,5 @@ export const postChangePassword: RequestHandler[] = [
       data: null,
       message: 'Password changed successfully. Please sign in again on other devices.',
     });
-  },
+  }),
 ];

@@ -23,6 +23,7 @@ import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
 import { z } from 'zod';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for module ID path parameter. */
 const ModuleParamsSchema = z.object({
@@ -38,7 +39,7 @@ const CertificateParamsSchema = z.object({
 /** GET /training/modules/:moduleId/certificates - List certificates for a module. */
 export const getCertificates: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
@@ -59,13 +60,13 @@ export const getCertificates: RequestHandler[] = [
     } catch (e) {
       next(e);
     }
-  },
+  }),
 ];
 
 /** POST /training/modules/:moduleId/certificates - Upload a certificate for a user (DPO role required). */
 export const postCertificate: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
@@ -138,13 +139,13 @@ export const postCertificate: RequestHandler[] = [
     } catch (e) {
       next(e);
     }
-  },
+  }),
 ];
 
 /** GET /training/modules/:moduleId/certificates/:certificateId - Retrieve a single certificate. */
 export const getCertificate: RequestHandler[] = [
   validate({ params: CertificateParamsSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
@@ -172,13 +173,13 @@ export const getCertificate: RequestHandler[] = [
     } catch (e) {
       next(e);
     }
-  },
+  }),
 ];
 
 /** PATCH /training/modules/:moduleId/certificates/:certificateId - Update a certificate (DPO role required). */
 export const patchCertificate: RequestHandler[] = [
   validate({ params: CertificateParamsSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
@@ -268,13 +269,13 @@ export const patchCertificate: RequestHandler[] = [
     } catch (e) {
       next(e);
     }
-  },
+  }),
 ];
 
 /** DELETE /training/modules/:moduleId/certificates/:certificateId - Delete a certificate (DPO role required). */
 export const deleteCertificateHandler: RequestHandler[] = [
   validate({ params: CertificateParamsSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
@@ -312,13 +313,13 @@ export const deleteCertificateHandler: RequestHandler[] = [
     } catch (e) {
       next(e);
     }
-  },
+  }),
 ];
 
 /** POST /training/modules/:moduleId/certificate-template - Upload a certificate template (DPO role required). */
 export const postCertificateTemplate: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
@@ -380,13 +381,13 @@ export const postCertificateTemplate: RequestHandler[] = [
     } catch (e) {
       next(e);
     }
-  },
+  }),
 ];
 
 /** DELETE /training/modules/:moduleId/certificate-template - Remove certificate template (DPO role required). */
 export const deleteCertificateTemplate: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
@@ -414,5 +415,5 @@ export const deleteCertificateTemplate: RequestHandler[] = [
     } catch (e) {
       next(e);
     }
-  },
+  }),
 ];

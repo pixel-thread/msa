@@ -9,6 +9,7 @@ import { logger } from '@src/shared/logger';
 import { z } from 'zod';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 const ParamsSchema = z.object({
   meetingId: z.string('Invalid meeting ID'),
@@ -17,7 +18,7 @@ const ParamsSchema = z.object({
 /** POST /api/meetings/[meetingId]/minutes - Record a meeting minute. */
 export const postCreateMinute: RequestHandler[] = [
   validate({ params: ParamsSchema, body: CreateMeetingMinuteSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const meetingId = req.params.meetingId as string;
@@ -44,5 +45,5 @@ export const postCreateMinute: RequestHandler[] = [
 
     logger.info({ traceId, meetingId }, 'POST /api/meetings/[meetingId]/minutes - Success');
     return success(res, { data: minute, message: 'Meeting minute recorded successfully' });
-  },
+  }),
 ];

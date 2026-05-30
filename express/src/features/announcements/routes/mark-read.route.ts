@@ -6,11 +6,12 @@ import { logger } from '@src/shared/logger';
 import { validate } from '@src/shared/lib/validate';
 import { AnnouncementRouteParams } from '@src/features/announcements/validators';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** POST handler to mark an announcement as read by the authenticated user. */
 export const postMarkRead: RequestHandler[] = [
   validate({ params: AnnouncementRouteParams }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const announcementId = req.params.announcementId;
     if (!announcementId) throw new Error('Invalid announcement id');
@@ -24,5 +25,5 @@ export const postMarkRead: RequestHandler[] = [
     const readReceipt = {} as any;
     logger.info({ traceId, announcementId }, 'POST /api/announcements/[id]/read - Success');
     return success(res, { data: readReceipt, message: 'Announcement marked as read' });
-  },
+  }),
 ];

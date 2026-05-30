@@ -31,6 +31,7 @@ import {
   createTestPaymentOrder,
   verifyTestPayment,
 } from '@src/features/payments/services/payment.service';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 async function getAssociation(req: Request) {
   const userId = req.userId as string;
@@ -44,19 +45,19 @@ async function getAssociation(req: Request) {
 }
 
 export const listProviders: RequestHandler[] = [
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'GET /api/payments/providers - Request started');
     const association = await getAssociation(req);
     const providers = await getProvidersByAssociation(association.id);
     logger.info({ traceId, count: providers.length }, 'GET /api/payments/providers - Success');
     return success(res, { data: providers });
-  },
+  }),
 ];
 
 export const createProviderHandler: RequestHandler[] = [
   validate({ body: UpsertPaymentProviderSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, provider: req.body.provider },
@@ -73,11 +74,11 @@ export const createProviderHandler: RequestHandler[] = [
     });
     logger.info({ traceId, providerId: result.id }, 'POST /api/payments/providers - Success');
     return success(res, { data: result }, 201);
-  },
+  }),
 ];
 
 export const providerStatus: RequestHandler[] = [
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'GET /api/payments/providers/status - Request started');
     const association = await getAssociation(req);
@@ -95,12 +96,12 @@ export const providerStatus: RequestHandler[] = [
       'GET /api/payments/providers/status - Success',
     );
     return success(res, { data: { status: activeProvider.isActive } });
-  },
+  }),
 ];
 
 export const getProvider: RequestHandler[] = [
   validate({ params: ProviderIdParamSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, providerId: req.params.providerId },
@@ -119,12 +120,12 @@ export const getProvider: RequestHandler[] = [
       'GET /api/payments/providers/[providerId] - Success',
     );
     return success(res, { data: provider });
-  },
+  }),
 ];
 
 export const updateProviderHandler: RequestHandler[] = [
   validate({ params: ProviderIdParamSchema, body: UpdatePaymentProviderSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, providerId: req.params.providerId },
@@ -151,12 +152,12 @@ export const updateProviderHandler: RequestHandler[] = [
       'PATCH /api/payments/providers/[providerId] - Success',
     );
     return success(res, { data: result });
-  },
+  }),
 ];
 
 export const deleteProviderHandler: RequestHandler[] = [
   validate({ params: ProviderIdParamSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, providerId: req.params.providerId },
@@ -174,12 +175,12 @@ export const deleteProviderHandler: RequestHandler[] = [
       'DELETE /api/payments/providers/[providerId] - Success',
     );
     return success(res, { data: null, message: 'Provider deleted successfully' });
-  },
+  }),
 ];
 
 export const activateProvider: RequestHandler[] = [
   validate({ params: ProviderIdParamSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, providerId: req.params?.providerId },
@@ -210,12 +211,12 @@ export const activateProvider: RequestHandler[] = [
       data: result,
       message: result.isActive ? activatedMessage : deActivatedMessage,
     });
-  },
+  }),
 ];
 
 export const testProvider: RequestHandler[] = [
   validate({ params: ProviderIdParamSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, providerId: req.params.providerId },
@@ -246,12 +247,12 @@ export const testProvider: RequestHandler[] = [
       'POST /api/payments/providers/[providerId]/test - Success',
     );
     return success(res, { data: options }, 201);
-  },
+  }),
 ];
 
 export const verifyTestProvider: RequestHandler[] = [
   validate({ params: ProviderIdParamSchema, body: VerifyPaymentSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId },
@@ -277,5 +278,5 @@ export const verifyTestProvider: RequestHandler[] = [
       data: result,
       message: 'Test payment verified and completed successfully',
     });
-  },
+  }),
 ];

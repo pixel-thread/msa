@@ -9,11 +9,12 @@ import { buildPagination } from '@src/shared/utils/build-pagination';
 import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** GET handler to list complaints with optional filters and pagination. */
 export const listComplaints: RequestHandler[] = [
   validate({ query: ComplaintQuerySchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /compliance - Request started');
@@ -49,13 +50,13 @@ export const listComplaints: RequestHandler[] = [
 
     logger.info({ traceId, count: complaints.length }, 'GET /compliance - Success');
     return success(res, { data: complaints, meta: buildPagination(total, page) });
-  },
+  }),
 ];
 
 /** POST handler to create a new compliance complaint. */
 export const createComplaintHandler: RequestHandler[] = [
   validate({ body: CreateComplaintSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'POST /compliance - Request started');
@@ -74,5 +75,5 @@ export const createComplaintHandler: RequestHandler[] = [
 
     logger.info({ traceId, complaintId: complaint.id }, 'POST /compliance - Success');
     return success(res, { data: complaint }, 201);
-  },
+  }),
 ];

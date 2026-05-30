@@ -19,6 +19,7 @@ import { pageNumberValidation } from '@src/shared/validators';
 import { getUniqueUser } from '@src/shared/services/user/get-unique-user';
 import { z } from 'zod';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for user ID path parameter. */
 const UserParamsSchema = z.object({
@@ -67,7 +68,7 @@ async function withRole(req: Request, role: UserRole) {
 /** GET /api/consent/:receiptId - Retrieve a single consent receipt. */
 export const getReceipt: RequestHandler[] = [
   validate({ params: ConsentReceiptParamsSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const receiptId = req.params.receiptId as string;
@@ -84,13 +85,13 @@ export const getReceipt: RequestHandler[] = [
 
     logger.info({ traceId }, 'GET /api/consent/[receiptId] - Success');
     return success(res, { data: receipt });
-  },
+  }),
 ];
 
 /** PATCH /api/consent/:receiptId - Update a consent receipt (DPO role required). */
 export const updateReceipt: RequestHandler[] = [
   validate({ params: ConsentReceiptParamsSchema, body: UpdateConsentReceiptSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const receiptId = req.params.receiptId as string;
@@ -113,13 +114,13 @@ export const updateReceipt: RequestHandler[] = [
 
     logger.info({ traceId }, 'PATCH /api/consent/[receiptId] - Success');
     return success(res, { data: receipt, message: 'Consent receipt updated successfully' });
-  },
+  }),
 ];
 
 /** DELETE /api/consent/:receiptId - Delete a consent receipt (DPO role required). */
 export const deleteReceipt: RequestHandler[] = [
   validate({ params: ConsentReceiptParamsSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const receiptId = req.params.receiptId as string;
@@ -135,13 +136,13 @@ export const deleteReceipt: RequestHandler[] = [
 
     logger.info({ traceId }, 'DELETE /api/consent/[receiptId] - Success');
     return success(res, { data: null, message: 'Consent receipt deleted successfully' });
-  },
+  }),
 ];
 
 /** GET /api/consent/users/:userId - Retrieve consent history for a specific user (DPO role required). */
 export const getUserConsents: RequestHandler[] = [
   validate({ params: UserParamsSchema, query: UserQuerySchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const targetUserId = req.params.userId as string;
@@ -165,5 +166,5 @@ export const getUserConsents: RequestHandler[] = [
       'GET /api/consent/users/[userId] - Success',
     );
     return success(res, { data: data.records, meta: data.pagination });
-  },
+  }),
 ];

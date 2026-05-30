@@ -10,11 +10,12 @@ import { findFirstMember } from '@src/features/members/services/findFirstMember'
 import { getVerificationCodeFirst } from '@src/features/auth/services/get-verification-code-first';
 import { createVerificationCode } from '@src/features/auth/services/create-verification-code';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** POST handler to resend an MFA verification code. Enforces a cooldown period between resends. */
 export const postMfaResend: RequestHandler[] = [
   validate({}),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const userId = req.userId as string;
     if (!userId) throw new UnauthorizedError('Unauthorized');
@@ -59,5 +60,5 @@ export const postMfaResend: RequestHandler[] = [
       message: 'Verification code sent to your email',
       data: { codeSent: true },
     });
-  },
+  }),
 ];

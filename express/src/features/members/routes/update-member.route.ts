@@ -9,6 +9,7 @@ import { updateMember } from '@src/features/members/services/updateMember';
 import { withRole } from '@src/shared/utils/with-role';
 import { logger } from '@src/shared/logger';
 import z from 'zod';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for validating the route parameter containing the member ID. */
 const ParamSchema = z.object({ memberId: z.uuid() });
@@ -32,7 +33,7 @@ const AdminOnboardingSchema = z.object({
 /** Route handler for updating a member's profile. Requires SECRETARY role. */
 export const updateMemberRoute: RequestHandler[] = [
   validate({ body: AdminOnboardingSchema, params: ParamSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const userId = req.userId as string;
     if (!userId) throw new UnauthorizedError('Unauthorized');
@@ -93,5 +94,5 @@ export const updateMemberRoute: RequestHandler[] = [
         dateOfJoiningAssociation: updatedUser.dateOfJoiningAssociation,
       },
     });
-  },
+  }),
 ];

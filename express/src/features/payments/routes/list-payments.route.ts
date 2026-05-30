@@ -9,6 +9,7 @@ import { withRole } from '@src/shared/utils/with-role';
 import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
 import { GetTransactionsQuerySchema } from '@src/features/payments/validators';
 import { getAllTransactions } from '@src/features/payments/services/payment.service';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 async function getAssociation(req: Request) {
   const userId = req.userId as string;
@@ -23,7 +24,7 @@ async function getAssociation(req: Request) {
 
 export const listPayments: RequestHandler[] = [
   validate({ query: GetTransactionsQuerySchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId, query: req.query }, 'GET /api/payments - Request started');
     const association = await getAssociation(req);
@@ -32,5 +33,5 @@ export const listPayments: RequestHandler[] = [
     const result = await getAllTransactions(association.id, (req.query as any) || {});
     logger.info({ traceId, count: result.transactions.length }, 'GET /api/payments - Success');
     return success(res, { data: result.transactions, meta: result.pagination });
-  },
+  }),
 ];

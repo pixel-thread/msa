@@ -9,6 +9,7 @@ import { logger } from '@src/shared/logger';
 import { getSubscriptionPayments } from '@feature/subscriptions/services';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for subscription ID path parameter. */
 const SubscriptionParamsSchema = z.object({
@@ -23,7 +24,7 @@ const SubscriptionQuerySchema = z.object({
 /** GET /api/subscriptions/:subscriptionId/payments - Retrieve payments for a subscription. */
 export const getSubscriptionPaymentsHandler: RequestHandler[] = [
   validate({ params: SubscriptionParamsSchema, query: SubscriptionQuerySchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -43,5 +44,5 @@ export const getSubscriptionPaymentsHandler: RequestHandler[] = [
     });
     logger.info({ traceId, subscriptionId, count: result.data.length }, 'Payments fetched');
     return success(res, result);
-  },
+  }),
 ];

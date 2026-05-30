@@ -16,10 +16,11 @@ import { AddAssociationMemberSchema } from '@src/features/associations/validator
 import { logger } from '@src/shared/logger';
 import type { CreateAssociationInput } from '@validator/associations';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** GET /api/admin/associations - Retrieve all active associations. */
 export const getAssociations: RequestHandler[] = [
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'GET /api/admin/associations - Request started');
     const user = await withRole(req, UserRole.SUPER_ADMIN);
@@ -36,13 +37,13 @@ export const getAssociations: RequestHandler[] = [
       'GET /api/admin/associations - Success',
     );
     return success(res, { data: data.associations, meta: data.pagination });
-  },
+  }),
 ];
 
 /** POST /api/admin/associations - Create a new association. */
 export const postAssociation: RequestHandler[] = [
   validate({ body: CreateAssociationSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, name: req.body?.name },
@@ -77,12 +78,12 @@ export const postAssociation: RequestHandler[] = [
       'POST /api/admin/associations - Success',
     );
     return success(res, { data: association, message: 'Association created successfully' }, 201);
-  },
+  }),
 ];
 
 /** GET /api/admin/associations/:id - Retrieve a single association by ID. */
 export const getAssociationById: RequestHandler[] = [
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, id: req.params.id },
@@ -105,13 +106,13 @@ export const getAssociationById: RequestHandler[] = [
     }
     logger.info({ traceId, id: req.params.id }, 'GET /api/admin/associations/[id] - Success');
     return success(res, { data: association, message: 'Association found successfully' });
-  },
+  }),
 ];
 
 /** PUT /api/admin/associations/:id - Update an existing association. */
 export const putAssociation: RequestHandler[] = [
   validate({ body: CreateAssociationSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, id: req.params.id, name: req.body?.name },
@@ -154,12 +155,12 @@ export const putAssociation: RequestHandler[] = [
     });
     logger.info({ traceId, id: req.params.id }, 'PUT /api/admin/associations/[id] - Success');
     return success(res, { data: updated, message: 'Association updated successfully' }, 200);
-  },
+  }),
 ];
 
 /** DELETE /api/admin/associations/:id - Soft-delete an association. */
 export const deleteAssociationById: RequestHandler[] = [
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, id: req.params.id },
@@ -185,13 +186,13 @@ export const deleteAssociationById: RequestHandler[] = [
     });
     logger.info({ traceId, id: req.params.id }, 'DELETE /api/admin/associations/[id] - Success');
     return success(res, { data: deleted, message: 'Association deleted successfully' }, 200);
-  },
+  }),
 ];
 
 /** POST /api/admin/associations/:id/member - Assign a user to an association. */
 export const postAssociationMember: RequestHandler[] = [
   validate({ body: AddAssociationMemberSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, targetUserId: req.body?.user_id, targetAssociationId: req.body?.association_id },
@@ -237,5 +238,5 @@ export const postAssociationMember: RequestHandler[] = [
       'POST /api/admin/associations/[id]/member - Success',
     );
     return success(res, { data: updatedUser, message: 'User association change successfully' });
-  },
+  }),
 ];

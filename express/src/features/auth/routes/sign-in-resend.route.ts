@@ -12,12 +12,13 @@ import { getUniqueUser } from '@src/shared/services/user/get-unique-user';
 import { getVerificationCodeFirst } from '@src/features/auth/services/get-verification-code-first';
 import { createVerificationCode } from '@src/features/auth/services/create-verification-code';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 const ResendSignInCodeSchema = z.object({ mfa_temp_token: z.string() });
 
 export const postSignInResend: RequestHandler[] = [
   validate({ body: ResendSignInCodeSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const mfaCookie = req.cookies?.mfa_temp_token || req.body?.mfa_temp_token;
     if (!mfaCookie) throw new BadRequestError('Session expired. Please signin again');
 
@@ -73,5 +74,5 @@ export const postSignInResend: RequestHandler[] = [
       message: 'Verification code sent to your email',
       data: { codeSent: true },
     });
-  },
+  }),
 ];

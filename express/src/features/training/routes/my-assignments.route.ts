@@ -6,10 +6,11 @@ import { findUserAssignments, findUserCompletions } from '@src/features/training
 import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** GET /training/my-assignments - Retrieve the current user's training assignments. */
 export const getMyAssignments: RequestHandler[] = [
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -28,12 +29,12 @@ export const getMyAssignments: RequestHandler[] = [
 
     logger.info({ traceId }, 'GET /training/my-assignments - Success');
     return success(res, { data: assignments.assignments, meta: assignments.pagination });
-  },
+  }),
 ];
 
 /** GET /training/my-completions - Retrieve the current user's training completions. */
 export const getMyCompletions: RequestHandler[] = [
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -52,5 +53,5 @@ export const getMyCompletions: RequestHandler[] = [
 
     logger.info({ traceId }, 'GET /training/my-completions - Success');
     return success(res, { data: completions.module, meta: completions.pagination });
-  },
+  }),
 ];

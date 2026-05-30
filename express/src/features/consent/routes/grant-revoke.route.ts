@@ -8,6 +8,7 @@ import { ConsentStatus } from '@prisma/client';
 import { ConsentService } from '@src/features/consent/services/consent.service';
 import { ConsentUpdateSchema } from '@src/features/consent/validators/consent.validators';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 async function getAssociation(req: Request) {
   const userId = req.userId as string;
@@ -23,7 +24,7 @@ async function getAssociation(req: Request) {
 /** POST /api/consent/grant - Grant consent for specified purposes. */
 export const grantConsent: RequestHandler[] = [
   validate({ body: ConsentUpdateSchema.omit({ action: true }) }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -48,13 +49,13 @@ export const grantConsent: RequestHandler[] = [
 
     logger.info({ traceId, userId }, 'POST /api/consent/grant - Consent granted successfully');
     return success(res, { message: 'Consent granted successfully', data: receipts });
-  },
+  }),
 ];
 
 /** POST /api/consent/revoke - Withdraw consent for specified purposes. */
 export const revokeConsent: RequestHandler[] = [
   validate({ body: ConsentUpdateSchema.omit({ action: true }) }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -79,5 +80,5 @@ export const revokeConsent: RequestHandler[] = [
 
     logger.info({ traceId, userId }, 'POST /api/consent/revoke - Consent revoked successfully');
     return success(res, { message: 'Consent revoked successfully', data: receipts });
-  },
+  }),
 ];

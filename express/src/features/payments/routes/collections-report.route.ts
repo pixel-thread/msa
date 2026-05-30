@@ -11,6 +11,7 @@ import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
 import { CollectionReportQuerySchema } from '@src/features/payments/validators';
 import { findContributionPeriods } from '@src/features/payments/services/findContributionPeriods';
 import { PAGE_SIZE } from '@src/shared/constants';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 async function getAssociation(req: Request) {
   const userId = req.userId as string;
@@ -25,7 +26,7 @@ async function getAssociation(req: Request) {
 
 export const collectionsReport: RequestHandler[] = [
   validate({ query: CollectionReportQuerySchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const query = req.query as any;
     logger.info(
@@ -54,5 +55,5 @@ export const collectionsReport: RequestHandler[] = [
       'GET /api/payments/reports/collections - Success',
     );
     return success(res, { data: collections, meta: buildPagination(total, query.page) });
-  },
+  }),
 ];

@@ -8,11 +8,12 @@ import { buildPagination } from '@src/shared/utils/build-pagination';
 import { UnauthorizedError, NotFoundError } from '@src/shared/errors';
 import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** GET handler to list the current user's own complaints. */
 export const listMyComplaints: RequestHandler[] = [
   validate({ query: ComplaintQuerySchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const userId = req.userId as string;
     if (!userId) {
@@ -52,13 +53,13 @@ export const listMyComplaints: RequestHandler[] = [
 
     logger.info({ traceId, count: complaints.length }, 'GET /compliance/my - Success');
     return success(res, { data: complaints, meta: buildPagination(total, page) });
-  },
+  }),
 ];
 
 /** GET handler to fetch a single complaint belonging to the current user. */
 export const getMyComplaint: RequestHandler[] = [
   validate({ params: ComplaintParamsSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const userId = req.userId as string;
     if (!userId) {
@@ -86,5 +87,5 @@ export const getMyComplaint: RequestHandler[] = [
       'GET /compliance/my/:complaintId - Success',
     );
     return success(res, { data: complaint });
-  },
+  }),
 ];

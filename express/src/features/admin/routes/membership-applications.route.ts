@@ -17,11 +17,12 @@ import {
 } from '@src/features/membership-applications/validators';
 import { logger } from '@src/shared/logger';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** GET /api/admin/membership-applications - List membership applications with optional status filter. */
 export const getMembershipApplicationsHandler: RequestHandler[] = [
   validate({ query: GetMembershipApplicationsQuerySchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, status: (req.query as any)?.status },
@@ -42,13 +43,13 @@ export const getMembershipApplicationsHandler: RequestHandler[] = [
       'GET /api/admin/membership-applications - Success',
     );
     return success(res, { data: result.data, meta: result.pagination });
-  },
+  }),
 ];
 
 /** POST /api/admin/membership-applications/:applicationId/approve - Approve a membership application and create a user. */
 export const postApproveApplication: RequestHandler[] = [
   validate({ params: MembershipApplicationParamsSchema, body: ApproveApplicationSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const applicationId = req.params.applicationId as string;
     if (!applicationId) {
@@ -98,13 +99,13 @@ export const postApproveApplication: RequestHandler[] = [
         tempPassword: result.tempPassword,
       },
     });
-  },
+  }),
 ];
 
 /** POST /api/admin/membership-applications/:applicationId/reject - Reject a membership application with a reason. */
 export const postRejectApplication: RequestHandler[] = [
   validate({ params: MembershipApplicationParamsSchema, body: RejectApplicationSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const applicationId = req.params.applicationId as string;
     if (!applicationId) {
@@ -149,5 +150,5 @@ export const postRejectApplication: RequestHandler[] = [
         reviewedAt: application.reviewedAt,
       },
     });
-  },
+  }),
 ];

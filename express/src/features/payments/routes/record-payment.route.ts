@@ -9,6 +9,7 @@ import { withRole } from '@src/shared/utils/with-role';
 import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
 import { RecordManualPaymentSchema } from '@src/features/payments/validators';
 import { recordManualPayment } from '@src/features/payments/services/payment.service';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 async function getAssociation(req: Request) {
   const userId = req.userId as string;
@@ -23,7 +24,7 @@ async function getAssociation(req: Request) {
 
 export const recordPayment: RequestHandler[] = [
   validate({ body: RecordManualPaymentSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, userId: req.body.userId },
@@ -52,5 +53,5 @@ export const recordPayment: RequestHandler[] = [
       { data: transaction, message: 'Payment recorded and allocated successfully' },
       201,
     );
-  },
+  }),
 ];

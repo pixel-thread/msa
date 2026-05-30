@@ -11,6 +11,7 @@ import { logger } from '@src/shared/logger';
 import { z } from 'zod';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 const MeetingParamsSchema = z.object({
   meetingId: z.string('Invalid meeting ID'),
@@ -19,7 +20,7 @@ const MeetingParamsSchema = z.object({
 /** PUT /api/meetings/[meetingId]/attendees - Bulk replace attendees for a meeting. */
 export const putBulkAssignAttendees: RequestHandler[] = [
   validate({ params: MeetingParamsSchema, body: BulkAssignAttendeesSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const meetingId = req.params.meetingId as string;
@@ -59,5 +60,5 @@ export const putBulkAssignAttendees: RequestHandler[] = [
       data: result,
       message: `Assigned ${result.assigned.length} attendees, skipped ${result.skipped.length} existing`,
     });
-  },
+  }),
 ];

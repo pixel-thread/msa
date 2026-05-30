@@ -6,6 +6,7 @@ import { UserRole } from '@prisma/client';
 import { ConsentService } from '@src/features/consent/services/consent.service';
 import { getUniqueUser } from '@src/shared/services/user/get-unique-user';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 const ROLE_HIERARCHY: Record<UserRole, number> = {
   SUPER_ADMIN: 0,
@@ -42,7 +43,7 @@ async function withRole(req: Request, role: UserRole) {
 }
 
 /** GET /api/consent/my - Retrieve the current user's consent state for all purposes. */
-export const getMyConsent = async (req: Request, res: Response, _next: NextFunction) => {
+export const getMyConsent = asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.traceId as string) || '';
   const association = await getAssociation(req);
   logger.info({ traceId, associationId: association.id }, 'GET /api/consent/my - Request started');
@@ -56,4 +57,4 @@ export const getMyConsent = async (req: Request, res: Response, _next: NextFunct
 
   logger.info({ traceId }, 'GET /api/consent/my - Success');
   return success(res, { data: consentState });
-};
+});

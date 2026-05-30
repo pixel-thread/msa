@@ -10,6 +10,7 @@ import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
 import { z } from 'zod';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for training module ID path parameter. */
 const TrainingParamsSchema = z.object({
@@ -19,7 +20,7 @@ const TrainingParamsSchema = z.object({
 /** GET /training/modules/:moduleId - Retrieve a single training module. */
 export const getModule: RequestHandler[] = [
   validate({ params: TrainingParamsSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -40,13 +41,13 @@ export const getModule: RequestHandler[] = [
       'GET /training/modules/{moduleId} - Success',
     );
     return success(res, { data: trainingModule });
-  },
+  }),
 ];
 
 /** PATCH /training/modules/:moduleId - Update a training module (DPO role required). */
 export const updateModuleHandler: RequestHandler[] = [
   validate({ params: TrainingParamsSchema, body: UpdateTrainingModuleSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -71,13 +72,13 @@ export const updateModuleHandler: RequestHandler[] = [
       'PATCH /training/modules/{moduleId} - Success',
     );
     return success(res, { data: trainingModule });
-  },
+  }),
 ];
 
 /** DELETE /training/modules/:moduleId - Delete a training module (DPO role required). */
 export const deleteModuleHandler: RequestHandler[] = [
   validate({ params: TrainingParamsSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -101,5 +102,5 @@ export const deleteModuleHandler: RequestHandler[] = [
       'DELETE /training/modules/{moduleId} - Success',
     );
     return success(res, { data: { success: true } });
-  },
+  }),
 ];

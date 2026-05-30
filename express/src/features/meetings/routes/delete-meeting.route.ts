@@ -7,9 +7,10 @@ import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
 import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** DELETE /api/meetings/[meetingId] - Delete a meeting. */
-export const deleteMeetingHandler = async (req: Request, res: Response, _next: NextFunction) => {
+export const deleteMeetingHandler = asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.traceId as string) || '';
   const association = await getAssociation(req);
   const meetingId = req.params.meetingId as string;
@@ -36,4 +37,4 @@ export const deleteMeetingHandler = async (req: Request, res: Response, _next: N
     'DELETE /api/meetings/[meetingId] - Success',
   );
   return success(res, { data: deletedMeeting, message: 'Meeting deleted successfully' });
-};
+});

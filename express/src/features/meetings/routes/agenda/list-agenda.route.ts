@@ -8,13 +8,14 @@ import { logger } from '@src/shared/logger';
 import { z } from 'zod';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 const ParamsSchema = z.object({ meetingId: z.string('Invalid meeting ID') });
 
 /** GET /api/meetings/[meetingId]/agenda - List all agenda items for a meeting. */
 export const getAgendaItems: RequestHandler[] = [
   validate({ params: ParamsSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const meetingId = req.params.meetingId as string;
@@ -37,5 +38,5 @@ export const getAgendaItems: RequestHandler[] = [
       'GET /api/meetings/[meetingId]/agenda - Success',
     );
     return success(res, { data: agenda });
-  },
+  }),
 ];

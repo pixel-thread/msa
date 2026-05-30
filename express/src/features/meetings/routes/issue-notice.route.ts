@@ -5,9 +5,10 @@ import { updateMeeting } from '@src/features/meetings/services/updateMeeting';
 import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** POST /api/meetings/[meetingId]/notice - Issue a notice for a meeting. */
-export const postIssueNotice = async (req: Request, res: Response, _next: NextFunction) => {
+export const postIssueNotice = asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.traceId as string) || '';
   const association = await getAssociation(req);
   logger.info(
@@ -38,4 +39,4 @@ export const postIssueNotice = async (req: Request, res: Response, _next: NextFu
     'POST /api/meetings/[meetingId]/notice - Success',
   );
   return success(res, { data: meeting });
-};
+});

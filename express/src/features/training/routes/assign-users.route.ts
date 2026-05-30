@@ -21,6 +21,7 @@ import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
 import { z } from 'zod';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for module ID path parameter. */
 const ParamsSchema = z.object({
@@ -40,7 +41,7 @@ const BulkRemoveAssignSchema = z.object({
 /** GET /training/modules/:moduleId/assign - List assignments for a module (SECRETARY role required). */
 export const getAssignments: RequestHandler[] = [
   validate({ params: ParamsSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -59,13 +60,13 @@ export const getAssignments: RequestHandler[] = [
 
     logger.info({ traceId }, 'GET /training/modules/{moduleId}/assign - Success');
     return success(res, { data: result.data, meta: buildPagination(result.total, page) });
-  },
+  }),
 ];
 
 /** POST /training/modules/:moduleId/assign - Assign a user to a module (DPO role required). */
 export const postAssign: RequestHandler[] = [
   validate({ params: ParamsSchema, body: AssignTrainingSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -94,13 +95,13 @@ export const postAssign: RequestHandler[] = [
       if (error instanceof Error) throw new BadRequestError(error.message);
       throw new BadRequestError('Failed to assign training');
     }
-  },
+  }),
 ];
 
 /** PUT /training/modules/:moduleId/assign - Bulk assign users to a module (DPO role required). */
 export const putBulkAssign: RequestHandler[] = [
   validate({ params: ParamsSchema, body: BulkAssignTrainingSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -129,13 +130,13 @@ export const putBulkAssign: RequestHandler[] = [
       if (error instanceof Error) throw new BadRequestError(error.message);
       throw new BadRequestError('Failed to bulk assign training');
     }
-  },
+  }),
 ];
 
 /** DELETE /training/modules/:moduleId/assign - Remove a user assignment (DPO role required). */
 export const deleteAssignment: RequestHandler[] = [
   validate({ params: ParamsSchema, body: RemoveAssignSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -164,13 +165,13 @@ export const deleteAssignment: RequestHandler[] = [
       if (error instanceof Error) throw new BadRequestError(error.message);
       throw new BadRequestError('Failed to remove training assignment');
     }
-  },
+  }),
 ];
 
 /** PATCH /training/modules/:moduleId/assign - Bulk remove user assignments (DPO role required). */
 export const patchBulkRemove: RequestHandler[] = [
   validate({ params: ParamsSchema, body: BulkRemoveAssignSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -199,13 +200,13 @@ export const patchBulkRemove: RequestHandler[] = [
       if (error instanceof Error) throw new BadRequestError(error.message);
       throw new BadRequestError('Failed to bulk remove training assignments');
     }
-  },
+  }),
 ];
 
 /** GET /training/modules/:moduleId/assigned-users - List assigned users with completion status (SECRETARY role required). */
 export const getAssignedUsersHandler: RequestHandler[] = [
   validate({ params: ParamsSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -224,5 +225,5 @@ export const getAssignedUsersHandler: RequestHandler[] = [
 
     logger.info({ traceId }, 'GET /training/modules/{moduleId}/assigned-users - Success');
     return success(res, { data: result.data, meta: buildPagination(result.total, page) });
-  },
+  }),
 ];

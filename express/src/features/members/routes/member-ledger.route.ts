@@ -10,11 +10,12 @@ import { withRole } from '@src/shared/utils/with-role';
 import { getUserContributionSummary } from '@feature/payments/services/contribution.service';
 import { LedgerQueryParams, LedgerRouteParams } from '@src/features/ledger/validators';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Route handler for retrieving a member's payment ledger and contribution summary. Requires FINANCE role. */
 export const getMemberLedger: RequestHandler[] = [
   validate({ params: LedgerRouteParams, query: LedgerQueryParams }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
 
     const userId = req.userId as string;
@@ -63,5 +64,5 @@ export const getMemberLedger: RequestHandler[] = [
       data: { transactions: history.transactions, summary },
       meta: history.pagination,
     });
-  },
+  }),
 ];

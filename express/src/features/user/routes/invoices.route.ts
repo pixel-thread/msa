@@ -11,6 +11,7 @@ import { buildPagination } from '@src/shared/utils/build-pagination';
 import { pageNumberValidation } from '@src/shared/validators';
 import { logger } from '@src/shared/logger';
 import z from 'zod';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Query schema for listing invoices with pagination. */
 const InvoiceRouteQuery = z.object({
@@ -25,7 +26,7 @@ const InvoiceRouteParams = z.object({
 /** GET handler to list invoices for the authenticated user. */
 export const listInvoices: RequestHandler[] = [
   validate({ query: InvoiceRouteQuery }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const userId = req.userId as string;
     if (!userId) throw new UnauthorizedError('Unauthorized');
@@ -70,13 +71,13 @@ export const listInvoices: RequestHandler[] = [
       message: 'Invoices fetched successfully',
       meta: buildPagination(total, page),
     });
-  },
+  }),
 ];
 
 /** GET handler to fetch a single invoice by ID for the authenticated user. */
 export const getInvoice: RequestHandler[] = [
   validate({ params: InvoiceRouteParams }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const userId = req.userId as string;
     if (!userId) throw new UnauthorizedError('Unauthorized');
@@ -122,5 +123,5 @@ export const getInvoice: RequestHandler[] = [
     );
 
     return success(res, { data: invoices, message: 'Invoices fetched successfully' });
-  },
+  }),
 ];

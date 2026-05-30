@@ -17,6 +17,7 @@ import { logger } from '@src/shared/logger';
 import { withRole } from '@utils/with-role';
 import { z } from 'zod';
 import { auth } from '@src/middleware/auth';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for registering a push notification token. */
 const RegisterPushTokenSchema = z.object({
@@ -31,7 +32,7 @@ const LinkNotificationSchema = z.object({
 /** POST handler to register a push notification token. */
 export const postRegisterPushToken: RequestHandler[] = [
   validate({ body: RegisterPushTokenSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'POST /api/notifications/register - Request started');
     const token = req.body?.token;
@@ -39,13 +40,13 @@ export const postRegisterPushToken: RequestHandler[] = [
     const pushToken = await upsertPushToken(token);
     logger.info({ traceId, tokenId: pushToken.id }, 'POST /api/notifications/register - Success');
     return success(res, { data: pushToken });
-  },
+  }),
 ];
 
 /** POST handler to link a push token to an authenticated user. */
 export const postLinkNotification: RequestHandler[] = [
   validate({ body: LinkNotificationSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'POST /api/notifications/link - Request started');
     const userId = req.userId;
@@ -54,14 +55,14 @@ export const postLinkNotification: RequestHandler[] = [
     const pushToken = await upsertPushToken(req.body.token, userId as string);
     logger.info({ traceId, tokenId: pushToken.id }, 'POST /api/notifications/link - Success');
     return success(res, { data: pushToken }, 201);
-  },
+  }),
 ];
 
 /** PATCH handler to update a notification's read/received status. */
 export const patchNotificationStatus: RequestHandler[] = [
   auth,
   validate({ body: UpdateNotificationSchema, params: NotificationRouteParams }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'PATCH /api/notifications/[notificationId]/status - Request started');
     const user = await withRole(req, UserRole.MEMBER);
@@ -93,5 +94,5 @@ export const patchNotificationStatus: RequestHandler[] = [
       data: notification,
       message: 'Successfully updated notification status',
     });
-  },
+  }),
 ];

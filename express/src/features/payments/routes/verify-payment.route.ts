@@ -7,6 +7,7 @@ import { logger } from '@src/shared/logger';
 import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
 import { VerifyPaymentSchema } from '@src/features/payments/validators';
 import { verifyAndCompletePayment } from '@src/features/payments/services/payment.service';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 async function getAssociation(req: Request) {
   const userId = req.userId as string;
@@ -21,7 +22,7 @@ async function getAssociation(req: Request) {
 
 export const verifyPayment: RequestHandler[] = [
   validate({ body: VerifyPaymentSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, razorpayOrderId: req.body.razorpayOrderId },
@@ -46,5 +47,5 @@ export const verifyPayment: RequestHandler[] = [
       { data: result, message: 'Payment verified and completed successfully' },
       200,
     );
-  },
+  }),
 ];

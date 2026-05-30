@@ -18,10 +18,11 @@ import {
   UpdateMemberTypeSchema,
   MemberTypeParamsSchema,
 } from '@feature/member-types/validators';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** GET /api/member-types - List all member types for the current association. */
 export const getMemberTypes: RequestHandler[] = [
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -35,13 +36,13 @@ export const getMemberTypes: RequestHandler[] = [
       : [];
     logger.info({ traceId, count: memberTypes.length }, 'GET /api/member-types - Success');
     return success(res, { data: memberTypes });
-  },
+  }),
 ];
 
 /** POST /api/member-types - Create a new member type (PRESIDENT role required). */
 export const postMemberType: RequestHandler[] = [
   ...(CreateMemberTypeSchema ? [validate({ body: CreateMemberTypeSchema })] : []),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -58,13 +59,13 @@ export const postMemberType: RequestHandler[] = [
     });
     logger.info({ traceId, memberTypeId: memberType?.id }, 'POST /api/member-types - Success');
     return success(res, { data: memberType }, 201);
-  },
+  }),
 ];
 
 /** GET /api/member-types/:memberTypeId - Retrieve a single member type by ID. */
 export const getMemberTypeById: RequestHandler[] = [
   validate({ params: MemberTypeParamsSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -83,13 +84,13 @@ export const getMemberTypeById: RequestHandler[] = [
     if (!memberType) throw new NotFoundError('Member type not found');
     logger.info({ traceId, memberTypeId }, 'GET /api/member-types/[memberTypeId] - Success');
     return success(res, { data: memberType, message: 'Member type found' });
-  },
+  }),
 ];
 
 /** PATCH /api/member-types/:memberTypeId - Update a member type (PRESIDENT role required). */
 export const patchMemberType: RequestHandler[] = [
   ...(UpdateMemberTypeSchema ? [validate({ body: UpdateMemberTypeSchema })] : []),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -112,13 +113,13 @@ export const patchMemberType: RequestHandler[] = [
     });
     logger.info({ traceId, memberTypeId }, 'PATCH /api/member-types/[memberTypeId] - Success');
     return success(res, { data: memberType, message: 'Member type updated successfully' });
-  },
+  }),
 ];
 
 /** DELETE /api/member-types/:memberTypeId - Delete a member type (PRESIDENT role required, must have no users/plans). */
 export const deleteMemberType: RequestHandler[] = [
   validate({ params: MemberTypeParamsSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -138,5 +139,5 @@ export const deleteMemberType: RequestHandler[] = [
 
     logger.info({ traceId, memberTypeId }, 'DELETE /api/member-types/[memberTypeId] - Success');
     return success(res, { data: null, message: 'Member type deleted successfully' });
-  },
+  }),
 ];

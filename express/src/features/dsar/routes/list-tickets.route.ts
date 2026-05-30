@@ -9,6 +9,7 @@ import { findDsarTickets } from '@src/features/dsar/services';
 import { DsarQuerySchema } from '@src/features/dsar/validators';
 import { getUniqueUser } from '@src/shared/services/user/get-unique-user';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 const ROLE_HIERARCHY: Record<UserRole, number> = {
   SUPER_ADMIN: 0,
@@ -47,7 +48,7 @@ async function withRole(req: Request, role: UserRole) {
 /** GET /api/dsar - List DSAR tickets (DPO role required, with optional filters). */
 export const listTickets: RequestHandler[] = [
   validate({ query: DsarQuerySchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /api/dsar - Request started');
@@ -68,5 +69,5 @@ export const listTickets: RequestHandler[] = [
 
     logger.info({ traceId, count: result.tickets.length }, 'GET /api/dsar - Success');
     return success(res, { data: result.tickets, meta: result.pagination });
-  },
+  }),
 ];

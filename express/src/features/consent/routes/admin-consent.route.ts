@@ -12,6 +12,7 @@ import { pageNumberValidation } from '@src/shared/validators';
 import { getUniqueUser } from '@src/shared/services/user/get-unique-user';
 import { z } from 'zod';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for paginated history query. */
 const HistoryQuerySchema = z.object({
@@ -55,7 +56,7 @@ async function withRole(req: Request, role: UserRole) {
 /** GET /api/consent/all - Retrieve all consent records for the association (DPO role required). */
 export const getAllConsentRecords: RequestHandler[] = [
   validate({ query: AllConsentRecordsQuerySchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -73,13 +74,13 @@ export const getAllConsentRecords: RequestHandler[] = [
 
     logger.info({ traceId, count: records.length }, 'GET /api/consent/all - Success');
     return success(res, { data: records, meta: buildPagination(total, page) });
-  },
+  }),
 ];
 
 /** GET /api/consent/history - Retrieve the current user's consent history. */
 export const getConsentHistory: RequestHandler[] = [
   validate({ query: HistoryQuerySchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -95,7 +96,7 @@ export const getConsentHistory: RequestHandler[] = [
 
     logger.info({ traceId, userId }, 'GET /api/consent/history - Success');
     return success(res, { data: data.history, meta: data.pagination });
-  },
+  }),
 ];
 
 /** GET /api/consent/report - Generate a consent summary report (DPO role required). */

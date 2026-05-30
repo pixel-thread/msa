@@ -23,6 +23,7 @@ import { findPaymentTransactions } from '@src/features/payments/services/findPay
 import { findContributionPeriods } from '@src/features/payments/services/findContributionPeriods';
 import { pageNumberValidation } from '@src/shared/validators/common';
 import { PAGE_SIZE } from '@src/shared/constants';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 async function getAssociation(req: Request) {
   const userId = req.userId as string;
@@ -41,7 +42,7 @@ const UserPaymentsQuerySchema = z.object({
 
 export const userPayments: RequestHandler[] = [
   validate({ params: UserPaymentsParamsSchema, query: UserPaymentsQuerySchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, userId: req.params.userId },
@@ -85,7 +86,7 @@ export const userPayments: RequestHandler[] = [
       data: { user, transactions, summary },
       meta: buildPagination(total, page),
     });
-  },
+  }),
 ];
 
 const UserContributionsQuerySchema = z.object({
@@ -98,7 +99,7 @@ const UserContributionsQuerySchema = z.object({
 
 export const userContributions: RequestHandler[] = [
   validate({ params: UserContributionsParamsSchema, query: UserContributionsQuerySchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, userId: req.params.userId },
@@ -179,5 +180,5 @@ export const userContributions: RequestHandler[] = [
       data: { user, contributions, summary },
       meta: buildPagination(total, page),
     });
-  },
+  }),
 ];

@@ -79,6 +79,9 @@ async function bootstrap() {
   app.use('/api/v1/training', trainingRouter);
   app.use('/api/v1/user', userRouter);
 
+  app.get('/', (_, res) => {
+    return res.redirect(`${env.BASE_URL}`);
+  });
   /**
    * -------------------------------------------------------
    * 404 Handler

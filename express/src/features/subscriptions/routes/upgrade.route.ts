@@ -9,6 +9,7 @@ import { logger } from '@src/shared/logger';
 import { upgradeSubscription } from '@feature/subscriptions/services';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 /** Schema for subscription upgrade request. */
 const UpgradeSchema = z.object({
@@ -18,7 +19,7 @@ const UpgradeSchema = z.object({
 /** POST /api/subscriptions/upgrade - Upgrade the current user's subscription. */
 export const postUpgrade: RequestHandler[] = [
   validate({ body: UpgradeSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
@@ -34,5 +35,5 @@ export const postUpgrade: RequestHandler[] = [
     });
     logger.info({ traceId, subscriptionId: updated.id }, 'Subscription upgraded');
     return success(res, { data: updated });
-  },
+  }),
 ];

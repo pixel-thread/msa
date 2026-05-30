@@ -9,6 +9,7 @@ import { UnauthorizedError, ForbiddenError, NotFoundError } from '@src/shared/er
 import { getTransactionById } from '@src/features/payments/services/payment.service';
 import { validate } from '@src/shared/lib/validate';
 import { z } from 'zod';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 const PaymentIdParamSchema = z.object({ paymentId: z.string().uuid() });
 
@@ -25,7 +26,7 @@ async function getAssociation(req: Request) {
 
 export const getPayment: RequestHandler[] = [
   validate({ params: PaymentIdParamSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'GET /api/payments/[id] - Request started');
     const association = await getAssociation(req);
@@ -50,5 +51,5 @@ export const getPayment: RequestHandler[] = [
     }
     logger.info({ traceId, paymentId }, 'GET /api/payments/[id] - Success');
     return success(res, { data: transaction });
-  },
+  }),
 ];

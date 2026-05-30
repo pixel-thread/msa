@@ -9,10 +9,11 @@ import { findFirstMember } from '@src/features/members/services/findFirstMember'
 import { updateUser } from '@src/features/user/services';
 import { deleteRefreshTokens } from '@src/features/auth/services/delete-refresh-tokens';
 import { logger } from '@src/shared/logger';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 export const postResetPassword: RequestHandler[] = [
   validate({ body: ResetPasswordSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'POST /api/auth/reset-password - Request started');
     const { token, password } = req.body as ResetPasswordInput;
@@ -50,5 +51,5 @@ export const postResetPassword: RequestHandler[] = [
       data: true,
       message: 'Password reset successfully. Please sign in with your new password.',
     });
-  },
+  }),
 ];

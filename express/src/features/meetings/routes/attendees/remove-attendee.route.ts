@@ -11,6 +11,7 @@ import { logger } from '@src/shared/logger';
 import { z } from 'zod';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { asyncHandler } from '@src/shared/utils/async-handler';
 
 const AttendeeParamsSchema = z.object({
   meetingId: z.string('Invalid meeting ID'),
@@ -20,7 +21,7 @@ const AttendeeParamsSchema = z.object({
 /** PATCH /api/meetings/[meetingId]/attendees/[userId] - Update an attendee's role or RSVP. */
 export const patchUpdateAttendee: RequestHandler[] = [
   validate({ params: AttendeeParamsSchema, body: UpdateAttendeeSchema }),
-  async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const meetingId = req.params.meetingId as string;
@@ -63,7 +64,7 @@ export const patchUpdateAttendee: RequestHandler[] = [
       'PATCH /api/meetings/[meetingId]/attendees/[userId] - Success',
     );
     return success(res, { data: updated });
-  },
+  }),
 ];
 
 /** DELETE /api/meetings/[meetingId]/attendees/[userId] - Remove an attendee from a meeting. */
