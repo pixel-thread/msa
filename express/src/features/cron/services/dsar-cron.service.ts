@@ -2,6 +2,7 @@ import { prisma } from '@src/shared/lib/prisma';
 import { DsarStatus, AuditAction } from '@prisma/client';
 import { logAction } from '@src/shared/services/audit-logs';
 
+/** Result of checking DSAR SLA deadlines for a single association. */
 export interface DsarSlaResult {
   associationId: string;
   associationSlug: string;
@@ -12,6 +13,7 @@ export interface DsarSlaResult {
   error?: string;
 }
 
+/** Check DSAR ticket deadlines for a given association, flagging breached and at-risk tickets. */
 export async function checkDsarDeadlines(associationId: string): Promise<DsarSlaResult> {
   try {
     const now = new Date();
@@ -93,6 +95,7 @@ export async function checkDsarDeadlines(associationId: string): Promise<DsarSla
   }
 }
 
+/** Run DSAR SLA check for all active associations. */
 export async function runDsarSlaCron(): Promise<DsarSlaResult[]> {
   const associations = await prisma.association.findMany({
     where: { isActive: true },

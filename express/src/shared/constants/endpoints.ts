@@ -1,3 +1,4 @@
+/** Shared endpoint paths used across the application. */
 export const sharedEndpoints = {
   auth: {
     mfaDisable: '/auth/mfa/disable',

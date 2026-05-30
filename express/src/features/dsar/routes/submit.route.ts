@@ -19,6 +19,7 @@ async function getAssociation(req: Request) {
   return { id: user.association.id, slug: user.association.slug, name: user.association.name };
 }
 
+/** POST /api/dsar/submit - Submit a new DSAR ticket. */
 export const submitDsar: RequestHandler[] = [
   validate({ body: SubmitDsarSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

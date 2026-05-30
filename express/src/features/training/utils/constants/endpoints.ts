@@ -1,3 +1,4 @@
+/** Training feature API endpoint builders. */
 export const trainingEndpoints = {
   base: '/training/modules' as const,
   byId: (id: string) => `/training/modules/${id}`,

@@ -2,6 +2,7 @@ import { prisma } from '@lib/prisma';
 import { CreateTrainingCertificateInput } from '../validators/training';
 import { AuditAction, Prisma } from '@prisma/client';
 
+/** Parameters for creating a training certificate. */
 interface CreateCertificateProps {
   associationId: string;
   moduleId: string;
@@ -11,6 +12,7 @@ interface CreateCertificateProps {
   fileId?: string;
 }
 
+/** Create a training certificate for a user with audit logging. */
 export async function createCertificate({
   associationId,
   moduleId,

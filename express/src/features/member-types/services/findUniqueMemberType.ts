@@ -1,10 +1,12 @@
 import { prisma } from '@lib/prisma';
 
+/** Parameters for finding a unique member type. */
 interface FindUniqueMemberTypeProps {
   associationId: string;
   memberTypeId: string;
 }
 
+/** Find a single member type by ID within a specific association. */
 export async function findUniqueMemberType({
   associationId,
   memberTypeId,

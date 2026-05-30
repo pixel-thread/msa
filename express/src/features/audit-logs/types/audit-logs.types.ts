@@ -1,3 +1,4 @@
+/** Represents a single audit log entry. */
 export interface AuditLogEntry {
   id: string;
   actorId: string | null;
@@ -12,6 +13,7 @@ export interface AuditLogEntry {
   newValues: Record<string, unknown> | null;
 }
 
+/** Query parameters for filtering audit logs. */
 export interface AuditLogQuery {
   page: number;
   limit: number;

@@ -18,6 +18,7 @@ import {
 import { logger } from '@src/shared/logger';
 import { withRole } from '@src/shared/utils/with-role';
 
+/** GET /api/admin/membership-applications - List membership applications with optional status filter. */
 export const getMembershipApplicationsHandler: RequestHandler[] = [
   validate({ query: GetMembershipApplicationsQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -44,6 +45,7 @@ export const getMembershipApplicationsHandler: RequestHandler[] = [
   },
 ];
 
+/** POST /api/admin/membership-applications/:applicationId/approve - Approve a membership application and create a user. */
 export const postApproveApplication: RequestHandler[] = [
   validate({ params: MembershipApplicationParamsSchema, body: ApproveApplicationSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -99,6 +101,7 @@ export const postApproveApplication: RequestHandler[] = [
   },
 ];
 
+/** POST /api/admin/membership-applications/:applicationId/reject - Reject a membership application with a reason. */
 export const postRejectApplication: RequestHandler[] = [
   validate({ params: MembershipApplicationParamsSchema, body: RejectApplicationSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

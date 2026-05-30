@@ -3,12 +3,14 @@ import type { ZodType } from 'zod';
 import { ValidationError } from '@src/shared/errors';
 import { formatZodIssues } from '@src/shared/validators/format-zod-issues';
 
+/** Zod validation schemas for an Express request (body, query, params). */
 interface ValidationSchemas<TBody, TQuery, TParams> {
   body?: ZodType<TBody>;
   params?: ZodType<TParams>;
   query?: ZodType<TQuery>;
 }
 
+/** Defines a non-configurable, enumerable property on an object. */
 function defineProp<T extends Record<string, unknown>>(
   obj: Record<string, unknown>,
   key: string,
@@ -22,6 +24,7 @@ function defineProp<T extends Record<string, unknown>>(
   });
 }
 
+/** Express middleware that validates req.body / req.query / req.params against Zod schemas. */
 export function validate<
   TBody = never,
   TQuery = never,

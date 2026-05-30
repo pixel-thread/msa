@@ -1,6 +1,7 @@
 import { prisma } from '@lib/prisma';
 import { AuditAction, Prisma } from '@prisma/client';
 
+/** Parameters for deleting a training certificate. */
 interface DeleteCertificateProps {
   associationId: string;
   moduleId: string;
@@ -8,6 +9,7 @@ interface DeleteCertificateProps {
   actorId: string;
 }
 
+/** Delete a training certificate and its associated file with audit logging. */
 export async function deleteCertificate({
   associationId,
   moduleId,

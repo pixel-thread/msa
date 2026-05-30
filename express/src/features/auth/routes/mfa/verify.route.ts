@@ -11,8 +11,10 @@ import { updateVerificationCode } from '@src/features/auth/services/update-verif
 import { updateMember } from '@src/features/members/services/updateMember';
 import { logger } from '@src/shared/logger';
 
+/** Schema for verifying MFA — expects a 6-digit code. */
 const VerifyMfaSchema = z.object({ code: z.string().length(6, 'Code must be 6 digits') });
 
+/** POST handler to verify an MFA setup code and enable MFA for the user. */
 export const postMfaVerify: RequestHandler[] = [
   validate({ body: VerifyMfaSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

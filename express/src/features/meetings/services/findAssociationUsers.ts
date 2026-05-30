@@ -1,6 +1,7 @@
 import { prisma } from '@lib/prisma';
 import { UserStatus } from '@prisma/client';
 
+/** Props for finding association users. */
 interface FindAssociationUsersProps {
   associationId: string;
   search?: string;
@@ -11,6 +12,7 @@ interface FindAssociationUsersProps {
   };
 }
 
+/** Find active users in an association with optional search and pagination. */
 export async function findAssociationUsers({
   associationId,
   search,

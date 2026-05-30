@@ -10,8 +10,10 @@ import { logger } from '@src/shared/logger';
 import z from 'zod';
 import { withRole } from '@src/shared/utils/with-role';
 
+/** Schema for validating the route parameter containing the member ID. */
 const ParamSchema = z.object({ memberId: z.uuid() });
 
+/** Route handler for retrieving a single member by ID. Requires DPO role. */
 export const getMember: RequestHandler[] = [
   validate({ params: ParamSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

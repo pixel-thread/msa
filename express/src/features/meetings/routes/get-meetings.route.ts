@@ -14,6 +14,7 @@ import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
 
+/** GET /api/meetings - List all meetings for the association. */
 export const getMeetings: RequestHandler[] = [
   validate({ query: MeetingQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

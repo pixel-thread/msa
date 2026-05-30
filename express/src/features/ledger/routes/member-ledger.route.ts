@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { getMemberEntries } from '@src/features/ledger/services/ledger.service';
 import { logger } from '@src/shared/logger';
 
+/** Schema for paginated member ledger query. */
 const QuerySchema = z.object({
   page: pageNumberValidation,
 });
@@ -44,6 +45,7 @@ async function requireRole(req: Request, role: UserRole) {
   return user;
 }
 
+/** GET /api/ledger/member/:memberId - Retrieve ledger entries for a specific member (FINANCE role required). */
 export const getMemberLedger: RequestHandler[] = [
   validate({ query: QuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

@@ -11,6 +11,7 @@ import { getUserContributionSummary } from '@feature/payments/services/contribut
 import { LedgerQueryParams, LedgerRouteParams } from '@src/features/ledger/validators';
 import { logger } from '@src/shared/logger';
 
+/** Route handler for retrieving a member's payment ledger and contribution summary. Requires FINANCE role. */
 export const getMemberLedger: RequestHandler[] = [
   validate({ params: LedgerRouteParams, query: LedgerQueryParams }),
   async (req: Request, res: Response, _next: NextFunction) => {

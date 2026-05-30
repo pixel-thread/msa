@@ -14,6 +14,7 @@ const ParamsSchema = z.object({
   meetingId: z.string('Invalid meeting ID'),
 });
 
+/** POST /api/meetings/[meetingId]/minutes - Record a meeting minute. */
 export const postCreateMinute: RequestHandler[] = [
   validate({ params: ParamsSchema, body: CreateMeetingMinuteSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

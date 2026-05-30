@@ -44,6 +44,7 @@ async function withRole(req: Request, role: UserRole) {
   return { ...user, role: roles };
 }
 
+/** GET /api/dsar - List DSAR tickets (DPO role required, with optional filters). */
 export const listTickets: RequestHandler[] = [
   validate({ query: DsarQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

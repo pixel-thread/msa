@@ -6,6 +6,7 @@ import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
 
+/** DELETE /api/meetings/[meetingId]/minutes/[minutesId] - Delete a meeting minute. */
 export const deleteMinute = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.traceId as string) || '';
   const association = await getAssociation(req);

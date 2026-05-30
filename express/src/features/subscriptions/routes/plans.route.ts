@@ -17,6 +17,7 @@ import { withRole } from '@src/shared/utils/with-role';
 import { logger } from '@src/shared/logger';
 import { z } from 'zod';
 
+/** Schema for updating a subscription plan (all fields optional). */
 const UpdatePlanSchema = z.object({
   name: z.string().min(1).optional(),
   description: z.string().optional(),
@@ -28,12 +29,15 @@ const UpdatePlanSchema = z.object({
   memberTypeId: z.uuid().optional().nullable(),
 });
 
+/** Schema for setting a default plan. */
 const SetDefaultPlanSchema = z.object({
   planId: z.uuid(),
 });
 
+/** Schema for plan ID path parameter. */
 const PlanParamsSchema = z.object({ planId: z.string().uuid() });
 
+/** GET /api/subscriptions/plans - List subscription plans. */
 export const getPlansHandler: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -45,6 +49,7 @@ export const getPlansHandler: RequestHandler[] = [
   },
 ];
 
+/** POST /api/subscriptions/plans - Create a new subscription plan (SUPER_ADMIN role required). */
 export const createPlanHandler: RequestHandler[] = [
   validate({ body: CreateSubscriptionPlanSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -58,6 +63,7 @@ export const createPlanHandler: RequestHandler[] = [
   },
 ];
 
+/** POST /api/subscriptions/plans/default - Set a plan as the default (SUPER_ADMIN role required). */
 export const setDefaultPlanHandler: RequestHandler[] = [
   validate({ body: SetDefaultPlanSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -71,6 +77,7 @@ export const setDefaultPlanHandler: RequestHandler[] = [
   },
 ];
 
+/** PATCH /api/subscriptions/plans/:planId - Update a subscription plan (SUPER_ADMIN role required). */
 export const updatePlanHandler: RequestHandler[] = [
   validate({ body: UpdatePlanSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -89,6 +96,7 @@ export const updatePlanHandler: RequestHandler[] = [
   },
 ];
 
+/** DELETE /api/subscriptions/plans/:planId - Soft-delete a plan (PRESIDENT role required). */
 export const deletePlanHandler: RequestHandler[] = [
   validate({ params: PlanParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

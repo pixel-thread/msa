@@ -3,6 +3,7 @@ import { env } from '@src/env';
 import { getStorageProvider } from '@src/shared/services/storage';
 import { logger } from '@src/shared/logger';
 
+/** Result of a file upload containing key, URL, MIME type, and size. */
 export interface UploadResult {
   key: string;
   url: string;
@@ -10,6 +11,7 @@ export interface UploadResult {
   sizeBytes: number;
 }
 
+/** Uploads a file to the configured storage provider. Returns the upload result metadata. */
 export async function uploadToBucket(
   file: File,
   pathPrefix: string,
@@ -61,6 +63,7 @@ export async function uploadToBucket(
   };
 }
 
+/** Deletes a file from Supabase storage by its storage key. */
 export async function deleteFromBucket(storageKey: string): Promise<void> {
   const bucket = env.STORAGE_BUCKET;
   const { error } = await supabase.storage.from(bucket).remove([storageKey]);

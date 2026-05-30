@@ -3,13 +3,19 @@ import { prisma } from '@lib/prisma';
 import { NotFoundError } from '@src/shared/errors';
 import { uploadToBucket } from '@src/shared/lib/supabase/storage';
 
+/** Props for uploading an image to an announcement. */
 interface UploadImageProps {
+  /** The announcement to attach the image to. */
   announcementId: string;
+  /** The association scoping the upload. */
   associationId: string;
+  /** The image file to upload. */
   file: File;
+  /** The user uploading the file. */
   uploadedById: string;
 }
 
+/** Upload an image for an announcement. Replaces any existing image. */
 export async function uploadAnnouncementImage({
   announcementId,
   associationId,

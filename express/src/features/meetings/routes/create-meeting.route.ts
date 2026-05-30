@@ -11,6 +11,7 @@ import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
 
+/** POST /api/meetings - Create a new meeting with agenda items. */
 export const postCreateMeeting: RequestHandler[] = [
   validate({ body: CreateMeetingSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

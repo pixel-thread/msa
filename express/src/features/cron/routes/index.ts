@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { postSubscriptionExpiry, postDsarSla, postAnonymize } from './cron-jobs.route';
 
+/** Cron-job feature router. */
 const router = Router();
 
 router.post('/subscription-expiry', postSubscriptionExpiry);

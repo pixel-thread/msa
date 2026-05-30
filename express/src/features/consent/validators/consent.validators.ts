@@ -37,6 +37,7 @@ export const ConsentReceiptParamsSchema = z.object({
   receiptId: z.uuid('Invalid receipt ID'),
 });
 
+/** Type derived from ConsentReceiptParamsSchema. */
 export type ConsentReceiptParamsInput = z.infer<typeof ConsentReceiptParamsSchema>;
 
 /**
@@ -47,6 +48,7 @@ export const UpdateConsentReceiptSchema = z.object({
   channel: z.enum(['web', 'mobile', 'email']).optional(),
 });
 
+/** Type derived from UpdateConsentReceiptSchema. */
 export type UpdateConsentReceiptInput = z.infer<typeof UpdateConsentReceiptSchema>;
 
 /**
@@ -59,4 +61,5 @@ export const AllConsentRecordsQuerySchema = z.object({
   search: z.string().optional(),
 });
 
+/** Type derived from AllConsentRecordsQuerySchema. */
 export type AllConsentRecordsQueryInput = z.infer<typeof AllConsentRecordsQuerySchema>;

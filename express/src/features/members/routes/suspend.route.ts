@@ -16,10 +16,12 @@ import { updateMember } from '@src/features/members/services/updateMember';
 import { logger } from '@src/shared/logger';
 import z from 'zod';
 
+/** Schema for validating the route parameter containing the member ID to suspend. */
 const SuspenseUserRouteParams = z.object({
   memberId: z.uuid(),
 });
 
+/** Route handler for suspending a member. Requires PRESIDENT role. */
 export const suspendMember: RequestHandler[] = [
   validate({ params: SuspenseUserRouteParams }),
   async (req: Request, res: Response, _next: NextFunction) => {

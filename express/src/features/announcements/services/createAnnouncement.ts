@@ -3,9 +3,13 @@ import { AnnouncementStatus, AnnouncementPriority, UserRole } from '@prisma/clie
 import { NotFoundError } from '@src/shared/errors';
 import { sendAnnouncementNotifications } from './sendAnnouncementNotifications';
 
+/** Props for creating an announcement. */
 interface CreateAnnouncementProps {
+  /** The association this announcement belongs to. */
   associationId: string;
+  /** The user creating the announcement. */
   authorId: string;
+  /** The announcement content data. */
   data: {
     title: string;
     summary?: string;
@@ -18,9 +22,11 @@ interface CreateAnnouncementProps {
     publishedAt?: Date;
     expiresAt?: Date;
   };
+  /** Whether to send push notifications upon publishing. */
   sendNotification?: boolean;
 }
 
+/** Create a new announcement. Optionally sends push notifications if published. */
 export async function createAnnouncement({
   associationId,
   authorId,

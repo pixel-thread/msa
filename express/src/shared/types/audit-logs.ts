@@ -1,3 +1,4 @@
+/** A single audit-log entry with actor details and changed values. */
 export interface AuditLogEntry {
   id: string;
   actorId: string | null;
@@ -12,6 +13,7 @@ export interface AuditLogEntry {
   newValues: Record<string, unknown> | null;
 }
 
+/** Query filters for retrieving audit logs. */
 export interface AuditLogQuery {
   page: number;
   action?: string;

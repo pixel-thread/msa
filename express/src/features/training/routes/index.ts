@@ -30,8 +30,12 @@ import {
 } from './supplements.route';
 import { auth } from '@src/middleware/auth';
 
+/** Training feature router - all routes require authentication. */
 const router: Router = Router();
+
 router.use(auth);
+
+
 
 router.get('/', getModules);
 router.post('/', postModules);

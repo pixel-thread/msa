@@ -2,12 +2,16 @@ import { prisma } from '@lib/prisma';
 import { NotFoundError } from '@src/shared/errors';
 import { AgendaOperationInput } from '../validators/agenda-items';
 
+/** Props for processing agenda operations. */
 interface ProcessAgendaOperationsProps {
   meetingId: string;
   associationId: string;
   operations: AgendaOperationInput['operations'];
 }
 
+/**
+ * Process bulk agenda operations (CREATE, UPDATE, DELETE, REORDER) within a transaction.
+ */
 export async function processAgendaOperations({
   meetingId,
   associationId,

@@ -3,12 +3,14 @@ import { Prisma } from '@prisma/client';
 import { NotFoundError } from '@src/shared/errors';
 import { CreateMeetingMinuteInput, UpdateMeetingMinuteInput } from '../validators/minutes';
 
+/** Props for creating a meeting minute. */
 interface CreateMeetingMinuteProps {
   meetingId: string;
   associationId: string;
   data: CreateMeetingMinuteInput;
 }
 
+/** Props for updating a meeting minute. */
 interface UpdateMeetingMinuteProps {
   meetingId: string;
   minuteId: string;
@@ -16,6 +18,7 @@ interface UpdateMeetingMinuteProps {
   data: UpdateMeetingMinuteInput;
 }
 
+/** Create a new meeting minute record. */
 export async function createMeetingMinute({
   meetingId,
   associationId,
@@ -37,6 +40,7 @@ export async function createMeetingMinute({
   });
 }
 
+/** Update an existing meeting minute record. */
 export async function updateMeetingMinute({
   meetingId,
   minuteId,
@@ -62,18 +66,22 @@ export async function updateMeetingMinute({
   });
 }
 
+/** Props for querying meeting minutes. */
 type GetMeetingMinuitesProps = {
   where: Prisma.MeetingMinutesWhereInput;
 };
 
+/** Get all minutes for a meeting. */
 export async function getMeetingMinuites({ where }: GetMeetingMinuitesProps) {
   return await prisma.meetingMinutes.findMany({ where });
 }
 
+/** Props for deleting a meeting minute. */
 type DeleteMeetingMinuiteProps = {
   where: Prisma.MeetingMinutesWhereUniqueInput;
 };
 
+/** Delete a meeting minute record. */
 export async function deleteMeetingMinute({ where }: DeleteMeetingMinuiteProps) {
   return await prisma.meetingMinutes.delete({ where });
 }

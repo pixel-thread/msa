@@ -1,6 +1,7 @@
 import { prisma } from '@src/shared/lib/prisma';
 import { UserRole } from '@prisma/client';
 
+/** Find users with high-level roles (DPO, PRESIDENT, SUPER_ADMIN) in an association. */
 export async function findAssociationAdmins(associationId: string) {
   return await prisma.user.findMany({
     where: {

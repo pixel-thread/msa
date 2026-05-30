@@ -31,6 +31,7 @@ if (!isProduction) {
   });
 }
 
+/** Application-wide Pino logger instance with Postgres transport and console output in dev. */
 export const logger = pino(
   {
     level: 'trace',

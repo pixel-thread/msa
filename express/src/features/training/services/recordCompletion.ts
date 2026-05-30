@@ -2,6 +2,7 @@ import { prisma } from '@lib/prisma';
 import { RecordCompletionInput, AdminRecordCompletionInput } from '../validators/training';
 import { AuditAction, Prisma } from '@prisma/client';
 
+/** Parameters for recording a completion. */
 interface RecordCompletionProps {
   associationId: string;
   userId: string;
@@ -9,6 +10,7 @@ interface RecordCompletionProps {
   data: RecordCompletionInput;
 }
 
+/** Record a training completion for the current user with audit logging. */
 export async function recordCompletion({
   associationId,
   userId,
@@ -48,12 +50,14 @@ export async function recordCompletion({
   });
 }
 
+/** Parameters for admin recording a completion. */
 interface AdminRecordCompletionProps {
   associationId: string;
   actorId: string;
   data: AdminRecordCompletionInput;
 }
 
+/** Admin-record a training completion for any user with audit logging. */
 export async function adminRecordCompletion({
   associationId,
   actorId,

@@ -2,6 +2,7 @@ import { prisma } from '@lib/prisma';
 import { UpdateSupplementInput } from '../validators/training';
 import { AuditAction, Prisma } from '@prisma/client';
 
+/** Parameters for updating a training supplement. */
 interface UpdateSupplementProps {
   associationId: string;
   moduleId: string;
@@ -12,6 +13,7 @@ interface UpdateSupplementProps {
   fileId?: string;
 }
 
+/** Update a training supplement, optionally replacing the file, with audit logging. */
 export async function updateSupplement({
   associationId,
   moduleId,

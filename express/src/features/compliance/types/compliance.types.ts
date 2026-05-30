@@ -1,3 +1,4 @@
+/** Result of a single compliance check execution. */
 export interface ComplianceCheckResult {
   checkType: string;
   status: string;
@@ -8,6 +9,7 @@ export interface ComplianceCheckResult {
   checkedAt: Date;
 }
 
+/** A single item of compliance evidence (consent, DSAR, payments, etc.). */
 export interface ComplianceEvidenceItem {
   type: string;
   description: string;
@@ -16,6 +18,7 @@ export interface ComplianceEvidenceItem {
   metadata?: Record<string, unknown>;
 }
 
+/** Full compliance evidence report covering all sections. */
 export interface ComplianceEvidence {
   generatedAt: Date;
   associationId: string;
@@ -32,6 +35,7 @@ export interface ComplianceEvidence {
   };
 }
 
+/** A stored compliance check record. */
 export interface ComplianceRecord {
   id: string;
   checkType: string;

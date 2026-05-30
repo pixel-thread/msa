@@ -2,6 +2,7 @@ import { prisma } from '@lib/prisma';
 import { PAGE_SIZE } from '@src/shared/constants';
 import { AuditAction, Prisma, TrainingAssignmentStatus } from '@prisma/client';
 
+/** Parameters for completing a training assignment. */
 interface CompleteAssignmentProps {
   associationId: string;
   moduleId: string;
@@ -14,6 +15,7 @@ interface CompleteAssignmentProps {
   certificateNumber?: string;
 }
 
+/** Mark a training assignment as complete, create completion record, and optionally issue a certificate. */
 export async function completeAssignment({
   associationId,
   moduleId,
@@ -120,12 +122,14 @@ export async function completeAssignment({
   });
 }
 
+/** Parameters for retrieving assigned users. */
 interface GetAssignedUsersProps {
   associationId: string;
   moduleId: string;
   page?: number;
 }
 
+/** Retrieve paginated list of users assigned to a module with their completion status. */
 export async function getAssignedUsers({
   associationId,
   moduleId,

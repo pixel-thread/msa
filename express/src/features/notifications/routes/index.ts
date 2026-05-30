@@ -5,6 +5,7 @@ import {
   patchNotificationStatus,
 } from './notification-actions.route';
 
+/** Notifications router — aggregates all notification-related route handlers. */
 const router: Router = Router();
 
 router.post('/register', postRegisterPushToken);

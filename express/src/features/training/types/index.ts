@@ -1,3 +1,4 @@
+/** Training module with nested completion records for the current user. */
 export interface TrainingModuleWithCompletions {
   id: string;
   associationId: string;
@@ -14,6 +15,7 @@ export interface TrainingModuleWithCompletions {
   completions: TrainingCompletionItem[];
 }
 
+/** A training completion with the associated module details. */
 export interface TrainingCompletionWithModule {
   id: string;
   userId: string;
@@ -36,6 +38,7 @@ export interface TrainingCompletionWithModule {
   };
 }
 
+/** Summary of a training module for list views (includes certificate template). */
 export interface TrainingModuleListItem {
   id: string;
   title: string;
@@ -54,6 +57,7 @@ export interface TrainingModuleListItem {
   updatedAt: string;
 }
 
+/** A training assignment linking a user to a module. */
 export interface TrainingAssignment {
   id: string;
   moduleId: string;
@@ -70,6 +74,7 @@ export interface TrainingAssignment {
   };
 }
 
+/** A training completion record with user and module info. */
 export interface TrainingCompletionItem {
   id: string;
   userId: string;
@@ -87,6 +92,7 @@ export interface TrainingCompletionItem {
   };
 }
 
+/** A training supplement file attached to a module. */
 export interface TrainingSupplementItem {
   id: string;
   moduleId: string;
@@ -105,6 +111,7 @@ export interface TrainingSupplementItem {
   updatedAt: string;
 }
 
+/** A certificate template for a training module. */
 export interface TrainingCertificateTemplateItem {
   id: string;
   associationId: string;
@@ -116,6 +123,7 @@ export interface TrainingCertificateTemplateItem {
   updatedAt: string;
 }
 
+/** A training certificate issued to a user. */
 export interface TrainingCertificateItem {
   id: string;
   userId: string;
@@ -134,6 +142,7 @@ export interface TrainingCertificateItem {
   updatedAt: string;
 }
 
+/** A user assigned to a module with their completion status. */
 export interface AssignedUserWithCompletion {
   id: string;
   moduleId: string;

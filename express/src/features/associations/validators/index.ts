@@ -3,6 +3,7 @@ import { z } from 'zod';
 export { CreateAssociationSchema } from '@validator/associations';
 export type { CreateAssociationInput } from '@validator/associations';
 
+/** Schema for validating association update requests. Only included fields are updated. */
 export const UpdateAssociationSchema = z.object({
   slug: z
     .string()
@@ -28,4 +29,5 @@ export const UpdateAssociationSchema = z.object({
     .optional(),
 });
 
+/** Input type inferred from UpdateAssociationSchema. */
 export type UpdateAssociationInput = z.infer<typeof UpdateAssociationSchema>;

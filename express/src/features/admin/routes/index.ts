@@ -14,10 +14,13 @@ import {
 } from './membership-applications.route';
 import { auth } from '@src/middleware/auth';
 
+/** Admin feature router - all routes require authentication. */
 const router: Router = Router();
 router.use(auth);
 
 router.get('/associations', getAssociations);
+
+
 router.post('/associations', postAssociation);
 router.get('/associations/:id', getAssociationById);
 router.put('/associations/:id', putAssociation);

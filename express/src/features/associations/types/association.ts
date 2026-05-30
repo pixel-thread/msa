@@ -1,3 +1,4 @@
+/** Represents an association entity. */
 export interface Association {
   id: string;
   slug: string;

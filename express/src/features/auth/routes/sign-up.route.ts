@@ -13,6 +13,7 @@ import { findFirstMember } from '@src/features/members/services/findFirstMember'
 import { createMembershipApplication } from '@src/features/membership-applications/services';
 import { logger } from '@src/shared/logger';
 
+/** POST handler for user sign-up. Validates the application and creates a pending membership application. */
 export const postSignUp: RequestHandler[] = [
   validate({ body: MembershipApplicationSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

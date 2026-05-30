@@ -3,12 +3,14 @@ import { CreateMemberTypeInput } from '../validators';
 import { AuditAction, Prisma } from '@prisma/client';
 import { ConflictError } from '@src/shared/errors';
 
+/** Parameters for creating a member type. */
 interface CreateMemberTypeProps {
   associationId: string;
   actorId: string;
   data: CreateMemberTypeInput;
 }
 
+/** Create a member type with duplicate-level checking and audit logging. */
 export async function createMemberType({ associationId, actorId, data }: CreateMemberTypeProps) {
   const existing = await prisma.memberType.findFirst({
     where: { associationId, level: data.level },

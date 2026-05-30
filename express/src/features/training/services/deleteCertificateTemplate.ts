@@ -1,6 +1,7 @@
 import { prisma } from '@lib/prisma';
 import { AuditAction, Prisma } from '@prisma/client';
 
+/** Parameters for deleting a certificate template. */
 interface DeleteCertificateTemplateProps {
   associationId: string;
   moduleId: string;

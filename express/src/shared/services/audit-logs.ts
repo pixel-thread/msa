@@ -4,6 +4,7 @@ import type { AuditLogEntry, AuditLogQuery } from '@src/shared/types/audit-logs'
 import { buildPagination } from '@src/shared/utils/build-pagination';
 import { PAGE_SIZE } from '../constants';
 
+/** Parameters for creating an audit log entry. */
 interface LogActionParams {
   actorId: string;
   action: AuditAction;
@@ -17,6 +18,7 @@ interface LogActionParams {
   traceId?: string;
 }
 
+/** Persists an audit log entry for a tracked action. */
 export async function logAction(params: LogActionParams) {
   const {
     actorId,
@@ -47,6 +49,7 @@ export async function logAction(params: LogActionParams) {
   });
 }
 
+/** Queries audit logs with filtering and pagination. */
 export async function findAuditLogs(
   associationId: string,
   query: AuditLogQuery,
@@ -102,6 +105,7 @@ export async function findAuditLogs(
   };
 }
 
+/** Returns aggregate audit-log stats (counts over 7d / 30d / total / top actions). */
 export async function getAuditLogStats(associationId: string) {
   const now = new Date();
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);

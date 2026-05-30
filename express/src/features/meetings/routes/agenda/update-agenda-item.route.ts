@@ -16,6 +16,7 @@ const UpdateAgendaItemSchema = z.object({
   order: z.number().int().optional(),
 });
 
+/** PATCH /api/meetings/[meetingId]/agenda/[itemId] - Update an agenda item. */
 export const patchUpdateAgendaItem: RequestHandler[] = [
   validate({ body: UpdateAgendaItemSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

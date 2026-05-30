@@ -1,3 +1,4 @@
+/** Announcements services barrel export. */
 export * from './createAnnouncement';
 export * from './updateAnnouncement';
 export * from './deleteAnnouncement';

@@ -10,6 +10,7 @@ import { waiveSubscription } from '@feature/subscriptions/services';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
 
+/** POST /api/subscriptions/waive - Waive a subscription (SECRETARY role required). */
 export const postWaive: RequestHandler[] = [
   validate({ body: WaiveSubscriptionSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

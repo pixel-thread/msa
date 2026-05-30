@@ -16,6 +16,7 @@ const MeetingParamsSchema = z.object({
   meetingId: z.string('Invalid meeting ID'),
 });
 
+/** GET /api/meetings/[meetingId]/attendees - List all attendees for a meeting. */
 export const getAttendees: RequestHandler[] = [
   validate({ params: MeetingParamsSchema, query: MeetingQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

@@ -6,6 +6,7 @@ import { getAuthCachedUser, cacheAuthUser } from '@src/features/auth/lib/cache';
 import { env } from '@src/env';
 import { logger } from '@src/shared/logger';
 
+/** GET handler to fetch the current authenticated user's profile. */
 export const getMe = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.traceId as string) || '';
   const userId = req.userId as string;
@@ -24,7 +25,9 @@ export const getMe = async (req: Request, res: Response, _next: NextFunction) =>
   const user = await getUniqueUser({ where: { id: userId } });
   if (!user || user.status !== 'ACTIVE') throw new UnauthorizedError('User not found or inactive');
 
-  if (env.NODE_ENV === 'production') await cacheAuthUser(userId, user);
+  if (env.NODE_ENV === 'production') {
+    await cacheAuthUser(userId, user);
+  }
 
   logger.info({ traceId, userId }, 'GET /api/auth/me - Success');
   return success(res, { message: 'User fetched successfully', data: user });

@@ -3,11 +3,14 @@ import { Prisma } from '@prisma/client';
 import { PAGE_SIZE } from '@src/shared/constants';
 import { buildPagination } from '@src/shared/utils';
 
+/** Parameters for paginated association lookup. */
 type FindManyProps = {
   where?: Prisma.AssociationWhereInput;
   orderBy?: Prisma.AssociationOrderByWithRelationInput;
   page?: number;
 };
+
+/** Find multiple associations with pagination support. */
 export async function findManyAssociation({ page = 1, where, orderBy }: FindManyProps) {
   const [associations, total] = await prisma.$transaction([
     prisma.association.findMany({

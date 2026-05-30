@@ -14,6 +14,7 @@ import {
   AnnouncementQuerySchema,
 } from '@src/features/announcements/validators';
 
+/** GET handler to list announcements with optional filters and pagination. */
 export const getAnnouncements: RequestHandler[] = [
   validate({ query: AnnouncementQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -73,6 +74,7 @@ export const getAnnouncements: RequestHandler[] = [
   },
 ];
 
+/** POST handler to create a new announcement. Requires SECRETARY role or higher. */
 export const postAnnouncement: RequestHandler[] = [
   validate({ body: CreateAnnouncementSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

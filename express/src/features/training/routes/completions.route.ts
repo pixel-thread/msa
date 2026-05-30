@@ -18,21 +18,25 @@ import { getAssociation } from '@src/shared/services/association/get-association
 import { withRole } from '@src/shared/utils/with-role';
 import { z } from 'zod';
 
+/** Schema for module ID path parameter. */
 const ModuleParamsSchema = z.object({
   moduleId: z.string().uuid('Invalid module ID'),
 });
 
+/** Schema for module + user assignment path parameters. */
 const AssignmentParamsSchema = z.object({
   moduleId: z.string().uuid('Invalid module ID'),
   userId: z.string().uuid('Invalid user ID'),
 });
 
+/** Schema for completion metadata. */
 const MetadataSchema = z.object({
   scorePercent: z.number().min(0).max(100).optional(),
   certificateOption: z.enum(['none', 'global', 'custom']).default('none'),
   certificateNumber: z.string().max(100).optional(),
 });
 
+/** GET /training/modules/:moduleId/complete - List completions for a module. */
 export const getModuleCompletions: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -59,6 +63,7 @@ export const getModuleCompletions: RequestHandler[] = [
   },
 ];
 
+/** POST /training/modules/:moduleId/complete - Record a completion for the current user. */
 export const postModuleComplete: RequestHandler[] = [
   validate({ params: ModuleParamsSchema, body: RecordCompletionSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -93,6 +98,7 @@ export const postModuleComplete: RequestHandler[] = [
   },
 ];
 
+/** POST /training/modules/:moduleId/assignments/:userId/complete - Mark an assignment as complete (SECRETARY role required). */
 export const postAdminComplete: RequestHandler[] = [
   validate({ params: AssignmentParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {

@@ -19,6 +19,7 @@ import {
   MemberTypeParamsSchema,
 } from '@feature/member-types/validators';
 
+/** GET /api/member-types - List all member types for the current association. */
 export const getMemberTypes: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -37,6 +38,7 @@ export const getMemberTypes: RequestHandler[] = [
   },
 ];
 
+/** POST /api/member-types - Create a new member type (PRESIDENT role required). */
 export const postMemberType: RequestHandler[] = [
   ...(CreateMemberTypeSchema ? [validate({ body: CreateMemberTypeSchema })] : []),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -59,6 +61,7 @@ export const postMemberType: RequestHandler[] = [
   },
 ];
 
+/** GET /api/member-types/:memberTypeId - Retrieve a single member type by ID. */
 export const getMemberTypeById: RequestHandler[] = [
   validate({ params: MemberTypeParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -83,6 +86,7 @@ export const getMemberTypeById: RequestHandler[] = [
   },
 ];
 
+/** PATCH /api/member-types/:memberTypeId - Update a member type (PRESIDENT role required). */
 export const patchMemberType: RequestHandler[] = [
   ...(UpdateMemberTypeSchema ? [validate({ body: UpdateMemberTypeSchema })] : []),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -111,6 +115,7 @@ export const patchMemberType: RequestHandler[] = [
   },
 ];
 
+/** DELETE /api/member-types/:memberTypeId - Delete a member type (PRESIDENT role required, must have no users/plans). */
 export const deleteMemberType: RequestHandler[] = [
   validate({ params: MemberTypeParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

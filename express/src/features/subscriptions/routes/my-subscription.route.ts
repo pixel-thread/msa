@@ -10,10 +10,12 @@ import { getMySubscription } from '@feature/subscriptions/services';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
 
+/** Schema for paginated my-subscription query. */
 const MySubscriptionQuerySchema = z.object({
   page: pageNumberValidation,
 });
 
+/** GET /api/subscriptions/my - Retrieve the current user's subscriptions. */
 export const getMySubscriptionHandler: RequestHandler[] = [
   validate({ query: MySubscriptionQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

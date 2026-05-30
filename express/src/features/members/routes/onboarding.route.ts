@@ -8,6 +8,7 @@ import { updateMember } from '@src/features/members/services/updateMember';
 import { logger } from '@src/shared/logger';
 import { z } from 'zod';
 
+/** Schema for validating the onboarding request body. */
 const OnboardingSchema = z.object({
   dateOfJoiningGovt: z
     .string()
@@ -21,6 +22,7 @@ const OnboardingSchema = z.object({
   designation: z.string().min(2).max(100).trim(),
 });
 
+/** Route handler for completing member onboarding (sets initial profile details). */
 export const onboarding: RequestHandler[] = [
   validate({ body: OnboardingSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

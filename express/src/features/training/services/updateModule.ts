@@ -2,6 +2,7 @@ import { prisma } from '@lib/prisma';
 import { UpdateTrainingModuleInput } from '../validators/training';
 import { AuditAction, Prisma } from '@prisma/client';
 
+/** Parameters for updating a training module. */
 interface UpdateModuleProps {
   associationId: string;
   moduleId: string;
@@ -9,6 +10,7 @@ interface UpdateModuleProps {
   data: UpdateTrainingModuleInput;
 }
 
+/** Update a training module with old/new value audit logging. */
 export async function updateModule({ associationId, moduleId, actorId, data }: UpdateModuleProps) {
   return await prisma.$transaction(async (tx) => {
     const oldModule = await tx.trainingModule.findUniqueOrThrow({

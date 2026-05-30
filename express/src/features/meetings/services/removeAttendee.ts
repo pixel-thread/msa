@@ -1,12 +1,14 @@
 import { prisma } from '@lib/prisma';
 import { NotFoundError, ForbiddenError } from '@src/shared/errors';
 
+/** Props for removing an attendee from a meeting. */
 interface RemoveAttendeeProps {
   meetingId: string;
   associationId: string;
   userId: string;
 }
 
+/** Remove a user from a meeting's attendee list. */
 export async function removeAttendee({ meetingId, associationId, userId }: RemoveAttendeeProps) {
   const meeting = await prisma.meeting.findFirst({
     where: { id: meetingId, associationId },

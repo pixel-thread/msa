@@ -16,8 +16,10 @@ import { findFirstMember } from '@src/features/members/services/findFirstMember'
 import { createVerificationCode } from '@src/features/auth/services/create-verification-code';
 import { logger } from '@src/shared/logger';
 
+/** Schema for setting up MFA — requires the user's current password. */
 const SetupMfaSchema = z.object({ password: z.string().min(1, 'Password is required') });
 
+/** POST handler to initiate MFA setup. Verifies password and sends a verification code. */
 export const postMfaSetup: RequestHandler[] = [
   validate({ body: SetupMfaSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

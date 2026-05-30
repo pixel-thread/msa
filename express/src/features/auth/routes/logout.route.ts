@@ -8,6 +8,7 @@ import { updateRefreshTokens } from '@src/features/auth/services/update-refresh-
 import { env } from '@src/env';
 import { logger } from '@src/shared/logger';
 
+/** POST handler for logging out. Revokes the refresh token and clears auth cookies. */
 export const postLogout: RequestHandler[] = [
   validate({ body: SignOutSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

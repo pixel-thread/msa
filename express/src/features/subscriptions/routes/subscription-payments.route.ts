@@ -10,14 +10,17 @@ import { getSubscriptionPayments } from '@feature/subscriptions/services';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
 
+/** Schema for subscription ID path parameter. */
 const SubscriptionParamsSchema = z.object({
   subscriptionId: z.uuid('Invalid subscription ID'),
 });
 
+/** Schema for paginated subscription payments query. */
 const SubscriptionQuerySchema = z.object({
   page: pageNumberValidation,
 });
 
+/** GET /api/subscriptions/:subscriptionId/payments - Retrieve payments for a subscription. */
 export const getSubscriptionPaymentsHandler: RequestHandler[] = [
   validate({ params: SubscriptionParamsSchema, query: SubscriptionQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

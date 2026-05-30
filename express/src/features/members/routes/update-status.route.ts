@@ -11,14 +11,17 @@ import { updateMember } from '@src/features/members/services/updateMember';
 import { logger } from '@src/shared/logger';
 import z from 'zod';
 
+/** Schema for validating the request body when updating a member's status. */
 const UpdateUserStatusSchema = z.object({
   status: z.nativeEnum(UserStatus),
 });
 
+/** Schema for validating the route parameter containing the member ID. */
 const UpdateUserStatusParamsSchema = z.object({
   memberId: z.uuid(),
 });
 
+/** Route handler for updating a member's status. Requires PRESIDENT role. */
 export const updateStatus: RequestHandler[] = [
   validate({ body: UpdateUserStatusSchema, params: UpdateUserStatusParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

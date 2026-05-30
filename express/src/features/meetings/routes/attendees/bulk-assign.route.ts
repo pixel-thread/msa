@@ -10,6 +10,7 @@ import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
 
+/** POST /api/meetings/[meetingId]/attendees/bulk - Bulk assign attendees to a meeting. */
 export const postBulkAssignAttendees: RequestHandler[] = [
   validate({ body: BulkAssignAttendeesSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

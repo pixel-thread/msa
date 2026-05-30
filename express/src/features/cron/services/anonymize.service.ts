@@ -2,6 +2,7 @@ import { prisma } from '@src/shared/lib/prisma';
 import { UserStatus, AuditAction } from '@prisma/client';
 import { logAction } from '@src/shared/services/audit-logs';
 
+/** Result of anonymizing expired users for a single association. */
 export interface AnonymizeResult {
   associationId: string;
   associationSlug: string;
@@ -10,6 +11,7 @@ export interface AnonymizeResult {
   error?: string;
 }
 
+/** Anonymize users whose data retention period has expired for a given association. */
 export async function anonymizeExpiredUsers(associationId: string): Promise<AnonymizeResult> {
   try {
     const now = new Date();
@@ -90,6 +92,7 @@ export async function anonymizeExpiredUsers(associationId: string): Promise<Anon
   }
 }
 
+/** Run anonymization for all active associations. */
 export async function runAnonymizeCron(): Promise<AnonymizeResult[]> {
   const associations = await prisma.association.findMany({
     where: { isActive: true },

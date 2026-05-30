@@ -16,6 +16,7 @@ const MeetingParamsSchema = z.object({
   meetingId: z.string('Invalid meeting ID'),
 });
 
+/** PUT /api/meetings/[meetingId]/attendees - Bulk replace attendees for a meeting. */
 export const putBulkAssignAttendees: RequestHandler[] = [
   validate({ params: MeetingParamsSchema, body: BulkAssignAttendeesSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

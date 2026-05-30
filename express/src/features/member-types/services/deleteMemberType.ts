@@ -2,12 +2,14 @@ import { prisma } from '@lib/prisma';
 import { AuditAction, Prisma } from '@prisma/client';
 import { BadRequestError } from '@src/shared/errors';
 
+/** Parameters for deleting a member type. */
 interface DeleteMemberTypeProps {
   associationId: string;
   actorId: string;
   memberTypeId: string;
 }
 
+/** Delete a member type if it has no assigned users or linked subscription plans. */
 export async function deleteMemberType({
   associationId,
   actorId,

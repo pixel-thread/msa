@@ -10,6 +10,7 @@ import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
 
+/** GET handler to list complaints with optional filters and pagination. */
 export const listComplaints: RequestHandler[] = [
   validate({ query: ComplaintQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -51,6 +52,7 @@ export const listComplaints: RequestHandler[] = [
   },
 ];
 
+/** POST handler to create a new compliance complaint. */
 export const createComplaintHandler: RequestHandler[] = [
   validate({ body: CreateComplaintSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

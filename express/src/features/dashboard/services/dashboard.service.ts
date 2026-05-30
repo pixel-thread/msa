@@ -1,6 +1,7 @@
 import { prisma } from '@src/shared/lib/prisma';
 import { PaymentStatus, ContributionStatus, Prisma } from '@prisma/client';
 
+/** Shape of the dashboard overview response. */
 export type DashboardOverview = {
   stats: {
     totalMembers: number;
@@ -41,12 +42,14 @@ export type DashboardOverview = {
   }>;
 };
 
+/** Format a date as a YYYY-MM month key. */
 function toMonthKey(date: Date): string {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
   return `${y}-${m}`;
 }
 
+/** Compute the full dashboard overview for a given association. */
 export async function getDashboardOverview(associationId: string): Promise<DashboardOverview> {
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -138,6 +141,7 @@ export async function getDashboardOverview(associationId: string): Promise<Dashb
   };
 }
 
+/** Build revenue-over-time series from payment transactions, grouped by month. */
 function buildRevenueOverTime(
   transactions: Array<{
     amount: Prisma.Decimal;
@@ -161,6 +165,7 @@ function buildRevenueOverTime(
   return fillMonthlyGaps(grouped, since);
 }
 
+/** Group users by the month they joined and count new members. */
 function buildMemberCountByMonth(
   users: Array<{ createdAt: Date }>,
 ): Array<{ month: string; newMembers: number }> {
@@ -175,6 +180,7 @@ function buildMemberCountByMonth(
   }));
 }
 
+/** Build a complete month-by-month member-growth series with running totals. */
 function buildMemberGrowthSeries(
   raw: Array<{ month: string; newMembers: number }>,
   since: Date,
@@ -197,6 +203,7 @@ function buildMemberGrowthSeries(
   });
 }
 
+/** Count how many active users have each role. */
 function buildRoleDistribution(
   users: Array<{ role: Array<string> }>,
 ): Array<{ role: string; count: number }> {
@@ -211,6 +218,7 @@ function buildRoleDistribution(
     .sort((a, b) => b.count - a.count);
 }
 
+/** Retrieve payment-method usage distribution for an association. */
 async function getPaymentMethodDistribution(associationId: string) {
   const rows = await prisma.paymentTransaction.groupBy({
     by: ['method'],
@@ -226,6 +234,7 @@ async function getPaymentMethodDistribution(associationId: string) {
   }));
 }
 
+/** Retrieve the 10 most recent payments for an association. */
 async function getRecentPayments(associationId: string) {
   const payments = await prisma.paymentTransaction.findMany({
     where: { associationId },
@@ -244,6 +253,7 @@ async function getRecentPayments(associationId: string) {
   }));
 }
 
+/** Generate a sorted list of YYYY-MM month keys from `from` to `to` inclusive. */
 function getMonthRange(from: Date, to: Date): string[] {
   const months: string[] = [];
   const current = new Date(from.getFullYear(), from.getMonth(), 1);
@@ -255,6 +265,7 @@ function getMonthRange(from: Date, to: Date): string[] {
   return months;
 }
 
+/** Fill in zero values for months that have no data, ensuring a complete series. */
 function fillMonthlyGaps(
   grouped: Record<string, { revenue: number; pending: number; refunded: number }>,
   since: Date,

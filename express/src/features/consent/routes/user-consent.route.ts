@@ -20,10 +20,12 @@ import { getUniqueUser } from '@src/shared/services/user/get-unique-user';
 import { z } from 'zod';
 import { logger } from '@src/shared/logger';
 
+/** Schema for user ID path parameter. */
 const UserParamsSchema = z.object({
   userId: z.string().uuid('Invalid user ID'),
 });
 
+/** Schema for paginated user consent query. */
 const UserQuerySchema = z.object({
   page: pageNumberValidation,
 });
@@ -62,6 +64,7 @@ async function withRole(req: Request, role: UserRole) {
   return { ...user, role: roles };
 }
 
+/** GET /api/consent/:receiptId - Retrieve a single consent receipt. */
 export const getReceipt: RequestHandler[] = [
   validate({ params: ConsentReceiptParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -84,6 +87,7 @@ export const getReceipt: RequestHandler[] = [
   },
 ];
 
+/** PATCH /api/consent/:receiptId - Update a consent receipt (DPO role required). */
 export const updateReceipt: RequestHandler[] = [
   validate({ params: ConsentReceiptParamsSchema, body: UpdateConsentReceiptSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -112,6 +116,7 @@ export const updateReceipt: RequestHandler[] = [
   },
 ];
 
+/** DELETE /api/consent/:receiptId - Delete a consent receipt (DPO role required). */
 export const deleteReceipt: RequestHandler[] = [
   validate({ params: ConsentReceiptParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -133,6 +138,7 @@ export const deleteReceipt: RequestHandler[] = [
   },
 ];
 
+/** GET /api/consent/users/:userId - Retrieve consent history for a specific user (DPO role required). */
 export const getUserConsents: RequestHandler[] = [
   validate({ params: UserParamsSchema, query: UserQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

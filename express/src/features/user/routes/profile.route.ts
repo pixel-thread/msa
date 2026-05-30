@@ -11,6 +11,7 @@ import { UpdateUserSchema } from '@src/features/user/validators';
 import { logger } from '@src/shared/logger';
 import z from 'zod';
 
+/** GET handler to fetch the authenticated user's profile. */
 export const getProfile: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -28,6 +29,7 @@ export const getProfile: RequestHandler[] = [
   },
 ];
 
+/** POST handler to update the authenticated user's profile. */
 export const updateProfile: RequestHandler[] = [
   validate({ body: UpdateUserSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

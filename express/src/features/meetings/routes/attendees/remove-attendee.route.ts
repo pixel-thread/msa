@@ -17,6 +17,7 @@ const AttendeeParamsSchema = z.object({
   userId: z.string('Invalid user ID'),
 });
 
+/** PATCH /api/meetings/[meetingId]/attendees/[userId] - Update an attendee's role or RSVP. */
 export const patchUpdateAttendee: RequestHandler[] = [
   validate({ params: AttendeeParamsSchema, body: UpdateAttendeeSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -65,6 +66,7 @@ export const patchUpdateAttendee: RequestHandler[] = [
   },
 ];
 
+/** DELETE /api/meetings/[meetingId]/attendees/[userId] - Remove an attendee from a meeting. */
 export const deleteRemoveAttendee = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.traceId as string) || '';
   const association = await getAssociation(req);

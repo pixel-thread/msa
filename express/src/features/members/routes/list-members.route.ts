@@ -12,12 +12,14 @@ import z from 'zod';
 import { auth } from '@src/middleware/auth';
 import { withRole } from '@src/shared/utils/with-role';
 
+/** Schema for validating query parameters when listing members. */
 const QuerySchema = z.object({
   page: pageNumberValidation,
   status: z.enum(UserStatus).optional(),
   search: z.string().optional(),
 });
 
+/** Route handler for listing members with pagination, filtering, and search. Requires SECRETARY role. */
 export const listMembers: RequestHandler[] = [
   auth,
   validate({ query: QuerySchema }),

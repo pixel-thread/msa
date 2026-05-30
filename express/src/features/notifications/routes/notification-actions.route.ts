@@ -18,14 +18,17 @@ import { withRole } from '@utils/with-role';
 import { z } from 'zod';
 import { auth } from '@src/middleware/auth';
 
+/** Schema for registering a push notification token. */
 const RegisterPushTokenSchema = z.object({
   token: z.string(),
 });
 
+/** Schema for linking a push token to a user. */
 const LinkNotificationSchema = z.object({
   token: z.string().min(1, 'Token is required'),
 });
 
+/** POST handler to register a push notification token. */
 export const postRegisterPushToken: RequestHandler[] = [
   validate({ body: RegisterPushTokenSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -39,6 +42,7 @@ export const postRegisterPushToken: RequestHandler[] = [
   },
 ];
 
+/** POST handler to link a push token to an authenticated user. */
 export const postLinkNotification: RequestHandler[] = [
   validate({ body: LinkNotificationSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -53,6 +57,7 @@ export const postLinkNotification: RequestHandler[] = [
   },
 ];
 
+/** PATCH handler to update a notification's read/received status. */
 export const patchNotificationStatus: RequestHandler[] = [
   auth,
   validate({ body: UpdateNotificationSchema, params: NotificationRouteParams }),

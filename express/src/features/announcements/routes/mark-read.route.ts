@@ -7,6 +7,7 @@ import { validate } from '@src/shared/lib/validate';
 import { AnnouncementRouteParams } from '@src/features/announcements/validators';
 import { withRole } from '@src/shared/utils/with-role';
 
+/** POST handler to mark an announcement as read by the authenticated user. */
 export const postMarkRead: RequestHandler[] = [
   validate({ params: AnnouncementRouteParams }),
   async (req: Request, res: Response, _next: NextFunction) => {

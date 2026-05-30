@@ -26,6 +26,7 @@ import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
 
+/** GET handler to list compliance checks with optional filters and pagination. */
 export const listChecks: RequestHandler[] = [
   validate({ query: ComplianceCheckQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -69,6 +70,7 @@ export const listChecks: RequestHandler[] = [
   },
 ];
 
+/** GET handler to fetch a single compliance check by ID. */
 export const getCheck: RequestHandler[] = [
   validate({ params: ComplianceCheckParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -98,6 +100,7 @@ export const getCheck: RequestHandler[] = [
   },
 ];
 
+/** POST handler to trigger compliance checks. Optionally specify which check types to run. */
 export const runChecks: RequestHandler[] = [
   validate({ body: TriggerComplianceCheckSchema.optional() }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -144,6 +147,7 @@ export const runChecks: RequestHandler[] = [
   },
 ];
 
+/** DELETE handler to remove a compliance check by ID. */
 export const deleteCheck: RequestHandler[] = [
   validate({ params: ComplianceCheckParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

@@ -11,6 +11,7 @@ import { getVerificationCodeFirst } from '@src/features/auth/services/get-verifi
 import { createVerificationCode } from '@src/features/auth/services/create-verification-code';
 import { logger } from '@src/shared/logger';
 
+/** POST handler to resend an MFA verification code. Enforces a cooldown period between resends. */
 export const postMfaResend: RequestHandler[] = [
   validate({}),
   async (req: Request, res: Response, _next: NextFunction) => {

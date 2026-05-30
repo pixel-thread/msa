@@ -5,6 +5,7 @@ import { ConflictError, NotFoundError } from '@src/shared/errors';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 import { PAGE_SIZE } from '@src/shared/constants';
 
+/** Parameters for creating a membership application. */
 type CreateApplicationProps = {
   email: string;
   phone: string;
@@ -21,6 +22,7 @@ type CreateApplicationProps = {
   postalCode?: string;
 };
 
+/** Create a new membership application with duplicate email/phone checks. */
 export async function createMembershipApplication(data: CreateApplicationProps) {
   const existing = await prisma.membershipApplication.findFirst({
     where: {
@@ -65,11 +67,13 @@ export async function createMembershipApplication(data: CreateApplicationProps) 
   });
 }
 
+/** Parameters for retrieving membership applications. */
 type GetApplicationsProps = {
   where?: Prisma.MembershipApplicationWhereInput;
   page?: number;
 };
 
+/** Retrieve paginated membership applications with optional filters. */
 export async function getMembershipApplications({ where = {}, page = 1 }: GetApplicationsProps) {
   const pageSize = PAGE_SIZE;
   const skip = (page - 1) * pageSize;
@@ -90,12 +94,14 @@ export async function getMembershipApplications({ where = {}, page = 1 }: GetApp
   };
 }
 
+/** Find a single membership application by unique criteria. */
 export async function getMembershipApplication(
   where: Prisma.MembershipApplicationWhereUniqueInput,
 ) {
   return prisma.membershipApplication.findUnique({ where });
 }
 
+/** Parameters for approving a membership application. */
 type ApproveApplicationProps = {
   applicationId: string;
   memberTypeId: string;
@@ -104,6 +110,7 @@ type ApproveApplicationProps = {
   reviewedBy: string;
 };
 
+/** Approve a membership application, create a user account, and return temp credentials. */
 export async function approveMembershipApplication({
   applicationId,
   memberTypeId,
@@ -189,12 +196,14 @@ export async function approveMembershipApplication({
   };
 }
 
+/** Parameters for rejecting a membership application. */
 type RejectApplicationProps = {
   applicationId: string;
   rejectionReason: string;
   reviewedBy: string;
 };
 
+/** Reject a pending membership application with a reason. */
 export async function rejectMembershipApplication({
   applicationId,
   rejectionReason,

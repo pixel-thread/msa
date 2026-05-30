@@ -1,5 +1,6 @@
 import type { UserRole, UserStatus } from '@src/shared/types';
 
+/** Full member record including profile details and attendance count. */
 export type Member = {
   id: string;
   name: string;
@@ -18,6 +19,7 @@ export type Member = {
   };
 };
 
+/** Summary member record used in list views. */
 export type MemberListItem = {
   id: string;
   name: string;
@@ -28,4 +30,5 @@ export type MemberListItem = {
   createdAt: Date;
 };
 
+/** Alias for a single MemberListItem. */
 export type Members = MemberListItem;

@@ -15,6 +15,7 @@ const ParamsSchema = z.object({
   minutesId: z.string('Invalid minute ID'),
 });
 
+/** PATCH /api/meetings/[meetingId]/minutes/[minutesId] - Update a meeting minute. */
 export const patchUpdateMinute: RequestHandler[] = [
   validate({ params: ParamsSchema, body: UpdateMeetingMinuteSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

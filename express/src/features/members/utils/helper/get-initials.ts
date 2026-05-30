@@ -1,3 +1,4 @@
+/** Extract up to 2 uppercase initials from a full name. */
 export const getInitials = (name: string) => {
   return name
     .split(' ')

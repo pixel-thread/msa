@@ -11,6 +11,7 @@ import { withRole } from '@src/shared/utils/with-role';
 
 const ParamsSchema = z.object({ meetingId: z.string('Invalid meeting ID') });
 
+/** GET /api/meetings/[meetingId]/agenda - List all agenda items for a meeting. */
 export const getAgendaItems: RequestHandler[] = [
   validate({ params: ParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

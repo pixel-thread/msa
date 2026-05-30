@@ -1,6 +1,7 @@
 import { logger } from '@src/shared/logger';
 import { redis } from './redis';
 
+/** Interface for a key-value cache client. */
 export interface CacheClient {
   get<T>(key: string): Promise<T | null>;
   set(key: string, value: unknown, ttlSeconds?: number): Promise<void>;
@@ -8,6 +9,7 @@ export interface CacheClient {
   delPattern(pattern: string): Promise<void>;
 }
 
+/** Serialises an unknown error to a plain object for logging. */
 function serializeError(error: unknown) {
   if (error instanceof Error) {
     return {
@@ -22,6 +24,7 @@ function serializeError(error: unknown) {
   };
 }
 
+/** Redis-backed cache client implementation. */
 export const cacheClient: CacheClient = {
   async get<T>(key: string): Promise<T | null> {
     try {
@@ -38,6 +41,7 @@ export const cacheClient: CacheClient = {
       return null;
     }
   },
+
   async set(key: string, value: unknown, ttlSeconds?: number): Promise<void> {
     try {
       const serialized = JSON.stringify(value);

@@ -1,3 +1,4 @@
+/** React Query key factories for training feature. */
 export const trainingQueryKeys = {
   modules: {
     all: (page?: number) => ['training-modules', page] as const,

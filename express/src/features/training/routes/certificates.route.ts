@@ -24,15 +24,18 @@ import { getAssociation } from '@src/shared/services/association/get-association
 import { withRole } from '@src/shared/utils/with-role';
 import { z } from 'zod';
 
+/** Schema for module ID path parameter. */
 const ModuleParamsSchema = z.object({
   moduleId: z.string().uuid('Invalid module ID'),
 });
 
+/** Schema for module + certificate ID path parameters. */
 const CertificateParamsSchema = z.object({
   moduleId: z.string().uuid('Invalid module ID'),
   certificateId: z.string().uuid('Invalid certificate ID'),
 });
 
+/** GET /training/modules/:moduleId/certificates - List certificates for a module. */
 export const getCertificates: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -59,6 +62,7 @@ export const getCertificates: RequestHandler[] = [
   },
 ];
 
+/** POST /training/modules/:moduleId/certificates - Upload a certificate for a user (DPO role required). */
 export const postCertificate: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -137,6 +141,7 @@ export const postCertificate: RequestHandler[] = [
   },
 ];
 
+/** GET /training/modules/:moduleId/certificates/:certificateId - Retrieve a single certificate. */
 export const getCertificate: RequestHandler[] = [
   validate({ params: CertificateParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -170,6 +175,7 @@ export const getCertificate: RequestHandler[] = [
   },
 ];
 
+/** PATCH /training/modules/:moduleId/certificates/:certificateId - Update a certificate (DPO role required). */
 export const patchCertificate: RequestHandler[] = [
   validate({ params: CertificateParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -265,6 +271,7 @@ export const patchCertificate: RequestHandler[] = [
   },
 ];
 
+/** DELETE /training/modules/:moduleId/certificates/:certificateId - Delete a certificate (DPO role required). */
 export const deleteCertificateHandler: RequestHandler[] = [
   validate({ params: CertificateParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -308,6 +315,7 @@ export const deleteCertificateHandler: RequestHandler[] = [
   },
 ];
 
+/** POST /training/modules/:moduleId/certificate-template - Upload a certificate template (DPO role required). */
 export const postCertificateTemplate: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -375,6 +383,7 @@ export const postCertificateTemplate: RequestHandler[] = [
   },
 ];
 
+/** DELETE /training/modules/:moduleId/certificate-template - Remove certificate template (DPO role required). */
 export const deleteCertificateTemplate: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {

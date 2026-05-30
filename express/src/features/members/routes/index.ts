@@ -10,6 +10,7 @@ import { addRole, removeRole } from './change-role.route';
 import { getMemberLedger } from './member-ledger.route';
 import { onboarding } from './onboarding.route';
 
+/** Router for all /api/members routes. All routes require authentication. */
 const router: Router = Router();
 
 router.use(auth);

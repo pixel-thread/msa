@@ -3,9 +3,8 @@ import { logger } from '@src/shared/logger';
 import { StorageProvider, UploadParams, UploadResult } from '@src/shared/types/storage';
 import SftpClient from 'ssh2-sftp-client';
 
-// SFTP-backed storage. Requires SFTP_HOST, SFTP_USER, SFTP_PASSWORD, CDN_URL env vars.
+/** SFTP-backed storage provider. Requires SFTP_HOST, SFTP_USER, SFTP_PASSWORD env vars. */
 export class SftpStorageProvider implements StorageProvider {
-  // Uploads a file to /uploads/<folder>/<timestamp>-<name>, returns key + CDN URL.
   async upload(params: UploadParams): Promise<UploadResult> {
     const sftp = new SftpClient('upload-client');
     logger.debug(
@@ -50,7 +49,7 @@ export class SftpStorageProvider implements StorageProvider {
     };
   }
 
-  // Removes a file from the SFTP server by its storage key.
+  /** Removes a file from the SFTP server by its storage key. */
   async delete(fileKey: string) {
     const sftp = new SftpClient();
 
@@ -68,7 +67,7 @@ export class SftpStorageProvider implements StorageProvider {
     await sftp.end();
   }
 
-  // Returns the public CDN URL for a stored file.
+  /** Returns the public CDN URL for a stored file. */
   async getPublicUrl(fileKey: string) {
     return `${env.SFTP_HOST}/${env.SFTP_ROOT}/${fileKey}`;
   }

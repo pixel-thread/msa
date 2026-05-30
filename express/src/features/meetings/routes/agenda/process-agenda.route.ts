@@ -12,6 +12,7 @@ import { withRole } from '@src/shared/utils/with-role';
 
 const ParamsSchema = z.object({ meetingId: z.string('Invalid meeting ID') });
 
+/** PATCH /api/meetings/[meetingId]/agenda - Process bulk agenda operations (create/update/delete/reorder). */
 export const patchProcessAgendaOperations: RequestHandler[] = [
   validate({ params: ParamsSchema, body: AgendaOperationSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

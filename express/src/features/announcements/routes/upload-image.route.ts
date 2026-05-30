@@ -8,6 +8,7 @@ import { validate } from '@src/shared/lib/validate';
 import { AnnouncementRouteParams } from '@src/features/announcements/validators';
 import { withRole } from '@src/shared/utils/with-role';
 
+/** POST handler to upload an image for an announcement. Requires SECRETARY role or higher. */
 export const postUploadImage: RequestHandler[] = [
   validate({ params: AnnouncementRouteParams }),
   async (req: Request, res: Response, _next: NextFunction) => {

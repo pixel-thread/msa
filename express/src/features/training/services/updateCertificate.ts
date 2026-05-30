@@ -2,6 +2,7 @@ import { prisma } from '@lib/prisma';
 import { UpdateTrainingCertificateInput } from '../validators/training';
 import { AuditAction, Prisma } from '@prisma/client';
 
+/** Parameters for updating a training certificate. */
 interface UpdateCertificateProps {
   associationId: string;
   moduleId: string;
@@ -12,6 +13,7 @@ interface UpdateCertificateProps {
   fileId?: string;
 }
 
+/** Update a training certificate, optionally replacing the file, with audit logging. */
 export async function updateCertificate({
   associationId,
   moduleId,

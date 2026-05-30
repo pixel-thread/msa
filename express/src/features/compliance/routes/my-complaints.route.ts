@@ -9,6 +9,7 @@ import { UnauthorizedError, NotFoundError } from '@src/shared/errors';
 import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 
+/** GET handler to list the current user's own complaints. */
 export const listMyComplaints: RequestHandler[] = [
   validate({ query: ComplaintQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -54,6 +55,7 @@ export const listMyComplaints: RequestHandler[] = [
   },
 ];
 
+/** GET handler to fetch a single complaint belonging to the current user. */
 export const getMyComplaint: RequestHandler[] = [
   validate({ params: ComplaintParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

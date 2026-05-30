@@ -8,11 +8,14 @@ import {
 } from './member-types.route';
 import { auth } from '@src/middleware/auth';
 
+/** Member-types feature router - all routes require authentication. */
 const router: Router = Router();
 
 router.use(auth);
 
 router.get('/', getMemberTypes);
+
+
 
 router.post('/', postMemberType);
 router.get('/:memberTypeId', getMemberTypeById);

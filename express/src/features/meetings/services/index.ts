@@ -1,3 +1,4 @@
+/** Meetings services barrel export. */
 export * from './assignAttendee';
 export * from './bulkAssignAttendees';
 export * from './createMeeting';

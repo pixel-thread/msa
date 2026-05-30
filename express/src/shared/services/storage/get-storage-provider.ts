@@ -2,7 +2,7 @@ import { SupabaseStorageProvider } from './supabase';
 import { SftpStorageProvider } from './sftp';
 import { env } from '@src/env';
 
-// Returns SupabaseStorageProvider (default) or SftpStorageProvider based on STORAGE_PROVIDER env.
+/** Returns the active storage provider based on the STORAGE_PROVIDER env variable. */
 export function getStorageProvider() {
   const provider = env.STORAGE_PROVIDER;
 

@@ -5,6 +5,7 @@ import { ExpoNotificationService } from '@lib/expo';
 import { EXPO_ROUTES } from '@src/shared/constants/expo-route';
 import { logger } from '@src/shared/logger';
 
+/** Props for bulk-assigning attendees to a meeting. */
 interface BulkAssignAttendeesProps {
   meetingId: string;
   associationId: string;
@@ -12,6 +13,10 @@ interface BulkAssignAttendeesProps {
   attendeeRole?: AttendeeRole;
 }
 
+/**
+ * Bulk-assign multiple users as attendees to a meeting.
+ * Skips users already assigned and sends push notifications in the background.
+ */
 export async function bulkAssignAttendees({
   meetingId,
   associationId,

@@ -1,4 +1,5 @@
 import type { UserRole } from './enums';
+
 export type { UserRole };
 
 /**

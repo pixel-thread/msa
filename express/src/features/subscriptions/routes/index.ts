@@ -13,11 +13,14 @@ import { postWaive } from './waive.route';
 import { getSubscriptionPaymentsHandler } from './subscription-payments.route';
 import { auth } from '@src/middleware/auth';
 
+/** Subscriptions feature router - all routes require authentication. */
 const router: Router = Router();
 
 router.use(auth);
 
 router.get('/plans', getPlansHandler);
+
+
 router.post('/plans', createPlanHandler);
 router.post('/plans/default', setDefaultPlanHandler);
 router.patch('/plans/:planId', updatePlanHandler);

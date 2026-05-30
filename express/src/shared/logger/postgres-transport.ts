@@ -11,6 +11,7 @@ const PINO_LEVELS: Record<number, string> = {
   60: 'fatal',
 };
 
+/** Creates a Writable stream that persists Pino log entries to the database. */
 export function createPostgresTransport() {
   return new Writable({
     objectMode: true,

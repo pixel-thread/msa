@@ -5,6 +5,10 @@ import { EXPO_ROUTES } from '@src/shared/constants/expo-route';
 import { createNotification } from '@src/shared/services/notification';
 import { logger } from '@src/shared/logger';
 
+/**
+ * Send push notifications for a published announcement to all eligible users.
+ * Filters by target roles if specified on the announcement.
+ */
 export async function sendAnnouncementNotifications(announcementId: string, associationId: string) {
   try {
     const announcement = await prisma.announcement.findUnique({

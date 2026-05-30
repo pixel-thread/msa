@@ -13,6 +13,7 @@ import { getUniqueUser } from '@src/shared/services/user/get-unique-user';
 import { z } from 'zod';
 import { logger } from '@src/shared/logger';
 
+/** Schema for paginated history query. */
 const HistoryQuerySchema = z.object({
   page: pageNumberValidation,
 });
@@ -51,6 +52,7 @@ async function withRole(req: Request, role: UserRole) {
   return { ...user, role: roles };
 }
 
+/** GET /api/consent/all - Retrieve all consent records for the association (DPO role required). */
 export const getAllConsentRecords: RequestHandler[] = [
   validate({ query: AllConsentRecordsQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -74,6 +76,7 @@ export const getAllConsentRecords: RequestHandler[] = [
   },
 ];
 
+/** GET /api/consent/history - Retrieve the current user's consent history. */
 export const getConsentHistory: RequestHandler[] = [
   validate({ query: HistoryQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -95,6 +98,7 @@ export const getConsentHistory: RequestHandler[] = [
   },
 ];
 
+/** GET /api/consent/report - Generate a consent summary report (DPO role required). */
 export const getConsentReport = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.traceId as string) || '';
   const association = await getAssociation(req);

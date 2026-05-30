@@ -6,6 +6,7 @@ const ALGORITHM = 'aes-256-gcm';
 
 const KEY = Buffer.from(env.FIELD_ENCRYPTION_KEY, 'hex');
 
+/** Encrypts a plaintext string using AES-256-GCM. Returns a colon-delimited hex string. */
 export const encrypt = (plain: string): string => {
   const iv = crypto.randomBytes(16);
 
@@ -18,6 +19,7 @@ export const encrypt = (plain: string): string => {
   return [iv.toString('hex'), tag.toString('hex'), encrypted.toString('hex')].join(':');
 };
 
+/** Decrypts a string previously encrypted with {@link encrypt}. */
 export const decrypt = (ciphertext: string): string => {
   const parts = ciphertext.split(':');
 

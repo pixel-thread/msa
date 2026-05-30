@@ -11,6 +11,7 @@ import {
   postAddMember,
 } from './associations.route';
 
+/** Associations feature router - all routes require authentication. */
 const router: ExpressRouter = Router();
 
 router.use(auth);

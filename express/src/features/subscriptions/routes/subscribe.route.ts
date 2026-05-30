@@ -10,6 +10,7 @@ import { subscribe } from '@feature/subscriptions/services';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
 
+/** POST /api/subscriptions/subscribe - Subscribe the current user to a plan. */
 export const postSubscribe: RequestHandler[] = [
   validate({ body: SubscribeSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

@@ -8,6 +8,7 @@ import z from 'zod';
 
 const associationsSlug = ['mfsa', 'mpsa', 'mpsc'];
 
+/** Schema for validating new membership application submissions. */
 export const MembershipApplicationSchema = z
   .object({
     email: z.email('Invalid email address'),
@@ -49,20 +50,25 @@ export const MembershipApplicationSchema = z
   )
   .strict();
 
+/** Input type inferred from MembershipApplicationSchema. */
 export type MembershipApplicationInput = z.infer<typeof MembershipApplicationSchema>;
 
+/** Schema for validating membership application list query parameters. */
 export const GetMembershipApplicationsQuerySchema = z.object({
   status: z.enum($Enums.ApplicationStatus, 'Invalid application status').optional(),
   page: pageNumberValidation,
   pageSize: pageSizeValidation,
 });
 
+/** Input type inferred from GetMembershipApplicationsQuerySchema. */
 export type GetMembershipApplicationsQuery = z.infer<typeof GetMembershipApplicationsQuerySchema>;
 
+/** Schema for membership application ID path parameter. */
 export const MembershipApplicationParamsSchema = z.object({
   applicationId: uuidValidiation,
 });
 
+/** Schema for validating application approval requests. */
 export const ApproveApplicationSchema = z
   .object({
     memberTypeId: z.uuid('Invalid member type'),
@@ -71,12 +77,15 @@ export const ApproveApplicationSchema = z
   })
   .strict();
 
+/** Input type inferred from ApproveApplicationSchema. */
 export type ApproveApplicationInput = z.infer<typeof ApproveApplicationSchema>;
 
+/** Schema for validating application rejection requests. */
 export const RejectApplicationSchema = z
   .object({
     rejectionReason: z.string().min(10, 'Rejection reason must be at least 10 characters'),
   })
   .strict();
 
+/** Input type inferred from RejectApplicationSchema. */
 export type RejectApplicationInput = z.infer<typeof RejectApplicationSchema>;

@@ -10,6 +10,7 @@ import { postMarkRead } from './mark-read.route';
 import { postUploadImage } from './upload-image.route';
 import { auth } from '@src/middleware/auth';
 
+/** Announcements router — aggregates all announcement-related route handlers. */
 const router: Router = Router();
 router.use(auth);
 router.get('/', getAnnouncements);

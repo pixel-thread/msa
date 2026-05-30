@@ -6,6 +6,7 @@
  * DENY  — input must NOT match the pattern; if it does, reject.
  */
 
+/** Positive-validation regex patterns for common input formats. */
 export const ALLOW = {
   EMAIL: /^[\w.%+-]+@[a-zA-Z\d-]+\.[a-zA-Z]{2,}$/,
 
@@ -60,6 +61,7 @@ export const ALLOW = {
   ADHAAR: /^\d{4}\s?\d{4}\s?\d{4}$/,
 };
 
+/** Negative-validation regex patterns for detecting unsafe input. */
 export const DENY = {
   HTML_TAGS: /<[^>]*>/,
 

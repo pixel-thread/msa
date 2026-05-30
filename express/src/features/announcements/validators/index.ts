@@ -4,6 +4,7 @@ import { pageNumberValidation, pageSizeValidation } from '@src/shared/validators
 
 import { MAX_IMAGE_SIZE, ALLOWED_IMAGE_FORMATS, ALLOWED_MIME_TYPES } from '@src/shared/constants';
 
+/** Schema for creating a new announcement. */
 export const CreateAnnouncementSchema = z.object({
   title: z.string().min(1).max(200),
   summary: z.string().max(500).optional(),
@@ -16,6 +17,7 @@ export const CreateAnnouncementSchema = z.object({
   expiresAt: z.coerce.date().optional(),
 });
 
+/** Schema for updating an existing announcement. All fields are optional. */
 export const UpdateAnnouncementSchema = z.object({
   title: z.string().min(1).max(200).optional(),
   summary: z.string().max(500).optional(),
@@ -29,6 +31,7 @@ export const UpdateAnnouncementSchema = z.object({
   expiresAt: z.coerce.date().optional().nullable(),
 });
 
+/** Schema for announcement listing query parameters. */
 export const AnnouncementQuerySchema = z.object({
   page: pageNumberValidation,
   limit: pageSizeValidation,
@@ -37,6 +40,7 @@ export const AnnouncementQuerySchema = z.object({
   search: z.string().optional(),
 });
 
+/** Schema for publishing an announcement with an optional publish date. */
 export const PublishAnnouncementSchema = z.object({
   publishedAt: z.coerce.date().optional(),
 });
@@ -45,6 +49,7 @@ export type CreateAnnouncementInput = z.infer<typeof CreateAnnouncementSchema>;
 export type UpdateAnnouncementInput = z.infer<typeof UpdateAnnouncementSchema>;
 export type AnnouncementQuery = z.infer<typeof AnnouncementQuerySchema>;
 
+/** Schema for announcement image upload form data. Validates file size, extension, and MIME type. */
 export const AnnouncementUploadFormData = z.object({
   file: z
     .instanceof(File, { message: 'File is required' })
@@ -67,6 +72,7 @@ export const AnnouncementUploadFormData = z.object({
     }),
 });
 
+/** Schema for announcement route parameters (announcementId). */
 export const AnnouncementRouteParams = z.object({
   announcementId: z.uuid(),
 });

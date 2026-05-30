@@ -2,6 +2,7 @@ import { prisma } from '@lib/prisma';
 import { PAGE_SIZE } from '@src/shared/constants';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 
+/** Parameters for finding training completions. */
 interface FindManyCompletionsProps {
   associationId: string;
   moduleId?: string;
@@ -9,6 +10,7 @@ interface FindManyCompletionsProps {
   page?: number;
 }
 
+/** Retrieve paginated training completions with optional module and user filters. */
 export async function findManyCompletions({
   associationId,
   moduleId,

@@ -2,6 +2,7 @@ import { prisma } from '@src/shared/lib/prisma';
 import type { AuditLogEntry, AuditLogQuery } from '../types';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 
+/** Retrieve paginated audit log entries for a given association, with optional filters. */
 export async function findAuditLogs(
   associationId: string,
   query: AuditLogQuery,
@@ -57,6 +58,7 @@ export async function findAuditLogs(
   };
 }
 
+/** Retrieve audit log statistics (totals for 7 days, 30 days, all time, and top actions). */
 export async function getAuditLogStats(associationId: string) {
   const now = new Date();
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);

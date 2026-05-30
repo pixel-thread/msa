@@ -1,5 +1,6 @@
 import type { DsarRequestType, DsarStatus } from '@src/shared/types';
 
+/** Represents a DSAR ticket entity. */
 export interface DsarTicket {
   id: string;
   ticketNumber: string;
@@ -23,6 +24,7 @@ export interface DsarTicket {
   } | null;
 }
 
+/** Represents a response attached to a DSAR ticket. */
 export interface DsarResponse {
   id: string;
   dsarTicketId: string;
@@ -34,6 +36,7 @@ export interface DsarResponse {
   createdAt: Date;
 }
 
+/** DSAR ticket record as returned from the API (with string dates). */
 export interface DsarTicketRecord {
   id: string;
   ticketNumber: string;
@@ -53,6 +56,7 @@ export interface DsarTicketRecord {
   responses?: DsarResponseRecord[];
 }
 
+/** DSAR response record as returned from the API (with string dates). */
 export interface DsarResponseRecord {
   id: string;
   dsarTicketId: string;

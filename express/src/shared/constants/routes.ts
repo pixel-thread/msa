@@ -37,5 +37,4 @@ export const API_PUBLIC_ROUTES = [
 /**
  * Private routes that require an authenticated user.
  */
-
 export const AUTH_ROUTES = ['/dashboard(.*)', '/settings(.*)', '/profile(.*)'] as const;

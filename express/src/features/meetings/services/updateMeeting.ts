@@ -2,6 +2,7 @@ import { prisma } from '@lib/prisma';
 import { NotFoundError } from '@src/shared/errors';
 import { MeetingStatus } from '@prisma/client';
 
+/** Props for updating a meeting. */
 interface UpdateMeetingProps {
   meetingId: string;
   associationId: string;
@@ -15,6 +16,7 @@ interface UpdateMeetingProps {
   };
 }
 
+/** Update a meeting's details after verifying it belongs to the association. */
 export async function updateMeeting({ meetingId, associationId, data }: UpdateMeetingProps) {
   const existing = await prisma.meeting.findFirst({
     where: { id: meetingId, associationId },

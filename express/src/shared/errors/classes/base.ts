@@ -1,3 +1,4 @@
+/** Base application error with a machine-readable code, HTTP status, and optional details. */
 export class AppError extends Error {
   constructor(
     public readonly code: string,

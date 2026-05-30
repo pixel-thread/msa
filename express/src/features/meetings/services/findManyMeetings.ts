@@ -4,6 +4,7 @@ import { PAGE_SIZE } from '@src/shared/constants';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
 
+/** Props for querying multiple meetings. */
 interface FindManyMeetingsProps {
   associationId: string;
   userId?: string;
@@ -17,6 +18,7 @@ interface FindManyMeetingsProps {
   };
 }
 
+/** Find meetings with optional filtering, pagination, and role-based access. */
 export async function findManyMeetings({
   associationId,
   filters,

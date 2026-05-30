@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+/** Schema for creating a new subscription plan. */
 export const CreateSubscriptionPlanSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
@@ -13,18 +14,23 @@ export const CreateSubscriptionPlanSchema = z.object({
   effectiveFrom: z.coerce.date().optional(),
 });
 
+/** Input type inferred from CreateSubscriptionPlanSchema. */
 export type CreateSubscriptionPlanInput = z.infer<typeof CreateSubscriptionPlanSchema>;
 
+/** Schema for validating subscription signup requests. */
 export const SubscribeSchema = z.object({
   planId: z.uuid(),
 });
 
+/** Schema for validating subscription waiver requests. */
 export const WaiveSubscriptionSchema = z.object({
   subscriptionId: z.uuid(),
   reason: z.string().min(1),
 });
 
+/** Schema for validating subscription upgrade requests. */
 export const UpgradeSubscriptionSchema = z.object({
   planId: z.uuid(),
 });
+/** Input type inferred from UpgradeSubscriptionSchema. */
 export type UpgradeSubscriptionInput = z.infer<typeof UpgradeSubscriptionSchema>;

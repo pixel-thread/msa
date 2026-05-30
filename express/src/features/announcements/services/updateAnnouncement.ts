@@ -3,10 +3,15 @@ import { AnnouncementStatus, AnnouncementPriority, UserRole } from '@prisma/clie
 import { NotFoundError, ForbiddenError } from '@src/shared/errors';
 import { sendAnnouncementNotifications } from './sendAnnouncementNotifications';
 
+/** Props for updating an announcement. */
 interface UpdateAnnouncementProps {
+  /** The announcement to update. */
   announcementId: string;
+  /** The association scoping the update. */
   associationId: string;
+  /** The user requesting the update. */
   authorId: string;
+  /** The fields to update. */
   data: {
     title?: string;
     summary?: string;
@@ -21,6 +26,7 @@ interface UpdateAnnouncementProps {
   };
 }
 
+/** Update an announcement. Only the original author can update their own announcements. */
 export async function updateAnnouncement({
   announcementId,
   associationId,

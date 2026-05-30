@@ -15,6 +15,7 @@ import { postMfaVerify } from './mfa/verify.route';
 import { postMfaResend } from './mfa/resend.route';
 import { postMfaDisable } from './mfa/disable.route';
 
+/** Auth router — aggregates all authentication-related route handlers. */
 const router: Router = Router();
 
 router.post('/sign-in', postSignIn);

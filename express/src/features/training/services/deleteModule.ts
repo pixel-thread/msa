@@ -3,6 +3,7 @@ import { NotFoundError } from '@src/shared/errors';
 import { prisma } from '@src/shared/lib/prisma';
 import { logAction } from '@src/shared/services/audit-logs';
 
+/** Delete a training module with audit logging. */
 export async function deleteModule(params: {
   associationId: string;
   moduleId: string;

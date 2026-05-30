@@ -1,12 +1,14 @@
 import { prisma } from '@lib/prisma';
 import { MeetingType, MeetingStatus } from '@prisma/client';
 
+/** Agenda item data for meeting creation. */
 interface AgendaItemData {
   order: number;
   title: string;
   description?: string;
 }
 
+/** Props for creating a meeting. */
 interface CreateMeetingProps {
   associationId: string;
   createdById: string;
@@ -19,6 +21,7 @@ interface CreateMeetingProps {
   };
 }
 
+/** Create a new meeting with agenda items. */
 export async function createMeeting({ associationId, createdById, data }: CreateMeetingProps) {
   return await prisma.meeting.create({
     data: {

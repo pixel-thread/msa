@@ -1,3 +1,4 @@
+/** Endpoint path constants for the DSAR feature. */
 export const dsarEndpoints = {
   base: '/dsar' as const,
   byId: (id: string) => `/dsar/${id}`,

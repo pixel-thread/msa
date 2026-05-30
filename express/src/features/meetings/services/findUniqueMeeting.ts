@@ -1,11 +1,13 @@
 import { prisma } from '@lib/prisma';
 import { NotFoundError } from '@src/shared/errors';
 
+/** Props for finding a unique meeting. */
 interface FindUniqueMeetingProps {
   meetingId: string;
   associationId: string;
 }
 
+/** Find a single meeting by ID and association, including attendees, agenda items, and minutes. */
 export async function findUniqueMeeting({ meetingId, associationId }: FindUniqueMeetingProps) {
   const meeting = await prisma.meeting.findFirst({
     where: { id: meetingId, associationId },

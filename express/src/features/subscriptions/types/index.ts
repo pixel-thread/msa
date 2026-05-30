@@ -1,5 +1,7 @@
+/** Supported billing cycle types. */
 type BillCycle = 'MONTHLY' | 'YEARLY';
 
+/** Represents a versioned snapshot of a subscription plan's pricing and features. */
 export type SubscriptionPlanVersion = {
   id: string;
   planId: string;
@@ -13,6 +15,7 @@ export type SubscriptionPlanVersion = {
   createdAt: string;
 };
 
+/** Represents a subscription plan entity with its active version. */
 export type SubscriptionPlan = {
   id: string;
   associationId: string;
@@ -27,6 +30,7 @@ export type SubscriptionPlan = {
   versions: SubscriptionPlanVersion[];
 };
 
+/** Lightweight subscription plan item for list views. */
 export type SubscriptionPlanListItem = {
   id: string;
   name: string;
@@ -39,6 +43,7 @@ export type SubscriptionPlanListItem = {
   createdAt: string;
 };
 
+/** Represents a user's subscription. */
 export type Subscription = {
   id: string;
   userId: string;

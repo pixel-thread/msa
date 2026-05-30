@@ -3,6 +3,7 @@ import { DsarRequestType, DsarStatus } from '@prisma/client';
 import { PAGE_SIZE } from '@src/shared/constants';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 
+/** Parameters for retrieving paginated DSAR tickets. */
 interface FindDsarTicketsProps {
   associationId: string;
   userId?: string;

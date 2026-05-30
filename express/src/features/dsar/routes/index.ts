@@ -13,6 +13,7 @@ import {
 import { listAdmins } from './admins.route';
 import { getSlaReport } from './sla-report.route';
 
+/** DSAR feature router - all routes require authentication. */
 const router: Router = Router();
 
 router.use(auth);

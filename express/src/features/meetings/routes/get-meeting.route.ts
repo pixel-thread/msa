@@ -15,6 +15,7 @@ const MeetingParamsSchema = z.object({
   meetingId: z.string('Invalid meeting ID'),
 });
 
+/** GET /api/meetings/[meetingId] - Get details of a single meeting. */
 export const getMeeting: RequestHandler[] = [
   validate({ params: MeetingParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

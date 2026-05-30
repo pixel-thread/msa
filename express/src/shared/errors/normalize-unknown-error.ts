@@ -12,9 +12,7 @@ import { Prisma } from '@prisma/client';
 import { JWTClaimValidationFailed, JOSEError } from 'jose/errors';
 import { logger } from '../logger';
 
-/**
- * Type guard to check if an error is a Prisma-specific error
- */
+/** Type guard to check if an error is a Prisma-specific error. */
 const isPrismaError = (
   error: unknown,
 ): error is
@@ -30,24 +28,29 @@ const isPrismaError = (
   );
 };
 
+/** Type guard to check if an error is a JWT validation error. */
 const isJwtError = (error: unknown): error is JWTClaimValidationFailed => {
   return error instanceof JOSEError;
 };
 
+/** Checks whether an unknown value is a Supabase Storage error-shaped object. */
 export function isSupabaseStorageError(error: unknown) {
   if (typeof error !== 'object' || error === null) return false;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const err = error as any;
+  const err = error as Record<string, unknown>;
 
   return (
     err.name === 'StorageError' ||
     err.name === 'StorageUnknownError' ||
     typeof err.statusCode === 'string' ||
-    typeof err.error?.message === 'string'
+    typeof (err.error as Record<string, unknown> | undefined)?.message === 'string'
   );
 }
 
+/**
+ * Converts an unknown error into a typed {@link AppError}.
+ * Handles JWT, Zod, Prisma, Supabase, and generic errors.
+ */
 export const normalizeUnknownError = (error: unknown, traceId?: string): AppError => {
   const isProd = env.NODE_ENV === 'production';
 

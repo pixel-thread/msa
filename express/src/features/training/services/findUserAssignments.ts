@@ -2,12 +2,14 @@ import { prisma } from '@lib/prisma';
 import { PAGE_SIZE } from '@src/shared/constants';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 
+/** Parameters for finding user assignments. */
 interface FindUserAssignmentsProps {
   userId: string;
   associationId: string;
   page?: number;
 }
 
+/** Retrieve paginated training assignments for a specific user. */
 export async function findUserAssignments({
   userId,
   associationId,

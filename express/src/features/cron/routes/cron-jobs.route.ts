@@ -8,11 +8,13 @@ import {
 } from '@src/features/cron/services';
 import { logger } from '@src/shared/logger';
 
+/** Verify the CRON secret from authorization header. */
 function verifyCronSecret(req: Request): boolean {
   const authHeader = req.headers['authorization'] as string;
   return authHeader === `Bearer ${env.CRON_SECRET}`;
 }
 
+/** POST /api/cron/subscription-expiry - Trigger subscription expiry check (cron job). */
 export const postSubscriptionExpiry: RequestHandler[] = [
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -51,6 +53,7 @@ export const postSubscriptionExpiry: RequestHandler[] = [
   },
 ];
 
+/** POST /api/cron/dsar-sla - Trigger DSAR SLA deadline check (cron job). */
 export const postDsarSla: RequestHandler[] = [
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -89,6 +92,7 @@ export const postDsarSla: RequestHandler[] = [
   },
 ];
 
+/** POST /api/cron/anonymize - Trigger user data anonymization (cron job). */
 export const postAnonymize: RequestHandler[] = [
   async (req: Request, res: Response, next: NextFunction) => {
     try {

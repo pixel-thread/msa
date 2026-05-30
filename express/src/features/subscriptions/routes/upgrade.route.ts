@@ -10,10 +10,12 @@ import { upgradeSubscription } from '@feature/subscriptions/services';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
 
+/** Schema for subscription upgrade request. */
 const UpgradeSchema = z.object({
   planId: z.uuid(),
 });
 
+/** POST /api/subscriptions/upgrade - Upgrade the current user's subscription. */
 export const postUpgrade: RequestHandler[] = [
   validate({ body: UpgradeSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

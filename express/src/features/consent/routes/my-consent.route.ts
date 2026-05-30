@@ -41,6 +41,7 @@ async function withRole(req: Request, role: UserRole) {
   return { ...user, role: roles };
 }
 
+/** GET /api/consent/my - Retrieve the current user's consent state for all purposes. */
 export const getMyConsent = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.traceId as string) || '';
   const association = await getAssociation(req);

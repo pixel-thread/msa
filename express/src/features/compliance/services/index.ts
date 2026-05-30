@@ -1,3 +1,4 @@
+/** Compliance services barrel export. */
 export * from './compliance-checks';
 export * from './create-complaint';
 export * from './findManyComplaints';

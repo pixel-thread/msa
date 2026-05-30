@@ -41,6 +41,7 @@ async function withRole(req: Request, role: UserRole) {
   return { ...user, role: roles };
 }
 
+/** GET /api/dsar/sla-report - Retrieve DSAR SLA compliance report (DPO role required). */
 export const getSlaReport = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.traceId as string) || '';
   const association = await getAssociation(req);

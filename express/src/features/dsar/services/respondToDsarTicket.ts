@@ -1,6 +1,7 @@
 import { prisma } from '@src/shared/lib/prisma';
 import { DsarStatus, AuditAction } from '@prisma/client';
 
+/** Parameters for responding to a DSAR ticket. */
 interface RespondToDsarTicketProps {
   associationId: string;
   ticketId: string;

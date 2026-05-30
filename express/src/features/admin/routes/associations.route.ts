@@ -17,6 +17,7 @@ import { logger } from '@src/shared/logger';
 import type { CreateAssociationInput } from '@validator/associations';
 import { withRole } from '@src/shared/utils/with-role';
 
+/** GET /api/admin/associations - Retrieve all active associations. */
 export const getAssociations: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -38,6 +39,7 @@ export const getAssociations: RequestHandler[] = [
   },
 ];
 
+/** POST /api/admin/associations - Create a new association. */
 export const postAssociation: RequestHandler[] = [
   validate({ body: CreateAssociationSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -78,6 +80,7 @@ export const postAssociation: RequestHandler[] = [
   },
 ];
 
+/** GET /api/admin/associations/:id - Retrieve a single association by ID. */
 export const getAssociationById: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -105,6 +108,7 @@ export const getAssociationById: RequestHandler[] = [
   },
 ];
 
+/** PUT /api/admin/associations/:id - Update an existing association. */
 export const putAssociation: RequestHandler[] = [
   validate({ body: CreateAssociationSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -153,6 +157,7 @@ export const putAssociation: RequestHandler[] = [
   },
 ];
 
+/** DELETE /api/admin/associations/:id - Soft-delete an association. */
 export const deleteAssociationById: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -183,6 +188,7 @@ export const deleteAssociationById: RequestHandler[] = [
   },
 ];
 
+/** POST /api/admin/associations/:id/member - Assign a user to an association. */
 export const postAssociationMember: RequestHandler[] = [
   validate({ body: AddAssociationMemberSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

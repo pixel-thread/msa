@@ -1,5 +1,6 @@
 import { prisma } from '@lib/prisma';
 
+/** Parameters for finding a certificate template. */
 interface FindCertificateTemplateProps {
   associationId: string;
   moduleId: string;

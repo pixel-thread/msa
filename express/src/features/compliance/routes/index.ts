@@ -5,6 +5,7 @@ import { listChecks, getCheck, runChecks, deleteCheck } from './checks.route';
 import { getEvidence } from './evidence.route';
 import { listMyComplaints, getMyComplaint } from './my-complaints.route';
 
+/** Compliance router — aggregates all compliance-related route handlers. */
 const router: Router = Router();
 
 router.use(auth);

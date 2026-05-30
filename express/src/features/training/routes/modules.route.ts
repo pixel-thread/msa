@@ -10,6 +10,7 @@ import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
 
+/** GET /training/modules - List training modules (scoped by user role). */
 export const getModules: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -52,6 +53,7 @@ export const getModules: RequestHandler[] = [
   },
 ];
 
+/** POST /training/modules - Create a new training module (DPO role required). */
 export const postModules: RequestHandler[] = [
   validate({ body: CreateTrainingModuleSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

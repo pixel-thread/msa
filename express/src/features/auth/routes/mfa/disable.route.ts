@@ -9,8 +9,10 @@ import { findFirstMember } from '@src/features/members/services/findFirstMember'
 import { updateMember } from '@src/features/members/services/updateMember';
 import { logger } from '@src/shared/logger';
 
+/** Schema for disabling MFA — requires the user's current password. */
 const DisableMfaSchema = z.object({ password: z.string().min(1, 'Password is required') });
 
+/** POST handler to disable MFA for the authenticated user after verifying their password. */
 export const postMfaDisable: RequestHandler[] = [
   validate({ body: DisableMfaSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

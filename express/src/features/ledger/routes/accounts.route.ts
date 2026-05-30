@@ -12,6 +12,7 @@ import { buildPagination } from '@src/shared/utils';
 import { getUniqueUser } from '@src/shared/services/user/get-unique-user';
 import { logger } from '@src/shared/logger';
 
+/** Schema for creating a new account. */
 const CreateAccountSchema = z.object({
   code: z.string().min(1),
   name: z.string().min(1),
@@ -19,6 +20,7 @@ const CreateAccountSchema = z.object({
   description: z.string().optional(),
 });
 
+/** Schema for paginated account query. */
 const AccountQuerySchema = z.object({
   page: pageNumberValidation,
 });
@@ -57,6 +59,7 @@ async function withRole(req: Request, role: UserRole) {
   return { ...user, role: roles };
 }
 
+/** GET /api/ledger/accounts - List ledger accounts (FINANCE role required). */
 export const listAccounts: RequestHandler[] = [
   validate({ query: AccountQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -77,6 +80,7 @@ export const listAccounts: RequestHandler[] = [
   },
 ];
 
+/** POST /api/ledger/accounts - Create a new ledger account (FINANCE role required). */
 export const createAccountHandler: RequestHandler[] = [
   validate({ body: CreateAccountSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

@@ -4,18 +4,23 @@ import { Prisma } from '@prisma/client';
 import { PAGE_SIZE } from '@src/shared/constants';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 
+/** Props for finding announcements with filters and pagination. */
 interface FindManyAnnouncementsProps {
+  /** The association to scope results to. */
   associationId: string;
+  /** Optional filters by status, priority, and search term. */
   filters?: {
     status?: AnnouncementStatus;
     priority?: AnnouncementPriority;
     search?: string;
   };
+  /** Pagination options. */
   pagination?: {
     page?: number;
   };
 }
 
+/** Find announcements for an association with optional filtering and pagination. */
 export async function findManyAnnouncements({
   associationId,
   filters,

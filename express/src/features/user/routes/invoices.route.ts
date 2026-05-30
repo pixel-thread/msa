@@ -12,14 +12,17 @@ import { pageNumberValidation } from '@src/shared/validators';
 import { logger } from '@src/shared/logger';
 import z from 'zod';
 
+/** Query schema for listing invoices with pagination. */
 const InvoiceRouteQuery = z.object({
   page: pageNumberValidation,
 });
 
+/** Params schema for fetching a single invoice by ID. */
 const InvoiceRouteParams = z.object({
   invoiceId: z.uuid(),
 });
 
+/** GET handler to list invoices for the authenticated user. */
 export const listInvoices: RequestHandler[] = [
   validate({ query: InvoiceRouteQuery }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -70,6 +73,7 @@ export const listInvoices: RequestHandler[] = [
   },
 ];
 
+/** GET handler to fetch a single invoice by ID for the authenticated user. */
 export const getInvoice: RequestHandler[] = [
   validate({ params: InvoiceRouteParams }),
   async (req: Request, res: Response, _next: NextFunction) => {

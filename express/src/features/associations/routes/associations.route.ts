@@ -27,10 +27,12 @@ import { updateMember } from '@src/features/members/services/updateMember';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
 
+/** Schema for adding a member to an association. */
 const BodySchema = z.object({
   memberId: z.string(),
 });
 
+/** GET /api/associations - Retrieve the current user's association. */
 export const getAssociationByUser: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -46,6 +48,7 @@ export const getAssociationByUser: RequestHandler[] = [
   },
 ];
 
+/** POST /api/associations - Create a new association (Super Admin only). */
 export const postAssociationCreate: RequestHandler[] = [
   validate({ body: CreateAssociationSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -78,6 +81,7 @@ export const postAssociationCreate: RequestHandler[] = [
   },
 ];
 
+/** GET /api/associations/current - Retrieve details of the current user's association. */
 export const getCurrentAssociation: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -97,6 +101,7 @@ export const getCurrentAssociation: RequestHandler[] = [
   },
 ];
 
+/** GET /api/associations/:associationId - Retrieve a single association by ID. */
 export const getAssociationDetail: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -127,6 +132,7 @@ export const getAssociationDetail: RequestHandler[] = [
   },
 ];
 
+/** PATCH /api/associations/:associationId - Update an existing association. */
 export const patchAssociationDetail: RequestHandler[] = [
   validate({ body: UpdateAssociationSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -178,6 +184,7 @@ export const patchAssociationDetail: RequestHandler[] = [
   },
 ];
 
+/** POST /api/associations/:associationId/deactivate - Deactivate an association (soft-disable). */
 export const postDeactivateAssociation: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -229,6 +236,7 @@ export const postDeactivateAssociation: RequestHandler[] = [
   },
 ];
 
+/** POST /api/associations/:associationId/logo - Upload a logo image for the association. */
 export const postUploadLogo: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -275,6 +283,7 @@ export const postUploadLogo: RequestHandler[] = [
   },
 ];
 
+/** POST /api/associations/:associationId/members - Add an existing member to the association. */
 export const postAddMember: RequestHandler[] = [
   validate({ body: BodySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

@@ -1,3 +1,4 @@
+/** Meeting API endpoint builders. */
 export const meetingsEndpoints = {
   base: '/meetings' as const,
   list: (page: number = 1) => `/meetings?page=${page}`,

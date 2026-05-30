@@ -14,6 +14,7 @@ const QuerySchema = z.object({
   page: pageNumberValidation,
 });
 
+/** GET /api/meetings/my - Get meetings assigned to the current user. */
 export const getMyMeetings: RequestHandler[] = [
   validate({ query: QuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

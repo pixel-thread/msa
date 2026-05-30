@@ -22,18 +22,22 @@ import { getAssociation } from '@src/shared/services/association/get-association
 import { withRole } from '@src/shared/utils/with-role';
 import { z } from 'zod';
 
+/** Schema for module ID path parameter. */
 const ParamsSchema = z.object({
   moduleId: z.string().uuid('Invalid module ID'),
 });
 
+/** Schema for removing a single user assignment. */
 const RemoveAssignSchema = z.object({
   userId: z.string().uuid('Invalid user ID'),
 });
 
+/** Schema for bulk removing user assignments. */
 const BulkRemoveAssignSchema = z.object({
   userIds: z.array(z.string().uuid('Invalid user ID')).min(1, 'At least one user is required'),
 });
 
+/** GET /training/modules/:moduleId/assign - List assignments for a module (SECRETARY role required). */
 export const getAssignments: RequestHandler[] = [
   validate({ params: ParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -58,6 +62,7 @@ export const getAssignments: RequestHandler[] = [
   },
 ];
 
+/** POST /training/modules/:moduleId/assign - Assign a user to a module (DPO role required). */
 export const postAssign: RequestHandler[] = [
   validate({ params: ParamsSchema, body: AssignTrainingSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -92,6 +97,7 @@ export const postAssign: RequestHandler[] = [
   },
 ];
 
+/** PUT /training/modules/:moduleId/assign - Bulk assign users to a module (DPO role required). */
 export const putBulkAssign: RequestHandler[] = [
   validate({ params: ParamsSchema, body: BulkAssignTrainingSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -126,6 +132,7 @@ export const putBulkAssign: RequestHandler[] = [
   },
 ];
 
+/** DELETE /training/modules/:moduleId/assign - Remove a user assignment (DPO role required). */
 export const deleteAssignment: RequestHandler[] = [
   validate({ params: ParamsSchema, body: RemoveAssignSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -160,6 +167,7 @@ export const deleteAssignment: RequestHandler[] = [
   },
 ];
 
+/** PATCH /training/modules/:moduleId/assign - Bulk remove user assignments (DPO role required). */
 export const patchBulkRemove: RequestHandler[] = [
   validate({ params: ParamsSchema, body: BulkRemoveAssignSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -194,6 +202,7 @@ export const patchBulkRemove: RequestHandler[] = [
   },
 ];
 
+/** GET /training/modules/:moduleId/assigned-users - List assigned users with completion status (SECRETARY role required). */
 export const getAssignedUsersHandler: RequestHandler[] = [
   validate({ params: ParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

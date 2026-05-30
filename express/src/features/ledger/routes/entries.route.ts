@@ -43,6 +43,7 @@ async function requireRole(req: Request, role: UserRole) {
   return user;
 }
 
+/** GET /api/ledger/entries - List ledger entries (FINANCE role required). */
 export const listEntries: RequestHandler[] = [
   validate({ query: LedgerQueryParams }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -63,6 +64,7 @@ export const listEntries: RequestHandler[] = [
   },
 ];
 
+/** POST /api/ledger/entries - Create a manual ledger entry (FINANCE role required). */
 export const createEntry: RequestHandler[] = [
   validate({ body: CreateLedgerEntrySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -89,6 +91,7 @@ export const createEntry: RequestHandler[] = [
   },
 ];
 
+/** POST /api/ledger/entries/:entryId/approve - Approve a ledger entry (PRESIDENT role required). */
 export const approveEntryHandler = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.traceId as string) || '';
   const association = await getAssociation(req);

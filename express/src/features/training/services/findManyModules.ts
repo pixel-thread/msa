@@ -3,6 +3,7 @@ import { UserRole } from '@prisma/client';
 import { PAGE_SIZE } from '@src/shared/constants';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 
+/** Parameters for finding training modules. */
 interface FindManyModulesProps {
   associationId: string;
   role?: UserRole[];
@@ -11,6 +12,7 @@ interface FindManyModulesProps {
   userId?: string;
 }
 
+/** Retrieve paginated training modules with optional role/active filters and user completion status. */
 export async function findManyModules({
   associationId,
   role,

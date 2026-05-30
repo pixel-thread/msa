@@ -3,6 +3,7 @@ import { NotFoundError, ForbiddenError } from '@src/shared/errors';
 import { AttendeeRole, RsvpStatus } from '@prisma/client';
 import { logger } from '@src/shared/logger';
 
+/** Props for updating an attendee. */
 interface UpdateAttendeeProps {
   meetingId: string;
   associationId: string;
@@ -15,6 +16,7 @@ interface UpdateAttendeeProps {
   isAdminUpdate?: boolean;
 }
 
+/** Update an attendee's role, RSVP status, or RSVP note for a meeting. */
 export async function updateAttendee({
   meetingId,
   associationId,

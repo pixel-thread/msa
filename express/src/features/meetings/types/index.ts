@@ -1,5 +1,6 @@
 import { HIGH_ROLE_USERS } from '@src/shared/constants';
 
+/** Meeting data transfer object. */
 export interface Meeting {
   id: string;
   title: string;
@@ -16,6 +17,7 @@ export interface Meeting {
   };
 }
 
+/** Member data transfer object. */
 export interface Member {
   id: string;
   name: string;
@@ -24,6 +26,7 @@ export interface Member {
   status: string;
 }
 
+/** Attendee data transfer object. */
 export interface Attendee {
   id: string;
   userId: string;
@@ -36,11 +39,13 @@ export interface Attendee {
   attendeeRole: string;
 }
 
+/** Form data for adding an attendee. */
 export interface AddAttendeeForm {
   userId: string;
   attendeeRole: string;
 }
 
+/** Form data for RSVP submission. */
 export interface RsvpForm {
   status: 'ACCEPTED' | 'DECLINED';
   note?: string;

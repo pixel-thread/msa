@@ -13,6 +13,7 @@ const ParamsSchema = z.object({
   meetingId: z.string('Invalid meeting ID'),
 });
 
+/** GET /api/meetings/[meetingId]/minutes - List all minutes for a meeting. */
 export const getMinutes: RequestHandler[] = [
   validate({ params: ParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

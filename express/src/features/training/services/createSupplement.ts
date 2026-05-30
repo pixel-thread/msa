@@ -2,6 +2,7 @@ import { prisma } from '@lib/prisma';
 import { CreateSupplementInput } from '../validators/training';
 import { AuditAction, Prisma } from '@prisma/client';
 
+/** Parameters for creating a training supplement. */
 interface CreateSupplementProps {
   associationId: string;
   moduleId: string;
@@ -11,6 +12,7 @@ interface CreateSupplementProps {
   fileId?: string;
 }
 
+/** Create a training supplement with audit logging. */
 export async function createSupplement({
   associationId,
   moduleId,

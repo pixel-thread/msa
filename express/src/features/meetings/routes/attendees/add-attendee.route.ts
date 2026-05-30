@@ -16,6 +16,7 @@ const MeetingParamsSchema = z.object({
   meetingId: z.string('Invalid meeting ID'),
 });
 
+/** POST /api/meetings/[meetingId]/attendees - Assign an attendee to a meeting. */
 export const postAddAttendee: RequestHandler[] = [
   validate({ params: MeetingParamsSchema, body: AssignAttendeeSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

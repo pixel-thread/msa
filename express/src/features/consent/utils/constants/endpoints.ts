@@ -1,3 +1,4 @@
+/** Endpoint path constants for the consent feature. */
 export const consentEndpoints = {
   all: '/consent/all' as const,
   report: '/consent/report' as const,

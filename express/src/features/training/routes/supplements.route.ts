@@ -22,15 +22,18 @@ import { getAssociation } from '@src/shared/services/association/get-association
 import { withRole } from '@src/shared/utils/with-role';
 import { z } from 'zod';
 
+/** Schema for module ID path parameter. */
 const ModuleParamsSchema = z.object({
   moduleId: z.string().uuid('Invalid module ID'),
 });
 
+/** Schema for module + supplement ID path parameters. */
 const SupplementParamsSchema = z.object({
   moduleId: z.string().uuid('Invalid module ID'),
   supplementId: z.string().uuid('Invalid supplement ID'),
 });
 
+/** GET /training/modules/:moduleId/supplements - List supplements for a module. */
 export const getSupplements: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -57,6 +60,7 @@ export const getSupplements: RequestHandler[] = [
   },
 ];
 
+/** POST /training/modules/:moduleId/supplements - Upload a supplement (DPO role required). */
 export const postSupplement: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -135,6 +139,7 @@ export const postSupplement: RequestHandler[] = [
   },
 ];
 
+/** GET /training/modules/:moduleId/supplements/:supplementId - Retrieve a single supplement. */
 export const getSupplement: RequestHandler[] = [
   validate({ params: SupplementParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -168,6 +173,7 @@ export const getSupplement: RequestHandler[] = [
   },
 ];
 
+/** PATCH /training/modules/:moduleId/supplements/:supplementId - Update a supplement (DPO role required). */
 export const updateSupplementHandler: RequestHandler[] = [
   validate({ params: SupplementParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -263,6 +269,7 @@ export const updateSupplementHandler: RequestHandler[] = [
   },
 ];
 
+/** DELETE /training/modules/:moduleId/supplements/:supplementId - Delete a supplement (DPO role required). */
 export const deleteSupplementHandler: RequestHandler[] = [
   validate({ params: SupplementParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {

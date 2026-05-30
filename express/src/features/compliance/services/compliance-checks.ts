@@ -9,6 +9,10 @@ import {
 } from '@prisma/client';
 import type { ComplianceCheckResult, ComplianceEvidence } from '../types';
 
+/**
+ * Run a single compliance check of the specified type for an association.
+ * Delegates to the appropriate check function based on checkType.
+ */
 export async function runComplianceCheck(
   associationId: string,
   checkType: string,
@@ -38,6 +42,7 @@ export async function runComplianceCheck(
   return checker();
 }
 
+/** Check the percentage of members who have granted consent for each purpose. */
 async function checkConsentCoverage(associationId: string): Promise<ComplianceCheckResult> {
   const purposes = [
     ConsentPurpose.PAYMENTS,
@@ -102,6 +107,7 @@ async function checkConsentCoverage(associationId: string): Promise<ComplianceCh
   };
 }
 
+/** Check DSAR ticket SLA compliance — identifies breached and at-risk tickets. */
 async function checkDsarSlaCompliance(associationId: string): Promise<ComplianceCheckResult> {
   const now = new Date();
   const threeDaysFromNow = new Date();
@@ -160,6 +166,7 @@ async function checkDsarSlaCompliance(associationId: string): Promise<Compliance
   };
 }
 
+/** Check data retention compliance — identifies users past their retention date. */
 async function checkDataRetention(associationId: string): Promise<ComplianceCheckResult> {
   const now = new Date();
   const sevenYearsAgo = new Date();
@@ -206,6 +213,7 @@ async function checkDataRetention(associationId: string): Promise<ComplianceChec
   };
 }
 
+/** Check whether PII fields appear to be encrypted by sampling recent users. */
 async function checkPiiEncryption(associationId: string): Promise<ComplianceCheckResult> {
   const sampleUsers = await prisma.user.findMany({
     where: { associationId },
@@ -265,6 +273,7 @@ async function checkPiiEncryption(associationId: string): Promise<ComplianceChec
   };
 }
 
+/** Check subscription expiry compliance — identifies expired and soon-to-expire subscriptions. */
 async function checkSubscriptionExpiry(associationId: string): Promise<ComplianceCheckResult> {
   const now = new Date();
 
@@ -314,6 +323,7 @@ async function checkSubscriptionExpiry(associationId: string): Promise<Complianc
   };
 }
 
+/** Check member data completeness — what percentage of key fields are filled in. */
 async function checkMemberDataCompleteness(associationId: string): Promise<ComplianceCheckResult> {
   const users = await prisma.user.findMany({
     where: { associationId, status: UserStatus.ACTIVE },
@@ -376,6 +386,7 @@ async function checkMemberDataCompleteness(associationId: string): Promise<Compl
   };
 }
 
+/** Check payment reconciliation — success rate of transactions in the last 30 days. */
 async function checkPaymentReconciliation(associationId: string): Promise<ComplianceCheckResult> {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -428,6 +439,7 @@ async function checkPaymentReconciliation(associationId: string): Promise<Compli
   };
 }
 
+/** Check audit log integrity — look for missing trace IDs or actor IDs in recent logs. */
 async function checkAuditLogIntegrity(associationId: string): Promise<ComplianceCheckResult> {
   const recentLogs = await prisma.auditLog.findMany({
     where: { associationId },
@@ -462,6 +474,7 @@ async function checkAuditLogIntegrity(associationId: string): Promise<Compliance
   };
 }
 
+/** Generate a compliance evidence report for an association over a given number of days. */
 export async function generateComplianceEvidence(
   associationId: string,
   days: number = 30,
@@ -491,6 +504,7 @@ export async function generateComplianceEvidence(
   };
 }
 
+/** Gather consent record evidence for the given period. */
 async function getConsentEvidence(associationId: string, from: Date, to: Date, days: number) {
   const records = await prisma.consentReceipt.findMany({
     where: { associationId, createdAt: { gte: from, lte: to } },
@@ -514,6 +528,7 @@ async function getConsentEvidence(associationId: string, from: Date, to: Date, d
   };
 }
 
+/** Gather DSAR ticket evidence for the given period. */
 async function getDsarEvidence(associationId: string, from: Date, to: Date) {
   const tickets = await prisma.dsarTicket.findMany({
     where: { associationId, createdAt: { gte: from, lte: to } },
@@ -536,6 +551,7 @@ async function getDsarEvidence(associationId: string, from: Date, to: Date) {
   };
 }
 
+/** Gather member statistics evidence. */
 async function getMemberEvidence(associationId: string) {
   const [total, active, withSubscription] = await Promise.all([
     prisma.user.count({ where: { associationId } }),
@@ -553,6 +569,7 @@ async function getMemberEvidence(associationId: string) {
   };
 }
 
+/** Gather payment transaction evidence for the given period. */
 async function getPaymentEvidence(associationId: string, from: Date, to: Date) {
   const payments = await prisma.paymentTransaction.groupBy({
     by: ['status'],
@@ -576,6 +593,7 @@ async function getPaymentEvidence(associationId: string, from: Date, to: Date) {
   };
 }
 
+/** Gather audit log evidence for the given period. */
 async function getAuditEvidence(associationId: string, from: Date, to: Date) {
   const logs = await prisma.auditLog.groupBy({
     by: ['action'],

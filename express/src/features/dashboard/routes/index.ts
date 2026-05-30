@@ -5,8 +5,10 @@ import { success } from '@src/shared/utils/responses';
 import { prisma } from '@src/shared/lib/prisma';
 import { ForbiddenError, UnauthorizedError } from '@src/shared/errors';
 
+/** Dashboard feature router. */
 const router: Router = Router();
 
+/** GET /api/dashboard/overview - Retrieve dashboard summary data for the user's association. */
 router.get('/overview', auth, async (req, res, next) => {
   try {
     const userId = req.userId as string;

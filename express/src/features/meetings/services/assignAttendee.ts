@@ -6,6 +6,7 @@ import { logger } from '@src/shared/logger';
 import { EXPO_ROUTES } from '@src/shared/constants/expo-route';
 import { createNotification } from '@src/shared/services/notification';
 
+/** Props for assigning an attendee to a meeting. */
 interface AssignAttendeeProps {
   meetingId: string;
   associationId: string;
@@ -13,6 +14,10 @@ interface AssignAttendeeProps {
   attendeeRole?: AttendeeRole;
 }
 
+/**
+ * Assign a user as an attendee to a meeting.
+ * Sends a push notification to the assigned user.
+ */
 export async function assignAttendee({
   meetingId,
   associationId,

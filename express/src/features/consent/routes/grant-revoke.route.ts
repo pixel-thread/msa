@@ -20,6 +20,7 @@ async function getAssociation(req: Request) {
   return { id: user.association.id, slug: user.association.slug, name: user.association.name };
 }
 
+/** POST /api/consent/grant - Grant consent for specified purposes. */
 export const grantConsent: RequestHandler[] = [
   validate({ body: ConsentUpdateSchema.omit({ action: true }) }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -50,6 +51,7 @@ export const grantConsent: RequestHandler[] = [
   },
 ];
 
+/** POST /api/consent/revoke - Withdraw consent for specified purposes. */
 export const revokeConsent: RequestHandler[] = [
   validate({ body: ConsentUpdateSchema.omit({ action: true }) }),
   async (req: Request, res: Response, _next: NextFunction) => {

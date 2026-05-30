@@ -1,6 +1,7 @@
 import { prisma } from '@lib/prisma';
 import { AuditAction, Prisma } from '@prisma/client';
 
+/** Parameters for deleting a training supplement. */
 interface DeleteSupplementProps {
   associationId: string;
   moduleId: string;
@@ -8,6 +9,7 @@ interface DeleteSupplementProps {
   actorId: string;
 }
 
+/** Delete a training supplement and its associated file with audit logging. */
 export async function deleteSupplement({
   associationId,
   moduleId,

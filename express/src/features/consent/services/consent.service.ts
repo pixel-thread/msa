@@ -211,7 +211,11 @@ export class ConsentService {
   }
 
   /**
-   * Finds a single consent receipt by ID.
+   * Finds a single consent receipt by ID within a specific association.
+   *
+   * @param associationId - The association ID.
+   * @param receiptId - The receipt ID to look up.
+   * @returns The consent receipt or null if not found.
    */
   static async findUniqueConsentReceipt(
     associationId: string,
@@ -229,7 +233,13 @@ export class ConsentService {
   }
 
   /**
-   * Updates a single consent receipt.
+   * Updates a single consent receipt and logs the change in the audit trail.
+   *
+   * @param associationId - The association ID.
+   * @param receiptId - The receipt ID to update.
+   * @param actorId - The user ID performing the update.
+   * @param data - The fields to update.
+   * @returns The updated consent receipt.
    */
   static async updateConsentReceipt(
     associationId: string,
@@ -268,7 +278,11 @@ export class ConsentService {
   }
 
   /**
-   * Deletes a single consent receipt.
+   * Deletes a single consent receipt and logs the action in the audit trail.
+   *
+   * @param associationId - The association ID.
+   * @param receiptId - The receipt ID to delete.
+   * @param actorId - The user ID performing the deletion.
    */
   static async deleteConsentReceipt(
     associationId: string,
@@ -301,6 +315,11 @@ export class ConsentService {
 
   /**
    * Gets consent history for a specific user (admin view).
+   *
+   * @param userId - The target user ID.
+   * @param associationId - The association ID.
+   * @param page - Page number for pagination.
+   * @returns Paginated consent records and metadata.
    */
   static async getUserConsentHistoryById(
     userId: string,

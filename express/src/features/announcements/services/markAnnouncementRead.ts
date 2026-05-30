@@ -1,12 +1,17 @@
 import { prisma } from '@lib/prisma';
 import { NotFoundError } from '@src/shared/errors';
 
+/** Props for marking an announcement as read. */
 interface MarkAnnouncementReadProps {
+  /** The announcement to mark as read. */
   announcementId: string;
+  /** The user reading the announcement. */
   userId: string;
+  /** The association scoping the lookup. */
   associationId: string;
 }
 
+/** Mark an announcement as read by a user. Creates or updates a read receipt. */
 export async function markAnnouncementRead({
   announcementId,
   userId,

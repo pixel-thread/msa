@@ -15,6 +15,7 @@ import { withRole } from '@src/shared/utils/with-role';
 
 const ParamsSchema = z.object({ meetingId: z.string('Invalid meeting ID') });
 
+/** POST /api/meetings/[meetingId]/agenda - Create a new agenda item for a meeting. */
 export const postAddAgendaItem: RequestHandler[] = [
   validate({ params: ParamsSchema, body: CreateAgendaItemSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

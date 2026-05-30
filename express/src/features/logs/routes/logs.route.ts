@@ -7,6 +7,7 @@ import { createLogs, createLogsBatch } from '@src/shared/services/logs';
 import { LogIngestSchema, LogBatchSchema } from '@src/shared/validators/logs';
 import { Prisma } from '@prisma/client';
 
+/** POST /api/logs - Ingest a single log entry. */
 export const postLog: RequestHandler[] = [
   validate({ body: LogIngestSchema.strict() }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -35,6 +36,7 @@ export const postLog: RequestHandler[] = [
   },
 ];
 
+/** POST /api/logs/batch - Ingest multiple log entries in a batch. */
 export const postLogBatch: RequestHandler[] = [
   validate({ body: LogBatchSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

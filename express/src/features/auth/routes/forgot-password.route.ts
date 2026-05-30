@@ -11,6 +11,7 @@ import { updateUser } from '@src/features/user/services';
 import { getUserFirst } from '@src/shared/services/user/get-user-first';
 import { logger } from '@src/shared/logger';
 
+/** POST handler for forgot-password flow. Validates email, generates a reset token, and sends reset email. */
 export const postForgotPassword: RequestHandler[] = [
   validate({ body: ForgotPasswordSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

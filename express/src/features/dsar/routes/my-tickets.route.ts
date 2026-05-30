@@ -44,6 +44,7 @@ async function withRole(req: Request, role: UserRole) {
   return { ...user, role: roles };
 }
 
+/** GET /api/dsar/my - List the current user's DSAR tickets. */
 export const listMyTickets: RequestHandler[] = [
   validate({ query: DsarQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -70,6 +71,7 @@ export const listMyTickets: RequestHandler[] = [
   },
 ];
 
+/** GET /api/dsar/my/:ticketId - Retrieve a single DSAR ticket owned by the current user. */
 export const getMyTicket = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.traceId as string) || '';
   const association = await getAssociation(req);

@@ -7,6 +7,7 @@ import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
 
+/** GET /training/my-assignments - Retrieve the current user's training assignments. */
 export const getMyAssignments: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -30,6 +31,7 @@ export const getMyAssignments: RequestHandler[] = [
   },
 ];
 
+/** GET /training/my-completions - Retrieve the current user's training completions. */
 export const getMyCompletions: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';

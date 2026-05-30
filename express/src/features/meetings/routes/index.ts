@@ -25,6 +25,7 @@ import { deleteMinute } from './minutes/delete-minutes.route';
 import { getMeetingReport } from './report.route';
 import { auth } from '@src/middleware/auth';
 
+/** Meetings feature router - aggregates all meeting-related routes. */
 const router: Router = Router();
 router.use(auth);
 // Static routes must be defined before parameterized routes

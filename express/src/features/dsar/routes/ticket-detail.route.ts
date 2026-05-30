@@ -22,8 +22,13 @@ import { getUniqueUser } from '@src/shared/services/user/get-unique-user';
 import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
 import { logger } from '@src/shared/logger';
 
+/** Schema for ticket ID path parameter. */
 const ParamsSchema = z.object({ ticketId: z.string().uuid() });
+
+/** Schema for assigning a ticket to a user. */
 const AssignSchema = z.object({ assignedToId: z.string().uuid() });
+
+/** Schema for rejecting a ticket with a reason. */
 const RejectSchema = z.object({ reason: z.string().min(1).max(500) });
 
 const ROLE_HIERARCHY: Record<UserRole, number> = {
@@ -60,6 +65,7 @@ async function withRole(req: Request, role: UserRole) {
   return { ...user, role: roles };
 }
 
+/** GET /api/dsar/:ticketId - Retrieve a single DSAR ticket (owner or DPO role required). */
 export const getTicket: RequestHandler[] = [
   validate({ params: ParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -86,6 +92,7 @@ export const getTicket: RequestHandler[] = [
   },
 ];
 
+/** DELETE /api/dsar/:ticketId - Delete a DSAR ticket (DPO role required). */
 export const deleteTicket: RequestHandler[] = [
   validate({ params: ParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -111,6 +118,7 @@ export const deleteTicket: RequestHandler[] = [
   },
 ];
 
+/** POST /api/dsar/:ticketId/respond - Respond to a DSAR ticket (DPO role required). */
 export const respondToTicket: RequestHandler[] = [
   validate({ params: ParamsSchema, body: RespondDsarSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -138,6 +146,7 @@ export const respondToTicket: RequestHandler[] = [
   },
 ];
 
+/** PATCH /api/dsar/:ticketId/assign - Assign a DSAR ticket to an admin user (DPO role required). */
 export const assignTicket: RequestHandler[] = [
   validate({ params: ParamsSchema, body: AssignSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -170,6 +179,7 @@ export const assignTicket: RequestHandler[] = [
   },
 ];
 
+/** POST /api/dsar/:ticketId/reject - Reject a DSAR ticket with a reason (DPO role required). */
 export const rejectTicket: RequestHandler[] = [
   validate({ params: ParamsSchema, body: RejectSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

@@ -7,6 +7,7 @@ import { PAGE_SIZE } from '@src/shared/constants';
 // Internal: Auto-create ledger entry for payment transactions
 // ---------------------------------------------------------------------------
 
+/** Auto-create a ledger entry for a payment transaction. */
 export async function createLedgerEntry(
   tx: Prisma.TransactionClient,
   paymentTransactionId: string,
@@ -79,6 +80,7 @@ export async function createLedgerEntry(
 // Ledger Entries
 // ---------------------------------------------------------------------------
 
+/** Input for creating a manual ledger entry. */
 export interface CreateManualEntryInput {
   description: string;
   paymentId?: string | null;
@@ -89,6 +91,7 @@ export interface CreateManualEntryInput {
   }>;
 }
 
+/** Retrieve paginated ledger entries for an association. */
 export async function getEntries(associationId: string, page = 1) {
   const validPage = Math.max(1, page);
   const skip = (validPage - 1) * PAGE_SIZE;
@@ -109,6 +112,7 @@ export async function getEntries(associationId: string, page = 1) {
   return { entries, total, page: validPage };
 }
 
+/** Create a manual ledger entry with validation (balanced debits/credits, active accounts). */
 export async function createManualEntry(
   associationId: string,
   userId: string,
@@ -163,6 +167,7 @@ export async function createManualEntry(
   });
 }
 
+/** Approve a ledger entry by ID. */
 export async function approveEntry(entryId: string, approvedById: string) {
   const existing = await prisma.ledgerEntry.findUnique({ where: { id: entryId } });
 
@@ -183,6 +188,7 @@ export async function approveEntry(entryId: string, approvedById: string) {
 // Accounts
 // ---------------------------------------------------------------------------
 
+/** Input for creating a new account. */
 export interface CreateAccountInput {
   code: string;
   name: string;
@@ -190,6 +196,7 @@ export interface CreateAccountInput {
   description?: string;
 }
 
+/** Retrieve paginated active accounts for an association. */
 export async function getAccounts(associationId: string, page = 1) {
   const validPage = Math.max(1, page);
   const skip = (validPage - 1) * PAGE_SIZE;
@@ -209,6 +216,7 @@ export async function getAccounts(associationId: string, page = 1) {
   return { accounts, total, page: validPage };
 }
 
+/** Create a new account for an association. */
 export async function createAccount(associationId: string, input: CreateAccountInput) {
   return prisma.account.create({
     data: {

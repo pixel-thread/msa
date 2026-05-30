@@ -5,11 +5,14 @@ import { grantConsent, revokeConsent } from './grant-revoke.route';
 import { getAllConsentRecords, getConsentHistory, getConsentReport } from './admin-consent.route';
 import { getReceipt, updateReceipt, deleteReceipt, getUserConsents } from './user-consent.route';
 
+/** Consent feature router - all routes require authentication. */
 const router: Router = Router();
 
 router.use(auth);
 
 router.get('/my', getMyConsent);
+
+
 router.post('/grant', grantConsent);
 router.post('/revoke', revokeConsent);
 router.get('/all', getAllConsentRecords);

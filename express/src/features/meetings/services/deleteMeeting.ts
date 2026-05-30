@@ -1,11 +1,13 @@
 import { prisma } from '@lib/prisma';
 import { NotFoundError } from '@src/shared/errors';
 
+/** Props for deleting a meeting. */
 interface DeleteMeetingProps {
   meetingId: string;
   associationId: string;
 }
 
+/** Delete a meeting by ID, verifying it belongs to the association. */
 export async function deleteMeeting({ meetingId, associationId }: DeleteMeetingProps) {
   const existing = await prisma.meeting.findFirst({
     where: { id: meetingId, associationId },

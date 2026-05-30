@@ -2,6 +2,7 @@ import { pageNumberValidation } from '@src/shared/validators/common';
 import { ComplaintStatus } from '@prisma/client';
 import { z } from 'zod';
 
+/** Query schema for listing complaints with filters and pagination. */
 export const ComplaintQuerySchema = z.object({
   status: z.nativeEnum(ComplaintStatus).optional(),
   priority: z.string().optional(),
@@ -12,12 +13,14 @@ export const ComplaintQuerySchema = z.object({
 
 export type ComplaintQueryInput = z.infer<typeof ComplaintQuerySchema>;
 
+/** Params schema for complaint route parameters. */
 export const ComplaintParamsSchema = z.object({
   complaintId: z.string().uuid('Invalid complaint ID'),
 });
 
 export type ComplaintParamsInput = z.infer<typeof ComplaintParamsSchema>;
 
+/** Schema for submitting a compliance complaint form. */
 export const complianceSubmitSchema = z.object({
   category: z.enum([
     'MEETING_CONDUCT',
@@ -40,5 +43,6 @@ export const complianceSubmitSchema = z.object({
 
 export type ComplianceSubmitFormData = z.output<typeof complianceSubmitSchema>;
 
+/** Alias for the compliance submit schema used in complaint creation. */
 export const CreateComplaintSchema = complianceSubmitSchema;
 export type CreateComplaintInput = ComplianceSubmitFormData;

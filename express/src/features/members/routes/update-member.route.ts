@@ -10,8 +10,10 @@ import { withRole } from '@src/shared/utils/with-role';
 import { logger } from '@src/shared/logger';
 import z from 'zod';
 
+/** Schema for validating the route parameter containing the member ID. */
 const ParamSchema = z.object({ memberId: z.uuid() });
 
+/** Schema for validating the request body when an admin updates a member. */
 const AdminOnboardingSchema = z.object({
   name: z.string().min(1, 'Name is required').optional(),
   mobile: z
@@ -27,6 +29,7 @@ const AdminOnboardingSchema = z.object({
   associationId: z.uuid(),
 });
 
+/** Route handler for updating a member's profile. Requires SECRETARY role. */
 export const updateMemberRoute: RequestHandler[] = [
   validate({ body: AdminOnboardingSchema, params: ParamSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

@@ -3,6 +3,7 @@ import { prisma } from './prisma';
 import { logger } from '@src/shared/logger';
 import { NotificationDataT } from '@sharedType/notification';
 
+/** Singleton Expo SDK client for push notification delivery. */
 const expo = new Expo();
 
 /**

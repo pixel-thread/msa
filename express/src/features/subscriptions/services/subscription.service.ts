@@ -5,17 +5,20 @@ import { buildPagination } from '@src/shared/utils/build-pagination';
 import { UserRole } from '@prisma/client';
 import { hasHighRoleAccess } from '@src/shared/utils';
 
+/** Parameters for subscribing a user to a plan. */
 interface SubscribeInput {
   planId: string;
   userId: string;
   associationId: string;
 }
 
+/** Parameters for upgrading a subscription. */
 interface UpgradeInput {
   planId: string;
   userId: string;
 }
 
+/** Parameters for waiving a subscription. */
 interface WaiveInput {
   subscriptionId: string;
   reason: string;
@@ -23,6 +26,7 @@ interface WaiveInput {
   associationId: string;
 }
 
+/** Subscribe a user to a plan, creating or updating their subscription. */
 export async function subscribe({ planId, userId, associationId }: SubscribeInput) {
   const plan = await prisma.subscriptionPlan.findUnique({
     where: {
@@ -97,6 +101,7 @@ export async function subscribe({ planId, userId, associationId }: SubscribeInpu
   return subscription;
 }
 
+/** Upgrade a user's subscription to a new plan version. */
 export async function upgradeSubscription({ planId, userId }: UpgradeInput) {
   const subscription = await prisma.subscription.findUnique({
     where: { userId },
@@ -163,6 +168,7 @@ export async function upgradeSubscription({ planId, userId }: UpgradeInput) {
   return updated;
 }
 
+/** Waive a subscription, marking it as WAIVED with a reason. */
 export async function waiveSubscription({
   subscriptionId,
   reason,
@@ -189,6 +195,7 @@ export async function waiveSubscription({
   return updated;
 }
 
+/** Retrieve the current user's subscriptions with pagination. */
 export async function getMySubscription(userId: string, page: number) {
   const [subscriptions, total] = await prisma.$transaction([
     prisma.subscription.findMany({
@@ -212,6 +219,7 @@ export async function getMySubscription(userId: string, page: number) {
   };
 }
 
+/** Parameters for retrieving subscription payments. */
 interface GetSubscriptionPaymentsInput {
   subscriptionId: string;
   userId: string;
@@ -220,6 +228,7 @@ interface GetSubscriptionPaymentsInput {
   page: number;
 }
 
+/** Retrieve paginated payments for a subscription, with authorization checks. */
 export async function getSubscriptionPayments({
   subscriptionId,
   userId,

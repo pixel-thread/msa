@@ -15,8 +15,10 @@ import { withRole } from '@src/shared/utils/with-role';
 import { logger } from '@src/shared/logger';
 import z from 'zod';
 
+/** Schema for validating the route parameter containing the member ID. */
 const ParamSchema = z.object({ memberId: z.uuid() });
 
+/** Route handler for soft-deleting a member. Requires SECRETARY role. */
 export const deleteMember: RequestHandler[] = [
   validate({ params: ParamSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

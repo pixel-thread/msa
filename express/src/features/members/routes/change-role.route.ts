@@ -16,14 +16,17 @@ import { updateMember } from '@src/features/members/services/updateMember';
 import { logger } from '@src/shared/logger';
 import z from 'zod';
 
+/** Schema for validating the request body when updating a user's role. */
 const UpdateUserRoleSchema = z.object({
   role: z.nativeEnum(UserRole),
 });
 
+/** Schema for validating route parameters containing the member ID. */
 const UpdateUserRoleParamsSchema = z.object({
   memberId: z.uuid(),
 });
 
+/** Route handler for adding a role to a member. Requires PRESIDENT role. */
 export const addRole: RequestHandler[] = [
   validate({ body: UpdateUserRoleSchema, params: UpdateUserRoleParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -84,6 +87,7 @@ export const addRole: RequestHandler[] = [
   },
 ];
 
+/** Route handler for removing a role from a member. Requires PRESIDENT role. */
 export const removeRole: RequestHandler[] = [
   validate({ body: UpdateUserRoleSchema, params: UpdateUserRoleParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

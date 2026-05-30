@@ -3,6 +3,7 @@ import { UpdateMemberTypeInput } from '../validators';
 import { AuditAction, Prisma } from '@prisma/client';
 import { ConflictError } from '@src/shared/errors';
 
+/** Parameters for updating a member type. */
 interface UpdateMemberTypeProps {
   associationId: string;
   actorId: string;
@@ -10,6 +11,7 @@ interface UpdateMemberTypeProps {
   data: UpdateMemberTypeInput;
 }
 
+/** Update a member type with duplicate-level checking and audit logging. */
 export async function updateMemberType({
   associationId,
   actorId,

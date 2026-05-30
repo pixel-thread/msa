@@ -5,6 +5,7 @@ import { UnauthorizedError } from '@src/shared/errors';
 import { getUser, updateUser } from '@src/features/user/services';
 import { logger } from '@src/shared/logger';
 
+/** POST handler to toggle MFA enable/disable for the authenticated user. */
 export const toggleMfa: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';

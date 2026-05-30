@@ -2,6 +2,7 @@ import { prisma } from '@src/shared/lib/prisma';
 import { AuditAction } from '@prisma/client';
 import { logAction } from '@src/shared/services/audit-logs';
 
+/** Result of processing expired subscriptions for a single association. */
 export interface SubscriptionExpiryResult {
   associationId: string;
   associationSlug: string;
@@ -10,6 +11,7 @@ export interface SubscriptionExpiryResult {
   error?: string;
 }
 
+/** Expire overdue subscriptions for a given association. */
 export async function expireOverdueSubscriptions(
   associationId: string,
 ): Promise<SubscriptionExpiryResult> {
@@ -83,6 +85,7 @@ export async function expireOverdueSubscriptions(
   }
 }
 
+/** Run subscription expiry check for all active associations. */
 export async function runSubscriptionExpiryCron(): Promise<SubscriptionExpiryResult[]> {
   const associations = await prisma.association.findMany({
     where: { isActive: true },

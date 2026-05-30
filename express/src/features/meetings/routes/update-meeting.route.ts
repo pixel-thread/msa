@@ -16,6 +16,7 @@ const MeetingParamsSchema = z.object({
   meetingId: z.string('Invalid meeting ID'),
 });
 
+/** PATCH /api/meetings/[meetingId] - Update a meeting. */
 export const patchUpdateMeeting: RequestHandler[] = [
   validate({ params: MeetingParamsSchema, body: UpdateMeetingSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

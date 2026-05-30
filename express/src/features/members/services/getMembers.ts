@@ -3,12 +3,14 @@ import type { AssociationDetails } from '@src/shared/api';
 import { Prisma } from '@prisma/client';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 
+/** Arguments for the getMembers query. */
 type Props = {
   where: Prisma.UserWhereInput;
   page?: number;
   search?: string;
 };
 
+/** Get a paginated list of members with optional search filtering. */
 export async function getMembers({ where, page = 1, search }: Props) {
   const pageSize = search ? 20 : 10;
 
@@ -57,10 +59,12 @@ export async function getMembers({ where, page = 1, search }: Props) {
   };
 }
 
+/** Get all members for a given association. */
 export async function getMembersByAssociation(association: AssociationDetails) {
   return getMembers({ where: { associationId: association.id } });
 }
 
+/** Get the total and active member counts for an association. */
 export async function getMemberCount(associationId: string) {
   const total = await prisma.user.count({
     where: { associationId },

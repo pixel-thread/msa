@@ -14,6 +14,7 @@ import {
   PublishAnnouncementSchema,
 } from '@src/features/announcements/validators';
 
+/** GET handler to fetch a single announcement by ID. */
 export const getAnnouncement: RequestHandler[] = [
   validate({ params: AnnouncementRouteParams }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -30,6 +31,7 @@ export const getAnnouncement: RequestHandler[] = [
   },
 ];
 
+/** PUT handler to update an announcement. Requires high-role access. */
 export const putAnnouncement: RequestHandler[] = [
   validate({ params: AnnouncementRouteParams, body: UpdateAnnouncementSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -54,6 +56,7 @@ export const putAnnouncement: RequestHandler[] = [
   },
 ];
 
+/** DELETE handler to remove an announcement. Requires high-role access. */
 export const deleteAnnouncement: RequestHandler[] = [
   validate({ params: AnnouncementRouteParams }),
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -79,6 +82,7 @@ export const deleteAnnouncement: RequestHandler[] = [
   },
 ];
 
+/** PATCH handler to publish, archive, or unpublish an announcement. Requires high-role access. */
 export const patchAnnouncement: RequestHandler[] = [
   validate({ params: AnnouncementRouteParams, body: PublishAnnouncementSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

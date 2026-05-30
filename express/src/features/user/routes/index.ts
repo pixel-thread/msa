@@ -4,6 +4,7 @@ import { getProfile, updateProfile } from './profile.route';
 import { toggleMfa } from './mfa.route';
 import { listInvoices, getInvoice } from './invoices.route';
 
+/** User router — aggregates all user profile and invoice route handlers. */
 const router: Router = Router();
 
 router.use(auth);

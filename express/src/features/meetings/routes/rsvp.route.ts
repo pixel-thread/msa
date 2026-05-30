@@ -19,6 +19,7 @@ const RsvpSchema = z.object({
     .transform((v) => v?.trim()),
 });
 
+/** POST /api/meetings/[meetingId]/rsvp - Submit an RSVP for a meeting. */
 export const postRsvp: RequestHandler[] = [
   validate({ body: RsvpSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {

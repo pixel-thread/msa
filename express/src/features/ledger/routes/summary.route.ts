@@ -35,6 +35,7 @@ async function requireRole(req: Request, role: UserRole) {
   return user;
 }
 
+/** GET /api/ledger/summary - Retrieve ledger summary (FINANCE role required). */
 export const getLedgerSummary = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.traceId as string) || '';
   const association = await getAssociation(req);

@@ -2,12 +2,14 @@ import { prisma } from '@lib/prisma';
 import { PAGE_SIZE } from '@src/shared/constants';
 import { AuditAction, Prisma } from '@prisma/client';
 
+/** Parameters for retrieving training assignments. */
 interface GetTrainingAssignmentsProps {
   associationId: string;
   moduleId: string;
   page?: number;
 }
 
+/** Retrieve paginated training assignments for a module. */
 export async function getTrainingAssignments({
   associationId,
   moduleId,
@@ -47,6 +49,7 @@ export async function getTrainingAssignments({
   return { data, total };
 }
 
+/** Parameters for assigning training to a user. */
 interface AssignTrainingProps {
   associationId: string;
   moduleId: string;
@@ -54,6 +57,7 @@ interface AssignTrainingProps {
   assignedById: string;
 }
 
+/** Assign a user to a training module with role validation and audit logging. */
 export async function assignTraining({
   associationId,
   moduleId,
@@ -117,6 +121,7 @@ export async function assignTraining({
   });
 }
 
+/** Parameters for bulk assigning training. */
 interface BulkAssignTrainingProps {
   associationId: string;
   moduleId: string;
@@ -124,6 +129,7 @@ interface BulkAssignTrainingProps {
   assignedById: string;
 }
 
+/** Bulk assign multiple users to a training module, skipping those without matching roles. */
 export async function bulkAssignTraining({
   associationId,
   moduleId,
@@ -217,6 +223,7 @@ export async function bulkAssignTraining({
   });
 }
 
+/** Parameters for removing a training assignment. */
 interface RemoveTrainingAssignmentProps {
   associationId: string;
   moduleId: string;
@@ -224,6 +231,7 @@ interface RemoveTrainingAssignmentProps {
   removedById: string;
 }
 
+/** Remove a single training assignment with audit logging. */
 export async function removeTrainingAssignment({
   associationId,
   moduleId,
@@ -262,6 +270,7 @@ export async function removeTrainingAssignment({
   });
 }
 
+/** Parameters for bulk removing training assignments. */
 interface BulkRemoveTrainingAssignmentProps {
   associationId: string;
   moduleId: string;
@@ -269,6 +278,7 @@ interface BulkRemoveTrainingAssignmentProps {
   removedById: string;
 }
 
+/** Bulk remove training assignments for specified users with audit logging. */
 export async function bulkRemoveTrainingAssignment({
   associationId,
   moduleId,

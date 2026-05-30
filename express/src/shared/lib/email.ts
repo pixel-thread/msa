@@ -8,12 +8,14 @@ const resend = env.RESEND_API_KEY ? new Resend(env.RESEND_API_KEY) : null;
 const APP_NAME = 'MFSA';
 const APP_URL = env.NEXT_PUBLIC_APP_URL?.toString() || 'http://localhost:3000';
 
+/** Properties required to send an email. */
 interface EmailProps {
   to: string;
   subject: string;
   html: string;
 }
 
+/** Internal helper to dispatch an email via Resend (no-op when unconfigured). */
 async function sendEmail({ to, subject, html }: EmailProps) {
   if (!resend) {
     logger.warn('[Email] Resend not configured, skipping email send');
@@ -43,6 +45,7 @@ async function sendEmail({ to, subject, html }: EmailProps) {
   }
 }
 
+/** Sends an MFA verification code email (login or setup). */
 export async function sendVerificationEmail(
   email: string,
   code: string,
@@ -99,6 +102,7 @@ export async function sendVerificationEmail(
   return sendEmail({ to: email, subject, html });
 }
 
+/** Sends a password-reset email containing a one-time reset link. */
 export async function sendPasswordResetEmail(
   email: string,
   resetToken: string,
@@ -151,6 +155,7 @@ export async function sendPasswordResetEmail(
   });
 }
 
+/** Sends a welcome email to a newly registered user. */
 export async function sendWelcomeEmail(email: string, name: string): Promise<{ success: boolean }> {
   const html = `
 <!DOCTYPE html>

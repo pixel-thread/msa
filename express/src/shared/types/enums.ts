@@ -32,6 +32,7 @@ export type ContributionStatus = 'DUE' | 'PARTIAL' | 'PAID' | 'WAIVED' | 'OVERDU
 
 export type PaymentProviderType = 'RAZORPAY' | 'STRIPE' | 'PAYU' | 'CASHFREE';
 
+/** All tracked actions that can generate an audit-log entry. */
 export type AuditAction =
   | 'CREATE'
   | 'UPDATE'
@@ -68,8 +69,10 @@ export type AuditAction =
   | 'COMPLAINT_CREATE'
   | 'COMPLAINT_UPDATE';
 
+/** Supported push notification categories. */
 export type NotificationType = 'GENERAL_MESSAGE' | 'FOLLOW' | 'SYSTEM';
 
+/** Array of all notification type values. */
 export const NOTIFICATION_TYPE_VALUES = [
   'GENERAL_MESSAGE',
   'FOLLOW',

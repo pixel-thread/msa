@@ -4,10 +4,12 @@ import crypto from 'crypto';
 export { generateSecureToken, hashToken } from './token';
 export { generateOTP, hashOTP } from './otp';
 
+/** Hashes a plaintext password using bcrypt (cost factor 12). */
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12);
 }
 
+/** Verifies a plaintext password against a bcrypt hash. */
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
   if (!password || password === '') {
     return false;
@@ -15,6 +17,7 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
   return bcrypt.compare(password, hash);
 }
 
+/** Checks a password against common strength rules. Returns validation errors if any. */
 export function validatePasswordStrength(password: string): {
   valid: boolean;
   errors: string[];
@@ -47,6 +50,7 @@ export function validatePasswordStrength(password: string): {
   };
 }
 
+/** Generates a cryptographically strong random password meeting complexity rules. */
 export function generateRandomPassword(length: number = 16): string {
   const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const lowercase = 'abcdefghijklmnopqrstuvwxyz';
