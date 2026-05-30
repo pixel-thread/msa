@@ -1,6 +1,11 @@
 import { Router } from 'express';
 import { getAnnouncements, postAnnouncement } from './announcements.route';
-import { getAnnouncement, putAnnouncement, deleteAnnouncement, patchAnnouncement } from './announcement-detail.route';
+import {
+  getAnnouncement,
+  putAnnouncement,
+  deleteAnnouncement,
+  patchAnnouncement,
+} from './announcement-detail.route';
 import { postMarkRead } from './mark-read.route';
 import { postUploadImage } from './upload-image.route';
 

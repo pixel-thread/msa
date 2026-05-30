@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { RefreshTokenSchema } from '@src/features/auth/validators';
@@ -13,7 +14,7 @@ import { cacheClient } from '@src/shared/lib/cache';
 import { env } from '@src/env';
 import { logger } from '@src/shared/logger';
 
-export const postRefresh = [
+export const postRefresh: RequestHandler[] = [
   validate({ body: RefreshTokenSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -23,18 +24,38 @@ export const postRefresh = [
 
     if (!refreshCookie) throw new UnauthorizedError('Refresh token not found');
 
-    try { await verifyRefreshToken(refreshCookie); }
-    catch { throw new UnauthorizedError('Invalid refresh token'); }
+    try {
+      await verifyRefreshToken(refreshCookie);
+    } catch {
+      throw new UnauthorizedError('Invalid refresh token');
+    }
 
     const hashedToken = hashToken(refreshCookie);
     const GRACE_PERIOD_KEY = `refresh_grace:${hashedToken}`;
-    const cachedTokens = await cacheClient.get<{ accessToken: string; refreshToken: string }>(GRACE_PERIOD_KEY);
+    const cachedTokens = await cacheClient.get<{ accessToken: string; refreshToken: string }>(
+      GRACE_PERIOD_KEY,
+    );
 
     if (cachedTokens) {
       logger.info({ traceId }, 'POST /api/auth/refresh - Success (cached)');
-      res.cookie('access_token', cachedTokens.accessToken, { httpOnly: true, secure: env.NODE_ENV === 'production', sameSite: 'strict', maxAge: 15 * 60 * 1000, path: '/' });
-      res.cookie('refresh_token', cachedTokens.refreshToken, { httpOnly: true, secure: env.NODE_ENV === 'production', sameSite: 'strict', maxAge: 7 * 24 * 60 * 60 * 1000, path: '/' });
-      return success(res, { message: 'Token refreshed successfully', data: { access_token: cachedTokens.accessToken, refresh_token: cachedTokens.refreshToken } });
+      res.cookie('access_token', cachedTokens.accessToken, {
+        httpOnly: true,
+        secure: env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 15 * 60 * 1000,
+        path: '/',
+      });
+      res.cookie('refresh_token', cachedTokens.refreshToken, {
+        httpOnly: true,
+        secure: env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        path: '/',
+      });
+      return success(res, {
+        message: 'Token refreshed successfully',
+        data: { access_token: cachedTokens.accessToken, refresh_token: cachedTokens.refreshToken },
+      });
     }
 
     const storedToken = await getUniqueRefreshToken({
@@ -53,7 +74,8 @@ export const postRefresh = [
       throw new UnauthorizedError('Invalid refresh token');
     }
 
-    if (storedToken.expiresAt < new Date()) throw new UnauthorizedError('Refresh token has expired');
+    if (storedToken.expiresAt < new Date())
+      throw new UnauthorizedError('Refresh token has expired');
 
     const user = storedToken.user;
     if (user.status !== 'ACTIVE') throw new UnauthorizedError('User is not active');
@@ -64,16 +86,39 @@ export const postRefresh = [
     const refreshTokenExpiry = new Date();
     refreshTokenExpiry.setDate(refreshTokenExpiry.getDate() + 7);
 
-    await cacheClient.set(GRACE_PERIOD_KEY, { accessToken: newAccessToken, refreshToken: newRefreshToken }, 30);
+    await cacheClient.set(
+      GRACE_PERIOD_KEY,
+      { accessToken: newAccessToken, refreshToken: newRefreshToken },
+      30,
+    );
     await updateRefreshToken({ where: { id: storedToken.id }, data: { revokedAt: new Date() } });
     await createRefreshToken({
-      data: { user: { connect: { id: user.id } }, token: hashedNewRefreshToken, expiresAt: refreshTokenExpiry },
+      data: {
+        user: { connect: { id: user.id } },
+        token: hashedNewRefreshToken,
+        expiresAt: refreshTokenExpiry,
+      },
     });
 
-    res.cookie('access_token', newAccessToken, { httpOnly: true, secure: env.NODE_ENV === 'production', sameSite: 'strict', maxAge: 15 * 60 * 1000, path: '/' });
-    res.cookie('refresh_token', newRefreshToken, { httpOnly: true, secure: env.NODE_ENV === 'production', sameSite: 'strict', maxAge: 7 * 24 * 60 * 60 * 1000, path: '/' });
+    res.cookie('access_token', newAccessToken, {
+      httpOnly: true,
+      secure: env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 15 * 60 * 1000,
+      path: '/',
+    });
+    res.cookie('refresh_token', newRefreshToken, {
+      httpOnly: true,
+      secure: env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/',
+    });
 
     logger.info({ traceId, userId: user.id }, 'POST /api/auth/refresh - Success');
-    return success(res, { message: 'Token refreshed successfully', data: { access_token: newAccessToken, refresh_token: newRefreshToken } });
+    return success(res, {
+      message: 'Token refreshed successfully',
+      data: { access_token: newAccessToken, refresh_token: newRefreshToken },
+    });
   },
 ];

@@ -9,8 +9,4 @@ export const ROLE_HIERARCHY: Record<UserRole, number> = {
   MEMBER: 2,
 };
 
-export const HIGH_ROLE_USERS: UserRole[] = [
-  'SUPER_ADMIN',
-  'PRESIDENT',
-  'SECRETARY',
-];
+export const HIGH_ROLE_USERS: UserRole[] = ['SUPER_ADMIN', 'PRESIDENT', 'SECRETARY'];

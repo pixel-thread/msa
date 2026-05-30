@@ -19,10 +19,16 @@ router.get('/overview', auth, async (req, res, next) => {
 
     if (!user || !user.associationId) throw new ForbiddenError('User association not found');
 
-    const association = { id: user.association.id, slug: user.association.slug, name: user.association.name };
+    const association = {
+      id: user.association.id,
+      slug: user.association.slug,
+      name: user.association.name,
+    };
     const data = await getDashboardOverview(association.id);
     return success(res, { data });
-  } catch (e) { next(e); }
+  } catch (e) {
+    next(e);
+  }
 });
 
 export default router;

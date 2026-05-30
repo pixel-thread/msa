@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { ChangePasswordInput, ChangePasswordSchema } from '@src/features/auth/validators';
@@ -9,7 +10,7 @@ import { deleteRefreshTokens } from '@src/features/auth/services/delete-refresh-
 import { getUniqueUserNoFilter } from '@src/shared/services/user/get-unique-user-no-filter';
 import { logger } from '@src/shared/logger';
 
-export const postChangePassword = [
+export const postChangePassword: RequestHandler[] = [
   validate({ body: ChangePasswordSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -24,7 +25,8 @@ export const postChangePassword = [
     }
 
     const user = await getUniqueUserNoFilter({ where: { id: userId } });
-    if (!user || !user.password) throw new BadRequestError('Please use password reset to set a new password');
+    if (!user || !user.password)
+      throw new BadRequestError('Please use password reset to set a new password');
 
     const isValid = await verifyPassword(currentPassword, user.password);
     if (!isValid) throw new BadRequestError('Current password is incorrect');
@@ -34,6 +36,9 @@ export const postChangePassword = [
     await deleteRefreshTokens({ where: { userId } });
 
     logger.info({ traceId, userId }, 'POST /api/auth/change-password - Success');
-    return success(res, { data: null, message: 'Password changed successfully. Please sign in again on other devices.' });
+    return success(res, {
+      data: null,
+      message: 'Password changed successfully. Please sign in again on other devices.',
+    });
   },
 ];

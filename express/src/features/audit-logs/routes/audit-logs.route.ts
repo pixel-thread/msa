@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { success } from '@src/shared/utils/responses';
 import { ForbiddenError } from '@src/shared/errors';
 import { UserRole } from '@prisma/client';
@@ -7,15 +8,24 @@ import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
 import { getAssociation, withRole } from '@src/features/meetings/routes/_helpers';
 import { logger } from '@src/shared/logger';
 
-export const getAuditLogs = [
+export const getAuditLogs: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
-    logger.info({ traceId, associationId: association.id }, 'GET /api/audit-logs - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'GET /api/audit-logs - Request started',
+    );
     const user = await withRole(req, UserRole.SECRETARY);
-    logger.info({ traceId, userId: user.id, roles: user.role }, 'GET /api/audit-logs - User authorized');
+    logger.info(
+      { traceId, userId: user.id, roles: user.role },
+      'GET /api/audit-logs - User authorized',
+    );
     if (!hasHighRoleAccess(user.role)) {
-      logger.error({ traceId, userId: user.id, roles: user.role }, 'GET /api/audit-logs - Permission denied');
+      logger.error(
+        { traceId, userId: user.id, roles: user.role },
+        'GET /api/audit-logs - Permission denied',
+      );
       throw new ForbiddenError('Permission denied: DPO, PRESIDENT, or SUPER_ADMIN required');
     }
     const page = parseInt(req.query.page as string, 10) || 1;

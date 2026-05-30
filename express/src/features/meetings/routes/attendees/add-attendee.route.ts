@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { ForbiddenError } from '@src/shared/errors';
@@ -14,21 +15,30 @@ const MeetingParamsSchema = z.object({
   meetingId: z.string('Invalid meeting ID'),
 });
 
-export const postAddAttendee = [
+export const postAddAttendee: RequestHandler[] = [
   validate({ params: MeetingParamsSchema, body: AssignAttendeeSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const meetingId = req.params.meetingId as string;
-    logger.info({ traceId, meetingId, associationId: association.id }, 'POST /api/meetings/[meetingId]/attendees - Request started');
+    logger.info(
+      { traceId, meetingId, associationId: association.id },
+      'POST /api/meetings/[meetingId]/attendees - Request started',
+    );
 
     const user = await withRole(req, UserRole.SECRETARY);
     if (!hasHighRoleAccess(user.role)) {
       throw new ForbiddenError('Only secretary, president, or super admin can assign attendees');
     }
 
-    logger.info({ traceId, userId: user.id, role: user.role, meetingId }, 'POST /api/meetings/[meetingId]/attendees - User authorized');
-    logger.info({ traceId, meetingId, attendeeUserId: req.body.userId }, 'POST /api/meetings/[meetingId]/attendees - Assigning attendee');
+    logger.info(
+      { traceId, userId: user.id, role: user.role, meetingId },
+      'POST /api/meetings/[meetingId]/attendees - User authorized',
+    );
+    logger.info(
+      { traceId, meetingId, attendeeUserId: req.body.userId },
+      'POST /api/meetings/[meetingId]/attendees - Assigning attendee',
+    );
 
     const attendee = await assignAttendee({
       meetingId,

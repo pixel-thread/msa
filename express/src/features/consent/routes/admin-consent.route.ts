@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
@@ -17,13 +18,21 @@ const HistoryQuerySchema = z.object({
 });
 
 const ROLE_HIERARCHY: Record<UserRole, number> = {
-  SUPER_ADMIN: 0, PRESIDENT: 1, SECRETARY: 2, FINANCE: 3, DPO: 4, MEMBER: 5,
+  SUPER_ADMIN: 0,
+  PRESIDENT: 1,
+  SECRETARY: 2,
+  FINANCE: 3,
+  DPO: 4,
+  MEMBER: 5,
 };
 
 async function getAssociation(req: Request) {
   const userId = req.headers['x-user-id'] as string;
   if (!userId) throw new UnauthorizedError('Unauthorized');
-  const user = await prisma.user.findUnique({ where: { id: userId }, include: { association: true } });
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { association: true },
+  });
   if (!user || !user.associationId) throw new ForbiddenError('User association not found');
   return { id: user.association.id, slug: user.association.slug, name: user.association.name };
 }
@@ -42,29 +51,38 @@ async function withRole(req: Request, role: UserRole) {
   return { ...user, role: roles };
 }
 
-export const getAllConsentRecords = [
+export const getAllConsentRecords: RequestHandler[] = [
   validate({ query: AllConsentRecordsQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
-    logger.info({ traceId, associationId: association.id }, 'GET /api/consent/all - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'GET /api/consent/all - Request started',
+    );
 
     await withRole(req, UserRole.DPO);
 
     const page = (req.query as any).page ?? 1;
-    const { records, total } = await ConsentService.getAllConsentRecords(association.id, req.query as any);
+    const { records, total } = await ConsentService.getAllConsentRecords(
+      association.id,
+      req.query as any,
+    );
 
     logger.info({ traceId, count: records.length }, 'GET /api/consent/all - Success');
     return success(res, { data: records, meta: buildPagination(total, page) });
   },
 ];
 
-export const getConsentHistory = [
+export const getConsentHistory: RequestHandler[] = [
   validate({ query: HistoryQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
-    logger.info({ traceId, associationId: association.id }, 'GET /api/consent/history - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'GET /api/consent/history - Request started',
+    );
 
     const userId = req.headers['x-user-id'] as string;
     if (!userId) throw new UnauthorizedError();
@@ -80,7 +98,10 @@ export const getConsentHistory = [
 export const getConsentReport = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
   const association = await getAssociation(req);
-  logger.info({ traceId, associationId: association.id }, 'GET /api/consent/report - Request started');
+  logger.info(
+    { traceId, associationId: association.id },
+    'GET /api/consent/report - Request started',
+  );
 
   await withRole(req, UserRole.DPO);
 

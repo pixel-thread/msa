@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UserRole } from '@prisma/client';
@@ -13,17 +14,27 @@ const ParamsSchema = z.object({
   minutesId: z.string('Invalid minute ID'),
 });
 
-export const patchUpdateMinute = [
+export const patchUpdateMinute: RequestHandler[] = [
   validate({ params: ParamsSchema, body: UpdateMeetingMinuteSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
-    const meetingId = req.params.meetingId as string; const minutesId = req.params.minutesId as string;
-    logger.info({ traceId, meetingId, minutesId, associationId: association.id }, 'PATCH /api/meetings/[meetingId]/minutes/[minutesId] - Request started');
+    const meetingId = req.params.meetingId as string;
+    const minutesId = req.params.minutesId as string;
+    logger.info(
+      { traceId, meetingId, minutesId, associationId: association.id },
+      'PATCH /api/meetings/[meetingId]/minutes/[minutesId] - Request started',
+    );
 
     const user = await withRole(req, UserRole.SECRETARY);
-    logger.info({ traceId, userId: user.id, role: user.role, meetingId, minutesId }, 'PATCH /api/meetings/[meetingId]/minutes/[minutesId] - User authorized');
-    logger.info({ traceId, meetingId, minutesId }, 'PATCH /api/meetings/[meetingId]/minutes/[minutesId] - Updating meeting minute');
+    logger.info(
+      { traceId, userId: user.id, role: user.role, meetingId, minutesId },
+      'PATCH /api/meetings/[meetingId]/minutes/[minutesId] - User authorized',
+    );
+    logger.info(
+      { traceId, meetingId, minutesId },
+      'PATCH /api/meetings/[meetingId]/minutes/[minutesId] - Updating meeting minute',
+    );
 
     const minute = await updateMeetingMinute({
       meetingId,
@@ -32,7 +43,10 @@ export const patchUpdateMinute = [
       data: req.body,
     });
 
-    logger.info({ traceId, meetingId, minutesId }, 'PATCH /api/meetings/[meetingId]/minutes/[minutesId] - Success');
+    logger.info(
+      { traceId, meetingId, minutesId },
+      'PATCH /api/meetings/[meetingId]/minutes/[minutesId] - Success',
+    );
     return success(res, { data: minute, message: 'Meeting minute updated successfully' });
   },
 ];

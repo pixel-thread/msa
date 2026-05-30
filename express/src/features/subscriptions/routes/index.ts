@@ -1,5 +1,11 @@
 import { Router } from 'express';
-import { getPlansHandler, createPlanHandler, setDefaultPlanHandler, updatePlanHandler, deletePlanHandler } from './plans.route';
+import {
+  getPlansHandler,
+  createPlanHandler,
+  setDefaultPlanHandler,
+  updatePlanHandler,
+  deletePlanHandler,
+} from './plans.route';
 import { getMySubscriptionHandler } from './my-subscription.route';
 import { postSubscribe } from './subscribe.route';
 import { postUpgrade } from './upgrade.route';

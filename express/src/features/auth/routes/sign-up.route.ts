@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { env } from '@src/env';
@@ -12,14 +13,25 @@ import { findFirstMember } from '@src/features/members/services/findFirstMember'
 import { createMembershipApplication } from '@src/features/membership-applications/services';
 import { logger } from '@src/shared/logger';
 
-export const postSignUp = [
+export const postSignUp: RequestHandler[] = [
   validate({ body: MembershipApplicationSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, email: req.body?.email }, 'POST /api/auth/sign-up - Request started');
     const {
-      email, phone, associationSlug, firstName, lastName, dateOfBirth, age,
-      gender, address, city, state, country, postalCode,
+      email,
+      phone,
+      associationSlug,
+      firstName,
+      lastName,
+      dateOfBirth,
+      age,
+      gender,
+      address,
+      city,
+      state,
+      country,
+      postalCode,
     } = req.body as MembershipApplicationInput;
 
     const [association, user] = await Promise.all([
@@ -41,16 +53,35 @@ export const postSignUp = [
     }
 
     const application = await createMembershipApplication({
-      email, phone, associationSlug: associationSlug || env.NEXT_PUBLIC_ASSOCIATION_SLUG,
-      firstName, lastName, dateOfBirth: new Date(dateOfBirth), age,
-      gender, address, city, state, country, postalCode,
+      email,
+      phone,
+      associationSlug: associationSlug || env.NEXT_PUBLIC_ASSOCIATION_SLUG,
+      firstName,
+      lastName,
+      dateOfBirth: new Date(dateOfBirth),
+      age,
+      gender,
+      address,
+      city,
+      state,
+      country,
+      postalCode,
     });
 
     logger.info({ traceId, applicationId: application.id }, 'POST /api/auth/sign-up - Success');
 
-    return success(res, {
-      message: 'Application submitted successfully. Your membership request is pending approval.',
-      data: { id: application.id, email: application.email, status: application.status, createdAt: application.createdAt },
-    }, 201);
+    return success(
+      res,
+      {
+        message: 'Application submitted successfully. Your membership request is pending approval.',
+        data: {
+          id: application.id,
+          email: application.email,
+          status: application.status,
+          createdAt: application.createdAt,
+        },
+      },
+      201,
+    );
   },
 ];

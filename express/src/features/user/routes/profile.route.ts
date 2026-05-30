@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { prisma } from '@src/shared/lib/prisma';
@@ -9,7 +10,7 @@ import { UpdateUserSchema } from '@src/features/user/validators';
 import { logger } from '@src/shared/logger';
 import z from 'zod';
 
-export const getProfile = [
+export const getProfile: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId }, 'GET /api/user - Request started');
@@ -26,7 +27,7 @@ export const getProfile = [
   },
 ];
 
-export const updateProfile = [
+export const updateProfile: RequestHandler[] = [
   validate({ body: UpdateUserSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';

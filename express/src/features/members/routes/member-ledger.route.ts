@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { prisma } from '@src/shared/lib/prisma';
@@ -9,7 +10,7 @@ import { getUserContributionSummary } from '@feature/payments/services/contribut
 import { LedgerQueryParams, LedgerRouteParams } from '@src/features/ledger/validators';
 import { logger } from '@src/shared/logger';
 
-export const getMemberLedger = [
+export const getMemberLedger: RequestHandler[] = [
   validate({ params: LedgerRouteParams, query: LedgerQueryParams }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -21,13 +22,23 @@ export const getMemberLedger = [
       include: { association: true },
     });
     if (!user || !user.associationId) throw new ForbiddenError('User association not found');
-    const association = { id: user.association.id, slug: user.association.slug, name: user.association.name };
+    const association = {
+      id: user.association.id,
+      slug: user.association.slug,
+      name: user.association.name,
+    };
 
-    logger.info({ traceId, associationId: association.id }, 'GET /api/members/[memberId]/ledger - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'GET /api/members/[memberId]/ledger - Request started',
+    );
 
     if (!user.role.includes(UserRole.FINANCE)) throw new ForbiddenError('Insufficient permissions');
 
-    logger.info({ traceId, userId: user.id }, 'GET /api/members/[memberId]/ledger - User authorized');
+    logger.info(
+      { traceId, userId: user.id },
+      'GET /api/members/[memberId]/ledger - User authorized',
+    );
 
     const query = req.query as { page?: number };
     const page = query?.page ?? 1;
@@ -37,7 +48,10 @@ export const getMemberLedger = [
       getUserContributionSummary(userId),
     ]);
 
-    logger.info({ traceId, count: history.transactions.length }, 'GET /api/members/[memberId]/ledger - Success');
+    logger.info(
+      { traceId, count: history.transactions.length },
+      'GET /api/members/[memberId]/ledger - Success',
+    );
 
     return success(res, {
       data: { transactions: history.transactions, summary },

@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { verifyMfaTempToken } from '@src/shared/lib/jwt';
@@ -14,21 +15,29 @@ import { logger } from '@src/shared/logger';
 
 const ResendSignInCodeSchema = z.object({ mfa_temp_token: z.string() });
 
-export const postSignInResend = [
+export const postSignInResend: RequestHandler[] = [
   validate({ body: ResendSignInCodeSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const mfaCookie = req.cookies?.mfa_temp_token || req.body?.mfa_temp_token;
     if (!mfaCookie) throw new BadRequestError('Session expired. Please signin again');
 
     let payload;
-    try { payload = await verifyMfaTempToken(mfaCookie); }
-    catch { throw new BadRequestError('Session expired. Please signin again'); }
+    try {
+      payload = await verifyMfaTempToken(mfaCookie);
+    } catch {
+      throw new BadRequestError('Session expired. Please signin again');
+    }
 
     const user = await getUniqueUser({ where: { id: payload?.sub } });
     if (!user) throw new NotFoundError('User not found');
 
     const lastCode = await getVerificationCodeFirst({
-      where: { userId: payload.sub, type: 'LOGIN_MFA', expiresAt: { gt: new Date() }, usedAt: null },
+      where: {
+        userId: payload.sub,
+        type: 'LOGIN_MFA',
+        expiresAt: { gt: new Date() },
+        usedAt: null,
+      },
       orderBy: { createdAt: 'desc' },
     });
 
@@ -37,7 +46,9 @@ export const postSignInResend = [
       const cooldownMs = env.OTP_RESEND_COOLDOWN * 1000;
       if (timeSinceLastCode < cooldownMs) {
         const remainingSeconds = Math.ceil((cooldownMs - timeSinceLastCode) / 1000);
-        throw new TooManyRequestsError(`Please wait ${remainingSeconds} seconds before requesting a new code`);
+        throw new TooManyRequestsError(
+          `Please wait ${remainingSeconds} seconds before requesting a new code`,
+        );
       }
     }
 
@@ -47,12 +58,20 @@ export const postSignInResend = [
     otpExpiry.setMinutes(otpExpiry.getMinutes() + 5);
 
     await createVerificationCode({
-      data: { user: { connect: { id: user.id } }, code: hashedOTP, type: 'LOGIN_MFA', expiresAt: otpExpiry },
+      data: {
+        user: { connect: { id: user.id } },
+        code: hashedOTP,
+        type: 'LOGIN_MFA',
+        expiresAt: otpExpiry,
+      },
     });
 
     if (env.NODE_ENV === 'production') await sendVerificationEmail(user.email, otp, 'LOGIN_MFA');
     if (env.NODE_ENV === 'development') logger.debug('Verification code: ' + otp);
 
-    return success(res, { message: 'Verification code sent to your email', data: { codeSent: true } });
+    return success(res, {
+      message: 'Verification code sent to your email',
+      data: { codeSent: true },
+    });
   },
 ];

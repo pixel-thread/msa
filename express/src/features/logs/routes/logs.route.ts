@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { ValidationError } from '@src/shared/errors';
@@ -6,7 +7,7 @@ import { createLogs, createLogsBatch } from '@src/shared/services/logs';
 import { LogIngestSchema, LogBatchSchema } from '@src/shared/validators/logs';
 import { Prisma } from '@prisma/client';
 
-export const postLog = [
+export const postLog: RequestHandler[] = [
   validate({ body: LogIngestSchema.strict() }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -19,13 +20,22 @@ export const postLog = [
       ? JSON.parse(JSON.stringify({ ...context, traceId }))
       : { traceId };
     const savedLog = await createLogs({
-      data: { type: level, message: message as string, content: sanitizedContextJson, isBackend: true },
+      data: {
+        type: level,
+        message: message as string,
+        content: sanitizedContextJson,
+        isBackend: true,
+      },
     });
-    return success(res, { data: { id: savedLog.id, traceId }, message: 'Successfully log to server' }, 201);
+    return success(
+      res,
+      { data: { id: savedLog.id, traceId }, message: 'Successfully log to server' },
+      201,
+    );
   },
 ];
 
-export const postLogBatch = [
+export const postLogBatch: RequestHandler[] = [
   validate({ body: LogBatchSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';

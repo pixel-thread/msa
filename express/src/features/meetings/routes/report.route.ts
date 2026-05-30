@@ -11,8 +11,14 @@ export const getMeetingReport = async (req: Request, res: Response, _next: NextF
   const user = await withRole(req, UserRole.SECRETARY);
 
   const meetingId = req.params.meetingId as string;
-  logger.info({ traceId, userId: user.id, role: user.role, meetingId }, 'GET /api/meetings/[meetingId]/report - User authorized');
-  logger.info({ traceId, meetingId }, 'GET /api/meetings/[meetingId]/report - Fetching meeting report');
+  logger.info(
+    { traceId, userId: user.id, role: user.role, meetingId },
+    'GET /api/meetings/[meetingId]/report - User authorized',
+  );
+  logger.info(
+    { traceId, meetingId },
+    'GET /api/meetings/[meetingId]/report - Fetching meeting report',
+  );
 
   const meeting = await findUniqueMeeting({ meetingId, associationId: association.id });
 

@@ -1,9 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { prisma } from '@src/shared/lib/prisma';
 import { UserRole } from '@prisma/client';
-import { findManyCompletions, recordCompletion, completeAssignment } from '@src/features/training/services';
+import {
+  findManyCompletions,
+  recordCompletion,
+  completeAssignment,
+} from '@src/features/training/services';
 import { RecordCompletionSchema } from '@src/features/training/validators/training';
 import { uploadToBucket } from '@src/shared/lib/supabase/storage';
 import { BadRequestError } from '@src/shared/errors';
@@ -27,33 +32,47 @@ const MetadataSchema = z.object({
   certificateNumber: z.string().max(100).optional(),
 });
 
-export const getModuleCompletions = [
+export const getModuleCompletions: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     try {
       const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'GET /training/modules/{moduleId}/complete - Request started');
+      logger.info(
+        { traceId, associationId: association.id },
+        'GET /training/modules/{moduleId}/complete - Request started',
+      );
       await withRole(req, UserRole.MEMBER);
       logger.info({ traceId }, 'GET /training/modules/{moduleId}/complete - User authorized');
 
-      const data = await findManyCompletions({ associationId: association.id, moduleId: req.params.moduleId });
+      const data = await findManyCompletions({
+        associationId: association.id,
+        moduleId: req.params.moduleId,
+      });
 
       logger.info({ traceId }, 'GET /training/modules/{moduleId}/complete - Success');
       return success(res, { data: data.completions, meta: data.pagination });
-    } catch (e) { next(e); }
+    } catch (e) {
+      next(e);
+    }
   },
 ];
 
-export const postModuleComplete = [
+export const postModuleComplete: RequestHandler[] = [
   validate({ params: ModuleParamsSchema, body: RecordCompletionSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     try {
       const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'POST /training/modules/{moduleId}/complete - Request started');
+      logger.info(
+        { traceId, associationId: association.id },
+        'POST /training/modules/{moduleId}/complete - Request started',
+      );
       const user = await withRole(req, UserRole.SUPER_ADMIN);
-      logger.info({ traceId, userId: user.id }, 'POST /training/modules/{moduleId}/complete - User authorized');
+      logger.info(
+        { traceId, userId: user.id },
+        'POST /training/modules/{moduleId}/complete - User authorized',
+      );
 
       const completion = await recordCompletion({
         associationId: association.id,
@@ -62,21 +81,32 @@ export const postModuleComplete = [
         data: req.body,
       });
 
-      logger.info({ traceId, completionId: completion.id }, 'POST /training/modules/{moduleId}/complete - Success');
+      logger.info(
+        { traceId, completionId: completion.id },
+        'POST /training/modules/{moduleId}/complete - Success',
+      );
       return success(res, { data: completion }, 201);
-    } catch (e) { next(e); }
+    } catch (e) {
+      next(e);
+    }
   },
 ];
 
-export const postAdminComplete = [
+export const postAdminComplete: RequestHandler[] = [
   validate({ params: AssignmentParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     try {
       const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'POST /training/modules/{moduleId}/assignments/{userId}/complete - Request started');
+      logger.info(
+        { traceId, associationId: association.id },
+        'POST /training/modules/{moduleId}/assignments/{userId}/complete - Request started',
+      );
       const actor = await withRole(req, UserRole.SECRETARY);
-      logger.info({ traceId, userId: actor.id }, 'POST /training/modules/{moduleId}/assignments/{userId}/complete - User authorized');
+      logger.info(
+        { traceId, userId: actor.id },
+        'POST /training/modules/{moduleId}/assignments/{userId}/complete - User authorized',
+      );
 
       const { moduleId, userId } = req.params;
       const contentType = req.headers['content-type'] || '';
@@ -120,7 +150,11 @@ export const postAdminComplete = [
 
         if (certificateOption === 'custom' && file && file.size > 0) {
           const webFile = new File([file.buffer], file.originalname, { type: file.mimetype });
-          const uploadResult = await uploadToBucket(webFile, `certificates/${association.slug}/${moduleId}`, traceId);
+          const uploadResult = await uploadToBucket(
+            webFile,
+            `certificates/${association.slug}/${moduleId}`,
+            traceId,
+          );
 
           const fileRecord = await prisma.file.create({
             data: {
@@ -153,12 +187,17 @@ export const postAdminComplete = [
           certificateNumber,
         });
 
-        logger.info({ traceId }, 'POST /training/modules/{moduleId}/assignments/{userId}/complete - Success');
+        logger.info(
+          { traceId },
+          'POST /training/modules/{moduleId}/assignments/{userId}/complete - Success',
+        );
         return success(res, { data: result }, 201);
       } catch (error) {
         if (error instanceof Error) throw new BadRequestError(error.message);
         throw new BadRequestError('Failed to complete assignment');
       }
-    } catch (e) { next(e); }
+    } catch (e) {
+      next(e);
+    }
   },
 ];

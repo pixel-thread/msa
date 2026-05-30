@@ -1,6 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
+import type { RequestHandler } from 'express';
 import { env } from '@src/env';
-import { runSubscriptionExpiryCron, runDsarSlaCron, runAnonymizeCron } from '@src/features/cron/services';
+import {
+  runSubscriptionExpiryCron,
+  runDsarSlaCron,
+  runAnonymizeCron,
+} from '@src/features/cron/services';
 import { logger } from '@src/shared/logger';
 
 function verifyCronSecret(req: Request): boolean {
@@ -8,7 +13,7 @@ function verifyCronSecret(req: Request): boolean {
   return authHeader === `Bearer ${env.CRON_SECRET}`;
 }
 
-export const postSubscriptionExpiry = [
+export const postSubscriptionExpiry: RequestHandler[] = [
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       logger.info('POST /api/cron/subscription-expiry - Request started');
@@ -20,24 +25,33 @@ export const postSubscriptionExpiry = [
       const totalExpired = results.reduce((sum, r) => sum + r.expired, 0);
       const totalFailed = results.reduce((sum, r) => sum + r.failed, 0);
       const processedAssociations = results.filter((r) => r.expired > 0 || !r.error).length;
-      logger.info({ totalAssociations: results.length, processedAssociations, totalExpired, totalFailed }, 'POST /api/cron/subscription-expiry - Subscription expiry check completed');
+      logger.info(
+        { totalAssociations: results.length, processedAssociations, totalExpired, totalFailed },
+        'POST /api/cron/subscription-expiry - Subscription expiry check completed',
+      );
       return res.json({
         success: true,
         message: 'Subscription expiry check completed',
-        summary: { totalAssociations: results.length, processedAssociations, totalExpired, totalFailed },
+        summary: {
+          totalAssociations: results.length,
+          processedAssociations,
+          totalExpired,
+          totalFailed,
+        },
         results,
       });
     } catch (error) {
       logger.error({ error }, 'POST /api/cron/subscription-expiry - Unhandled error');
       return res.status(500).json({
-        error: 'Internal server error', code: 'INTERNAL_ERROR',
+        error: 'Internal server error',
+        code: 'INTERNAL_ERROR',
         message: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   },
 ];
 
-export const postDsarSla = [
+export const postDsarSla: RequestHandler[] = [
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       logger.info('POST /api/cron/dsar-sla - Request started');
@@ -49,24 +63,33 @@ export const postDsarSla = [
       const totalBreached = results.reduce((sum, r) => sum + r.breached, 0);
       const totalAtRisk = results.reduce((sum, r) => sum + r.atRisk, 0);
       const processedAssociations = results.filter((r) => r.processed).length;
-      logger.info({ totalAssociations: results.length, processedAssociations, totalBreached, totalAtRisk }, 'POST /api/cron/dsar-sla - DSAR SLA check completed');
+      logger.info(
+        { totalAssociations: results.length, processedAssociations, totalBreached, totalAtRisk },
+        'POST /api/cron/dsar-sla - DSAR SLA check completed',
+      );
       return res.json({
         success: true,
         message: 'DSAR SLA check completed',
-        summary: { totalAssociations: results.length, processedAssociations, totalBreached, totalAtRisk },
+        summary: {
+          totalAssociations: results.length,
+          processedAssociations,
+          totalBreached,
+          totalAtRisk,
+        },
         results,
       });
     } catch (error) {
       logger.error({ error }, 'POST /api/cron/dsar-sla - Unhandled error');
       return res.status(500).json({
-        error: 'Internal server error', code: 'INTERNAL_ERROR',
+        error: 'Internal server error',
+        code: 'INTERNAL_ERROR',
         message: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   },
 ];
 
-export const postAnonymize = [
+export const postAnonymize: RequestHandler[] = [
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       logger.info('POST /api/cron/anonymize - Request started');
@@ -78,17 +101,31 @@ export const postAnonymize = [
       const totalProcessed = results.reduce((sum, r) => sum + r.processed, 0);
       const totalFailed = results.reduce((sum, r) => sum + r.failed, 0);
       const processedAssociations = results.filter((r) => r.processed && !r.error).length;
-      logger.info({ totalAssociations: results.length, processedAssociations, totalAnonymized: totalProcessed, totalFailed }, 'POST /api/cron/anonymize - Anonymization completed');
+      logger.info(
+        {
+          totalAssociations: results.length,
+          processedAssociations,
+          totalAnonymized: totalProcessed,
+          totalFailed,
+        },
+        'POST /api/cron/anonymize - Anonymization completed',
+      );
       return res.json({
         success: true,
         message: 'User anonymization completed',
-        summary: { totalAssociations: results.length, processedAssociations, totalAnonymized: totalProcessed, totalFailed },
+        summary: {
+          totalAssociations: results.length,
+          processedAssociations,
+          totalAnonymized: totalProcessed,
+          totalFailed,
+        },
         results,
       });
     } catch (error) {
       logger.error({ error }, 'POST /api/cron/anonymize - Unhandled error');
       return res.status(500).json({
-        error: 'Internal server error', code: 'INTERNAL_ERROR',
+        error: 'Internal server error',
+        code: 'INTERNAL_ERROR',
         message: error instanceof Error ? error.message : 'Unknown error',
       });
     }

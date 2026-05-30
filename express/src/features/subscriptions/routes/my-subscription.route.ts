@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UserRole } from '@prisma/client';
@@ -12,12 +13,15 @@ const MySubscriptionQuerySchema = z.object({
   page: pageNumberValidation,
 });
 
-export const getMySubscriptionHandler = [
+export const getMySubscriptionHandler: RequestHandler[] = [
   validate({ query: MySubscriptionQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
-    logger.info({ traceId, associationId: association.id }, 'GET /api/subscriptions/my - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'GET /api/subscriptions/my - Request started',
+    );
     const page = (req.query as any)?.page || 1;
     const user = await withRole(req, UserRole.MEMBER);
     logger.info({ traceId, userId: user.id }, 'User authorized');

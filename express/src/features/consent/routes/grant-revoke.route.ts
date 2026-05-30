@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError, ForbiddenError, BadRequestError } from '@src/shared/errors';
@@ -11,17 +12,23 @@ import { logger } from '@src/shared/logger';
 async function getAssociation(req: Request) {
   const userId = req.headers['x-user-id'] as string;
   if (!userId) throw new UnauthorizedError('Unauthorized');
-  const user = await prisma.user.findUnique({ where: { id: userId }, include: { association: true } });
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { association: true },
+  });
   if (!user || !user.associationId) throw new ForbiddenError('User association not found');
   return { id: user.association.id, slug: user.association.slug, name: user.association.name };
 }
 
-export const grantConsent = [
+export const grantConsent: RequestHandler[] = [
   validate({ body: ConsentUpdateSchema.omit({ action: true }) }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
-    logger.info({ traceId, associationId: association.id }, 'POST /api/consent/grant - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'POST /api/consent/grant - Request started',
+    );
 
     const userId = req.headers['x-user-id'] as string;
     if (!userId) throw new UnauthorizedError('Unauthorized');
@@ -31,9 +38,11 @@ export const grantConsent = [
     const userAgent = (req.headers['user-agent'] as string) || 'unknown';
 
     const receipts = await ConsentService.updateConsent(
-      userId, association.id,
+      userId,
+      association.id,
       { ...req.body, action: ConsentStatus.GRANTED },
-      ipAddress, userAgent,
+      ipAddress,
+      userAgent,
     );
 
     logger.info({ traceId, userId }, 'POST /api/consent/grant - Consent granted successfully');
@@ -41,12 +50,15 @@ export const grantConsent = [
   },
 ];
 
-export const revokeConsent = [
+export const revokeConsent: RequestHandler[] = [
   validate({ body: ConsentUpdateSchema.omit({ action: true }) }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
-    logger.info({ traceId, associationId: association.id }, 'POST /api/consent/revoke - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'POST /api/consent/revoke - Request started',
+    );
 
     const userId = req.headers['x-user-id'] as string;
     if (!userId) throw new UnauthorizedError('Unauthorized');
@@ -56,9 +68,11 @@ export const revokeConsent = [
     const userAgent = (req.headers['user-agent'] as string) || 'unknown';
 
     const receipts = await ConsentService.updateConsent(
-      userId, association.id,
+      userId,
+      association.id,
       { ...req.body, action: ConsentStatus.WITHDRAWN },
-      ipAddress, userAgent,
+      ipAddress,
+      userAgent,
     );
 
     logger.info({ traceId, userId }, 'POST /api/consent/revoke - Consent revoked successfully');

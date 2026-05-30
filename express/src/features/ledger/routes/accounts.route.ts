@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
@@ -23,13 +24,21 @@ const AccountQuerySchema = z.object({
 });
 
 const ROLE_HIERARCHY: Record<UserRole, number> = {
-  SUPER_ADMIN: 0, PRESIDENT: 1, SECRETARY: 2, FINANCE: 3, DPO: 4, MEMBER: 5,
+  SUPER_ADMIN: 0,
+  PRESIDENT: 1,
+  SECRETARY: 2,
+  FINANCE: 3,
+  DPO: 4,
+  MEMBER: 5,
 };
 
 async function getAssociation(req: Request) {
   const userId = req.headers['x-user-id'] as string;
   if (!userId) throw new UnauthorizedError('Unauthorized');
-  const user = await prisma.user.findUnique({ where: { id: userId }, include: { association: true } });
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { association: true },
+  });
   if (!user || !user.associationId) throw new ForbiddenError('User association not found');
   return { id: user.association.id, slug: user.association.slug, name: user.association.name };
 }
@@ -48,12 +57,15 @@ async function withRole(req: Request, role: UserRole) {
   return { ...user, role: roles };
 }
 
-export const listAccounts = [
+export const listAccounts: RequestHandler[] = [
   validate({ query: AccountQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
-    logger.info({ traceId, associationId: association.id }, 'GET /api/ledger/accounts - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'GET /api/ledger/accounts - Request started',
+    );
 
     await withRole(req, UserRole.FINANCE);
 
@@ -65,12 +77,15 @@ export const listAccounts = [
   },
 ];
 
-export const createAccountHandler = [
+export const createAccountHandler: RequestHandler[] = [
   validate({ body: CreateAccountSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
-    logger.info({ traceId, associationId: association.id }, 'POST /api/ledger/accounts - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'POST /api/ledger/accounts - Request started',
+    );
 
     await withRole(req, UserRole.FINANCE);
 

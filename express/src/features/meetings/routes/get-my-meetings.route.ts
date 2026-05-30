@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UserRole } from '@prisma/client';
@@ -12,15 +13,21 @@ const QuerySchema = z.object({
   page: pageNumberValidation,
 });
 
-export const getMyMeetings = [
+export const getMyMeetings: RequestHandler[] = [
   validate({ query: QuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
-    logger.info({ traceId, associationId: association.id }, 'GET /api/meetings/my - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'GET /api/meetings/my - Request started',
+    );
 
     const user = await withRole(req, UserRole.MEMBER);
-    logger.info({ traceId, userId: user.id, role: user.role }, 'GET /api/meetings/my - User authorized');
+    logger.info(
+      { traceId, userId: user.id, role: user.role },
+      'GET /api/meetings/my - User authorized',
+    );
 
     const userId = req.headers['x-user-id'] as string;
     const page = (req.query as any)?.page || 1;

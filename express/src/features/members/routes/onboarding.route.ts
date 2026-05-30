@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { prisma } from '@src/shared/lib/prisma';
@@ -20,7 +21,7 @@ const OnboardingSchema = z.object({
   designation: z.string().min(2).max(100).trim(),
 });
 
-export const onboarding = [
+export const onboarding: RequestHandler[] = [
   validate({ body: OnboardingSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -32,9 +33,16 @@ export const onboarding = [
       include: { association: true },
     });
     if (!user || !user.associationId) throw new ForbiddenError('User association not found');
-    const association = { id: user.association.id, slug: user.association.slug, name: user.association.name };
+    const association = {
+      id: user.association.id,
+      slug: user.association.slug,
+      name: user.association.name,
+    };
 
-    logger.info({ traceId, associationId: association.id }, 'POST /api/members/onboarding - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'POST /api/members/onboarding - Request started',
+    );
 
     if (!userId) {
       throw new UnauthorizedError('Unauthorized');

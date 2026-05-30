@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { ForbiddenError } from '@src/shared/errors';
@@ -15,18 +16,25 @@ const AttendeeParamsSchema = z.object({
   userId: z.string('Invalid user ID'),
 });
 
-export const patchUpdateAttendee = [
+export const patchUpdateAttendee: RequestHandler[] = [
   validate({ params: AttendeeParamsSchema, body: UpdateAttendeeSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
-    const meetingId = req.params.meetingId as string; const targetUserId = req.params.userId as string;
-    logger.info({ traceId, meetingId, targetUserId, associationId: association.id }, 'PATCH /api/meetings/[meetingId]/attendees/[userId] - Request started');
+    const meetingId = req.params.meetingId as string;
+    const targetUserId = req.params.userId as string;
+    logger.info(
+      { traceId, meetingId, targetUserId, associationId: association.id },
+      'PATCH /api/meetings/[meetingId]/attendees/[userId] - Request started',
+    );
 
     const user = await withRole(req, UserRole.MEMBER);
     const requestingUserId = req.headers['x-user-id'] as string;
 
-    logger.info({ traceId, userId: user.id, role: user.role, meetingId, targetUserId }, 'PATCH /api/meetings/[meetingId]/attendees/[userId] - User authorized');
+    logger.info(
+      { traceId, userId: user.id, role: user.role, meetingId, targetUserId },
+      'PATCH /api/meetings/[meetingId]/attendees/[userId] - User authorized',
+    );
 
     const isAdmin = hasHighRoleAccess(user.role);
     const isSelfUpdate = targetUserId === requestingUserId;
@@ -35,7 +43,10 @@ export const patchUpdateAttendee = [
       throw new ForbiddenError('You can only update your own RSVP');
     }
 
-    logger.info({ traceId, meetingId, targetUserId }, 'PATCH /api/meetings/[meetingId]/attendees/[userId] - Updating attendee');
+    logger.info(
+      { traceId, meetingId, targetUserId },
+      'PATCH /api/meetings/[meetingId]/attendees/[userId] - Updating attendee',
+    );
 
     const updated = await updateAttendee({
       meetingId,
@@ -45,7 +56,10 @@ export const patchUpdateAttendee = [
       isAdminUpdate: isAdmin,
     });
 
-    logger.info({ traceId, meetingId, targetUserId }, 'PATCH /api/meetings/[meetingId]/attendees/[userId] - Success');
+    logger.info(
+      { traceId, meetingId, targetUserId },
+      'PATCH /api/meetings/[meetingId]/attendees/[userId] - Success',
+    );
     return success(res, { data: updated });
   },
 ];
@@ -53,19 +67,32 @@ export const patchUpdateAttendee = [
 export const deleteRemoveAttendee = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
   const association = await getAssociation(req);
-  const meetingId = req.params.meetingId as string; const targetUserId = req.params.userId as string;
-  logger.info({ traceId, meetingId, targetUserId, associationId: association.id }, 'DELETE /api/meetings/[meetingId]/attendees/[userId] - Request started');
+  const meetingId = req.params.meetingId as string;
+  const targetUserId = req.params.userId as string;
+  logger.info(
+    { traceId, meetingId, targetUserId, associationId: association.id },
+    'DELETE /api/meetings/[meetingId]/attendees/[userId] - Request started',
+  );
 
   const user = await withRole(req, UserRole.SECRETARY);
   if (!hasHighRoleAccess(user.role)) {
     throw new ForbiddenError('Only secretary, president, or super admin can remove attendees');
   }
 
-  logger.info({ traceId, userId: user.id, role: user.role, meetingId, targetUserId }, 'DELETE /api/meetings/[meetingId]/attendees/[userId] - User authorized');
-  logger.info({ traceId, meetingId, targetUserId }, 'DELETE /api/meetings/[meetingId]/attendees/[userId] - Removing attendee');
+  logger.info(
+    { traceId, userId: user.id, role: user.role, meetingId, targetUserId },
+    'DELETE /api/meetings/[meetingId]/attendees/[userId] - User authorized',
+  );
+  logger.info(
+    { traceId, meetingId, targetUserId },
+    'DELETE /api/meetings/[meetingId]/attendees/[userId] - Removing attendee',
+  );
 
   await removeAttendee({ meetingId, associationId: association.id, userId: targetUserId });
 
-  logger.info({ traceId, meetingId, targetUserId }, 'DELETE /api/meetings/[meetingId]/attendees/[userId] - Success');
+  logger.info(
+    { traceId, meetingId, targetUserId },
+    'DELETE /api/meetings/[meetingId]/attendees/[userId] - Success',
+  );
   return success(res, { data: { success: true }, message: 'Attendee removed successfully' });
 };

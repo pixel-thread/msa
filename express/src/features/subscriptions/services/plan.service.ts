@@ -15,7 +15,10 @@ interface UpdatePlanInput {
   memberTypeId?: string | null;
 }
 
-export async function getPlans(associationId: string, user: { role: UserRole[]; memberTypeId?: string | null }) {
+export async function getPlans(
+  associationId: string,
+  user: { role: UserRole[]; memberTypeId?: string | null },
+) {
   if (hasHighRoleAccess(user.role)) {
     const plans = await prisma.subscriptionPlan.findMany({
       where: { associationId },
@@ -171,9 +174,7 @@ export async function setDefaultPlan(associationId: string, planId: string) {
 
 export async function updatePlan(associationId: string, planId: string, body: UpdatePlanInput) {
   const priceFields = ['amount', 'currency', 'billingCycle', 'features'] as const;
-  const hasPriceChange = priceFields.some(
-    (field) => body[field] !== undefined,
-  );
+  const hasPriceChange = priceFields.some((field) => body[field] !== undefined);
 
   if (hasPriceChange) {
     const currentVersion = await prisma.subscriptionPlanVersion.findFirst({

@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { prisma } from '@src/shared/lib/prisma';
@@ -25,7 +26,7 @@ const AdminOnboardingSchema = z.object({
   associationId: z.uuid(),
 });
 
-export const updateMemberRoute = [
+export const updateMemberRoute: RequestHandler[] = [
   validate({ body: AdminOnboardingSchema, params: ParamSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -37,11 +38,19 @@ export const updateMemberRoute = [
       include: { association: true },
     });
     if (!user || !user.associationId) throw new ForbiddenError('User association not found');
-    const association = { id: user.association.id, slug: user.association.slug, name: user.association.name };
+    const association = {
+      id: user.association.id,
+      slug: user.association.slug,
+      name: user.association.name,
+    };
 
-    logger.info({ traceId, associationId: association.id }, 'PATCH /api/members/[memberId] - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'PATCH /api/members/[memberId] - Request started',
+    );
 
-    if (!user.role.includes(UserRole.SECRETARY)) throw new ForbiddenError('Insufficient permissions');
+    if (!user.role.includes(UserRole.SECRETARY))
+      throw new ForbiddenError('Insufficient permissions');
 
     logger.info({ traceId, userId: user.id }, 'PATCH /api/members/[memberId] - User authorized');
 
@@ -60,7 +69,9 @@ export const updateMemberRoute = [
         ...(body.mobile && { mobile: body.mobile }),
         ...(body.designation && { designation: body.designation }),
         ...(body.dateOfJoiningGovt && { dateOfJoiningGovt: body.dateOfJoiningGovt }),
-        ...(body.dateOfJoiningAssociation && { dateOfJoiningAssociation: body.dateOfJoiningAssociation }),
+        ...(body.dateOfJoiningAssociation && {
+          dateOfJoiningAssociation: body.dateOfJoiningAssociation,
+        }),
         ...(body.membershipNumber && { membershipNumber: body.membershipNumber }),
         ...(body.associationId && { associationId: body.associationId }),
       },

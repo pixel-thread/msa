@@ -1,18 +1,24 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { verifyPassword, generateOTP, hashToken } from '@src/shared/lib/password';
 import { sendVerificationEmail } from '@src/shared/lib/email';
 import { env } from '@src/env';
 import { z } from 'zod';
-import { BadRequestError, ConflictError, UnauthorizedError, ValidationError } from '@src/shared/errors';
+import {
+  BadRequestError,
+  ConflictError,
+  UnauthorizedError,
+  ValidationError,
+} from '@src/shared/errors';
 import { findFirstMember } from '@src/features/members/services/findFirstMember';
 import { createVerificationCode } from '@src/features/auth/services/create-verification-code';
 import { logger } from '@src/shared/logger';
 
 const SetupMfaSchema = z.object({ password: z.string().min(1, 'Password is required') });
 
-export const postMfaSetup = [
+export const postMfaSetup: RequestHandler[] = [
   validate({ body: SetupMfaSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -37,14 +43,23 @@ export const postMfaSetup = [
     otpExpiry.setMinutes(otpExpiry.getMinutes() + 5);
 
     await createVerificationCode({
-      data: { user: { connect: { id: userId } }, code: hashedOTP, type: 'SETUP_MFA', expiresAt: otpExpiry },
+      data: {
+        user: { connect: { id: userId } },
+        code: hashedOTP,
+        type: 'SETUP_MFA',
+        expiresAt: otpExpiry,
+      },
     });
 
     const authUser = await findFirstMember({ where: { id: userId }, select: { email: true } });
 
-    if (authUser && env.NODE_ENV === 'production') await sendVerificationEmail(authUser.email, otp, 'SETUP_MFA');
+    if (authUser && env.NODE_ENV === 'production')
+      await sendVerificationEmail(authUser.email, otp, 'SETUP_MFA');
     if (authUser && env.NODE_ENV === 'development') logger.debug({ otp }, 'OTP:');
 
-    return success(res, { message: 'Verification code sent to your email', data: { pending: true, codeSent: true } });
+    return success(res, {
+      message: 'Verification code sent to your email',
+      data: { pending: true, codeSent: true },
+    });
   },
 ];

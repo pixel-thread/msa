@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { prisma } from '@src/shared/lib/prisma';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
@@ -12,12 +13,15 @@ import { findPaymentTransactions } from '@src/features/payments/services/findPay
 async function getAssociation(req: Request) {
   const userId = req.headers['x-user-id'] as string;
   if (!userId) throw new UnauthorizedError('Unauthorized');
-  const user = await prisma.user.findUnique({ where: { id: userId }, include: { association: true } });
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { association: true },
+  });
   if (!user || !user.associationId) throw new ForbiddenError('User association not found');
   return { id: user.association.id, slug: user.association.slug, name: user.association.name };
 }
 
-export const myPayments = [
+export const myPayments: RequestHandler[] = [
   validate({ query: PaymentHistoryQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';

@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { ForbiddenError } from '@src/shared/errors';
@@ -9,7 +10,7 @@ import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
 import { logger } from '@src/shared/logger';
 import { getAssociation, withRole } from './_helpers';
 
-export const postCreateMeeting = [
+export const postCreateMeeting: RequestHandler[] = [
   validate({ body: CreateMeetingSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -23,7 +24,10 @@ export const postCreateMeeting = [
       throw new ForbiddenError('Only secretary, president, or super admin can create meetings');
     }
 
-    logger.info({ traceId, userId: user.id, role: user.role }, 'POST /api/meetings - User authorized');
+    logger.info(
+      { traceId, userId: user.id, role: user.role },
+      'POST /api/meetings - User authorized',
+    );
     logger.info({ traceId }, 'POST /api/meetings - Creating meeting');
 
     const meeting = await createMeeting({

@@ -1,7 +1,13 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
-import { UnauthorizedError, ForbiddenError, BadRequestError, NotFoundError } from '@src/shared/errors';
+import {
+  UnauthorizedError,
+  ForbiddenError,
+  BadRequestError,
+  NotFoundError,
+} from '@src/shared/errors';
 import { prisma } from '@src/shared/lib/prisma';
 import { UserRole } from '@prisma/client';
 import { ConsentService } from '@src/features/consent/services/consent.service';
@@ -23,13 +29,21 @@ const UserQuerySchema = z.object({
 });
 
 const ROLE_HIERARCHY: Record<UserRole, number> = {
-  SUPER_ADMIN: 0, PRESIDENT: 1, SECRETARY: 2, FINANCE: 3, DPO: 4, MEMBER: 5,
+  SUPER_ADMIN: 0,
+  PRESIDENT: 1,
+  SECRETARY: 2,
+  FINANCE: 3,
+  DPO: 4,
+  MEMBER: 5,
 };
 
 async function getAssociation(req: Request) {
   const userId = req.headers['x-user-id'] as string;
   if (!userId) throw new UnauthorizedError('Unauthorized');
-  const user = await prisma.user.findUnique({ where: { id: userId }, include: { association: true } });
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { association: true },
+  });
   if (!user || !user.associationId) throw new ForbiddenError('User association not found');
   return { id: user.association.id, slug: user.association.slug, name: user.association.name };
 }
@@ -48,14 +62,17 @@ async function withRole(req: Request, role: UserRole) {
   return { ...user, role: roles };
 }
 
-export const getReceipt = [
+export const getReceipt: RequestHandler[] = [
   validate({ params: ConsentReceiptParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const receiptId = req.params.receiptId as string;
 
-    logger.info({ traceId, associationId: association.id, receiptId }, 'GET /api/consent/[receiptId] - Request started');
+    logger.info(
+      { traceId, associationId: association.id, receiptId },
+      'GET /api/consent/[receiptId] - Request started',
+    );
 
     await withRole(req, UserRole.DPO);
 
@@ -67,21 +84,25 @@ export const getReceipt = [
   },
 ];
 
-export const updateReceipt = [
+export const updateReceipt: RequestHandler[] = [
   validate({ params: ConsentReceiptParamsSchema, body: UpdateConsentReceiptSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const receiptId = req.params.receiptId as string;
 
-    logger.info({ traceId, associationId: association.id, receiptId }, 'PATCH /api/consent/[receiptId] - Request started');
+    logger.info(
+      { traceId, associationId: association.id, receiptId },
+      'PATCH /api/consent/[receiptId] - Request started',
+    );
 
     if (!req.body) throw new BadRequestError('Request body is required');
 
     await withRole(req, UserRole.DPO);
 
     const receipt = await ConsentService.updateConsentReceipt(
-      association.id, receiptId,
+      association.id,
+      receiptId,
       req.headers['x-user-id'] as string,
       req.body,
     );
@@ -91,19 +112,23 @@ export const updateReceipt = [
   },
 ];
 
-export const deleteReceipt = [
+export const deleteReceipt: RequestHandler[] = [
   validate({ params: ConsentReceiptParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const receiptId = req.params.receiptId as string;
 
-    logger.info({ traceId, associationId: association.id, receiptId }, 'DELETE /api/consent/[receiptId] - Request started');
+    logger.info(
+      { traceId, associationId: association.id, receiptId },
+      'DELETE /api/consent/[receiptId] - Request started',
+    );
 
     await withRole(req, UserRole.DPO);
 
     await ConsentService.deleteConsentReceipt(
-      association.id, receiptId,
+      association.id,
+      receiptId,
       req.headers['x-user-id'] as string,
     );
 
@@ -112,14 +137,17 @@ export const deleteReceipt = [
   },
 ];
 
-export const getUserConsents = [
+export const getUserConsents: RequestHandler[] = [
   validate({ params: UserParamsSchema, query: UserQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const targetUserId = req.params.userId as string;
 
-    logger.info({ traceId, associationId: association.id, targetUserId }, 'GET /api/consent/users/[userId] - Request started');
+    logger.info(
+      { traceId, associationId: association.id, targetUserId },
+      'GET /api/consent/users/[userId] - Request started',
+    );
 
     await withRole(req, UserRole.DPO);
 
@@ -130,7 +158,10 @@ export const getUserConsents = [
       throw new NotFoundError('No consent records found for this user');
     }
 
-    logger.info({ traceId, count: data.records.length }, 'GET /api/consent/users/[userId] - Success');
+    logger.info(
+      { traceId, count: data.records.length },
+      'GET /api/consent/users/[userId] - Success',
+    );
     return success(res, { data: data.records, meta: data.pagination });
   },
 ];

@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { verifyPassword } from '@src/shared/lib/password';
@@ -10,7 +11,7 @@ import { logger } from '@src/shared/logger';
 
 const DisableMfaSchema = z.object({ password: z.string().min(1, 'Password is required') });
 
-export const postMfaDisable = [
+export const postMfaDisable: RequestHandler[] = [
   validate({ body: DisableMfaSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';

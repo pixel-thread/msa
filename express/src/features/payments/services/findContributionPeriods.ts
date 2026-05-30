@@ -9,7 +9,12 @@ type Props = {
   include?: Prisma.ContributionPeriodInclude;
 };
 
-export async function findContributionPeriods({ where, page = 1, pageSize = PAGE_SIZE, include }: Props) {
+export async function findContributionPeriods({
+  where,
+  page = 1,
+  pageSize = PAGE_SIZE,
+  include,
+}: Props) {
   const skip = (page - 1) * pageSize;
   const [contributions, total] = await Promise.all([
     prisma.contributionPeriod.findMany({

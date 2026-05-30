@@ -8,12 +8,18 @@ import { getAssociation, withRole } from './_helpers';
 export const postIssueNotice = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
   const association = await getAssociation(req);
-  logger.info({ traceId, associationId: association.id }, 'POST /api/meetings/[meetingId]/notice - Request started');
+  logger.info(
+    { traceId, associationId: association.id },
+    'POST /api/meetings/[meetingId]/notice - Request started',
+  );
 
   const user = await withRole(req, UserRole.SECRETARY);
 
   const meetingId = req.params.meetingId as string;
-  logger.info({ traceId, userId: user.id, role: user.role, meetingId }, 'POST /api/meetings/[meetingId]/notice - User authorized');
+  logger.info(
+    { traceId, userId: user.id, role: user.role, meetingId },
+    'POST /api/meetings/[meetingId]/notice - User authorized',
+  );
   logger.info({ traceId, meetingId }, 'POST /api/meetings/[meetingId]/notice - Issuing notice');
 
   const meeting = await updateMeeting({
@@ -25,6 +31,9 @@ export const postIssueNotice = async (req: Request, res: Response, _next: NextFu
     },
   });
 
-  logger.info({ traceId, meetingId: meeting.id }, 'POST /api/meetings/[meetingId]/notice - Success');
+  logger.info(
+    { traceId, meetingId: meeting.id },
+    'POST /api/meetings/[meetingId]/notice - Success',
+  );
   return success(res, { data: meeting });
 };

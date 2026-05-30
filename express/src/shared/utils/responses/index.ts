@@ -7,15 +7,19 @@ interface ResponseMeta {
   totalPages?: number;
 }
 
-export function success<T>(res: Response, {
-  data,
-  meta,
-  message,
-}: {
-  data: T;
-  meta?: ResponseMeta;
-  message?: string;
-}, status: 200 | 201 | 204 = 200) {
+export function success<T>(
+  res: Response,
+  {
+    data,
+    meta,
+    message,
+  }: {
+    data: T;
+    meta?: ResponseMeta;
+    message?: string;
+  },
+  status: 200 | 201 | 204 = 200,
+) {
   return res.status(status).json({
     success: true,
     data,
@@ -25,13 +29,17 @@ export function success<T>(res: Response, {
   });
 }
 
-export function error(res: Response, {
-  message,
-  error: detail,
-}: {
-  message: string;
-  error?: string | Record<string, unknown>;
-}, status = 400) {
+export function error(
+  res: Response,
+  {
+    message,
+    error: detail,
+  }: {
+    message: string;
+    error?: string | Record<string, unknown>;
+  },
+  status = 400,
+) {
   return res.status(status).json({
     success: false,
     message,

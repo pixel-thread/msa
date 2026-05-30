@@ -1,7 +1,13 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
-import { UnauthorizedError, ForbiddenError, NotFoundError, BadRequestError } from '@src/shared/errors';
+import {
+  UnauthorizedError,
+  ForbiddenError,
+  NotFoundError,
+  BadRequestError,
+} from '@src/shared/errors';
 import { prisma } from '@src/shared/lib/prisma';
 import { UserRole, DsarStatus } from '@prisma/client';
 import { z } from 'zod';
@@ -21,13 +27,21 @@ const AssignSchema = z.object({ assignedToId: z.string().uuid() });
 const RejectSchema = z.object({ reason: z.string().min(1).max(500) });
 
 const ROLE_HIERARCHY: Record<UserRole, number> = {
-  SUPER_ADMIN: 0, PRESIDENT: 1, SECRETARY: 2, FINANCE: 3, DPO: 4, MEMBER: 5,
+  SUPER_ADMIN: 0,
+  PRESIDENT: 1,
+  SECRETARY: 2,
+  FINANCE: 3,
+  DPO: 4,
+  MEMBER: 5,
 };
 
 async function getAssociation(req: Request) {
   const userId = req.headers['x-user-id'] as string;
   if (!userId) throw new UnauthorizedError('Unauthorized');
-  const user = await prisma.user.findUnique({ where: { id: userId }, include: { association: true } });
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { association: true },
+  });
   if (!user || !user.associationId) throw new ForbiddenError('User association not found');
   return { id: user.association.id, slug: user.association.slug, name: user.association.name };
 }
@@ -46,7 +60,7 @@ async function withRole(req: Request, role: UserRole) {
   return { ...user, role: roles };
 }
 
-export const getTicket = [
+export const getTicket: RequestHandler[] = [
   validate({ params: ParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -54,7 +68,10 @@ export const getTicket = [
     const userId = req.headers['x-user-id'] as string;
     const ticketId = req.params.ticketId as string;
 
-    logger.info({ traceId, associationId: association.id, ticketId }, 'GET /api/dsar/[ticketId] - Request started');
+    logger.info(
+      { traceId, associationId: association.id, ticketId },
+      'GET /api/dsar/[ticketId] - Request started',
+    );
 
     const ticket = await findUniqueDsarTicket(ticketId, association.id);
     if (!ticket) throw new NotFoundError('DSAR ticket not found');
@@ -69,7 +86,7 @@ export const getTicket = [
   },
 ];
 
-export const deleteTicket = [
+export const deleteTicket: RequestHandler[] = [
   validate({ params: ParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -77,7 +94,10 @@ export const deleteTicket = [
     const actorId = req.headers['x-user-id'] as string;
     const ticketId = req.params.ticketId as string;
 
-    logger.info({ traceId, associationId: association.id, ticketId }, 'DELETE /api/dsar/[ticketId] - Request started');
+    logger.info(
+      { traceId, associationId: association.id, ticketId },
+      'DELETE /api/dsar/[ticketId] - Request started',
+    );
 
     await withRole(req, UserRole.DPO);
 
@@ -91,62 +111,84 @@ export const deleteTicket = [
   },
 ];
 
-export const respondToTicket = [
+export const respondToTicket: RequestHandler[] = [
   validate({ params: ParamsSchema, body: RespondDsarSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const ticketId = req.params.ticketId as string;
 
-    logger.info({ traceId, associationId: association.id, ticketId }, 'POST /api/dsar/[ticketId]/respond - Request started');
+    logger.info(
+      { traceId, associationId: association.id, ticketId },
+      'POST /api/dsar/[ticketId]/respond - Request started',
+    );
 
     const actorId = req.headers['x-user-id'] as string;
     await withRole(req, UserRole.DPO);
 
-    const ticket = await respondToDsarTicket({ associationId: association.id, ticketId, actorId, data: req.body });
+    const ticket = await respondToDsarTicket({
+      associationId: association.id,
+      ticketId,
+      actorId,
+      data: req.body,
+    });
 
     logger.info({ traceId }, 'POST /api/dsar/[ticketId]/respond - Success');
     return success(res, { data: ticket });
   },
 ];
 
-export const assignTicket = [
+export const assignTicket: RequestHandler[] = [
   validate({ params: ParamsSchema, body: AssignSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const ticketId = req.params.ticketId as string;
 
-    logger.info({ traceId, associationId: association.id, ticketId }, 'PATCH /api/dsar/[ticketId]/assign - Request started');
+    logger.info(
+      { traceId, associationId: association.id, ticketId },
+      'PATCH /api/dsar/[ticketId]/assign - Request started',
+    );
 
     const actorId = req.headers['x-user-id'] as string;
     await withRole(req, UserRole.DPO);
 
     const user = await getUniqueUser({ where: { id: req.body.assignedToId } });
     if (!user) throw new NotFoundError('User not found');
-    if (!hasHighRoleAccess(user.role as UserRole[])) throw new BadRequestError('User does not have the required role');
+    if (!hasHighRoleAccess(user.role as UserRole[]))
+      throw new BadRequestError('User does not have the required role');
 
-    const ticket = await assignDsarTicket({ associationId: association.id, ticketId, actorId, assignedToId: req.body.assignedToId });
+    const ticket = await assignDsarTicket({
+      associationId: association.id,
+      ticketId,
+      actorId,
+      assignedToId: req.body.assignedToId,
+    });
 
     logger.info({ traceId }, 'PATCH /api/dsar/[ticketId]/assign - Success');
     return success(res, { data: ticket });
   },
 ];
 
-export const rejectTicket = [
+export const rejectTicket: RequestHandler[] = [
   validate({ params: ParamsSchema, body: RejectSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const ticketId = req.params.ticketId as string;
 
-    logger.info({ traceId, associationId: association.id, ticketId }, 'POST /api/dsar/[ticketId]/reject - Request started');
+    logger.info(
+      { traceId, associationId: association.id, ticketId },
+      'POST /api/dsar/[ticketId]/reject - Request started',
+    );
 
     const actorId = req.headers['x-user-id'] as string;
     await withRole(req, UserRole.DPO);
 
     const ticket = await respondToDsarTicket({
-      associationId: association.id, ticketId, actorId,
+      associationId: association.id,
+      ticketId,
+      actorId,
       data: { status: DsarStatus.REJECTED, rejectedReason: req.body.reason },
     });
 

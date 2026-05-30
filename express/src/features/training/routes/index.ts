@@ -1,12 +1,33 @@
 import { Router } from 'express';
 import { getModules, postModules } from './modules.route';
 import { getModule, updateModuleHandler, deleteModuleHandler } from './module-detail.route';
-import { getAssignments, postAssign, putBulkAssign, deleteAssignment, patchBulkRemove, getAssignedUsersHandler } from './assign-users.route';
+import {
+  getAssignments,
+  postAssign,
+  putBulkAssign,
+  deleteAssignment,
+  patchBulkRemove,
+  getAssignedUsersHandler,
+} from './assign-users.route';
 import { getMyAssignments, getMyCompletions } from './my-assignments.route';
 import { getCompletions, postCompletion } from './record-completion.route';
 import { getModuleCompletions, postModuleComplete, postAdminComplete } from './completions.route';
-import { getCertificates, postCertificate, getCertificate, patchCertificate, deleteCertificateHandler, postCertificateTemplate, deleteCertificateTemplate } from './certificates.route';
-import { getSupplements, postSupplement, getSupplement, updateSupplementHandler, deleteSupplementHandler } from './supplements.route';
+import {
+  getCertificates,
+  postCertificate,
+  getCertificate,
+  patchCertificate,
+  deleteCertificateHandler,
+  postCertificateTemplate,
+  deleteCertificateTemplate,
+} from './certificates.route';
+import {
+  getSupplements,
+  postSupplement,
+  getSupplement,
+  updateSupplementHandler,
+  deleteSupplementHandler,
+} from './supplements.route';
 
 const router = Router();
 

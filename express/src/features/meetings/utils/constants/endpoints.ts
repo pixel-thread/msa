@@ -5,12 +5,10 @@ export const meetingsEndpoints = {
   rsvp: (id: string) => `/meetings/${id}/rsvp`,
   attendees: {
     base: (meetingId: string) => `/meetings/${meetingId}/attendees`,
-    byId: (meetingId: string, userId: string) =>
-      `/meetings/${meetingId}/attendees/${userId}`,
+    byId: (meetingId: string, userId: string) => `/meetings/${meetingId}/attendees/${userId}`,
   },
   minutes: {
     base: (meetingId: string) => `/meetings/${meetingId}/minutes`,
-    byId: (meetingId: string, minuteId: string) =>
-      `/meetings/${meetingId}/minutes/${minuteId}`,
+    byId: (meetingId: string, minuteId: string) => `/meetings/${meetingId}/minutes/${minuteId}`,
   },
 } as const;

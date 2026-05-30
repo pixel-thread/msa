@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { generateOTP, hashToken } from '@src/shared/lib/password';
@@ -10,7 +11,7 @@ import { getVerificationCodeFirst } from '@src/features/auth/services/get-verifi
 import { createVerificationCode } from '@src/features/auth/services/create-verification-code';
 import { logger } from '@src/shared/logger';
 
-export const postMfaResend = [
+export const postMfaResend: RequestHandler[] = [
   validate({}),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -30,7 +31,9 @@ export const postMfaResend = [
       const cooldownMs = env.OTP_RESEND_COOLDOWN * 1000;
       if (timeSinceLastCode < cooldownMs) {
         const remainingSeconds = Math.ceil((cooldownMs - timeSinceLastCode) / 1000);
-        throw new ForbiddenError(`Please wait ${remainingSeconds} seconds before requesting a new code`);
+        throw new ForbiddenError(
+          `Please wait ${remainingSeconds} seconds before requesting a new code`,
+        );
       }
     }
 
@@ -40,12 +43,20 @@ export const postMfaResend = [
     otpExpiry.setMinutes(otpExpiry.getMinutes() + 5);
 
     await createVerificationCode({
-      data: { user: { connect: { id: userId } }, code: hashedOTP, type: 'SETUP_MFA', expiresAt: otpExpiry },
+      data: {
+        user: { connect: { id: userId } },
+        code: hashedOTP,
+        type: 'SETUP_MFA',
+        expiresAt: otpExpiry,
+      },
     });
 
     if (env.NODE_ENV === 'production') await sendVerificationEmail(user.email, otp, 'SETUP_MFA');
     if (env.NODE_ENV === 'development') logger.debug({ otp }, 'OTP sent to ');
 
-    return success(res, { message: 'Verification code sent to your email', data: { codeSent: true } });
+    return success(res, {
+      message: 'Verification code sent to your email',
+      data: { codeSent: true },
+    });
   },
 ];

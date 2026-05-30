@@ -1,10 +1,17 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { ValidationError } from '@src/shared/errors';
 import { UserRole } from '@prisma/client';
 import { CreateSubscriptionPlanSchema } from '@feature/subscriptions/validators';
-import { getPlans, createPlan, setDefaultPlan, updatePlan, softDeletePlan } from '@feature/subscriptions/services';
+import {
+  getPlans,
+  createPlan,
+  setDefaultPlan,
+  updatePlan,
+  softDeletePlan,
+} from '@feature/subscriptions/services';
 import { getAssociation, withRole } from '@src/features/meetings/routes/_helpers';
 import { logger } from '@src/shared/logger';
 import { z } from 'zod';
@@ -24,7 +31,7 @@ const SetDefaultPlanSchema = z.object({
   planId: z.uuid(),
 });
 
-export const getPlansHandler = [
+export const getPlansHandler: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
@@ -35,7 +42,7 @@ export const getPlansHandler = [
   },
 ];
 
-export const createPlanHandler = [
+export const createPlanHandler: RequestHandler[] = [
   validate({ body: CreateSubscriptionPlanSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -48,7 +55,7 @@ export const createPlanHandler = [
   },
 ];
 
-export const setDefaultPlanHandler = [
+export const setDefaultPlanHandler: RequestHandler[] = [
   validate({ body: SetDefaultPlanSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -61,13 +68,16 @@ export const setDefaultPlanHandler = [
   },
 ];
 
-export const updatePlanHandler = [
+export const updatePlanHandler: RequestHandler[] = [
   validate({ body: UpdatePlanSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const user = await withRole(req, UserRole.SUPER_ADMIN);
-    logger.info({ traceId, userId: user.id }, 'PATCH /api/subscriptions/plans/[planId] - User authorized');
+    logger.info(
+      { traceId, userId: user.id },
+      'PATCH /api/subscriptions/plans/[planId] - User authorized',
+    );
     if (!req.body) throw new ValidationError('Invalid request body');
     const { planId } = req.params;
     const updatedPlan = await updatePlan(association.id, planId, req.body);
@@ -76,12 +86,15 @@ export const updatePlanHandler = [
   },
 ];
 
-export const deletePlanHandler = [
+export const deletePlanHandler: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const user = await withRole(req, UserRole.PRESIDENT);
-    logger.info({ traceId, userId: user.id }, 'DELETE /api/subscriptions/plans/[planId] - User authorized');
+    logger.info(
+      { traceId, userId: user.id },
+      'DELETE /api/subscriptions/plans/[planId] - User authorized',
+    );
     const { planId } = req.params;
     const plan = await softDeletePlan(association.id, planId);
     logger.info({ traceId, planId }, 'Plan deleted successfully');

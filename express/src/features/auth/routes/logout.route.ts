@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { SignOutSchema } from '@src/features/auth/validators';
@@ -7,7 +8,7 @@ import { updateRefreshTokens } from '@src/features/auth/services/update-refresh-
 import { env } from '@src/env';
 import { logger } from '@src/shared/logger';
 
-export const postLogout = [
+export const postLogout: RequestHandler[] = [
   validate({ body: SignOutSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';

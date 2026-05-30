@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { VerifySignInInput, VerifySignInSchema } from '@src/features/auth/validators';
@@ -12,7 +13,7 @@ import { updateVerificationCode } from '@src/features/auth/services/update-verif
 import { createRefreshToken } from '@src/features/auth/services/create-refresh-token';
 import { logger } from '@src/shared/logger';
 
-export const postSignInVerify = [
+export const postSignInVerify: RequestHandler[] = [
   validate({ body: VerifySignInSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -23,8 +24,11 @@ export const postSignInVerify = [
     if (!mfaCookie) throw new BadRequestError('Session expired. Please signin again');
 
     let payload;
-    try { payload = await verifyMfaTempToken(mfaCookie); }
-    catch { throw new BadRequestError('Session expired. Please signin again'); }
+    try {
+      payload = await verifyMfaTempToken(mfaCookie);
+    } catch {
+      throw new BadRequestError('Session expired. Please signin again');
+    }
 
     const user = await getUniqueUser({ where: { id: payload.sub } });
     if (!user || user.status !== 'ACTIVE') {
@@ -42,11 +46,17 @@ export const postSignInVerify = [
       throw new TooManyRequestsError('Too many attempts. Please request a new code');
     }
     if (verificationCode.code !== hashedCode) {
-      await updateVerificationCode({ where: { id: verificationCode.id }, data: { attempts: { increment: 1 } } });
+      await updateVerificationCode({
+        where: { id: verificationCode.id },
+        data: { attempts: { increment: 1 } },
+      });
       throw new UnauthorizedError('Invalid verification code');
     }
 
-    await updateVerificationCode({ where: { id: verificationCode.id }, data: { usedAt: new Date() } });
+    await updateVerificationCode({
+      where: { id: verificationCode.id },
+      data: { usedAt: new Date() },
+    });
 
     const accessToken = await signAccessToken(user.id);
     const refreshToken = await signRefreshToken(user.id);
@@ -55,14 +65,33 @@ export const postSignInVerify = [
     refreshTokenExpiry.setDate(refreshTokenExpiry.getDate() + 7);
 
     await createRefreshToken({
-      data: { user: { connect: { id: user.id } }, token: hashedRefreshToken, expiresAt: refreshTokenExpiry },
+      data: {
+        user: { connect: { id: user.id } },
+        token: hashedRefreshToken,
+        expiresAt: refreshTokenExpiry,
+      },
     });
 
-    res.cookie('access_token', accessToken, { httpOnly: true, secure: env.NODE_ENV === 'production', sameSite: 'strict', maxAge: 15 * 60 * 1000, path: '/' });
-    res.cookie('refresh_token', refreshToken, { httpOnly: true, secure: env.NODE_ENV === 'production', sameSite: 'strict', maxAge: 7 * 24 * 60 * 60 * 1000, path: '/' });
+    res.cookie('access_token', accessToken, {
+      httpOnly: true,
+      secure: env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 15 * 60 * 1000,
+      path: '/',
+    });
+    res.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/',
+    });
     res.clearCookie('mfa_temp_token');
 
     logger.info({ traceId, userId: user.id }, 'POST /api/auth/sign-in/verify - Success');
-    return success(res, { message: 'Signed in successfully', data: { access_token: accessToken, refresh_token: refreshToken } });
+    return success(res, {
+      message: 'Signed in successfully',
+      data: { access_token: accessToken, refresh_token: refreshToken },
+    });
   },
 ];

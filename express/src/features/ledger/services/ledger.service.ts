@@ -118,7 +118,9 @@ export async function createManualEntry(
   const credits = input.lines.filter((l) => !l.isDebit);
 
   if (debits.length === 0 || credits.length === 0) {
-    throw new ValidationError('A ledger entry must have at least one debit line and one credit line.');
+    throw new ValidationError(
+      'A ledger entry must have at least one debit line and one credit line.',
+    );
   }
 
   const totalDebits = debits.reduce((sum, l) => sum + l.amount, 0);

@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { ForbiddenError, ValidationError } from '@src/shared/errors';
@@ -17,7 +18,7 @@ const RsvpSchema = z.object({
     .transform((v) => v?.trim()),
 });
 
-export const postRsvp = [
+export const postRsvp: RequestHandler[] = [
   validate({ body: RsvpSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -26,12 +27,18 @@ export const postRsvp = [
     logger.info({ traceId, meetingId }, 'POST /api/meetings/[meetingId]/rsvp - Request started');
 
     const user = await withRole(req, UserRole.MEMBER);
-    logger.info({ traceId, userId: user.id, role: user.role, meetingId }, 'POST /api/meetings/[meetingId]/rsvp - User authorized');
+    logger.info(
+      { traceId, userId: user.id, role: user.role, meetingId },
+      'POST /api/meetings/[meetingId]/rsvp - User authorized',
+    );
 
     const userId = req.headers['x-user-id'] as string;
     if (!userId) throw new ForbiddenError('Unauthorized');
 
-    logger.info({ traceId, meetingId, userId }, 'POST /api/meetings/[meetingId]/rsvp - Submitting RSVP');
+    logger.info(
+      { traceId, meetingId, userId },
+      'POST /api/meetings/[meetingId]/rsvp - Submitting RSVP',
+    );
 
     const updated = await updateAttendee({
       meetingId,

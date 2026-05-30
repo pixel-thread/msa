@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { ValidationError } from '@src/shared/errors';
@@ -8,12 +9,15 @@ import { logger } from '@src/shared/logger';
 import { subscribe } from '@feature/subscriptions/services';
 import { getAssociation, withRole } from '@src/features/meetings/routes/_helpers';
 
-export const postSubscribe = [
+export const postSubscribe: RequestHandler[] = [
   validate({ body: SubscribeSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
-    logger.info({ traceId, associationId: association.id }, 'POST /api/subscriptions/subscribe - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'POST /api/subscriptions/subscribe - Request started',
+    );
     const user = await withRole(req, UserRole.MEMBER);
     logger.info({ traceId, userId: user.id }, 'User authorized');
     if (!req.body) throw new ValidationError('Invalid request body');

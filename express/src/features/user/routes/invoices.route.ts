@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { prisma } from '@src/shared/lib/prisma';
@@ -18,7 +19,7 @@ const InvoiceRouteParams = z.object({
   invoiceId: z.uuid(),
 });
 
-export const listInvoices = [
+export const listInvoices: RequestHandler[] = [
   validate({ query: InvoiceRouteQuery }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -30,9 +31,16 @@ export const listInvoices = [
       include: { association: true },
     });
     if (!user || !user.associationId) throw new ForbiddenError('User association not found');
-    const association = { id: user.association.id, slug: user.association.slug, name: user.association.name };
+    const association = {
+      id: user.association.id,
+      slug: user.association.slug,
+      name: user.association.name,
+    };
 
-    logger.info({ traceId, associationId: association.id }, 'GET /api/user/invoices - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'GET /api/user/invoices - Request started',
+    );
 
     if (!user.role.includes(UserRole.MEMBER)) throw new ForbiddenError('Insufficient permissions');
 
@@ -61,7 +69,7 @@ export const listInvoices = [
   },
 ];
 
-export const getInvoice = [
+export const getInvoice: RequestHandler[] = [
   validate({ params: InvoiceRouteParams }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -73,13 +81,23 @@ export const getInvoice = [
       include: { association: true },
     });
     if (!user || !user.associationId) throw new ForbiddenError('User association not found');
-    const association = { id: user.association.id, slug: user.association.slug, name: user.association.name };
+    const association = {
+      id: user.association.id,
+      slug: user.association.slug,
+      name: user.association.name,
+    };
 
-    logger.info({ traceId, associationId: association.id }, 'GET /api/user/invoices/[invoiceId] - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'GET /api/user/invoices/[invoiceId] - Request started',
+    );
 
     if (!user.role.includes(UserRole.MEMBER)) throw new ForbiddenError('Insufficient permissions');
 
-    logger.info({ traceId, userId: user.id }, 'GET /api/user/invoices/[invoiceId] - User authorized');
+    logger.info(
+      { traceId, userId: user.id },
+      'GET /api/user/invoices/[invoiceId] - User authorized',
+    );
 
     if (!userId) throw new UnauthorizedError('Unauthorized');
 
@@ -93,7 +111,10 @@ export const getInvoice = [
       },
     });
 
-    logger.info({ traceId, invoiceId: params?.invoiceId }, 'GET /api/user/invoices/[invoiceId] - Success');
+    logger.info(
+      { traceId, invoiceId: params?.invoiceId },
+      'GET /api/user/invoices/[invoiceId] - Success',
+    );
 
     return success(res, { data: invoices, message: 'Invoices fetched successfully' });
   },

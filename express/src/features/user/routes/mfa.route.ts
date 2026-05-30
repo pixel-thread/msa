@@ -1,10 +1,11 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError } from '@src/shared/errors';
 import { getUser, updateUser } from '@src/features/user/services';
 import { logger } from '@src/shared/logger';
 
-export const toggleMfa = [
+export const toggleMfa: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId }, 'POST /api/user/mfa - Request started');

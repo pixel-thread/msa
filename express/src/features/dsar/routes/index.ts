@@ -3,7 +3,13 @@ import { auth } from '@src/middleware/auth';
 import { listTickets } from './list-tickets.route';
 import { submitDsar } from './submit.route';
 import { listMyTickets, getMyTicket } from './my-tickets.route';
-import { getTicket, deleteTicket, respondToTicket, assignTicket, rejectTicket } from './ticket-detail.route';
+import {
+  getTicket,
+  deleteTicket,
+  respondToTicket,
+  assignTicket,
+  rejectTicket,
+} from './ticket-detail.route';
 import { listAdmins } from './admins.route';
 import { getSlaReport } from './sla-report.route';
 

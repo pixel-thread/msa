@@ -10,7 +10,10 @@ import { getAssociation, withRole } from './_helpers';
 export const postCancelMeeting = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
   const association = await getAssociation(req);
-  logger.info({ traceId, associationId: association.id }, 'POST /api/meetings/[meetingId]/cancel - Request started');
+  logger.info(
+    { traceId, associationId: association.id },
+    'POST /api/meetings/[meetingId]/cancel - Request started',
+  );
 
   const user = await withRole(req, UserRole.PRESIDENT);
   if (!hasHighRoleAccess(user.role)) {
@@ -18,7 +21,10 @@ export const postCancelMeeting = async (req: Request, res: Response, _next: Next
   }
 
   const meetingId = req.params.meetingId as string;
-  logger.info({ traceId, userId: user.id, role: user.role, meetingId }, 'POST /api/meetings/[meetingId]/cancel - User authorized');
+  logger.info(
+    { traceId, userId: user.id, role: user.role, meetingId },
+    'POST /api/meetings/[meetingId]/cancel - User authorized',
+  );
   logger.info({ traceId, meetingId }, 'POST /api/meetings/[meetingId]/cancel - Cancelling meeting');
 
   const meeting = await updateMeeting({
@@ -27,6 +33,9 @@ export const postCancelMeeting = async (req: Request, res: Response, _next: Next
     data: { status: MeetingStatus.CANCELLED },
   });
 
-  logger.info({ traceId, meetingId: meeting.id }, 'POST /api/meetings/[meetingId]/cancel - Success');
+  logger.info(
+    { traceId, meetingId: meeting.id },
+    'POST /api/meetings/[meetingId]/cancel - Success',
+  );
   return success(res, { data: meeting });
 };

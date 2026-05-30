@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UserRole } from '@prisma/client';
@@ -8,14 +9,17 @@ import { buildPagination } from '@src/shared/utils/build-pagination';
 import { logger } from '@src/shared/logger';
 import { getAssociation, withRole } from './_helpers';
 
-export const listComplaints = [
+export const listComplaints: RequestHandler[] = [
   validate({ query: ComplaintQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /compliance - Request started');
     const user = await withRole(req, UserRole.DPO);
-    logger.info({ traceId, userId: user.id, roles: user.role }, 'GET /compliance - User authorized');
+    logger.info(
+      { traceId, userId: user.id, roles: user.role },
+      'GET /compliance - User authorized',
+    );
 
     const query = req.query as unknown as Record<string, unknown>;
     const where: Record<string, unknown> = { associationId: association.id };
@@ -23,10 +27,16 @@ export const listComplaints = [
     if (query.status) where.status = query.status;
     if (query.priority) where.priority = query.priority;
     if (query.fromDate) {
-      where.createdAt = { ...((where.createdAt as object) || {}), gte: new Date(query.fromDate as string) };
+      where.createdAt = {
+        ...((where.createdAt as object) || {}),
+        gte: new Date(query.fromDate as string),
+      };
     }
     if (query.toDate) {
-      where.createdAt = { ...((where.createdAt as object) || {}), lte: new Date(query.toDate as string) };
+      where.createdAt = {
+        ...((where.createdAt as object) || {}),
+        lte: new Date(query.toDate as string),
+      };
     }
 
     const page = (query.page as number) ?? 1;
@@ -40,14 +50,17 @@ export const listComplaints = [
   },
 ];
 
-export const createComplaintHandler = [
+export const createComplaintHandler: RequestHandler[] = [
   validate({ body: CreateComplaintSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'POST /compliance - Request started');
     const user = await withRole(req, UserRole.DPO);
-    logger.info({ traceId, userId: user.id, roles: user.role }, 'POST /compliance - User authorized');
+    logger.info(
+      { traceId, userId: user.id, roles: user.role },
+      'POST /compliance - User authorized',
+    );
 
     const userId = req.headers['x-user-id'] as string;
     const complaint = await createComplaint({

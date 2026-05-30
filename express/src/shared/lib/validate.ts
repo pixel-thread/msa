@@ -9,7 +9,11 @@ interface ValidationSchemas<TBody, TQuery, TParams> {
   query?: ZodType<TQuery>;
 }
 
-function defineProp<T extends Record<string, unknown>>(obj: Record<string, unknown>, key: string, value: T[keyof T & string]): void {
+function defineProp<T extends Record<string, unknown>>(
+  obj: Record<string, unknown>,
+  key: string,
+  value: T[keyof T & string],
+): void {
   Object.defineProperty(obj, key, {
     value,
     writable: true,
@@ -22,9 +26,7 @@ export function validate<
   TBody = never,
   TQuery = never,
   TParams extends Record<string, string> = Record<string, string>,
->(
-  schemas: ValidationSchemas<TBody, TQuery, TParams>,
-): RequestHandler {
+>(schemas: ValidationSchemas<TBody, TQuery, TParams>): RequestHandler {
   return (req: Request<TParams, any, TBody, TQuery>, _res: Response, next: NextFunction) => {
     try {
       if (schemas.body) {

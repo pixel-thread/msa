@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { prisma } from '@src/shared/lib/prisma';
@@ -29,33 +30,47 @@ const SupplementParamsSchema = z.object({
   supplementId: z.string().uuid('Invalid supplement ID'),
 });
 
-export const getSupplements = [
+export const getSupplements: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     try {
       const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'GET /training/modules/{moduleId}/supplements - Request started');
+      logger.info(
+        { traceId, associationId: association.id },
+        'GET /training/modules/{moduleId}/supplements - Request started',
+      );
       await withRole(req, UserRole.MEMBER);
       logger.info({ traceId }, 'GET /training/modules/{moduleId}/supplements - User authorized');
 
-      const supplements = await findManySupplements({ associationId: association.id, moduleId: req.params.moduleId });
+      const supplements = await findManySupplements({
+        associationId: association.id,
+        moduleId: req.params.moduleId,
+      });
 
       logger.info({ traceId }, 'GET /training/modules/{moduleId}/supplements - Success');
       return success(res, { data: supplements });
-    } catch (e) { next(e); }
+    } catch (e) {
+      next(e);
+    }
   },
 ];
 
-export const postSupplement = [
+export const postSupplement: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     try {
       const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id, moduleId: req.params.moduleId }, 'POST /training/modules/{moduleId}/supplements - Request started');
+      logger.info(
+        { traceId, associationId: association.id, moduleId: req.params.moduleId },
+        'POST /training/modules/{moduleId}/supplements - Request started',
+      );
       const user = await withRole(req, UserRole.DPO);
-      logger.info({ traceId, userId: user.id }, 'POST /training/modules/{moduleId}/supplements - User authorized');
+      logger.info(
+        { traceId, userId: user.id },
+        'POST /training/modules/{moduleId}/supplements - User authorized',
+      );
 
       const { moduleId } = req.params;
       const file = (req as any).file as Express.Multer.File | undefined;
@@ -78,7 +93,11 @@ export const postSupplement = [
       }
 
       const webFile = new File([file.buffer], file.originalname, { type: file.mimetype });
-      const uploadResult = await uploadToBucket(webFile, `supplements/${association.slug}/${moduleId}`, traceId);
+      const uploadResult = await uploadToBucket(
+        webFile,
+        `supplements/${association.slug}/${moduleId}`,
+        traceId,
+      );
 
       const fileRecord = await prisma.file.create({
         data: {
@@ -104,21 +123,32 @@ export const postSupplement = [
         fileId: fileRecord.id,
       });
 
-      logger.info({ traceId, supplementId: supplement.id }, 'POST /training/modules/{moduleId}/supplements - Success');
+      logger.info(
+        { traceId, supplementId: supplement.id },
+        'POST /training/modules/{moduleId}/supplements - Success',
+      );
       return success(res, { data: supplement }, 201);
-    } catch (e) { next(e); }
+    } catch (e) {
+      next(e);
+    }
   },
 ];
 
-export const getSupplement = [
+export const getSupplement: RequestHandler[] = [
   validate({ params: SupplementParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     try {
       const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'GET /training/modules/{moduleId}/supplements/{supplementId} - Request started');
+      logger.info(
+        { traceId, associationId: association.id },
+        'GET /training/modules/{moduleId}/supplements/{supplementId} - Request started',
+      );
       await withRole(req, UserRole.MEMBER);
-      logger.info({ traceId }, 'GET /training/modules/{moduleId}/supplements/{supplementId} - User authorized');
+      logger.info(
+        { traceId },
+        'GET /training/modules/{moduleId}/supplements/{supplementId} - User authorized',
+      );
 
       const { moduleId, supplementId } = req.params;
       const supplements = await findManySupplements({ associationId: association.id, moduleId });
@@ -126,21 +156,32 @@ export const getSupplement = [
 
       if (!supplement) throw new NotFoundError('Training supplement not found');
 
-      logger.info({ traceId, supplementId }, 'GET /training/modules/{moduleId}/supplements/{supplementId} - Success');
+      logger.info(
+        { traceId, supplementId },
+        'GET /training/modules/{moduleId}/supplements/{supplementId} - Success',
+      );
       return success(res, { data: supplement });
-    } catch (e) { next(e); }
+    } catch (e) {
+      next(e);
+    }
   },
 ];
 
-export const updateSupplementHandler = [
+export const updateSupplementHandler: RequestHandler[] = [
   validate({ params: SupplementParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     try {
       const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'PATCH /training/modules/{moduleId}/supplements/{supplementId} - Request started');
+      logger.info(
+        { traceId, associationId: association.id },
+        'PATCH /training/modules/{moduleId}/supplements/{supplementId} - Request started',
+      );
       const user = await withRole(req, UserRole.DPO);
-      logger.info({ traceId, userId: user.id }, 'PATCH /training/modules/{moduleId}/supplements/{supplementId} - User authorized');
+      logger.info(
+        { traceId, userId: user.id },
+        'PATCH /training/modules/{moduleId}/supplements/{supplementId} - User authorized',
+      );
 
       const { moduleId, supplementId } = req.params;
       const file = (req as any).file as Express.Multer.File | undefined;
@@ -167,7 +208,11 @@ export const updateSupplementHandler = [
         }
 
         const webFile = new File([file.buffer], file.originalname, { type: file.mimetype });
-        const uploadResult = await uploadToBucket(webFile, `supplements/${association.slug}/${moduleId}`, traceId);
+        const uploadResult = await uploadToBucket(
+          webFile,
+          `supplements/${association.slug}/${moduleId}`,
+          traceId,
+        );
 
         const fileRecord = await prisma.file.create({
           data: {
@@ -199,24 +244,39 @@ export const updateSupplementHandler = [
       });
 
       if (oldStorageKey) {
-        try { await deleteFromBucket(oldStorageKey); } catch { /* best-effort cleanup */ }
+        try {
+          await deleteFromBucket(oldStorageKey);
+        } catch {
+          /* best-effort cleanup */
+        }
       }
 
-      logger.info({ traceId, supplementId }, 'PATCH /training/modules/{moduleId}/supplements/{supplementId} - Success');
+      logger.info(
+        { traceId, supplementId },
+        'PATCH /training/modules/{moduleId}/supplements/{supplementId} - Success',
+      );
       return success(res, { data: supplement });
-    } catch (e) { next(e); }
+    } catch (e) {
+      next(e);
+    }
   },
 ];
 
-export const deleteSupplementHandler = [
+export const deleteSupplementHandler: RequestHandler[] = [
   validate({ params: SupplementParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     try {
       const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'DELETE /training/modules/{moduleId}/supplements/{supplementId} - Request started');
+      logger.info(
+        { traceId, associationId: association.id },
+        'DELETE /training/modules/{moduleId}/supplements/{supplementId} - Request started',
+      );
       const user = await withRole(req, UserRole.DPO);
-      logger.info({ traceId, userId: user.id }, 'DELETE /training/modules/{moduleId}/supplements/{supplementId} - User authorized');
+      logger.info(
+        { traceId, userId: user.id },
+        'DELETE /training/modules/{moduleId}/supplements/{supplementId} - User authorized',
+      );
 
       const { moduleId, supplementId } = req.params;
       const result = await deleteSupplement({
@@ -227,11 +287,20 @@ export const deleteSupplementHandler = [
       });
 
       if (result.storageKey) {
-        try { await deleteFromBucket(result.storageKey); } catch { /* best-effort cleanup */ }
+        try {
+          await deleteFromBucket(result.storageKey);
+        } catch {
+          /* best-effort cleanup */
+        }
       }
 
-      logger.info({ traceId, supplementId }, 'DELETE /training/modules/{moduleId}/supplements/{supplementId} - Success');
+      logger.info(
+        { traceId, supplementId },
+        'DELETE /training/modules/{moduleId}/supplements/{supplementId} - Success',
+      );
       return success(res, { data: { success: true, message: 'Training supplement deleted' } });
-    } catch (e) { next(e); }
+    } catch (e) {
+      next(e);
+    }
   },
 ];

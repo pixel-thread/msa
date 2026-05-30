@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UserRole } from '@prisma/client';
@@ -32,31 +33,44 @@ const BulkRemoveAssignSchema = z.object({
   userIds: z.array(z.string().uuid('Invalid user ID')).min(1, 'At least one user is required'),
 });
 
-export const getAssignments = [
+export const getAssignments: RequestHandler[] = [
   validate({ params: ParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
-    logger.info({ traceId, associationId: association.id }, 'GET /training/modules/{moduleId}/assign - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'GET /training/modules/{moduleId}/assign - Request started',
+    );
     await withRole(req, UserRole.SECRETARY);
     logger.info({ traceId }, 'GET /training/modules/{moduleId}/assign - User authorized');
 
     const page = parseInt(req.query.page as string) || 1;
-    const result = await getTrainingAssignments({ associationId: association.id, moduleId: req.params.moduleId, page });
+    const result = await getTrainingAssignments({
+      associationId: association.id,
+      moduleId: req.params.moduleId,
+      page,
+    });
 
     logger.info({ traceId }, 'GET /training/modules/{moduleId}/assign - Success');
     return success(res, { data: result.data, meta: buildPagination(result.total, page) });
   },
 ];
 
-export const postAssign = [
+export const postAssign: RequestHandler[] = [
   validate({ params: ParamsSchema, body: AssignTrainingSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
-    logger.info({ traceId, associationId: association.id }, 'POST /training/modules/{moduleId}/assign - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'POST /training/modules/{moduleId}/assign - Request started',
+    );
     const user = await withRole(req, UserRole.DPO);
-    logger.info({ traceId, userId: user.id }, 'POST /training/modules/{moduleId}/assign - User authorized');
+    logger.info(
+      { traceId, userId: user.id },
+      'POST /training/modules/{moduleId}/assign - User authorized',
+    );
 
     try {
       const assignment = await assignTraining({
@@ -65,7 +79,10 @@ export const postAssign = [
         userId: req.body.userId,
         assignedById: user.id,
       });
-      logger.info({ traceId, userId: req.body.userId }, 'POST /training/modules/{moduleId}/assign - Success');
+      logger.info(
+        { traceId, userId: req.body.userId },
+        'POST /training/modules/{moduleId}/assign - Success',
+      );
       return success(res, { data: assignment }, 201);
     } catch (error) {
       if (error instanceof Error) throw new BadRequestError(error.message);
@@ -74,14 +91,20 @@ export const postAssign = [
   },
 ];
 
-export const putBulkAssign = [
+export const putBulkAssign: RequestHandler[] = [
   validate({ params: ParamsSchema, body: BulkAssignTrainingSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
-    logger.info({ traceId, associationId: association.id }, 'PUT /training/modules/{moduleId}/assign - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'PUT /training/modules/{moduleId}/assign - Request started',
+    );
     const user = await withRole(req, UserRole.DPO);
-    logger.info({ traceId, userId: user.id }, 'PUT /training/modules/{moduleId}/assign - User authorized');
+    logger.info(
+      { traceId, userId: user.id },
+      'PUT /training/modules/{moduleId}/assign - User authorized',
+    );
 
     try {
       const result = await bulkAssignTraining({
@@ -90,7 +113,10 @@ export const putBulkAssign = [
         userIds: req.body.userIds,
         assignedById: user.id,
       });
-      logger.info({ traceId, userCount: req.body.userIds.length }, 'PUT /training/modules/{moduleId}/assign - Success');
+      logger.info(
+        { traceId, userCount: req.body.userIds.length },
+        'PUT /training/modules/{moduleId}/assign - Success',
+      );
       return success(res, { data: result }, 201);
     } catch (error) {
       if (error instanceof Error) throw new BadRequestError(error.message);
@@ -99,14 +125,20 @@ export const putBulkAssign = [
   },
 ];
 
-export const deleteAssignment = [
+export const deleteAssignment: RequestHandler[] = [
   validate({ params: ParamsSchema, body: RemoveAssignSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
-    logger.info({ traceId, associationId: association.id }, 'DELETE /training/modules/{moduleId}/assign - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'DELETE /training/modules/{moduleId}/assign - Request started',
+    );
     const user = await withRole(req, UserRole.DPO);
-    logger.info({ traceId, userId: user.id }, 'DELETE /training/modules/{moduleId}/assign - User authorized');
+    logger.info(
+      { traceId, userId: user.id },
+      'DELETE /training/modules/{moduleId}/assign - User authorized',
+    );
 
     try {
       const result = await removeTrainingAssignment({
@@ -115,7 +147,10 @@ export const deleteAssignment = [
         userId: req.body.userId,
         removedById: user.id,
       });
-      logger.info({ traceId, userId: req.body.userId }, 'DELETE /training/modules/{moduleId}/assign - Success');
+      logger.info(
+        { traceId, userId: req.body.userId },
+        'DELETE /training/modules/{moduleId}/assign - Success',
+      );
       return success(res, { data: result });
     } catch (error) {
       if (error instanceof Error) throw new BadRequestError(error.message);
@@ -124,14 +159,20 @@ export const deleteAssignment = [
   },
 ];
 
-export const patchBulkRemove = [
+export const patchBulkRemove: RequestHandler[] = [
   validate({ params: ParamsSchema, body: BulkRemoveAssignSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
-    logger.info({ traceId, associationId: association.id }, 'PATCH /training/modules/{moduleId}/assign - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'PATCH /training/modules/{moduleId}/assign - Request started',
+    );
     const user = await withRole(req, UserRole.DPO);
-    logger.info({ traceId, userId: user.id }, 'PATCH /training/modules/{moduleId}/assign - User authorized');
+    logger.info(
+      { traceId, userId: user.id },
+      'PATCH /training/modules/{moduleId}/assign - User authorized',
+    );
 
     try {
       const result = await bulkRemoveTrainingAssignment({
@@ -140,7 +181,10 @@ export const patchBulkRemove = [
         userIds: req.body.userIds,
         removedById: user.id,
       });
-      logger.info({ traceId, userCount: req.body.userIds.length }, 'PATCH /training/modules/{moduleId}/assign - Success');
+      logger.info(
+        { traceId, userCount: req.body.userIds.length },
+        'PATCH /training/modules/{moduleId}/assign - Success',
+      );
       return success(res, { data: result });
     } catch (error) {
       if (error instanceof Error) throw new BadRequestError(error.message);
@@ -149,16 +193,23 @@ export const patchBulkRemove = [
   },
 ];
 
-export const getAssignedUsersHandler = [
+export const getAssignedUsersHandler: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
-    logger.info({ traceId, associationId: association.id }, 'GET /training/modules/{moduleId}/assigned-users - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'GET /training/modules/{moduleId}/assigned-users - Request started',
+    );
     await withRole(req, UserRole.SECRETARY);
     logger.info({ traceId }, 'GET /training/modules/{moduleId}/assigned-users - User authorized');
 
     const page = parseInt(req.query.page as string) || 1;
-    const result = await getAssignedUsers({ associationId: association.id, moduleId: req.params.moduleId, page });
+    const result = await getAssignedUsers({
+      associationId: association.id,
+      moduleId: req.params.moduleId,
+      page,
+    });
 
     logger.info({ traceId }, 'GET /training/modules/{moduleId}/assigned-users - Success');
     return success(res, { data: result.data, meta: buildPagination(result.total, page) });

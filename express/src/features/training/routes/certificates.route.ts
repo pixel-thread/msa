@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { prisma } from '@src/shared/lib/prisma';
@@ -31,33 +32,47 @@ const CertificateParamsSchema = z.object({
   certificateId: z.string().uuid('Invalid certificate ID'),
 });
 
-export const getCertificates = [
+export const getCertificates: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     try {
       const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'GET /training/modules/{moduleId}/certificates - Request started');
+      logger.info(
+        { traceId, associationId: association.id },
+        'GET /training/modules/{moduleId}/certificates - Request started',
+      );
       await withRole(req, UserRole.MEMBER);
       logger.info({ traceId }, 'GET /training/modules/{moduleId}/certificates - User authorized');
 
-      const certificates = await findManyCertificates({ associationId: association.id, moduleId: req.params.moduleId });
+      const certificates = await findManyCertificates({
+        associationId: association.id,
+        moduleId: req.params.moduleId,
+      });
 
       logger.info({ traceId }, 'GET /training/modules/{moduleId}/certificates - Success');
       return success(res, { data: certificates });
-    } catch (e) { next(e); }
+    } catch (e) {
+      next(e);
+    }
   },
 ];
 
-export const postCertificate = [
+export const postCertificate: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     try {
       const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'POST /training/modules/{moduleId}/certificates - Request started');
+      logger.info(
+        { traceId, associationId: association.id },
+        'POST /training/modules/{moduleId}/certificates - Request started',
+      );
       const user = await withRole(req, UserRole.DPO);
-      logger.info({ traceId, userId: user.id }, 'POST /training/modules/{moduleId}/certificates - User authorized');
+      logger.info(
+        { traceId, userId: user.id },
+        'POST /training/modules/{moduleId}/certificates - User authorized',
+      );
 
       const { moduleId } = req.params;
       const file = (req as any).file as Express.Multer.File | undefined;
@@ -80,7 +95,11 @@ export const postCertificate = [
       }
 
       const webFile = new File([file.buffer], file.originalname, { type: file.mimetype });
-      const uploadResult = await uploadToBucket(webFile, `certificates/${association.slug}/${moduleId}`, traceId);
+      const uploadResult = await uploadToBucket(
+        webFile,
+        `certificates/${association.slug}/${moduleId}`,
+        traceId,
+      );
 
       const fileRecord = await prisma.file.create({
         data: {
@@ -106,21 +125,32 @@ export const postCertificate = [
         fileId: fileRecord.id,
       });
 
-      logger.info({ traceId, certificateId: certificate.id }, 'POST /training/modules/{moduleId}/certificates - Success');
+      logger.info(
+        { traceId, certificateId: certificate.id },
+        'POST /training/modules/{moduleId}/certificates - Success',
+      );
       return success(res, { data: certificate }, 201);
-    } catch (e) { next(e); }
+    } catch (e) {
+      next(e);
+    }
   },
 ];
 
-export const getCertificate = [
+export const getCertificate: RequestHandler[] = [
   validate({ params: CertificateParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     try {
       const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'GET /training/modules/{moduleId}/certificates/{certificateId} - Request started');
+      logger.info(
+        { traceId, associationId: association.id },
+        'GET /training/modules/{moduleId}/certificates/{certificateId} - Request started',
+      );
       await withRole(req, UserRole.MEMBER);
-      logger.info({ traceId }, 'GET /training/modules/{moduleId}/certificates/{certificateId} - User authorized');
+      logger.info(
+        { traceId },
+        'GET /training/modules/{moduleId}/certificates/{certificateId} - User authorized',
+      );
 
       const { moduleId, certificateId } = req.params;
       const certificates = await findManyCertificates({ associationId: association.id, moduleId });
@@ -128,21 +158,32 @@ export const getCertificate = [
 
       if (!certificate) throw new NotFoundError('Training certificate not found');
 
-      logger.info({ traceId, certificateId }, 'GET /training/modules/{moduleId}/certificates/{certificateId} - Success');
+      logger.info(
+        { traceId, certificateId },
+        'GET /training/modules/{moduleId}/certificates/{certificateId} - Success',
+      );
       return success(res, { data: certificate });
-    } catch (e) { next(e); }
+    } catch (e) {
+      next(e);
+    }
   },
 ];
 
-export const patchCertificate = [
+export const patchCertificate: RequestHandler[] = [
   validate({ params: CertificateParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     try {
       const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'PATCH /training/modules/{moduleId}/certificates/{certificateId} - Request started');
+      logger.info(
+        { traceId, associationId: association.id },
+        'PATCH /training/modules/{moduleId}/certificates/{certificateId} - Request started',
+      );
       const user = await withRole(req, UserRole.DPO);
-      logger.info({ traceId, userId: user.id }, 'PATCH /training/modules/{moduleId}/certificates/{certificateId} - User authorized');
+      logger.info(
+        { traceId, userId: user.id },
+        'PATCH /training/modules/{moduleId}/certificates/{certificateId} - User authorized',
+      );
 
       const { moduleId, certificateId } = req.params;
       const file = (req as any).file as Express.Multer.File | undefined;
@@ -169,7 +210,11 @@ export const patchCertificate = [
         }
 
         const webFile = new File([file.buffer], file.originalname, { type: file.mimetype });
-        const uploadResult = await uploadToBucket(webFile, `certificates/${association.slug}/${moduleId}`, traceId);
+        const uploadResult = await uploadToBucket(
+          webFile,
+          `certificates/${association.slug}/${moduleId}`,
+          traceId,
+        );
 
         const fileRecord = await prisma.file.create({
           data: {
@@ -201,24 +246,39 @@ export const patchCertificate = [
       });
 
       if (oldStorageKey) {
-        try { await deleteFromBucket(oldStorageKey); } catch { /* best-effort cleanup */ }
+        try {
+          await deleteFromBucket(oldStorageKey);
+        } catch {
+          /* best-effort cleanup */
+        }
       }
 
-      logger.info({ traceId, certificateId }, 'PATCH /training/modules/{moduleId}/certificates/{certificateId} - Success');
+      logger.info(
+        { traceId, certificateId },
+        'PATCH /training/modules/{moduleId}/certificates/{certificateId} - Success',
+      );
       return success(res, { data: certificate });
-    } catch (e) { next(e); }
+    } catch (e) {
+      next(e);
+    }
   },
 ];
 
-export const deleteCertificateHandler = [
+export const deleteCertificateHandler: RequestHandler[] = [
   validate({ params: CertificateParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     try {
       const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'DELETE /training/modules/{moduleId}/certificates/{certificateId} - Request started');
+      logger.info(
+        { traceId, associationId: association.id },
+        'DELETE /training/modules/{moduleId}/certificates/{certificateId} - Request started',
+      );
       const user = await withRole(req, UserRole.DPO);
-      logger.info({ traceId, userId: user.id }, 'DELETE /training/modules/{moduleId}/certificates/{certificateId} - User authorized');
+      logger.info(
+        { traceId, userId: user.id },
+        'DELETE /training/modules/{moduleId}/certificates/{certificateId} - User authorized',
+      );
 
       const { moduleId, certificateId } = req.params;
       const result = await deleteCertificate({
@@ -229,24 +289,39 @@ export const deleteCertificateHandler = [
       });
 
       if (result.storageKey) {
-        try { await deleteFromBucket(result.storageKey); } catch { /* best-effort cleanup */ }
+        try {
+          await deleteFromBucket(result.storageKey);
+        } catch {
+          /* best-effort cleanup */
+        }
       }
 
-      logger.info({ traceId, certificateId }, 'DELETE /training/modules/{moduleId}/certificates/{certificateId} - Success');
+      logger.info(
+        { traceId, certificateId },
+        'DELETE /training/modules/{moduleId}/certificates/{certificateId} - Success',
+      );
       return success(res, { data: { success: true, message: 'Training certificate deleted' } });
-    } catch (e) { next(e); }
+    } catch (e) {
+      next(e);
+    }
   },
 ];
 
-export const postCertificateTemplate = [
+export const postCertificateTemplate: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     try {
       const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'POST /training/modules/{moduleId}/certificate-template - Request started');
+      logger.info(
+        { traceId, associationId: association.id },
+        'POST /training/modules/{moduleId}/certificate-template - Request started',
+      );
       const user = await withRole(req, UserRole.DPO);
-      logger.info({ traceId, userId: user.id }, 'POST /training/modules/{moduleId}/certificate-template - User authorized');
+      logger.info(
+        { traceId, userId: user.id },
+        'POST /training/modules/{moduleId}/certificate-template - User authorized',
+      );
 
       const { moduleId } = req.params;
       const file = (req as any).file as Express.Multer.File | undefined;
@@ -258,7 +333,11 @@ export const postCertificateTemplate = [
       const name = (req.body.name as string) || 'Module Certificate';
 
       const webFile = new File([file.buffer], file.originalname, { type: file.mimetype });
-      const uploadResult = await uploadToBucket(webFile, `certificates/${association.slug}/${moduleId}/template`, traceId);
+      const uploadResult = await uploadToBucket(
+        webFile,
+        `certificates/${association.slug}/${moduleId}/template`,
+        traceId,
+      );
 
       const fileRecord = await prisma.file.create({
         data: {
@@ -284,21 +363,32 @@ export const postCertificateTemplate = [
         fileId: fileRecord.id,
       });
 
-      logger.info({ traceId, templateId: template.id }, 'POST /training/modules/{moduleId}/certificate-template - Success');
+      logger.info(
+        { traceId, templateId: template.id },
+        'POST /training/modules/{moduleId}/certificate-template - Success',
+      );
       return success(res, { data: template }, 201);
-    } catch (e) { next(e); }
+    } catch (e) {
+      next(e);
+    }
   },
 ];
 
-export const deleteCertificateTemplate = [
+export const deleteCertificateTemplate: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     try {
       const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'DELETE /training/modules/{moduleId}/certificate-template - Request started');
+      logger.info(
+        { traceId, associationId: association.id },
+        'DELETE /training/modules/{moduleId}/certificate-template - Request started',
+      );
       const user = await withRole(req, UserRole.DPO);
-      logger.info({ traceId, userId: user.id }, 'DELETE /training/modules/{moduleId}/certificate-template - User authorized');
+      logger.info(
+        { traceId, userId: user.id },
+        'DELETE /training/modules/{moduleId}/certificate-template - User authorized',
+      );
 
       await deleteCertificateTemplate({
         associationId: association.id,
@@ -306,8 +396,13 @@ export const deleteCertificateTemplate = [
         actorId: user.id,
       });
 
-      logger.info({ traceId }, 'DELETE /training/modules/{moduleId}/certificate-template - Success');
+      logger.info(
+        { traceId },
+        'DELETE /training/modules/{moduleId}/certificate-template - Success',
+      );
       return success(res, { data: { success: true, message: 'Certificate template removed' } });
-    } catch (e) { next(e); }
+    } catch (e) {
+      next(e);
+    }
   },
 ];

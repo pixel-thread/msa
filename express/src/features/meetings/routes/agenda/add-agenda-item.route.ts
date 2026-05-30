@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UserRole } from '@prisma/client';
@@ -13,7 +14,7 @@ import { getAssociation, withRole } from '../_helpers';
 
 const ParamsSchema = z.object({ meetingId: z.string('Invalid meeting ID') });
 
-export const postAddAgendaItem = [
+export const postAddAgendaItem: RequestHandler[] = [
   validate({ params: ParamsSchema, body: CreateAgendaItemSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -22,9 +23,15 @@ export const postAddAgendaItem = [
     logger.info({ traceId, meetingId }, 'POST /api/meetings/[meetingId]/agenda - Request started');
 
     const user = await withRole(req, UserRole.SECRETARY);
-    logger.info({ traceId, userId: user.id, role: user.role, meetingId }, 'POST /api/meetings/[meetingId]/agenda - User authorized');
+    logger.info(
+      { traceId, userId: user.id, role: user.role, meetingId },
+      'POST /api/meetings/[meetingId]/agenda - User authorized',
+    );
 
-    logger.info({ traceId, meetingId }, 'POST /api/meetings/[meetingId]/agenda - Creating agenda item');
+    logger.info(
+      { traceId, meetingId },
+      'POST /api/meetings/[meetingId]/agenda - Creating agenda item',
+    );
 
     let order = req.body.order;
     if (order === undefined) {
@@ -39,7 +46,10 @@ export const postAddAgendaItem = [
       order,
     });
 
-    logger.info({ traceId, meetingId, agendaItemId: item.id }, 'POST /api/meetings/[meetingId]/agenda - Success');
+    logger.info(
+      { traceId, meetingId, agendaItemId: item.id },
+      'POST /api/meetings/[meetingId]/agenda - Success',
+    );
     return success(res, { data: item, message: 'Agenda item created successfully' });
   },
 ];

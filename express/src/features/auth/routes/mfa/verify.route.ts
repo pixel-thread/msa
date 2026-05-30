@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { hashToken } from '@src/shared/lib/password';
@@ -12,7 +13,7 @@ import { logger } from '@src/shared/logger';
 
 const VerifyMfaSchema = z.object({ code: z.string().length(6, 'Code must be 6 digits') });
 
-export const postMfaVerify = [
+export const postMfaVerify: RequestHandler[] = [
   validate({ body: VerifyMfaSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -33,11 +34,17 @@ export const postMfaVerify = [
       throw new TooManyRequestsError('Too many attempts. Please request a new code');
     }
     if (verificationCode.code !== hashedCode) {
-      await updateVerificationCode({ where: { id: verificationCode.id }, data: { attempts: { increment: 1 } } });
+      await updateVerificationCode({
+        where: { id: verificationCode.id },
+        data: { attempts: { increment: 1 } },
+      });
       throw new UnauthorizedError('Invalid verification code');
     }
 
-    await updateVerificationCode({ where: { id: verificationCode.id }, data: { usedAt: new Date() } });
+    await updateVerificationCode({
+      where: { id: verificationCode.id },
+      data: { usedAt: new Date() },
+    });
     await updateMember({ where: { id: userId }, data: { mfaEnabled: true } });
 
     logger.info({ traceId, userId }, 'POST /api/auth/mfa/verify - Success');

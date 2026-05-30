@@ -1,6 +1,5 @@
 export const membersEndpoints = {
-  list: (page: number = 1, status: string = 'ACTIVE') =>
-    `/members?page=${page}&status=${status}`,
+  list: (page: number = 1, status: string = 'ACTIVE') => `/members?page=${page}&status=${status}`,
   byId: (id: string) => `/members/${id}`,
   status: (id: string) => `/members/${id}/status`,
   role: (id: string) => `/members/${id}/role`,

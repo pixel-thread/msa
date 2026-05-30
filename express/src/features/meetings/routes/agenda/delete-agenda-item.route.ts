@@ -8,13 +8,22 @@ import { getAssociation, withRole } from '../_helpers';
 export const deleteAgendaItemHandler = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
   const association = await getAssociation(req);
-  logger.info({ traceId, associationId: association.id }, 'DELETE /api/meetings/[meetingId]/agenda/[itemId] - Request started');
+  logger.info(
+    { traceId, associationId: association.id },
+    'DELETE /api/meetings/[meetingId]/agenda/[itemId] - Request started',
+  );
 
   const user = await withRole(req, UserRole.SECRETARY);
-  logger.info({ traceId, userId: user.id, role: user.role }, 'DELETE /api/meetings/[meetingId]/agenda/[itemId] - User authorized');
+  logger.info(
+    { traceId, userId: user.id, role: user.role },
+    'DELETE /api/meetings/[meetingId]/agenda/[itemId] - User authorized',
+  );
 
   const itemId = req.params.itemId as string;
-  logger.info({ traceId, itemId }, 'DELETE /api/meetings/[meetingId]/agenda/[itemId] - Deleting agenda item');
+  logger.info(
+    { traceId, itemId },
+    'DELETE /api/meetings/[meetingId]/agenda/[itemId] - Deleting agenda item',
+  );
 
   const item = await deleteAgendaItem({ where: { id: itemId } });
 

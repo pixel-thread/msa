@@ -1,8 +1,14 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { prisma } from '@src/shared/lib/prisma';
-import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError } from '@src/shared/errors';
+import {
+  BadRequestError,
+  ForbiddenError,
+  NotFoundError,
+  UnauthorizedError,
+} from '@src/shared/errors';
 import { UserRole } from '@prisma/client';
 import { findUniqueMember } from '@src/features/members/services/findUniqueMember';
 import { logger } from '@src/shared/logger';
@@ -10,7 +16,7 @@ import z from 'zod';
 
 const ParamSchema = z.object({ memberId: z.uuid() });
 
-export const deleteMember = [
+export const deleteMember: RequestHandler[] = [
   validate({ params: ParamSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -22,11 +28,19 @@ export const deleteMember = [
       include: { association: true },
     });
     if (!user || !user.associationId) throw new ForbiddenError('User association not found');
-    const association = { id: user.association.id, slug: user.association.slug, name: user.association.name };
+    const association = {
+      id: user.association.id,
+      slug: user.association.slug,
+      name: user.association.name,
+    };
 
-    logger.info({ traceId, associationId: association.id }, 'DELETE /api/members/[memberId] - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'DELETE /api/members/[memberId] - Request started',
+    );
 
-    if (!user.role.includes(UserRole.SECRETARY)) throw new ForbiddenError('Insufficient permissions');
+    if (!user.role.includes(UserRole.SECRETARY))
+      throw new ForbiddenError('Insufficient permissions');
 
     const params = req.params as z.infer<typeof ParamSchema>;
 

@@ -29,7 +29,7 @@ export async function rateLimiter(req: Request, _res: Response, next: NextFuncti
   const limiter = getRatelimiter();
   if (!limiter) return next();
 
-  const identifier = req.ip || req.headers['x-forwarded-for'] as string || 'anonymous';
+  const identifier = req.ip || (req.headers['x-forwarded-for'] as string) || 'anonymous';
   const result = await limiter.limit(identifier);
 
   if (!result.success) {

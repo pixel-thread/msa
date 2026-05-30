@@ -1,16 +1,21 @@
 import { Request, Response, NextFunction } from 'express';
+import type { RequestHandler } from 'express';
 import { AuditAction } from '@prisma/client';
 import { logger } from '@src/shared/logger';
 import { processWebhookEvent } from '@src/features/payments/services/webhook.service';
 import { WebhookSignatureError } from '@src/shared/errors';
 import { logAction } from '@src/shared/services/audit-logs';
 
-export const webhook = [
+export const webhook: RequestHandler[] = [
   async (req: Request, res: Response, next: NextFunction) => {
     logger.info('POST /api/payments/webhook - Request started');
     let rawBody: string;
     try {
-      rawBody = req.body ? (typeof req.body === 'string' ? req.body : JSON.stringify(req.body)) : '';
+      rawBody = req.body
+        ? typeof req.body === 'string'
+          ? req.body
+          : JSON.stringify(req.body)
+        : '';
     } catch {
       return res.status(400).json({ error: 'Failed to read request body' });
     }

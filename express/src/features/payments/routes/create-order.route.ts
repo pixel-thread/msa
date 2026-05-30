@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { prisma } from '@src/shared/lib/prisma';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
@@ -13,19 +14,25 @@ import { getActiveProvider } from '@src/features/payments/services/payment-provi
 async function getAssociation(req: Request) {
   const userId = req.headers['x-user-id'] as string;
   if (!userId) throw new UnauthorizedError('Unauthorized');
-  const user = await prisma.user.findUnique({ where: { id: userId }, include: { association: true } });
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { association: true },
+  });
   if (!user || !user.associationId) throw new ForbiddenError('User association not found');
   return { id: user.association.id, slug: user.association.slug, name: user.association.name };
 }
 
-export const createOrder = [
+export const createOrder: RequestHandler[] = [
   validate({ body: CreateOrderSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId }, 'POST /api/payments/order - Request started');
     const association = await getAssociation(req);
     const userId = req.headers['x-user-id'] as string;
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, role: true, memberTypeId: true } });
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, role: true, memberTypeId: true },
+    });
     if (!user || !user.role.includes(UserRole.MEMBER)) {
       throw new ForbiddenError('Insufficient permissions');
     }
@@ -48,7 +55,9 @@ export const createOrder = [
       where: whereClause as Parameters<typeof findSubscriptionPlans>[0]['where'],
       include: plansInclude,
     });
-    let plans = plansRaw as unknown as (typeof plansRaw[number] & { versions: Array<{ amount: number }> })[];
+    let plans = plansRaw as unknown as ((typeof plansRaw)[number] & {
+      versions: Array<{ amount: number }>;
+    })[];
     if (plans.length === 0) {
       plansRaw = await findSubscriptionPlans({
         where: { associationId: association.id, isDefault: true, isActive: true },
@@ -60,17 +69,25 @@ export const createOrder = [
       throw new NotFoundError('Plan not found under this member Group');
     }
     const selectedPlan = typeId
-      ? plans.sort((a, b) => Number(a.versions[0]?.amount ?? 0) - Number(b.versions[0]?.amount ?? 0))[0]
+      ? plans.sort(
+          (a, b) => Number(a.versions[0]?.amount ?? 0) - Number(b.versions[0]?.amount ?? 0),
+        )[0]
       : plans[0];
     const activeVersion = selectedPlan.versions[0];
-    logger.info({ traceId, userId: user.id, amount: parseInt(activeVersion.amount.toFixed(2)) }, 'POST /api/payments/order - Creating payment order');
+    logger.info(
+      { traceId, userId: user.id, amount: parseInt(activeVersion.amount.toFixed(2)) },
+      'POST /api/payments/order - Creating payment order',
+    );
     const orderDetails = await createPaymentOrder({
       associationId: association.id,
       userId: user.id,
       amount: parseInt(activeVersion.amount.toFixed(2)),
       notes: req.body?.notes,
     });
-    logger.info({ traceId, orderId: (orderDetails as any).id }, 'POST /api/payments/order - Success');
+    logger.info(
+      { traceId, orderId: (orderDetails as any).id },
+      'POST /api/payments/order - Success',
+    );
     return success(res, { data: orderDetails }, 201);
   },
 ];

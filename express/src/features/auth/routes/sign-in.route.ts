@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { SignInSchema } from '@src/features/auth/validators';
@@ -14,7 +15,7 @@ import { createRefreshToken } from '@src/features/auth/services/create-refresh-t
 import { createVerificationCode } from '@src/features/auth/services/create-verification-code';
 import { logger } from '@src/shared/logger';
 
-export const postSignIn = [
+export const postSignIn: RequestHandler[] = [
   validate({ body: SignInSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -34,11 +35,11 @@ export const postSignIn = [
         const failedAttempts = user.failedLoginAttempts + 1;
         const shouldLock = failedAttempts >= 5;
         await updateUser({
-        where: { id: user.id },
-        data: {
-          failedLoginAttempts: shouldLock ? 0 : failedAttempts,
-          lockedUntil: shouldLock ? new Date(Date.now() + 15 * 60 * 1000) : null,
-        },
+          where: { id: user.id },
+          data: {
+            failedLoginAttempts: shouldLock ? 0 : failedAttempts,
+            lockedUntil: shouldLock ? new Date(Date.now() + 15 * 60 * 1000) : null,
+          },
         });
         if (shouldLock) throw new ForbiddenError('Too many failed attempts. Account locked');
       }
@@ -60,10 +61,10 @@ export const postSignIn = [
 
       await createVerificationCode({
         data: {
-        user: { connect: { id: user.id } },
-        code: hashedOTP,
-        type: 'LOGIN_MFA',
-        expiresAt: otpExpiry,
+          user: { connect: { id: user.id } },
+          code: hashedOTP,
+          type: 'LOGIN_MFA',
+          expiresAt: otpExpiry,
         },
       });
 

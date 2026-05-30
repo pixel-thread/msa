@@ -1,15 +1,19 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { ForbiddenError } from '@src/shared/errors';
 import { UserRole, MeetingStatus } from '@prisma/client';
 import { createMeeting, findManyMeetings } from '@src/features/meetings/services';
-import { CreateMeetingSchema, MeetingQuerySchema } from '@src/features/meetings/validators/meetings';
+import {
+  CreateMeetingSchema,
+  MeetingQuerySchema,
+} from '@src/features/meetings/validators/meetings';
 import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
 import { logger } from '@src/shared/logger';
 import { getAssociation, withRole } from './_helpers';
 
-export const getMeetings = [
+export const getMeetings: RequestHandler[] = [
   validate({ query: MeetingQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -17,7 +21,10 @@ export const getMeetings = [
     logger.info({ traceId, associationId: association.id }, 'GET /api/meetings - Request started');
 
     const user = await withRole(req, UserRole.MEMBER);
-    logger.info({ traceId, userId: user.id, role: user.role }, 'GET /api/meetings - User authorized');
+    logger.info(
+      { traceId, userId: user.id, role: user.role },
+      'GET /api/meetings - User authorized',
+    );
 
     const query = req.query as { page?: number; type?: string; status?: string };
     if (!query) throw new ForbiddenError('Invalid query parameters');

@@ -25,7 +25,6 @@ export const trainingEndpoints = {
     list: (moduleId: string) => `/training/modules/${moduleId}/certificates`,
     byId: (moduleId: string, certificateId: string) =>
       `/training/modules/${moduleId}/certificates/${certificateId}`,
-    template: (moduleId: string) =>
-      `/training/modules/${moduleId}/certificate-template`,
+    template: (moduleId: string) => `/training/modules/${moduleId}/certificate-template`,
   },
 } as const;

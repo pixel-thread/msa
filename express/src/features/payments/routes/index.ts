@@ -11,9 +11,24 @@ import { verifyPayment } from './verify-payment.route';
 import { webhook } from './webhook.route';
 import { recordPayment } from './record-payment.route';
 import { userPayments, userContributions } from './user-payments.route';
-import { listContributions, generateContributions, waiveContributionHandler, getContribution } from './contributions.route';
+import {
+  listContributions,
+  generateContributions,
+  waiveContributionHandler,
+  getContribution,
+} from './contributions.route';
 import { collectionsReport } from './collections-report.route';
-import { listProviders, createProviderHandler, providerStatus, getProvider, updateProviderHandler, deleteProviderHandler, activateProvider, testProvider, verifyTestProvider } from './providers.route';
+import {
+  listProviders,
+  createProviderHandler,
+  providerStatus,
+  getProvider,
+  updateProviderHandler,
+  deleteProviderHandler,
+  activateProvider,
+  testProvider,
+  verifyTestProvider,
+} from './providers.route';
 
 const router = Router();
 

@@ -1,5 +1,9 @@
 import { Router } from 'express';
-import { postRegisterPushToken, postLinkNotification, patchNotificationStatus } from './notification-actions.route';
+import {
+  postRegisterPushToken,
+  postLinkNotification,
+  patchNotificationStatus,
+} from './notification-actions.route';
 
 const router = Router();
 

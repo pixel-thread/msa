@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { prisma } from '@src/shared/lib/prisma';
@@ -10,7 +11,7 @@ import z from 'zod';
 
 const ParamSchema = z.object({ memberId: z.uuid() });
 
-export const getMember = [
+export const getMember: RequestHandler[] = [
   validate({ params: ParamSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -22,9 +23,16 @@ export const getMember = [
       include: { association: true },
     });
     if (!user || !user.associationId) throw new ForbiddenError('User association not found');
-    const association = { id: user.association.id, slug: user.association.slug, name: user.association.name };
+    const association = {
+      id: user.association.id,
+      slug: user.association.slug,
+      name: user.association.name,
+    };
 
-    logger.info({ traceId, associationId: association.id }, 'GET /api/members/[memberId] - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'GET /api/members/[memberId] - Request started',
+    );
 
     if (!user.role.includes(UserRole.DPO)) throw new ForbiddenError('Insufficient permissions');
 
@@ -48,9 +56,9 @@ export const getMember = [
         createdAt: true,
         updatedAt: true,
         _count: {
-        select: {
-          meetingAttendances: true,
-        },
+          select: {
+            meetingAttendances: true,
+          },
         },
       },
     });

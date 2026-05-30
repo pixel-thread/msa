@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError, ValidationError, NotFoundError } from '@src/shared/errors';
@@ -24,7 +25,7 @@ const LinkNotificationSchema = z.object({
   token: z.string().min(1, 'Token is required'),
 });
 
-export const postRegisterPushToken = [
+export const postRegisterPushToken: RequestHandler[] = [
   validate({ body: RegisterPushTokenSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -37,7 +38,7 @@ export const postRegisterPushToken = [
   },
 ];
 
-export const postLinkNotification = [
+export const postLinkNotification: RequestHandler[] = [
   validate({ body: LinkNotificationSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
@@ -51,7 +52,7 @@ export const postLinkNotification = [
   },
 ];
 
-export const patchNotificationStatus = [
+export const patchNotificationStatus: RequestHandler[] = [
   validate({ body: UpdateNotificationSchema, params: NotificationRouteParams }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';

@@ -1,10 +1,16 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { prisma } from '@src/shared/lib/prisma';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 import { logger } from '@src/shared/logger';
-import { UnauthorizedError, ForbiddenError, NotFoundError, ValidationError } from '@src/shared/errors';
+import {
+  UnauthorizedError,
+  ForbiddenError,
+  NotFoundError,
+  ValidationError,
+} from '@src/shared/errors';
 import { UserRole } from '@prisma/client';
 import { z } from 'zod';
 import {
@@ -21,7 +27,10 @@ import { PAGE_SIZE } from '@src/shared/constants';
 async function getAssociation(req: Request) {
   const userId = req.headers['x-user-id'] as string;
   if (!userId) throw new UnauthorizedError('Unauthorized');
-  const user = await prisma.user.findUnique({ where: { id: userId }, include: { association: true } });
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { association: true },
+  });
   if (!user || !user.associationId) throw new ForbiddenError('User association not found');
   return { id: user.association.id, slug: user.association.slug, name: user.association.name };
 }
@@ -30,14 +39,20 @@ const UserPaymentsQuerySchema = z.object({
   page: pageNumberValidation,
 });
 
-export const userPayments = [
+export const userPayments: RequestHandler[] = [
   validate({ params: UserPaymentsParamsSchema, query: UserPaymentsQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    logger.info({ traceId, userId: req.params.userId }, 'GET /api/payments/users/[userId] - Request started');
+    logger.info(
+      { traceId, userId: req.params.userId },
+      'GET /api/payments/users/[userId] - Request started',
+    );
     const association = await getAssociation(req);
     const authUserId = req.headers['x-user-id'] as string;
-    const authUser = await prisma.user.findUnique({ where: { id: authUserId }, select: { role: true } });
+    const authUser = await prisma.user.findUnique({
+      where: { id: authUserId },
+      select: { role: true },
+    });
     if (!authUser || !authUser.role.includes(UserRole.FINANCE)) {
       throw new ForbiddenError('Insufficient permissions');
     }
@@ -62,7 +77,10 @@ export const userPayments = [
       },
     });
     const summary = await getUserContributionSummary(userId);
-    logger.info({ traceId, userId, count: transactions.length, total }, 'GET /api/payments/users/[userId] - Success');
+    logger.info(
+      { traceId, userId, count: transactions.length, total },
+      'GET /api/payments/users/[userId] - Success',
+    );
     return success(res, {
       data: { user, transactions, summary },
       meta: buildPagination(total, page),
@@ -78,21 +96,37 @@ const UserContributionsQuerySchema = z.object({
   toMonth: z.coerce.number().int().min(1).max(12).optional(),
 });
 
-export const userContributions = [
+export const userContributions: RequestHandler[] = [
   validate({ params: UserContributionsParamsSchema, query: UserContributionsQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    logger.info({ traceId, userId: req.params.userId }, 'GET /api/payments/users/[userId]/contributions - Request started');
+    logger.info(
+      { traceId, userId: req.params.userId },
+      'GET /api/payments/users/[userId]/contributions - Request started',
+    );
     const association = await getAssociation(req);
     const authUserId = req.headers['x-user-id'] as string;
-    const authUser = await prisma.user.findUnique({ where: { id: authUserId }, select: { role: true } });
+    const authUser = await prisma.user.findUnique({
+      where: { id: authUserId },
+      select: { role: true },
+    });
     if (!authUser || !authUser.role.includes(UserRole.FINANCE)) {
       throw new ForbiddenError('Insufficient permissions');
     }
     logger.info({ traceId }, 'GET /api/payments/users/[userId]/contributions - User authorized');
     const { userId } = req.params as { userId: string };
-    const { page = 1, fromYear, fromMonth, toYear, toMonth } = (req.query as {
-      page?: number; fromYear?: number; fromMonth?: number; toYear?: number; toMonth?: number;
+    const {
+      page = 1,
+      fromYear,
+      fromMonth,
+      toYear,
+      toMonth,
+    } = (req.query as {
+      page?: number;
+      fromYear?: number;
+      fromMonth?: number;
+      toYear?: number;
+      toMonth?: number;
     }) || {};
     const user = await findFirstMember({ where: { id: userId, associationId: association.id } });
     if (!user) throw new NotFoundError('User not found in this association');
@@ -103,12 +137,17 @@ export const userContributions = [
       ];
     }
     if (toYear && toMonth) {
-      const toClause = { OR: [{ year: { lt: toYear } }, { year: toYear, month: { lte: toMonth } }] };
+      const toClause = {
+        OR: [{ year: { lt: toYear } }, { year: toYear, month: { lte: toMonth } }],
+      };
       whereClause.AND = whereClause.AND
         ? [...(whereClause.AND as unknown[]), toClause]
         : [toClause];
     }
-    logger.info({ traceId, userId }, 'GET /api/payments/users/[userId]/contributions - Fetching contributions');
+    logger.info(
+      { traceId, userId },
+      'GET /api/payments/users/[userId]/contributions - Fetching contributions',
+    );
     const { contributions, total } = await findContributionPeriods({
       where: whereClause as Parameters<typeof findContributionPeriods>[0]['where'],
       page,
@@ -117,14 +156,25 @@ export const userContributions = [
         allocations: {
           include: {
             paymentTransaction: {
-              select: { id: true, amount: true, method: true, gateway: true, status: true, paidAt: true, receiptNumber: true },
+              select: {
+                id: true,
+                amount: true,
+                method: true,
+                gateway: true,
+                status: true,
+                paidAt: true,
+                receiptNumber: true,
+              },
             },
           },
         },
       },
     });
     const summary = await getUserContributionSummary(userId);
-    logger.info({ traceId, userId, count: contributions.length, total }, 'GET /api/payments/users/[userId]/contributions - Success');
+    logger.info(
+      { traceId, userId, count: contributions.length, total },
+      'GET /api/payments/users/[userId]/contributions - Success',
+    );
     return success(res, {
       data: { user, contributions, summary },
       meta: buildPagination(total, page),

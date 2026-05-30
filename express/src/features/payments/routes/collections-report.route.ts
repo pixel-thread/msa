@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
+import type { RequestHandler } from 'express';
 import { prisma } from '@src/shared/lib/prisma';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
@@ -13,17 +14,23 @@ import { PAGE_SIZE } from '@src/shared/constants';
 async function getAssociation(req: Request) {
   const userId = req.headers['x-user-id'] as string;
   if (!userId) throw new UnauthorizedError('Unauthorized');
-  const user = await prisma.user.findUnique({ where: { id: userId }, include: { association: true } });
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { association: true },
+  });
   if (!user || !user.associationId) throw new ForbiddenError('User association not found');
   return { id: user.association.id, slug: user.association.slug, name: user.association.name };
 }
 
-export const collectionsReport = [
+export const collectionsReport: RequestHandler[] = [
   validate({ query: CollectionReportQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const query = req.query as any;
-    logger.info({ traceId, year: query.year, month: query.month }, 'GET /api/payments/reports/collections - Request started');
+    logger.info(
+      { traceId, year: query.year, month: query.month },
+      'GET /api/payments/reports/collections - Request started',
+    );
     const association = await getAssociation(req);
     const userId = req.headers['x-user-id'] as string;
     const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
@@ -45,7 +52,10 @@ export const collectionsReport = [
         allocations: { include: { paymentTransaction: true } },
       },
     });
-    logger.info({ traceId, count: collections.length, total }, 'GET /api/payments/reports/collections - Success');
+    logger.info(
+      { traceId, count: collections.length, total },
+      'GET /api/payments/reports/collections - Success',
+    );
     return success(res, { data: collections, meta: buildPagination(total, query.page) });
   },
 ];
