@@ -34,7 +34,7 @@ import subscriptionsRouter from '@feature/subscriptions/routes/index';
 import trainingRouter from '@feature/training/routes/index';
 import userRouter from '@feature/user/routes/index';
 
-export function createApp() {
+export function createApp(): express.Express {
   const app = express();
 
   /**
@@ -95,6 +95,14 @@ export function createApp() {
       message: 'Route not found',
     });
   });
+
+  /**
+   * -------------------------------------------------------
+   * Global Rate Limiter
+   * -------------------------------------------------------
+   */
+
+  app.use(rateLimiter);
 
   /**
    * -------------------------------------------------------
