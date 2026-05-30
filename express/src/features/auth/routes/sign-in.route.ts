@@ -31,10 +31,15 @@ import { SignInSchema } from '@src/features/auth/validators';
  */
 export const postSignIn: RequestHandler[] = [
   validate({ body: SignInSchema }),
-
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
+    logger.info({ traceId }, 'POST /api/auth/sign-in - Request started');
     const user = await getUserFirst({ where: { email: req.body?.email } });
+
+    // ---- Handle invalid credentials ----
+    if (!user) {
+      throw new UnauthorizedError('Invalid credentials');
+    }
 
     // ---- Check account lockout ----
     // If the user has been locked due to too many failed attempts, reject early
