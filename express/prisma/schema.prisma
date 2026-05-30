@@ -1,0 +1,1313 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  extensions = [pgcrypto, pg_trgm]
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────────────────────────────────────
+enum AnnouncementStatus {
+  DRAFT
+  PUBLISHED
+  SCHEDULED
+  ARCHIVED
+
+  @@map("announcement_status")
+}
+
+enum AnnouncementPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+
+  @@map("announcement_priority")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  PRESIDENT
+  SECRETARY
+  FINANCE
+  DPO
+  MEMBER
+
+  @@map("user_role")
+}
+
+enum Status {
+  DELETED
+  ACTIVE
+  INACTIVE
+
+  @@map("status")
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  ANONYMIZED
+  PENDING
+
+  @@map("user_status")
+}
+
+enum ConsentPurpose {
+  PAYMENTS
+  COMMUNICATIONS
+  MEETINGS
+  ANALYTICS
+  MARKETING
+
+  @@map("consent_purpose")
+}
+
+enum ConsentStatus {
+  GRANTED
+  WITHDRAWN
+
+  @@map("consent_status")
+}
+
+enum DsarRequestType {
+  ACCESS
+  CORRECTION
+  DELETION
+  PORTABILITY
+
+  @@map("dsar_request_type")
+}
+
+enum DsarStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  REJECTED
+
+  @@map("dsar_status")
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  UPI
+  CHEQUE
+  ONLINE
+
+  @@map("payment_method")
+}
+
+enum PaymentType {
+  SUBSCRIPTION
+  DONATION
+  EVENT_FEE
+  BANK_INTEREST
+  FAMILY_CONTRIBUTION
+
+  @@map("payment_type")
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+  WAIVED
+
+  @@map("payment_status")
+}
+
+enum ContributionStatus {
+  DUE
+  PARTIAL
+  PAID
+  WAIVED
+  OVERDUE
+
+  @@map("contribution_status")
+}
+
+enum PaymentProviderType {
+  RAZORPAY
+  STRIPE
+  PAYU
+  CASHFREE
+
+  @@map("payment_provider_type")
+}
+
+enum PaymentGateway {
+  RAZORPAY
+  MANUAL
+
+  @@map("payment_gateway")
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+
+  @@map("approval_status")
+}
+
+enum MeetingType {
+  EC_MEETING
+  GENERAL_MEETING
+
+  @@map("meeting_type")
+}
+
+enum MeetingStatus {
+  SCHEDULED
+  NOTICE_ISSUED
+  COMPLETED
+  CANCELLED
+
+  @@map("meeting_status")
+}
+
+enum AttendeeRole {
+  HOST     // Primary meeting host
+  CO_HOST  // Assistant/co-host
+  REQUIRED // Must attend
+  OPTIONAL // Invited; attendance is optional
+  OBSERVER // View-only participant
+
+  @@map("attendee_role")
+}
+
+enum RsvpStatus {
+  PENDING // Invited, not yet responded
+  ACCEPTED
+  DECLINED
+
+  @@map("rsvp_status")
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  CONSENT_GRANT
+  CONSENT_REVOKE
+  DSAR_SUBMIT
+  DSAR_RESPOND
+  PAYMENT_RECORD
+  SUBSCRIPTION_CHANGE
+  ANONYMIZE
+  ROLE_CHANGE
+  MEETING_ASSIGN
+  MEETING_RSVP
+  PAYMENT_CREATED
+  PAYMENT_COMPLETED
+  PAYMENT_FAILED
+  PAYMENT_REFUNDED
+  PAYMENT_VERIFIED
+  PAYMENT_WAIVED
+  WEBHOOK_RECEIVED
+  REPORT_EXPORTED
+  ANNOUNCEMENT_CREATE
+  ANNOUNCEMENT_PUBLISH
+  ANNOUNCEMENT_DELETE
+  ANNOUNCEMENT_READ
+  TRAINING_MODULE_CREATE
+  TRAINING_MODULE_UPDATE
+  TRAINING_COMPLETE
+  TRAINING_ASSIGN
+  TRAINING_UNASSIGN
+  COMPLAINT_CREATE
+  COMPLAINT_UPDATE
+
+  @@map("audit_action")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ASSOCIATION  (root tenant)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Association {
+  id             String   @id @default(uuid())
+  slug           String   @unique // "mfsa" | "mpsa"
+  name           String   @unique
+  description    String?
+  logo           String?
+  country        String   @default("IN")
+  state          String?
+  timezone       String   @default("Asia/Kolkata")
+  currencyCode   String   @default("INR")
+  primaryColor   String?  @default("#1f2937")
+  secondaryColor String?  @default("#3b82f6")
+  contactEmail   String?
+  contactPhone   String?
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  status         Status   @default(ACTIVE)
+
+  users               User[]
+  files               File[]
+  subscriptionPlans   SubscriptionPlan[]
+  meetings            Meeting[]
+  auditLogs           AuditLog[]
+  paymentTransactions PaymentTransaction[]
+  announcements       Announcement[]
+  notifications       Notification[]
+  dsarTickets         DsarTicket[]
+  consentReceipts     ConsentReceipt[]
+  trainingModules     TrainingModule[]
+  complaints          Complaint[]
+  complianceChecks    ComplianceCheck[]
+  memberTypes         MemberType[]
+  paymentProviders    PaymentProvider[]
+  accounts            Account[]
+
+  @@index([slug])
+  @@index([isActive])
+  @@map("associations")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// USERS
+// ─────────────────────────────────────────────────────────────────────────────
+
+model User {
+  id                       String        @id @default(uuid())
+  associationId            String
+  email                    String
+  name                     String
+  mobile                   String?
+  designation              String?
+  role                     UserRole[]
+  status                   UserStatus    @default(ACTIVE)
+  dateOfJoiningGovt        DateTime?
+  dateOfJoiningAssociation DateTime?
+  membershipNumber         String?
+  overallConsentStatus     ConsentStatus @default(GRANTED)
+  dataRetentionUntil       DateTime      @default(dbgenerated("(NOW() + INTERVAL '7 years')"))
+  failedLoginAttempts      Int           @default(0)
+  lockedUntil              DateTime?
+  imageUrl                 String?
+  password                 String?
+  passwordResetToken       String?
+  passwordResetExpires     DateTime?
+  mfaEnabled               Boolean       @default(false)
+  deletedAt                DateTime?
+  createdAt                DateTime      @default(now())
+  updatedAt                DateTime      @updatedAt
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+
+  subscription          Subscription?
+  payments              PaymentTransaction[]
+  contributionPeriods   ContributionPeriod[]
+  auditLogs             AuditLog[]           @relation("ActorLogs")
+  meetingsCreated       Meeting[]            @relation("CreatedMeetings")
+  meetingAttendances    MeetingAttendee[] // ★ Meetings this user is assigned to
+  refreshTokens         RefreshToken[]
+  verificationCodes     VerificationCode[]
+  pushTokens            PushToken[]
+  authoredAnnouncements Announcement[]       @relation("AuthoredAnnouncements")
+  announcementReads     AnnouncementRead[]
+  dsarTickets           DsarTicket[]         @relation("MemberTickets")
+  assignedDsarTickets   DsarTicket[]         @relation("AssignedTickets")
+  consentReceipts       ConsentReceipt[]
+  trainingCompletions   TrainingCompletion[]
+  complaints            Complaint[]
+  trainingAssignments   TrainingAssignment[]
+  trainingCertificates  TrainingCertificate[]
+  memberTypeId          String?
+  memberType            MemberType?          @relation(fields: [memberTypeId], references: [id])
+
+  @@unique([associationId, email])
+  @@unique([associationId, membershipNumber])
+  @@index([associationId])
+  @@index([email])
+  @@index([role])
+  @@index([status])
+  @@index([dataRetentionUntil])
+  @@index([passwordResetToken])
+  @@map("users")
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model MembershipApplication {
+  id              String   @id @default(uuid())
+  email           String
+  phone           String
+  associationSlug String
+  firstName       String?
+  lastName        String
+  dateOfBirth     DateTime
+  age             Int
+  gender          String?
+  address         String?
+  city            String?
+  state           String?
+  country         String?
+  postalCode      String?
+
+  status          ApplicationStatus @default(PENDING)
+  rejectionReason String? // Helpful if an admin denies their sign-up
+  reviewedAt      DateTime?
+  reviewedBy      String? // ID of the admin who approved/rejected them
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([email, associationSlug])
+  @@unique([phone, associationSlug])
+  @@index([email])
+  @@index([phone])
+  @@index([associationSlug])
+  @@index([status]) // Added an index since your admins will filter by status often
+  @@map("membership_applications")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SUBSCRIPTIONS
+// ─────────────────────────────────────────────────────────────────────────────
+
+model SubscriptionPlan {
+  id            String   @id @default(uuid())
+  associationId String
+  name          String
+  description   String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  isDefault     Boolean   @default(true)
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+
+  versions      SubscriptionPlanVersion[]
+  subscriptions Subscription[]
+
+  memberTypeId String?
+  memberType   MemberType? @relation(fields: [memberTypeId], references: [id])
+
+  @@unique([associationId, name])
+  @@index([associationId])
+  @@map("subscription_plans")
+}
+
+model SubscriptionPlanVersion {
+  id     String @id @default(uuid())
+  planId String
+
+  amount       Decimal @db.Decimal(10, 2)
+  currency     String  @default("INR")
+  billingCycle String  @default("MONTHLY")
+  features     Json
+  description  String?
+
+  effectiveFrom DateTime  @default(now())
+  effectiveTo   DateTime?
+
+  createdAt DateTime @default(now())
+
+  plan           SubscriptionPlan             @relation(fields: [planId], references: [id], onDelete: Cascade)
+  subscriptions  Subscription[]
+  billingHistory SubscriptionBillingHistory[]
+
+  @@index([planId])
+  @@map("subscription_plan_versions")
+}
+
+model Subscription {
+  id            String    @id @default(uuid())
+  userId        String    @unique
+  planId        String
+  planVersionId String
+  status        String    @default("ACTIVE")
+  startDate     DateTime  @default(now())
+  endDate       DateTime
+  waivedAt      DateTime?
+  waivedReason  String?
+  waivedBy      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user        User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan        SubscriptionPlan        @relation(fields: [planId], references: [id])
+  planVersion SubscriptionPlanVersion @relation(fields: [planVersionId], references: [id])
+
+  billingHistory SubscriptionBillingHistory[]
+
+  @@index([status])
+  @@index([endDate])
+  @@map("subscriptions")
+}
+
+model SubscriptionBillingHistory {
+  id             String   @id @default(uuid())
+  subscriptionId String
+  planVersionId  String
+  amountCharged  Decimal  @db.Decimal(10, 2)
+  status         String   @default("PENDING")
+  periodStart    DateTime
+  periodEnd      DateTime
+  dueDate        DateTime
+  createdAt      DateTime @default(now())
+
+  subscription Subscription            @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  planVersion  SubscriptionPlanVersion @relation(fields: [planVersionId], references: [id])
+
+  @@index([subscriptionId])
+  @@map("subscription_billing_history")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MEETINGS & GOVERNANCE
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Meeting {
+  id             String        @id @default(uuid())
+  associationId  String // ★
+  title          String
+  type           MeetingType
+  status         MeetingStatus @default(SCHEDULED)
+  scheduledAt    DateTime
+  venue          String?
+  noticeIssuedAt DateTime?
+  createdById    String
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  createdBy   User        @relation("CreatedMeetings", fields: [createdById], references: [id])
+
+  attendees   MeetingAttendee[] // ★ All assigned members
+  agendaItems AgendaItem[]
+  minutes     MeetingMinutes[]
+
+  @@index([associationId])
+  @@index([type])
+  @@index([status])
+  @@index([scheduledAt])
+  @@map("meetings")
+}
+
+// ★ Meeting assignment join table
+model MeetingAttendee {
+  id           String       @id @default(uuid())
+  meetingId    String
+  userId       String
+  attendeeRole AttendeeRole @default(OPTIONAL)
+  rsvpStatus   RsvpStatus   @default(PENDING)
+  rsvpNote     String? // Decline reason, etc.
+  rsvpAt       DateTime? // Timestamp of RSVP
+  notifiedAt   DateTime? // When meeting notice was sent to them
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([meetingId, userId]) // One row per member per meeting
+  @@index([meetingId])
+  @@index([userId])
+  @@index([rsvpStatus])
+  @@map("meeting_attendees")
+}
+
+model AgendaItem {
+  id          String   @id @default(uuid())
+  meetingId   String
+  order       Int
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@index([meetingId])
+  @@map("agenda_items")
+}
+
+model MeetingMinutes {
+  id          String   @id @default(uuid())
+  meetingId   String
+  agendaPoint String
+  decision    String
+  actionItems Json? // [{ assigneeId, task, dueDate }]
+  recordedAt  DateTime @default(now())
+
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@map("meeting_minutes")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AUDIT LOG  (append-only — no updatedAt)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id            String      @id @default(uuid())
+  associationId String // ★
+  actorId       String?
+  action        AuditAction
+  resourceType  String
+  resourceId    String?
+  oldValues     Json?
+  newValues     Json?
+  ipAddress     String?
+  userAgent     String?
+  traceId       String?
+  createdAt     DateTime    @default(now())
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  actor       User?       @relation("ActorLogs", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([associationId])
+  @@index([actorId])
+  @@index([action])
+  @@index([resourceType, resourceId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DSAR
+// ─────────────────────────────────────────────────────────────────────────────
+
+model DsarTicket {
+  id               String          @id @default(uuid())
+  associationId    String
+  ticketNumber     String          @unique
+  userId           String
+  requestType      DsarRequestType
+  requestedData    String[]
+  description      String?
+  status           DsarStatus      @default(PENDING)
+  assignedToId     String?
+  responseDeadline DateTime        @default(dbgenerated("(NOW() + INTERVAL '21 days')"))
+  rejectedReason   String?
+  completedAt      DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  association Association    @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  member      User           @relation("MemberTickets", fields: [userId], references: [id], onDelete: Cascade)
+  assignedTo  User?          @relation("AssignedTickets", fields: [assignedToId], references: [id])
+  responses   DsarResponse[]
+
+  @@unique([associationId, ticketNumber])
+  @@index([associationId])
+  @@index([userId])
+  @@index([status])
+  @@index([responseDeadline])
+  @@map("dsar_tickets")
+}
+
+model DsarResponse {
+  id             String    @id @default(uuid())
+  dsarTicketId   String
+  responseType   String
+  storageKey     String?
+  deliveryMethod String    @default("secure_download")
+  notes          String?
+  deliveredAt    DateTime?
+  createdAt      DateTime  @default(now())
+
+  ticket DsarTicket @relation(fields: [dsarTicketId], references: [id], onDelete: Cascade)
+
+  @@map("dsar_responses")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AUTH TOKENS
+// ─────────────────────────────────────────────────────────────────────────────
+
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String
+  token     String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model VerificationCode {
+  id        String    @id @default(uuid())
+  userId    String
+  code      String
+  type      String
+  expiresAt DateTime
+  usedAt    DateTime?
+  attempts  Int       @default(0)
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("verification_codes")
+}
+
+model PushToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("push_tokens")
+}
+
+model ConsentReceipt {
+  id            String         @id @default(uuid())
+  associationId String
+  userId        String
+  purpose       ConsentPurpose
+  status        ConsentStatus
+  ipAddress     String?
+  userAgent     String?
+  channel       String         @default("web")
+  metadata      Json?
+  createdAt     DateTime       @default(now())
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([associationId])
+  @@index([userId, purpose])
+  @@index([createdAt])
+  @@map("consent_receipts")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PAYMENTS & LEDGER
+// ─────────────────────────────────────────────────────────────────────────────
+
+model PaymentTransaction {
+  id String @id @default(uuid())
+
+  associationId String
+  userId        String
+
+  amount   Decimal @db.Decimal(10, 2)
+  currency String  @default("INR")
+
+  gateway PaymentGateway @default(RAZORPAY)
+
+  status PaymentStatus @default(PENDING)
+
+  method PaymentMethod?
+
+  referenceNumber String?
+  receiptNumber   String?
+
+  notes String?
+
+  // Razorpay
+  razorpayOrderId   String? @unique
+  razorpayPaymentId String? @unique
+  razorpaySignature String?
+  razorpayRefundId  String?
+
+  receiptUrl String?
+  invoiceUrl String?
+
+  paidAt   DateTime?
+  failedAt DateTime?
+
+  createdById  String?
+  verifiedById String?
+
+  paymentDate DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id])
+
+  allocations   PaymentAllocation[]
+  ledgerEntries LedgerEntry[]
+
+  @@index([associationId])
+  @@index([userId])
+  @@index([status])
+  @@index([paymentDate])
+  @@map("payment_transactions")
+}
+
+model ContributionPeriod {
+  id String @id @default(uuid())
+
+  associationId String
+  userId        String
+
+  year  Int
+  month Int
+
+  expectedAmount Decimal @db.Decimal(10, 2)
+
+  paidAmount Decimal @default(0) @db.Decimal(10, 2)
+
+  dueAmount Decimal @db.Decimal(10, 2)
+
+  status ContributionStatus @default(DUE)
+
+  dueDate DateTime
+
+  waivedAt     DateTime?
+  waivedReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  allocations PaymentAllocation[]
+
+  @@unique([userId, year, month])
+  @@index([associationId])
+  @@index([userId])
+  @@index([status])
+  @@map("contribution_periods")
+}
+
+model PaymentAllocation {
+  id String @id @default(uuid())
+
+  paymentTransactionId String
+  contributionPeriodId String
+
+  allocatedAmount Decimal @db.Decimal(10, 2)
+
+  createdAt DateTime @default(now())
+
+  paymentTransaction PaymentTransaction @relation(fields: [paymentTransactionId], references: [id], onDelete: Cascade)
+  contributionPeriod ContributionPeriod @relation(fields: [contributionPeriodId], references: [id], onDelete: Cascade)
+
+  @@index([paymentTransactionId])
+  @@index([contributionPeriodId])
+  @@map("payment_allocations")
+}
+
+model PaymentWebhookEvent {
+  id String @id @default(uuid())
+
+  eventId   String? @unique
+  eventType String
+
+  gateway PaymentGateway @default(RAZORPAY)
+
+  payload Json
+
+  signature String?
+
+  processed Boolean @default(false)
+
+  processedAt DateTime?
+
+  errorMessage String?
+
+  createdAt DateTime @default(now())
+
+  @@index([eventType])
+  @@index([processed])
+  @@map("payment_webhook_events")
+}
+
+model LedgerEntry {
+  id                   String         @id @default(uuid())
+  paymentTransactionId String?
+  description          String
+  approvalStatus       ApprovalStatus @default(PENDING)
+  createdById          String
+  approvedById         String?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  paymentTransaction PaymentTransaction? @relation(fields: [paymentTransactionId], references: [id])
+  lines              LedgerLine[]
+
+  @@index([paymentTransactionId])
+  @@map("ledger_entries")
+}
+
+model LedgerLine {
+  id            String   @id @default(uuid())
+  ledgerEntryId String
+  accountId     String // ID of the chart of accounts
+  isDebit       Boolean // true for debit, false for credit
+  amount        Decimal  @db.Decimal(10, 2)
+  createdAt     DateTime @default(now())
+
+  ledgerEntry LedgerEntry @relation(fields: [ledgerEntryId], references: [id], onDelete: Cascade)
+
+  @@index([ledgerEntryId])
+  @@map("ledger_lines")
+}
+
+model Account {
+  id            String   @id @default(uuid())
+  associationId String
+  code          String
+  name          String
+  type          String
+  description   String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+
+  @@index([associationId])
+  @@index([code])
+  @@map("accounts")
+}
+
+enum NotificationType {
+  GENERAL_MESSAGE
+  FOLLOW
+  SYSTEM
+}
+
+model Notification {
+  id       String           @id @default(uuid())
+  userId   String
+  title    String
+  type     NotificationType
+  body     String
+  route    String
+  entityId String
+  imageUrl String?
+
+  isRead Boolean   @default(false)
+  readAt DateTime?
+
+  isReceived Boolean   @default(false)
+  receivedAt DateTime?
+
+  meta      Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  associationId String
+  association   Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+
+  @@index([associationId])
+  @@index([userId])
+  @@map("notifications")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ANNOUNCEMENTS (Broadcasts)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Announcement {
+  id            String @id @default(uuid())
+  associationId String
+  authorId      String
+
+  title    String
+  summary  String? // Short snippet for push/list view
+  content  String  @db.Text // Rich text/Markdown content
+  imageUrl String?
+
+  status   AnnouncementStatus   @default(DRAFT)
+  priority AnnouncementPriority @default(NORMAL)
+
+  // Targeting
+  targetRoles UserRole[] // Empty = Everyone, or specific roles like [PRESIDENT, SECRETARY]
+  isPinned    Boolean    @default(false)
+
+  // Scheduling
+  publishedAt DateTime?
+  expiresAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  association  Association        @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  author       User               @relation("AuthoredAnnouncements", fields: [authorId], references: [id])
+  readReceipts AnnouncementRead[]
+  imageFileId String? @unique
+  imageFile   File?     @relation("AnnouncementImage", fields: [imageFileId], references: [id], onDelete: SetNull)
+
+  @@index([associationId, status])
+  @@index([publishedAt])
+  @@map("announcements")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TRAINING
+// ─────────────────────────────────────────────────────────────────────────────
+
+model TrainingModule {
+  id               String               @id @default(uuid())
+  associationId    String
+  title            String
+  description      String?
+  content          String
+  durationMinutes  Int?
+  requiredForRoles UserRole[]           @default([MEMBER])
+  version          Int                  @default(1)
+  isActive         Boolean              @default(true)
+
+  certificateTemplateId String?                    @unique
+  certificateTemplate   TrainingCertificateTemplate? @relation(fields: [certificateTemplateId], references: [id], onDelete: SetNull)
+
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  association      Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  completions      TrainingCompletion[]
+  assignments      TrainingAssignment[]
+  supplements      TrainingSupplement[]
+  certificates     TrainingCertificate[]
+
+  @@unique([associationId, title])
+  @@index([associationId])
+  @@map("training_modules")
+}
+
+model TrainingCompletion {
+  id             String         @id @default(uuid())
+  userId         String
+  moduleId       String
+  scorePercent   Decimal?       @db.Decimal(5, 2)
+  completedAt    DateTime       @default(now())
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  module         TrainingModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, moduleId])
+  @@map("training_completions")
+}
+
+enum TrainingAssignmentStatus {
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
+  EXEMPT
+
+  @@map("training_assignment_status")
+}
+
+model TrainingAssignment {
+  id String @id @default(uuid())
+
+  moduleId String
+  userId   String
+
+  status TrainingAssignmentStatus @default(ASSIGNED)
+
+  assignedAt DateTime @default(now())
+
+  dueDate DateTime?
+
+  startedAt DateTime?
+
+  completedAt DateTime?
+
+  reminderSentAt DateTime?
+
+  assignedById String?
+
+  notes String?
+
+  // Relations
+  module TrainingModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([moduleId, userId])
+  @@index([userId])
+  @@index([moduleId])
+  @@index([status])
+  @@map("training_assignments")
+}
+
+model TrainingSupplement {
+  id String @id @default(uuid())
+
+  moduleId String
+
+  title       String
+  description String?
+
+
+  // Storage
+  downloadUrl  String
+  thumbnailUrl String?
+  imageUrl     String?
+
+  fileId String?
+  file   File? @relation(fields: [fileId], references: [id], onDelete: SetNull)
+  // Ordering
+  sortOrder Int @default(autoincrement()) 
+
+  // Visibility
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  module TrainingModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@index([moduleId])
+  @@index([sortOrder])
+  @@index([moduleId,isActive])
+  @@map("training_supplements")
+}
+
+model TrainingCertificate {
+  id String @id @default(uuid())
+
+  userId   String
+  moduleId String
+
+  certificateNumber String? @unique
+
+  issuedAt DateTime @default(now())
+
+  // Fast-access URLs
+  certificateUrl String
+  thumbnailUrl   String?
+
+  // Canonical file
+  fileId String? @unique
+  file   File? @relation(fields: [fileId], references: [id], onDelete: SetNull)
+
+  user   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  module TrainingModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, moduleId])
+
+  @@index([userId])
+  @@index([moduleId])
+
+  @@map("training_certificates")
+}
+
+model TrainingCertificateTemplate {
+  id String @id @default(uuid())
+
+  associationId String
+
+  name String
+
+  certificateUrl String
+  thumbnailUrl   String?
+
+  fileId String? @unique
+  file   File?   @relation(fields: [fileId], references: [id], onDelete: SetNull)
+
+  trainingModule TrainingModule?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([associationId])
+  @@map("training_certificate_templates")
+}
+
+model AnnouncementRead {
+  id             String   @id @default(uuid())
+  announcementId String
+  userId         String
+  readAt         DateTime @default(now())
+
+  announcement Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([announcementId, userId])
+  @@index([userId])
+  @@map("announcement_reads")
+}
+
+enum ComplaintCategory {
+  MEETING_CONDUCT
+  PAYMENT_DISPUTE
+  DATA_PRIVACY
+  MEMBER_CONDUCT
+  ADMINISTRATIVE
+  OTHER
+
+  @@map("complaint_category")
+}
+
+enum ComplaintStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+
+  @@map("complaint_status")
+}
+
+model Complaint {
+  id            String             @id @default(uuid())
+  associationId String
+  userId        String
+  category      ComplaintCategory
+  subject       String
+  description   String
+  status        ComplaintStatus    @default(OPEN)
+  priority      String             @default("NORMAL")
+  assignedToId  String?
+  resolvedAt    DateTime?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([associationId])
+  @@index([userId])
+  @@index([status])
+  @@map("complaints")
+}
+
+enum ComplianceCheckStatus {
+  PASSED
+  FAILED
+  WARNING
+  SKIPPED
+
+  @@map("compliance_check_status")
+}
+
+model ComplianceCheck {
+  id              String                @id @default(uuid())
+  associationId   String
+  checkType       String
+  status          ComplianceCheckStatus
+  score           Int
+  message         String
+  details         Json?
+  recommendations Json?
+  checkedAt       DateTime              @default(now())
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+
+  @@index([associationId])
+  @@index([checkType])
+  @@index([status])
+  @@index([checkedAt])
+  @@map("compliance_checks")
+}
+
+model MemberType {
+  id          String  @id @default(uuid())
+  description String?
+  level       Int
+
+  associationId     String
+  association       Association        @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  users             User[]
+  subscriptionPlans SubscriptionPlan[]
+
+  @@unique([associationId, level])
+  @@index([level])
+  @@map("member_types")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PAYMENT PROVIDERS (Multi-Tenant)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model PaymentProvider {
+  id                     String              @id @default(uuid())
+  associationId          String
+  provider               PaymentProviderType
+  keyId                  String
+  encryptedKeySecret     String
+  encryptedWebhookSecret String?
+  isActive               Boolean             @default(false)
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+
+  @@index([associationId])
+  @@map("payment_providers")
+}
+
+model Log {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  type      String // Stores 'error', 'warn', etc.
+  message   String // Stores the main error message
+  content   Json // Stores the context/metadata natively as JSON
+  isBackend Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("logs")
+}
+
+model File {
+  id String @id @default(uuid())
+
+  associationId String?
+
+  originalName String
+  storedName   String
+
+  mimeType String
+  extension String?
+
+  sizeBytes Int
+
+  // Storage provider info
+  bucket     String?
+  storageKey String
+
+  // CDN / public URLs
+  url          String
+  thumbnailUrl String?
+
+  // Optional image metadata
+  width  Int?
+  height Int?
+
+  // Video metadata
+  durationSeconds Int?
+
+  checksum String?
+
+  uploadedById String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  trainingCertificateId String?
+  trainingCertificate TrainingCertificate?
+
+  trainingCertificateTemplate TrainingCertificateTemplate?
+
+  trainingSupplement TrainingSupplement[]
+  announcement       Announcement?       @relation("AnnouncementImage")
+
+  association Association? @relation(fields: [associationId], references: [id], onDelete: Cascade)
+
+  @@index([associationId])
+  @@index([mimeType])
+
+  @@map("files")
+}

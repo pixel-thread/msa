@@ -1,0 +1,52 @@
+{
+  "name": "mfsa-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "lint": "eslint",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate deploy",
+    "db:seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "@supabase/supabase-js": "^2.106.1",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.0",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "date-fns": "^4.2.1",
+    "dotenv": "^16.4.7",
+    "expo-server-sdk": "^6.1.0",
+    "express": "^5.1.0",
+    "jose": "^6.0.0",
+    "pg": "^8.20.0",
+    "pino": "^10.3.1",
+    "razorpay": "^2.9.6",
+    "resend": "^6.12.3",
+    "ssh2-sftp-client": "^12.1.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/node": "^20",
+    "@types/pg": "^8.20.0",
+    "@types/ssh2-sftp-client": "^9.0.6",
+    "prisma": "^7.8.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": "20.x"
+  }
+}
