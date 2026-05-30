@@ -19,7 +19,7 @@ import {
   patchCertificate,
   deleteCertificateHandler,
   postCertificateTemplate,
-  deleteCertificateTemplate,
+  deleteCertificateTemplateRoute,
 } from './certificates.route';
 import {
   getSupplements,
@@ -65,7 +65,7 @@ router.get('/:moduleId/certificates/:certificateId', getCertificate);
 router.patch('/:moduleId/certificates/:certificateId', patchCertificate);
 router.delete('/:moduleId/certificates/:certificateId', deleteCertificateHandler);
 router.post('/:moduleId/certificate-template', postCertificateTemplate);
-router.delete('/:moduleId/certificate-template', deleteCertificateTemplate);
+router.delete('/:moduleId/certificate-template', deleteCertificateTemplateRoute);
 
 router.get('/:moduleId/supplements', getSupplements);
 router.post('/:moduleId/supplements', postSupplement);

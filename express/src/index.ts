@@ -34,7 +34,7 @@ import subscriptionsRouter from '@feature/subscriptions/routes/index';
 import trainingRouter from '@feature/training/routes/index';
 import userRouter from '@feature/user/routes/index';
 
-async function bootstrap() {
+export function createApp() {
   const app = express();
 
   /**
@@ -82,6 +82,7 @@ async function bootstrap() {
   app.get('/', (_, res) => {
     return res.redirect(`${env.BASE_URL}`);
   });
+
   /**
    * -------------------------------------------------------
    * 404 Handler
@@ -103,21 +104,16 @@ async function bootstrap() {
 
   app.use(errorHandler);
 
-  /**
-   * -------------------------------------------------------
-   * Start Server
-   * -------------------------------------------------------
-   */
+  return app;
+}
 
+const app = createApp();
+
+if (process.env.NODE_ENV !== 'test') {
   app.listen(env.PORT, () => {
     logger.debug(`🚀 Express API running on http://localhost:${env.PORT}`);
-
     logger.debug(`Environment: ${env.NODE_ENV}`);
   });
 }
 
-bootstrap().catch((err) => {
-  console.error('Failed to start server:', err);
-
-  process.exit(1);
-});
+export default app;

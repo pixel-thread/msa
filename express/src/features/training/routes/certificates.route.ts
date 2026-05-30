@@ -385,7 +385,7 @@ export const postCertificateTemplate: RequestHandler[] = [
 ];
 
 /** DELETE /training/modules/:moduleId/certificate-template - Remove certificate template (DPO role required). */
-export const deleteCertificateTemplate: RequestHandler[] = [
+export const deleteCertificateTemplateRoute: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';

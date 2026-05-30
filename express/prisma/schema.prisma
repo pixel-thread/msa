@@ -282,7 +282,7 @@ model Association {
 model User {
   id                       String        @id @default(uuid())
   associationId            String
-  email                    String
+  email                    String @unique
   name                     String
   mobile                   String?
   designation              String?
