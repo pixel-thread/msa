@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { ForbiddenError } from '@src/shared/errors';
@@ -13,39 +13,37 @@ export const getMeetings = [
   validate({ query: MeetingQuerySchema }),
   async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'GET /api/meetings - Request started');
+    const association = await getAssociation(req);
+    logger.info({ traceId, associationId: association.id }, 'GET /api/meetings - Request started');
 
-      const user = await withRole(req, UserRole.MEMBER);
-      logger.info({ traceId, userId: user.id, role: user.role }, 'GET /api/meetings - User authorized');
+    const user = await withRole(req, UserRole.MEMBER);
+    logger.info({ traceId, userId: user.id, role: user.role }, 'GET /api/meetings - User authorized');
 
-      const query = req.query as { page?: number; type?: string; status?: string };
-      if (!query) throw new ForbiddenError('Invalid query parameters');
+    const query = req.query as { page?: number; type?: string; status?: string };
+    if (!query) throw new ForbiddenError('Invalid query parameters');
 
-      const userId = req.headers['x-user-id'] as string;
-      const { page, type, status } = query;
+    const userId = req.headers['x-user-id'] as string;
+    const { page, type, status } = query;
 
-      if (hasHighRoleAccess(user.role)) {
-        const result = await findManyMeetings({
-          role: user.role,
-          associationId: association.id,
-          filters: { type, status } as any,
-          pagination: { page: page ?? 1 },
-        });
-        logger.info({ traceId, count: result.meetings.length }, 'GET /api/meetings - Success');
-        return success(res, { data: result.meetings, meta: result.pagination });
-      }
-
+    if (hasHighRoleAccess(user.role)) {
       const result = await findManyMeetings({
         role: user.role,
-        userId,
         associationId: association.id,
-        filters: { status: MeetingStatus.SCHEDULED } as any,
+        filters: { type, status } as any,
         pagination: { page: page ?? 1 },
       });
       logger.info({ traceId, count: result.meetings.length }, 'GET /api/meetings - Success');
       return success(res, { data: result.meetings, meta: result.pagination });
-    } catch (e) { next(e); }
+    }
+
+    const result = await findManyMeetings({
+      role: user.role,
+      userId,
+      associationId: association.id,
+      filters: { status: MeetingStatus.SCHEDULED } as any,
+      pagination: { page: page ?? 1 },
+    });
+    logger.info({ traceId, count: result.meetings.length }, 'GET /api/meetings - Success');
+    return success(res, { data: result.meetings, meta: result.pagination });
   },
 ];

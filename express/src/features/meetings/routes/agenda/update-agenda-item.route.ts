@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UserRole } from '@prisma/client';
@@ -18,23 +18,21 @@ export const patchUpdateAgendaItem = [
   validate({ body: UpdateAgendaItemSchema }),
   async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'PATCH /api/meetings/[meetingId]/agenda/[itemId] - Request started');
+    const association = await getAssociation(req);
+    logger.info({ traceId, associationId: association.id }, 'PATCH /api/meetings/[meetingId]/agenda/[itemId] - Request started');
 
-      const user = await withRole(req, UserRole.SECRETARY);
-      logger.info({ traceId, userId: user.id, role: user.role }, 'PATCH /api/meetings/[meetingId]/agenda/[itemId] - User authorized');
+    const user = await withRole(req, UserRole.SECRETARY);
+    logger.info({ traceId, userId: user.id, role: user.role }, 'PATCH /api/meetings/[meetingId]/agenda/[itemId] - User authorized');
 
-      const itemId = req.params.itemId as string;
-      logger.info({ traceId, itemId }, 'PATCH /api/meetings/[meetingId]/agenda/[itemId] - Updating agenda item');
+    const itemId = req.params.itemId as string;
+    logger.info({ traceId, itemId }, 'PATCH /api/meetings/[meetingId]/agenda/[itemId] - Updating agenda item');
 
-      const item = await updateAgendaItem({
-        where: { id: itemId },
-        data: req.body,
-      });
+    const item = await updateAgendaItem({
+      where: { id: itemId },
+      data: req.body,
+    });
 
-      logger.info({ traceId, itemId }, 'PATCH /api/meetings/[meetingId]/agenda/[itemId] - Success');
-      return success(res, { data: item });
-    } catch (e) { next(e); }
+    logger.info({ traceId, itemId }, 'PATCH /api/meetings/[meetingId]/agenda/[itemId] - Success');
+    return success(res, { data: item });
   },
 ];

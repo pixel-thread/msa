@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { ForbiddenError } from '@src/shared/errors';
@@ -13,37 +13,35 @@ export const postCreateMeeting = [
   validate({ body: CreateMeetingSchema }),
   async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'POST /api/meetings - Request started');
+    const association = await getAssociation(req);
+    logger.info({ traceId, associationId: association.id }, 'POST /api/meetings - Request started');
 
-      const userId = req.headers['x-user-id'] as string;
-      const user = await withRole(req, UserRole.SECRETARY);
+    const userId = req.headers['x-user-id'] as string;
+    const user = await withRole(req, UserRole.SECRETARY);
 
-      if (!hasHighRoleAccess(user.role)) {
-        throw new ForbiddenError('Only secretary, president, or super admin can create meetings');
-      }
+    if (!hasHighRoleAccess(user.role)) {
+      throw new ForbiddenError('Only secretary, president, or super admin can create meetings');
+    }
 
-      logger.info({ traceId, userId: user.id, role: user.role }, 'POST /api/meetings - User authorized');
-      logger.info({ traceId }, 'POST /api/meetings - Creating meeting');
+    logger.info({ traceId, userId: user.id, role: user.role }, 'POST /api/meetings - User authorized');
+    logger.info({ traceId }, 'POST /api/meetings - Creating meeting');
 
-      const meeting = await createMeeting({
-        associationId: association.id,
-        createdById: userId,
-        data: {
-          title: req.body.title,
-          type: req.body.type,
-          scheduledAt: new Date(req.body.scheduledAt),
-          venue: req.body.venue,
-          agendaItems: req.body.agendaItems?.map((item: any, idx: number) => ({
-            ...item,
-            order: item.order ?? idx + 1,
-          })),
-        },
-      });
+    const meeting = await createMeeting({
+      associationId: association.id,
+      createdById: userId,
+      data: {
+        title: req.body.title,
+        type: req.body.type,
+        scheduledAt: new Date(req.body.scheduledAt),
+        venue: req.body.venue,
+        agendaItems: req.body.agendaItems?.map((item: any, idx: number) => ({
+          ...item,
+          order: item.order ?? idx + 1,
+        })),
+      },
+    });
 
-      logger.info({ traceId, meetingId: meeting.id }, 'POST /api/meetings - Success');
-      return success(res, { data: meeting }, 201);
-    } catch (e) { next(e); }
+    logger.info({ traceId, meetingId: meeting.id }, 'POST /api/meetings - Success');
+    return success(res, { data: meeting }, 201);
   },
 ];

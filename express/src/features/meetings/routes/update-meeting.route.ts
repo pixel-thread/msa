@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { ForbiddenError } from '@src/shared/errors';
@@ -18,32 +18,30 @@ export const patchUpdateMeeting = [
   validate({ params: MeetingParamsSchema, body: UpdateMeetingSchema }),
   async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      const meetingId = req.params.meetingId as string;
-      logger.info({ traceId, meetingId, associationId: association.id }, 'PATCH /api/meetings/[meetingId] - Request started');
+    const association = await getAssociation(req);
+    const meetingId = req.params.meetingId as string;
+    logger.info({ traceId, meetingId, associationId: association.id }, 'PATCH /api/meetings/[meetingId] - Request started');
 
-      const user = await withRole(req, UserRole.SECRETARY);
-      if (!hasHighRoleAccess(user.role)) {
-        throw new ForbiddenError('Only secretary, president, or super admin can update meetings');
-      }
+    const user = await withRole(req, UserRole.SECRETARY);
+    if (!hasHighRoleAccess(user.role)) {
+      throw new ForbiddenError('Only secretary, president, or super admin can update meetings');
+    }
 
-      logger.info({ traceId, userId: user.id, role: user.role, meetingId }, 'PATCH /api/meetings/[meetingId] - User authorized');
-      logger.info({ traceId, meetingId }, 'PATCH /api/meetings/[meetingId] - Updating meeting');
+    logger.info({ traceId, userId: user.id, role: user.role, meetingId }, 'PATCH /api/meetings/[meetingId] - User authorized');
+    logger.info({ traceId, meetingId }, 'PATCH /api/meetings/[meetingId] - Updating meeting');
 
-      const updateData: Record<string, unknown> = { ...req.body };
-      if (req.body?.scheduledAt) {
-        updateData.scheduledAt = new Date(req.body.scheduledAt);
-      }
+    const updateData: Record<string, unknown> = { ...req.body };
+    if (req.body?.scheduledAt) {
+      updateData.scheduledAt = new Date(req.body.scheduledAt);
+    }
 
-      const meeting = await updateMeeting({
-        meetingId,
-        associationId: association.id,
-        data: updateData as Parameters<typeof updateMeeting>[0]['data'],
-      });
+    const meeting = await updateMeeting({
+      meetingId,
+      associationId: association.id,
+      data: updateData as Parameters<typeof updateMeeting>[0]['data'],
+    });
 
-      logger.info({ traceId, meetingId: meeting.id }, 'PATCH /api/meetings/[meetingId] - Success');
-      return success(res, { data: meeting });
-    } catch (e) { next(e); }
+    logger.info({ traceId, meetingId: meeting.id }, 'PATCH /api/meetings/[meetingId] - Success');
+    return success(res, { data: meeting });
   },
 ];
