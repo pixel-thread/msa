@@ -13,7 +13,7 @@ import {
   postRejectApplication,
 } from './membership-applications.route';
 
-const router = Router();
+const router: Router = Router();
 
 router.get('/associations', getAssociations);
 router.post('/associations', postAssociation);

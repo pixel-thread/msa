@@ -15,12 +15,7 @@ import { CreateAssociationSchema } from '@src/features/associations/validators';
 import { AddAssociationMemberSchema } from '@src/features/associations/validators/associations';
 import { withRole } from '@src/features/meetings/routes/_helpers';
 import { logger } from '@src/shared/logger';
-import { z } from 'zod';
 import type { CreateAssociationInput } from '@validator/associations';
-
-const ParamsSchema = z.object({
-  id: z.uuid(),
-});
 
 export const getAssociations: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {

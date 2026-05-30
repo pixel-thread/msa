@@ -10,7 +10,7 @@ import { addRole, removeRole } from './change-role.route';
 import { getMemberLedger } from './member-ledger.route';
 import { onboarding } from './onboarding.route';
 
-const router = Router();
+const router: Router = Router();
 
 router.use(auth);
 

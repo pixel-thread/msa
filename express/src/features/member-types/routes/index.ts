@@ -7,7 +7,7 @@ import {
   deleteMemberType,
 } from './member-types.route';
 
-const router = Router();
+const router: Router = Router();
 
 router.get('/', getMemberTypes);
 

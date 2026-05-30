@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, type Router as ExpressRouter } from 'express';
 import { auth } from '@src/middleware/auth';
 import {
   getAssociationByUser,
@@ -11,7 +11,7 @@ import {
   postAddMember,
 } from './associations.route';
 
-const router = Router();
+const router: ExpressRouter = Router();
 
 router.use(auth);
 
