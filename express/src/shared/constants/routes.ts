@@ -8,7 +8,7 @@ export const ADMIN_ROUTES = ['/api/admin(.*)', '/admin(.*)'] as const;
 /**
  * Publicly accessible web pages that do not require authentication.
  */
-export const PUBLIC_ROUTES = [
+export const PUBLIC_PAGE_PATH = [
   '/',
   '/docs',
   '/sign-in',
