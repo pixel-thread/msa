@@ -1,17 +1,28 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { Ratelimit } from '@upstash/ratelimit';
+import type { Duration } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 import { env } from '@src/env';
 import { TooManyRequestsError } from '@src/shared/errors';
 import { logger } from '@src/shared/logger';
 
+// Singleton Redis client
+const redis =
+  env.UPSTASH_REDIS_REST_URL && env.UPSTASH_REDIS_REST_TOKEN
+    ? new Redis({
+        url: env.UPSTASH_REDIS_REST_URL,
+        token: env.UPSTASH_REDIS_REST_TOKEN,
+      })
+    : null;
+
+if (!redis) {
+  logger.warn('Upstash Redis credentials missing. Rate limiting will be disabled.');
+}
+
 let ratelimit: Ratelimit | null = null;
 
-export function createRateLimiter(limit: number, window: any) {
-  const redis = new Redis({
-    url: env.UPSTASH_REDIS_REST_URL,
-    token: env.UPSTASH_REDIS_REST_TOKEN,
-  });
+export function createRateLimiter(limit: number, window: Duration) {
+  if (!redis) return null;
 
   return new Ratelimit({
     redis,
@@ -20,10 +31,12 @@ export function createRateLimiter(limit: number, window: any) {
   });
 }
 
-export function routeRateLimiter(limit: number, window: any): any {
+export function routeRateLimiter(limit: number, window: Duration): RequestHandler {
   const limiter = createRateLimiter(limit, window);
 
   return async (req: Request, _res: Response, next: NextFunction) => {
+    if (!limiter) return next();
+
     try {
       const identifier = req.ip || (req.headers['x-forwarded-for'] as string) || 'anonymous';
       const result = await limiter.limit(identifier);
@@ -74,3 +87,4 @@ export async function rateLimiter(req: Request, _res: Response, next: NextFuncti
     next();
   }
 }
+
