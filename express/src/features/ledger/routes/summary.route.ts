@@ -1,39 +1,10 @@
 import { Request, NextFunction, Response } from 'express';
 import { success } from '@src/shared/utils/responses';
-import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
-import { prisma } from '@src/shared/lib/prisma';
 import { UserRole } from '@prisma/client';
 import { getSummary } from '@src/features/ledger/services/ledger.service';
 import { logger } from '@src/shared/logger';
-
-async function getAssociation(req: Request) {
-  const userId = req.userId as string;
-  if (!userId) throw new UnauthorizedError('Unauthorized');
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: { association: true },
-  });
-  if (!user || !user.associationId) throw new ForbiddenError('User association not found');
-  return { id: user.association.id, slug: user.association.slug, name: user.association.name };
-}
-
-async function requireRole(req: Request, role: UserRole) {
-  const userId = req.userId as string;
-  if (!userId) throw new UnauthorizedError('Unauthorized');
-  const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user) throw new UnauthorizedError('User not found');
-  const roleHierarchy = [
-    UserRole.MEMBER,
-    UserRole.FINANCE,
-    UserRole.DPO,
-    UserRole.PRESIDENT,
-    UserRole.SUPER_ADMIN,
-  ];
-  const userLevel = roleHierarchy.indexOf(user.role);
-  const requiredLevel = roleHierarchy.indexOf(role);
-  if (userLevel < requiredLevel) throw new ForbiddenError('Insufficient role');
-  return user;
-}
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 
 /** GET /api/ledger/summary - Retrieve ledger summary (FINANCE role required). */
 export const getLedgerSummary = async (req: Request, res: Response, _next: NextFunction) => {
@@ -44,7 +15,7 @@ export const getLedgerSummary = async (req: Request, res: Response, _next: NextF
     'GET /api/ledger/summary - Request started',
   );
 
-  await requireRole(req, UserRole.FINANCE);
+  await withRole(req, UserRole.FINANCE);
 
   const data = await getSummary(association.id);
 

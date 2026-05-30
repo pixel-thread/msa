@@ -2,15 +2,14 @@ import { Request, NextFunction, Response } from 'express';
 import type { RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
-import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
-import { prisma } from '@src/shared/lib/prisma';
 import { UserRole } from '@prisma/client';
 import { z } from 'zod';
 import { getAccounts, createAccount } from '@src/features/ledger/services/ledger.service';
 import { pageNumberValidation } from '@src/shared/validators';
 import { buildPagination } from '@src/shared/utils';
-import { getUniqueUser } from '@src/shared/services/user/get-unique-user';
 import { logger } from '@src/shared/logger';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 
 /** Schema for creating a new account. */
 const CreateAccountSchema = z.object({
@@ -24,40 +23,6 @@ const CreateAccountSchema = z.object({
 const AccountQuerySchema = z.object({
   page: pageNumberValidation,
 });
-
-const ROLE_HIERARCHY: Record<UserRole, number> = {
-  SUPER_ADMIN: 0,
-  PRESIDENT: 1,
-  SECRETARY: 2,
-  FINANCE: 3,
-  DPO: 4,
-  MEMBER: 5,
-};
-
-async function getAssociation(req: Request) {
-  const userId = req.userId as string;
-  if (!userId) throw new UnauthorizedError('Unauthorized');
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: { association: true },
-  });
-  if (!user || !user.associationId) throw new ForbiddenError('User association not found');
-  return { id: user.association.id, slug: user.association.slug, name: user.association.name };
-}
-
-async function withRole(req: Request, role: UserRole) {
-  const userId = req.userId as string;
-  if (!userId) throw new UnauthorizedError('Unauthorized');
-  const user = await getUniqueUser({ where: { id: userId } });
-  if (!user) throw new UnauthorizedError('Unauthorized');
-  const roles = user.role as UserRole[];
-  const highestUserRole = roles.reduce((highest, current) =>
-    ROLE_HIERARCHY[current] < ROLE_HIERARCHY[highest] ? current : highest,
-  );
-  const hasPermission = ROLE_HIERARCHY[highestUserRole] <= ROLE_HIERARCHY[role];
-  if (!hasPermission) throw new ForbiddenError('Permission denied');
-  return { ...user, role: roles };
-}
 
 /** GET /api/ledger/accounts - List ledger accounts (FINANCE role required). */
 export const listAccounts: RequestHandler[] = [

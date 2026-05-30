@@ -11,7 +11,8 @@ const router: Router = Router();
 /** GET /api/dashboard/overview - Retrieve dashboard summary data for the user's association. */
 router.get('/overview', auth, async (req, res, next) => {
   try {
-    const userId = req.userId as string;
+    const userId = req.user.id;
+
     if (!userId) throw new UnauthorizedError('Unauthorized');
 
     const user = await prisma.user.findUnique({
@@ -19,7 +20,7 @@ router.get('/overview', auth, async (req, res, next) => {
       include: { association: true },
     });
 
-    if (!user || !user.associationId) throw new ForbiddenError('User association not found');
+    if (!user || !user.associationId) throw new ForbiddenError('User association not found 2');
 
     const association = {
       id: user.association.id,

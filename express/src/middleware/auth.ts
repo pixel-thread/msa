@@ -6,9 +6,8 @@ import { prisma } from '@src/shared/lib';
 
 export async function auth(req: Request, _res: Response, next: NextFunction) {
   const path = req.path;
-  const basePath = '/api' + path;
 
-  if (API_PUBLIC_ROUTES.some((r) => basePath === r)) {
+  if (API_PUBLIC_ROUTES.some((r) => path === r)) {
     return next();
   }
 

@@ -35,10 +35,8 @@ const router: Router = Router();
 
 router.use(auth);
 
-
-
-router.get('/', getModules);
-router.post('/', postModules);
+router.get('/modules', getModules);
+router.post('/modules', postModules);
 
 router.get('/my-assignments', getMyAssignments);
 router.get('/my-completions', getMyCompletions);
