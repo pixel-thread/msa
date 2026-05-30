@@ -9,7 +9,7 @@ fi
 echo "Starting environment variable sync to Vercel..."
 
 # Read .env file, ignoring comments and empty lines
-grep -v '^#' .env.production | grep -v '^\s*$' | while IFS='=' read -r key value; do
+grep -v '^#' .env | grep -v '^\s*$' | while IFS='=' read -r key value; do
   # Remove potential quotes from the value
   value=$(echo "$value" | sed -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//")
 
