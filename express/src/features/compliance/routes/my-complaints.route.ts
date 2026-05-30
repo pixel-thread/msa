@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
-import { ComplaintQuerySchema, ComplaintParamsSchema, CreateComplaintSchema } from '@src/features/compliance/validators';
-import { findManyComplaints, findUniqueComplaint, createComplaint } from '@src/features/compliance/services';
+import { ComplaintQuerySchema, ComplaintParamsSchema } from '@src/features/compliance/validators';
+import { findManyComplaints, findUniqueComplaint } from '@src/features/compliance/services';
 import { buildPagination } from '@src/shared/utils/build-pagination';
-import { UnauthorizedError, NotFoundError, BadRequestError } from '@src/shared/errors';
+import { UnauthorizedError, NotFoundError } from '@src/shared/errors';
 import { logger } from '@src/shared/logger';
 import { getAssociation } from './_helpers';
 
@@ -46,29 +46,6 @@ export const listMyComplaints = [
   },
 ];
 
-export const createMyComplaint = [
-  validate({ body: CreateComplaintSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
-    const userId = req.headers['x-user-id'] as string;
-    try {
-      if (!userId) throw new UnauthorizedError('Unauthorized');
-
-      const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'POST /compliance/my - Request started');
-
-      const complaint = await createComplaint({
-        associationId: association.id,
-        userId,
-        data: req.body,
-      });
-
-      logger.info({ traceId, complaintId: complaint.id }, 'POST /compliance/my - Success');
-      return success(res, { data: complaint }, 201);
-    } catch (e) { next(e); }
-  },
-];
-
 export const getMyComplaint = [
   validate({ params: ComplaintParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -91,17 +68,6 @@ export const getMyComplaint = [
 
       logger.info({ traceId, complaintId: req.params.complaintId }, 'GET /compliance/my/:complaintId - Success');
       return success(res, { data: complaint });
-    } catch (e) { next(e); }
-  },
-];
-
-export const updateMyComplaint = [
-  validate({ params: ComplaintParamsSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      logger.info({ traceId, complaintId: req.params.complaintId }, 'PUT /compliance/my/:complaintId - Not implemented');
-      throw new BadRequestError('Update complaint not implemented yet');
     } catch (e) { next(e); }
   },
 ];

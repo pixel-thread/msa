@@ -1,21 +1,25 @@
 import { Router } from 'express';
-import { listComplaints } from './overview.route';
-import { listChecks, getCheck } from './checks.route';
-import { postEvidence } from './evidence.route';
-import { listMyComplaints, createMyComplaint, getMyComplaint, updateMyComplaint } from './my-complaints.route';
+import { auth } from '@src/middleware/auth';
+import { listComplaints, createComplaintHandler } from './overview.route';
+import { listChecks, getCheck, runChecks, deleteCheck } from './checks.route';
+import { getEvidence } from './evidence.route';
+import { listMyComplaints, getMyComplaint } from './my-complaints.route';
 
 const router = Router();
 
+router.use(auth);
+
 router.get('/', listComplaints);
+router.post('/', createComplaintHandler);
 
 router.get('/checks', listChecks);
+router.post('/checks', runChecks);
 router.get('/checks/:checkId', getCheck);
+router.delete('/checks/:checkId', deleteCheck);
 
-router.post('/evidence', postEvidence);
+router.get('/evidence', getEvidence);
 
 router.get('/my', listMyComplaints);
-router.post('/my', createMyComplaint);
 router.get('/my/:complaintId', getMyComplaint);
-router.put('/my/:complaintId', updateMyComplaint);
 
 export default router;

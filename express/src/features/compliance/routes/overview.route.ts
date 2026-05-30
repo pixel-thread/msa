@@ -2,8 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UserRole } from '@prisma/client';
-import { ComplaintQuerySchema } from '@src/features/compliance/validators';
-import { findManyComplaints } from '@src/features/compliance/services';
+import { ComplaintQuerySchema, CreateComplaintSchema } from '@src/features/compliance/validators';
+import { findManyComplaints, createComplaint } from '@src/features/compliance/services';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 import { logger } from '@src/shared/logger';
 import { getAssociation, withRole } from './_helpers';
@@ -38,6 +38,29 @@ export const listComplaints = [
 
       logger.info({ traceId, count: complaints.length }, 'GET /compliance - Success');
       return success(res, { data: complaints, meta: buildPagination(total, page) });
+    } catch (e) { next(e); }
+  },
+];
+
+export const createComplaintHandler = [
+  validate({ body: CreateComplaintSchema }),
+  async (req: Request, res: Response, next: NextFunction) => {
+    const traceId = (req.headers['x-trace-id'] as string) || '';
+    try {
+      const association = await getAssociation(req);
+      logger.info({ traceId, associationId: association.id }, 'POST /compliance - Request started');
+      const user = await withRole(req, UserRole.DPO);
+      logger.info({ traceId, userId: user.id, roles: user.role }, 'POST /compliance - User authorized');
+
+      const userId = req.headers['x-user-id'] as string;
+      const complaint = await createComplaint({
+        associationId: association.id,
+        userId,
+        data: req.body,
+      });
+
+      logger.info({ traceId, complaintId: complaint.id }, 'POST /compliance - Success');
+      return success(res, { data: complaint }, 201);
     } catch (e) { next(e); }
   },
 ];
