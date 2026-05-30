@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import http from '@src/shared/utils/http';
 import { toast } from 'sonner';
-import type { Meeting, Member, Attendee } from '../types';
+import type { Meeting, Attendee } from '../types';
 import type { CreateMeetingInput } from '../validators';
 import type { PaginationMeta } from '@src/shared/types/api.types';
 import { meetingsEndpoints } from '../utils/constants/endpoints';
@@ -66,7 +66,8 @@ export function useMeetingAttendees(meetingId: string | null) {
   const { data, isLoading, isFetching, refetch } = useQuery({
     queryKey: ['meeting-attendees', meetingId],
     enabled: !!meetingId,
-    queryFn: async () => http.get<Attendee[]>(meetingsEndpoints.attendees.base(meetingId)),
+    queryFn: async () =>
+      http.get<Attendee[]>(meetingsEndpoints.attendees.base(meetingId as string)),
     select: (data) => data.data,
   });
 

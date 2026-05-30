@@ -26,7 +26,9 @@ export function useMeetingMinutes(meetingId: string | null) {
     queryKey: ['meeting-minutes', meetingId],
     enabled: !!meetingId,
     queryFn: async () => {
-      const res = await http.get<MeetingMinute[]>(meetingsEndpoints.minutes.base(meetingId));
+      const res = await http.get<MeetingMinute[]>(
+        meetingsEndpoints.minutes.base(meetingId as string),
+      );
       if (!res.success || !res.data) {
         throw new Error(res.message || 'Failed to fetch minutes');
       }
@@ -36,7 +38,7 @@ export function useMeetingMinutes(meetingId: string | null) {
 
   const createMinuteMutation = useMutation({
     mutationFn: (minuteData: CreateMeetingMinuteInput) =>
-      http.post<MeetingMinute>(meetingsEndpoints.minutes.base(meetingId), minuteData),
+      http.post<MeetingMinute>(meetingsEndpoints.minutes.base(meetingId as string), minuteData),
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({
@@ -54,7 +56,10 @@ export function useMeetingMinutes(meetingId: string | null) {
 
   const updateMinuteMutation = useMutation({
     mutationFn: ({ minuteId, data }: { minuteId: string; data: UpdateMeetingMinuteInput }) =>
-      http.patch<MeetingMinute>(meetingsEndpoints.minutes.byId(meetingId, minuteId), data),
+      http.patch<MeetingMinute>(
+        meetingsEndpoints.minutes.byId(meetingId as string, minuteId),
+        data,
+      ),
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({
@@ -71,7 +76,8 @@ export function useMeetingMinutes(meetingId: string | null) {
   });
 
   const deleteMinuteMutation = useMutation({
-    mutationFn: (minuteId: string) => http.delete(meetingsEndpoints.minutes.byId(meetingId, minuteId)),
+    mutationFn: (minuteId: string) =>
+      http.delete(meetingsEndpoints.minutes.byId(meetingId as string, minuteId)),
     onSuccess: (res) => {
       if (res.success) {
         queryClient.invalidateQueries({

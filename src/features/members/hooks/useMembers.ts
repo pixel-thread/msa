@@ -11,7 +11,7 @@ interface UseMembersOptions {
 export function useMembers(options: UseMembersOptions = {}) {
   const { page = 1, status = 'ACTIVE' } = options;
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ['members', page, status],
     queryFn: () => http.get<User[]>(membersEndpoints.list(page, status)),
   });
@@ -19,7 +19,7 @@ export function useMembers(options: UseMembersOptions = {}) {
   return {
     members: data?.data ?? [],
     meta: data?.meta,
-    isLoading,
+    isLoading: isFetching || isLoading,
     error,
     refetch,
   };

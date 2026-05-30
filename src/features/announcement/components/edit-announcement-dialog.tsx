@@ -49,7 +49,7 @@ export function EditAnnouncementDialog({
   onOpenChange,
 }: EditAnnouncementDialogProps) {
   const updateAnnouncement = useUpdateAnnouncement();
-  const { uploadImage, isUploading } = useUploadAnnouncementImage(announcement?.id ?? null);
+  const { uploadImage, isUploading } = useUploadAnnouncementImage(announcement?.id as string);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm({

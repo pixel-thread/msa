@@ -3,7 +3,7 @@ import http from '@src/shared/utils/http';
 import { toast } from 'sonner';
 import { announcementEndpoints } from '../utils/constants/endpoints';
 
-export function useUploadAnnouncementImage(announcementId: string | null) {
+export function useUploadAnnouncementImage(announcementId: string) {
   const queryClient = useQueryClient();
 
   const uploadMutation = useMutation({
@@ -25,9 +25,6 @@ export function useUploadAnnouncementImage(announcementId: string | null) {
       }
       toast.error(res.message || 'Failed to upload image');
       return res;
-    },
-    onError: (err) => {
-      toast.error('Failed to upload image');
     },
   });
 
