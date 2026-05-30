@@ -47,7 +47,7 @@ export function routeRateLimiter(limit: number, window: Duration): RequestHandle
 
       next();
     } catch (error) {
-      logger.error('Route rate limiter error', { error });
+      logger.error({ error }, 'Route rate limiter error');
       next();
     }
   };
@@ -83,8 +83,7 @@ export async function rateLimiter(req: Request, _res: Response, next: NextFuncti
 
     next();
   } catch (error) {
-    logger.error('Rate limiter error', { error });
+    logger.error({ error }, 'Rate limiter error');
     next();
   }
 }
-

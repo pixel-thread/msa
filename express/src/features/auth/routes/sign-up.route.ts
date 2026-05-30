@@ -63,13 +63,13 @@ export const postSignUp: RequestHandler[] = [
     // Reject if the association slug does not resolve to a valid association
     if (!association) {
       logger.error({ traceId, associationSlug }, 'POST /api/auth/sign-up - Association not found');
-      throw new ConflictError('Association not found');
+      throw new BadRequestError('Invalid association');
     }
 
     // Prevent duplicate active accounts for the same email address
     if (user && user.status === 'ACTIVE') {
       logger.error({ traceId, email }, 'POST /api/auth/sign-up - Active User already exists');
-      throw new BadRequestError('Invalid email');
+      throw new ConflictError('Active User already exists');
     }
 
     // ---- Create membership application ----
