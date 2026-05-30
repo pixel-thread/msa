@@ -3,7 +3,8 @@ import { success } from '@src/shared/utils/responses';
 import { UserRole, MeetingStatus } from '@prisma/client';
 import { updateMeeting } from '@src/features/meetings/services/updateMeeting';
 import { logger } from '@src/shared/logger';
-import { getAssociation, withRole } from './_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 
 export const postIssueNotice = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.traceId as string) || '';

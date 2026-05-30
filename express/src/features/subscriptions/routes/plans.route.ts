@@ -12,7 +12,8 @@ import {
   updatePlan,
   softDeletePlan,
 } from '@feature/subscriptions/services';
-import { getAssociation, withRole } from '@src/features/meetings/routes/_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 import { logger } from '@src/shared/logger';
 import { z } from 'zod';
 

@@ -5,7 +5,7 @@ import { grantConsent, revokeConsent } from './grant-revoke.route';
 import { getAllConsentRecords, getConsentHistory, getConsentReport } from './admin-consent.route';
 import { getReceipt, updateReceipt, deleteReceipt, getUserConsents } from './user-consent.route';
 
-const router = Router();
+const router: Router = Router();
 
 router.use(auth);
 

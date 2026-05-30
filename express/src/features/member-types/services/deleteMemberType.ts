@@ -1,4 +1,3 @@
-import 'server-only';
 import { prisma } from '@lib/prisma';
 import { AuditAction, Prisma } from '@prisma/client';
 import { BadRequestError } from '@src/shared/errors';

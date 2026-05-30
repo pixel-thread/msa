@@ -126,11 +126,7 @@ export const deleteReceipt: RequestHandler[] = [
 
     await withRole(req, UserRole.DPO);
 
-    await ConsentService.deleteConsentReceipt(
-      association.id,
-      receiptId,
-      req.userId as string,
-    );
+    await ConsentService.deleteConsentReceipt(association.id, receiptId, req.userId as string);
 
     logger.info({ traceId }, 'DELETE /api/consent/[receiptId] - Success');
     return success(res, { data: null, message: 'Consent receipt deleted successfully' });

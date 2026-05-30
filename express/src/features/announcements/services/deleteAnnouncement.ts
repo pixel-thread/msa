@@ -1,4 +1,3 @@
-import 'server-only';
 import { prisma } from '@lib/prisma';
 import { NotFoundError, ForbiddenError } from '@src/shared/errors';
 

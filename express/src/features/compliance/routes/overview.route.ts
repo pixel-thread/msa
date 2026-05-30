@@ -7,7 +7,8 @@ import { ComplaintQuerySchema, CreateComplaintSchema } from '@src/features/compl
 import { findManyComplaints, createComplaint } from '@src/features/compliance/services';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 import { logger } from '@src/shared/logger';
-import { getAssociation, withRole } from './_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 
 export const listComplaints: RequestHandler[] = [
   validate({ query: ComplaintQuerySchema }),

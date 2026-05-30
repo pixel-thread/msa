@@ -8,9 +8,10 @@ import {
 } from './announcement-detail.route';
 import { postMarkRead } from './mark-read.route';
 import { postUploadImage } from './upload-image.route';
+import { auth } from '@src/middleware/auth';
 
 const router: Router = Router();
-
+router.use(auth);
 router.get('/', getAnnouncements);
 router.post('/', postAnnouncement);
 router.get('/:announcementId', getAnnouncement);

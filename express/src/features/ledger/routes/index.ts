@@ -5,7 +5,7 @@ import { listEntries, createEntry, approveEntryHandler } from './entries.route';
 import { getLedgerSummary } from './summary.route';
 import { getMemberLedger } from './member-ledger.route';
 
-const router = Router();
+const router: Router = Router();
 
 router.use(auth);
 

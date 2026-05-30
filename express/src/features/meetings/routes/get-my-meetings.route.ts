@@ -7,7 +7,8 @@ import { findManyMeetings } from '@src/features/meetings/services';
 import { pageNumberValidation } from '@src/shared/validators/common';
 import { logger } from '@src/shared/logger';
 import { z } from 'zod';
-import { getAssociation, withRole } from './_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 
 const QuerySchema = z.object({
   page: pageNumberValidation,

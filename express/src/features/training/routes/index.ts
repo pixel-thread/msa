@@ -28,8 +28,10 @@ import {
   updateSupplementHandler,
   deleteSupplementHandler,
 } from './supplements.route';
+import { auth } from '@src/middleware/auth';
 
-const router = Router();
+const router: Router = Router();
+router.use(auth);
 
 router.get('/', getModules);
 router.post('/', postModules);

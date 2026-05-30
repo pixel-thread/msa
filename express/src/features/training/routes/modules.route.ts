@@ -7,7 +7,8 @@ import { createModule, findManyModules } from '@src/features/training/services';
 import { CreateTrainingModuleSchema } from '@src/features/training/validators/training';
 import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
 import { logger } from '@src/shared/logger';
-import { getAssociation, withRole } from './_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 
 export const getModules: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {

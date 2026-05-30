@@ -7,7 +7,8 @@ import { UserRole } from '@prisma/client';
 import { WaiveSubscriptionSchema } from '@feature/subscriptions/validators';
 import { logger } from '@src/shared/logger';
 import { waiveSubscription } from '@feature/subscriptions/services';
-import { getAssociation, withRole } from '@src/features/meetings/routes/_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 
 export const postWaive: RequestHandler[] = [
   validate({ body: WaiveSubscriptionSchema }),

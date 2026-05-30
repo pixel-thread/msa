@@ -5,8 +5,9 @@ import { ForbiddenError } from '@src/shared/errors';
 import { UserRole } from '@prisma/client';
 import { findAuditLogs, getAuditLogStats } from '@src/features/audit-logs/services';
 import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
-import { getAssociation, withRole } from '@src/features/meetings/routes/_helpers';
 import { logger } from '@src/shared/logger';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 
 export const getAuditLogs: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {

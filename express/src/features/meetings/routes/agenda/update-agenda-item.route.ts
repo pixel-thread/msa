@@ -7,7 +7,8 @@ import { updateAgendaItem } from '@src/features/meetings/services/updateAgendaIt
 import { z } from 'zod';
 import { ValidationError } from '@src/shared/errors';
 import { logger } from '@src/shared/logger';
-import { getAssociation, withRole } from '../_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 
 const UpdateAgendaItemSchema = z.object({
   title: z.string().min(1).optional(),

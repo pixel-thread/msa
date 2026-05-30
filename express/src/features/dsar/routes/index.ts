@@ -13,7 +13,7 @@ import {
 import { listAdmins } from './admins.route';
 import { getSlaReport } from './sla-report.route';
 
-const router = Router();
+const router: Router = Router();
 
 router.use(auth);
 

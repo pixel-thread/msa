@@ -8,7 +8,8 @@ import { findUniqueMeeting } from '@src/features/meetings/services';
 import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
 import { logger } from '@src/shared/logger';
 import { z } from 'zod';
-import { getAssociation, withRole } from './_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 
 const MeetingParamsSchema = z.object({
   meetingId: z.string('Invalid meeting ID'),

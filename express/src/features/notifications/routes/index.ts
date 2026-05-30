@@ -5,7 +5,7 @@ import {
   patchNotificationStatus,
 } from './notification-actions.route';
 
-const router = Router();
+const router: Router = Router();
 
 router.post('/register', postRegisterPushToken);
 router.post('/link', postLinkNotification);

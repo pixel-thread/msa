@@ -30,7 +30,7 @@ import {
   verifyTestProvider,
 } from './providers.route';
 
-const router = Router();
+const router: Router = Router();
 
 // Static routes must come before :paymentId parameterized routes
 router.get('/', auth, listPayments);

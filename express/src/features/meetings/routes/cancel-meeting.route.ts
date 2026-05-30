@@ -5,7 +5,8 @@ import { updateMeeting } from '@src/features/meetings/services';
 import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
 import { ForbiddenError } from '@src/shared/errors';
 import { logger } from '@src/shared/logger';
-import { getAssociation, withRole } from './_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 
 export const postCancelMeeting = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.traceId as string) || '';

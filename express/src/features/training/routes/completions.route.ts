@@ -14,7 +14,8 @@ import { uploadToBucket } from '@src/shared/lib/supabase/storage';
 import { BadRequestError } from '@src/shared/errors';
 import { env } from '@src/env';
 import { logger } from '@src/shared/logger';
-import { getAssociation, withRole } from './_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 import { z } from 'zod';
 
 const ModuleParamsSchema = z.object({

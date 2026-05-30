@@ -15,9 +15,9 @@ const ROLE_HIERARCHY: Record<UserRole, number> = {
 export async function withRole(req: Request, role: UserRole) {
   const userId = req.userId;
 
-  if (!userId) throw new UnauthorizedError('Unauthorized');
+  if (!userId) throw new UnauthorizedError('Unauthorized 2');
   const user = await getUniqueUser({ where: { id: userId } });
-  if (!user) throw new UnauthorizedError('Unauthorized');
+  if (!user) throw new UnauthorizedError('Unauthorized 3');
   const roles = user.role as UserRole[];
   const highestUserRole = roles.reduce((highest, current) =>
     ROLE_HIERARCHY[current] < ROLE_HIERARCHY[highest] ? current : highest,

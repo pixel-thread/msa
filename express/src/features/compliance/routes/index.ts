@@ -5,7 +5,7 @@ import { listChecks, getCheck, runChecks, deleteCheck } from './checks.route';
 import { getEvidence } from './evidence.route';
 import { listMyComplaints, getMyComplaint } from './my-complaints.route';
 
-const router = Router();
+const router: Router = Router();
 
 router.use(auth);
 

@@ -6,8 +6,11 @@ import {
   patchMemberType,
   deleteMemberType,
 } from './member-types.route';
+import { auth } from '@src/middleware/auth';
 
 const router: Router = Router();
+
+router.use(auth);
 
 router.get('/', getMemberTypes);
 

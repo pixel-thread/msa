@@ -8,7 +8,8 @@ import { createMeeting } from '@src/features/meetings/services';
 import { CreateMeetingSchema } from '@src/features/meetings/validators/meetings';
 import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
 import { logger } from '@src/shared/logger';
-import { getAssociation, withRole } from './_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 
 export const postCreateMeeting: RequestHandler[] = [
   validate({ body: CreateMeetingSchema }),

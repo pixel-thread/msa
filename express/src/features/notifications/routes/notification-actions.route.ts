@@ -16,6 +16,7 @@ import {
 import { logger } from '@src/shared/logger';
 import { withRole } from '@utils/with-role';
 import { z } from 'zod';
+import { auth } from '@src/middleware/auth';
 
 const RegisterPushTokenSchema = z.object({
   token: z.string(),
@@ -53,6 +54,7 @@ export const postLinkNotification: RequestHandler[] = [
 ];
 
 export const patchNotificationStatus: RequestHandler[] = [
+  auth,
   validate({ body: UpdateNotificationSchema, params: NotificationRouteParams }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';

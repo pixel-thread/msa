@@ -11,8 +11,11 @@ import { postSubscribe } from './subscribe.route';
 import { postUpgrade } from './upgrade.route';
 import { postWaive } from './waive.route';
 import { getSubscriptionPaymentsHandler } from './subscription-payments.route';
+import { auth } from '@src/middleware/auth';
 
-const router = Router();
+const router: Router = Router();
+
+router.use(auth);
 
 router.get('/plans', getPlansHandler);
 router.post('/plans', createPlanHandler);

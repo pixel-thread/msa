@@ -1,10 +1,9 @@
-import 'server-only';
 import { prisma } from '@lib/prisma';
 import { NotificationType, Prisma } from '@prisma/client';
 import { ExpoNotificationService } from '@lib/expo';
-import { logger } from '@src/shared/logger/server';
 import { EXPO_ROUTES } from '@src/shared/constants/expo-route';
 import { createNotification } from '@src/shared/services/notification';
+import { logger } from '@src/shared/logger';
 
 export async function sendAnnouncementNotifications(announcementId: string, associationId: string) {
   try {

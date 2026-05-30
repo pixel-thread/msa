@@ -18,7 +18,8 @@ import {
 import { buildPagination } from '@src/shared/utils/build-pagination';
 import { BadRequestError } from '@src/shared/errors';
 import { logger } from '@src/shared/logger';
-import { getAssociation, withRole } from './_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 import { z } from 'zod';
 
 const ParamsSchema = z.object({

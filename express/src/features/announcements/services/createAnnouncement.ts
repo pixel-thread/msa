@@ -1,4 +1,3 @@
-import 'server-only';
 import { prisma } from '@lib/prisma';
 import { AnnouncementStatus, AnnouncementPriority, UserRole } from '@prisma/client';
 import { NotFoundError } from '@src/shared/errors';

@@ -5,7 +5,8 @@ import { UserRole } from '@prisma/client';
 import { deleteMeeting } from '@src/features/meetings/services';
 import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
 import { logger } from '@src/shared/logger';
-import { getAssociation, withRole } from './_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 
 export const deleteMeetingHandler = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.traceId as string) || '';

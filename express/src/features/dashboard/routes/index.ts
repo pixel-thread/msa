@@ -5,7 +5,7 @@ import { success } from '@src/shared/utils/responses';
 import { prisma } from '@src/shared/lib/prisma';
 import { ForbiddenError, UnauthorizedError } from '@src/shared/errors';
 
-const router = Router();
+const router: Router = Router();
 
 router.get('/overview', auth, async (req, res, next) => {
   try {

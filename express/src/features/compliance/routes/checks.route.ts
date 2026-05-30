@@ -23,7 +23,8 @@ import {
 import { buildPagination } from '@src/shared/utils/build-pagination';
 import { NotFoundError } from '@src/shared/errors';
 import { logger } from '@src/shared/logger';
-import { getAssociation, withRole } from './_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 
 export const listChecks: RequestHandler[] = [
   validate({ query: ComplianceCheckQuerySchema }),
@@ -84,7 +85,7 @@ export const getCheck: RequestHandler[] = [
     );
 
     const check = await findUniqueComplianceCheck({
-      where: { id: req.params.checkId, associationId: association.id },
+      where: { id: req.params.checkId as string, associationId: association.id },
     });
 
     if (!check) throw new NotFoundError('Compliance check not found');
@@ -159,11 +160,12 @@ export const deleteCheck: RequestHandler[] = [
     );
 
     const existing = await findUniqueComplianceCheck({
-      where: { id: req.params.checkId, associationId: association.id },
+      where: { id: req.params.checkId as string, associationId: association.id },
     });
+
     if (!existing) throw new NotFoundError('Compliance check not found');
 
-    await deleteComplianceCheck({ where: { id: req.params.checkId } });
+    await deleteComplianceCheck({ where: { id: req.params.checkId as string } });
 
     logger.info(
       { traceId, checkId: req.params.checkId },

@@ -4,7 +4,8 @@ import { success } from '@src/shared/utils/responses';
 import { UserRole } from '@prisma/client';
 import { generateComplianceEvidence } from '@src/features/compliance/services';
 import { logger } from '@src/shared/logger';
-import { getAssociation, withRole } from './_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 
 export const getEvidence: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {

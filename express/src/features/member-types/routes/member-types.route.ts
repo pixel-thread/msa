@@ -3,7 +3,8 @@ import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { BadRequestError, ForbiddenError, NotFoundError } from '@src/shared/errors';
 import { UserRole } from '@prisma/client';
-import { getAssociation, withRole } from '@src/features/meetings/routes/_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 import { logger } from '@src/shared/logger';
 import {
   findManyMemberTypes,

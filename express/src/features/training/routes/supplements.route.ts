@@ -18,7 +18,8 @@ import { uploadToBucket, deleteFromBucket } from '@src/shared/lib/supabase/stora
 import { BadRequestError, NotFoundError } from '@src/shared/errors';
 import { env } from '@src/env';
 import { logger } from '@src/shared/logger';
-import { getAssociation, withRole } from './_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 import { z } from 'zod';
 
 const ModuleParamsSchema = z.object({

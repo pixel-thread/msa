@@ -7,7 +7,8 @@ import { UserRole } from '@prisma/client';
 import { updateAttendee } from '@src/features/meetings/services/updateAttendee';
 import { z } from 'zod';
 import { logger } from '@src/shared/logger';
-import { getAssociation, withRole } from './_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 
 const RsvpSchema = z.object({
   status: z.enum(['ACCEPTED', 'DECLINED']),

@@ -15,8 +15,8 @@ import {
   ApproveApplicationSchema,
   RejectApplicationSchema,
 } from '@src/features/membership-applications/validators';
-import { withRole } from '@src/features/meetings/routes/_helpers';
 import { logger } from '@src/shared/logger';
+import { withRole } from '@src/shared/utils/with-role';
 
 export const getMembershipApplicationsHandler: RequestHandler[] = [
   validate({ query: GetMembershipApplicationsQuerySchema }),

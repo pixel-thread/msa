@@ -7,7 +7,8 @@ import { findUniqueModule, updateModule, deleteModule } from '@src/features/trai
 import { UpdateTrainingModuleSchema } from '@src/features/training/validators/training';
 import { NotFoundError } from '@src/shared/errors';
 import { logger } from '@src/shared/logger';
-import { getAssociation, withRole } from './_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 import { z } from 'zod';
 
 const TrainingParamsSchema = z.object({

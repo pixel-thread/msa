@@ -7,7 +7,7 @@ import { findManyComplaints, findUniqueComplaint } from '@src/features/complianc
 import { buildPagination } from '@src/shared/utils/build-pagination';
 import { UnauthorizedError, NotFoundError } from '@src/shared/errors';
 import { logger } from '@src/shared/logger';
-import { getAssociation } from './_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
 
 export const listMyComplaints: RequestHandler[] = [
   validate({ query: ComplaintQuerySchema }),
@@ -74,7 +74,7 @@ export const getMyComplaint: RequestHandler[] = [
 
     const association = await getAssociation(req);
     const complaint = await findUniqueComplaint({
-      where: { id: req.params.complaintId, associationId: association.id, userId },
+      where: { id: req.params.complaintId as string, associationId: association.id, userId },
     });
 
     if (!complaint) throw new NotFoundError('Complaint not found');

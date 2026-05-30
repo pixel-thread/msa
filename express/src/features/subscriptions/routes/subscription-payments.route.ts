@@ -7,7 +7,8 @@ import { pageNumberValidation } from '@src/shared/validators/common';
 import { z } from 'zod';
 import { logger } from '@src/shared/logger';
 import { getSubscriptionPayments } from '@feature/subscriptions/services';
-import { getAssociation, withRole } from '@src/features/meetings/routes/_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 
 const SubscriptionParamsSchema = z.object({
   subscriptionId: z.uuid('Invalid subscription ID'),

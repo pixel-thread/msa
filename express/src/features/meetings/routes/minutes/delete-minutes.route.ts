@@ -3,7 +3,8 @@ import { success } from '@src/shared/utils/responses';
 import { UserRole } from '@prisma/client';
 import { deleteMeetingMinute } from '@src/features/meetings/services/minutes';
 import { logger } from '@src/shared/logger';
-import { getAssociation, withRole } from '../_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 
 export const deleteMinute = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.traceId as string) || '';

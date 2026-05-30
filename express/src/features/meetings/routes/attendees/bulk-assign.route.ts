@@ -7,7 +7,8 @@ import { ForbiddenError } from '@src/shared/errors';
 import { BulkAssignAttendeesSchema } from '@src/features/meetings/validators';
 import { bulkAssignAttendees } from '@src/features/meetings/services/bulkAssignAttendees';
 import { logger } from '@src/shared/logger';
-import { getAssociation, withRole } from '../_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 
 export const postBulkAssignAttendees: RequestHandler[] = [
   validate({ body: BulkAssignAttendeesSchema }),

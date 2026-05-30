@@ -6,7 +6,8 @@ import { UserRole } from '@prisma/client';
 import { findManyCompletions, adminRecordCompletion } from '@src/features/training/services';
 import { AdminRecordCompletionSchema } from '@src/features/training/validators/training';
 import { logger } from '@src/shared/logger';
-import { getAssociation, withRole } from './_helpers';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 
 export const getCompletions: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {

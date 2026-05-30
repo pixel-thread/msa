@@ -23,9 +23,10 @@ import { postCreateMinute } from './minutes/add-minutes.route';
 import { patchUpdateMinute } from './minutes/update-minutes.route';
 import { deleteMinute } from './minutes/delete-minutes.route';
 import { getMeetingReport } from './report.route';
+import { auth } from '@src/middleware/auth';
 
 const router: Router = Router();
-
+router.use(auth);
 // Static routes must be defined before parameterized routes
 router.get('/my', getMyMeetings);
 
