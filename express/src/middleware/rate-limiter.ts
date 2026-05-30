@@ -1,19 +1,11 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { Ratelimit } from '@upstash/ratelimit';
 import type { Duration } from '@upstash/ratelimit';
-import { Redis } from '@upstash/redis';
-import { env } from '@src/env';
 import { TooManyRequestsError } from '@src/shared/errors';
 import { logger } from '@src/shared/logger';
+import { redis } from '@lib/redis';
 
 // Singleton Redis client
-const redis =
-  env.UPSTASH_REDIS_REST_URL && env.UPSTASH_REDIS_REST_TOKEN
-    ? new Redis({
-        url: env.UPSTASH_REDIS_REST_URL,
-        token: env.UPSTASH_REDIS_REST_TOKEN,
-      })
-    : null;
 
 if (!redis) {
   logger.warn('Upstash Redis credentials missing. Rate limiting will be disabled.');
