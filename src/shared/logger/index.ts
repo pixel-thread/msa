@@ -2,6 +2,7 @@
 import { env } from '@src/env';
 import { safeStringify } from '../utils/helper/safe-stringify';
 import axios from 'axios';
+import cookies from 'react-cookies';
 
 type LogLevel = 'info' | 'warn' | 'error' | 'debug';
 
@@ -40,7 +41,13 @@ const formatMessage = (level: LogLevel, message: string, context?: LogContext): 
 };
 
 const flushClient = async (batch: QueuedLog[]) => {
-  await axios.post(`${env.NEXT_PUBLIC_API_BASE_URL}/logs/batch`, batch);
+  const csrfToken = cookies.load('csrf-token');
+  await axios.post(`${env.NEXT_PUBLIC_API_BASE_URL}/logs/batch`, batch, {
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': csrfToken,
+    },
+  });
 };
 
 const flush = async () => {
