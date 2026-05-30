@@ -1,7 +1,7 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 
-import { env } from './env';
+import { env } from '@src/env';
 
 import { cors } from './middleware/cors';
 import { traceId } from './middleware/trace-id';
