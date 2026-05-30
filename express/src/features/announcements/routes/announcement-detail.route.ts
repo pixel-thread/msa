@@ -7,8 +7,15 @@ import { logger } from '@src/shared/logger';
 import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { validate } from '@src/shared/lib/validate';
+import {
+  AnnouncementRouteParams,
+  UpdateAnnouncementSchema,
+  PublishAnnouncementSchema,
+} from '@src/features/announcements/validators';
 
 export const getAnnouncement: RequestHandler[] = [
+  validate({ params: AnnouncementRouteParams }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
@@ -24,6 +31,7 @@ export const getAnnouncement: RequestHandler[] = [
 ];
 
 export const putAnnouncement: RequestHandler[] = [
+  validate({ params: AnnouncementRouteParams, body: UpdateAnnouncementSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
@@ -47,6 +55,7 @@ export const putAnnouncement: RequestHandler[] = [
 ];
 
 export const deleteAnnouncement: RequestHandler[] = [
+  validate({ params: AnnouncementRouteParams }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
@@ -71,6 +80,7 @@ export const deleteAnnouncement: RequestHandler[] = [
 ];
 
 export const patchAnnouncement: RequestHandler[] = [
+  validate({ params: AnnouncementRouteParams, body: PublishAnnouncementSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);

@@ -7,6 +7,10 @@ import { UserRole } from '@prisma/client';
 import { withRole } from '@src/shared/utils/with-role';
 import { UnauthorizedError, ForbiddenError, NotFoundError } from '@src/shared/errors';
 import { getTransactionById } from '@src/features/payments/services/payment.service';
+import { validate } from '@src/shared/lib/validate';
+import { z } from 'zod';
+
+const PaymentIdParamSchema = z.object({ paymentId: z.string().uuid() });
 
 async function getAssociation(req: Request) {
   const userId = req.userId as string;
@@ -20,6 +24,7 @@ async function getAssociation(req: Request) {
 }
 
 export const getPayment: RequestHandler[] = [
+  validate({ params: PaymentIdParamSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'GET /api/payments/[id] - Request started');

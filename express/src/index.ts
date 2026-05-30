@@ -23,7 +23,7 @@ async function bootstrap() {
   app.use(express.json({ limit: '5mb' }));
   app.use(rateLimiter);
 
-  app.get('api/v1/health', (_req, res) => {
+  app.get('/api/health', (_req, res) => {
     res.json({ success: true, message: 'OK' });
   });
 
@@ -36,7 +36,7 @@ async function bootstrap() {
     const folderName = dirent.name;
 
     try {
-      const routeModule = await import(join(featuresDir, folderName, 'routes', 'index.ts'));
+      const routeModule = await import(join(featuresDir, folderName, 'routes', 'index'));
       const router = routeModule.default;
 
       if (router) {
@@ -45,8 +45,9 @@ async function bootstrap() {
         logger.debug(`  ✓ Mounted ${apiPath}`);
         mountedCount++;
       }
-    } catch {
+    } catch (error) {
       // Feature has no routes/index.ts — skip silently
+      logger.warn(`Failed loading routes for feature "${folderName}":`);
     }
   }
 

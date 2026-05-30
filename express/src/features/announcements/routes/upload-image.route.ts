@@ -5,8 +5,11 @@ import { UserRole } from '@prisma/client';
 import { logger } from '@src/shared/logger';
 import { getAssociation, withRole } from '@src/features/meetings/routes/_helpers';
 import { deleteFromBucket } from '@src/shared/lib/supabase/storage';
+import { validate } from '@src/shared/lib/validate';
+import { AnnouncementRouteParams } from '@src/features/announcements/validators';
 
 export const postUploadImage: RequestHandler[] = [
+  validate({ params: AnnouncementRouteParams }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);

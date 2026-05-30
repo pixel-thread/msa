@@ -12,7 +12,11 @@ import {
   updateMemberType,
   deleteMemberType as _deleteMemberType,
 } from '@feature/member-types/services';
-import { CreateMemberTypeSchema, UpdateMemberTypeSchema } from '@feature/member-types/validators';
+import {
+  CreateMemberTypeSchema,
+  UpdateMemberTypeSchema,
+  MemberTypeParamsSchema,
+} from '@feature/member-types/validators';
 
 export const getMemberTypes: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
@@ -55,6 +59,7 @@ export const postMemberType: RequestHandler[] = [
 ];
 
 export const getMemberTypeById: RequestHandler[] = [
+  validate({ params: MemberTypeParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
@@ -106,6 +111,7 @@ export const patchMemberType: RequestHandler[] = [
 ];
 
 export const deleteMemberType: RequestHandler[] = [
+  validate({ params: MemberTypeParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);

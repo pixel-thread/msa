@@ -31,6 +31,8 @@ const SetDefaultPlanSchema = z.object({
   planId: z.uuid(),
 });
 
+const PlanParamsSchema = z.object({ planId: z.string().uuid() });
+
 export const getPlansHandler: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -87,6 +89,7 @@ export const updatePlanHandler: RequestHandler[] = [
 ];
 
 export const deletePlanHandler: RequestHandler[] = [
+  validate({ params: PlanParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);

@@ -9,8 +9,13 @@ import { getAssociation } from '@src/shared/services/association/get-association
 import { withRole } from '@src/shared/utils/with-role';
 import { findManyAnnouncements } from '../services';
 import { validate } from '@src/shared/lib/validate';
+import {
+  CreateAnnouncementSchema,
+  AnnouncementQuerySchema,
+} from '@src/features/announcements/validators';
 
 export const getAnnouncements: RequestHandler[] = [
+  validate({ query: AnnouncementQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
 
@@ -69,6 +74,7 @@ export const getAnnouncements: RequestHandler[] = [
 ];
 
 export const postAnnouncement: RequestHandler[] = [
+  validate({ body: CreateAnnouncementSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);

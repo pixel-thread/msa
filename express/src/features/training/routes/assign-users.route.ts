@@ -194,6 +194,7 @@ export const patchBulkRemove: RequestHandler[] = [
 ];
 
 export const getAssignedUsersHandler: RequestHandler[] = [
+  validate({ params: ParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
