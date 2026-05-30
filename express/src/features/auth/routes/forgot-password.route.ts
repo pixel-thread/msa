@@ -12,7 +12,7 @@ import { logger } from '@src/shared/logger';
 
 export const postForgotPassword = [
   validate({ body: ForgotPasswordSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const { email } = req.body as ForgotPasswordInput;
     const user = await getUserFirst({ where: { email } });
 

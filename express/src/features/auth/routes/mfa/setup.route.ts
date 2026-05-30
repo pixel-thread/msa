@@ -14,7 +14,7 @@ const SetupMfaSchema = z.object({ password: z.string().min(1, 'Password is requi
 
 export const postMfaSetup = [
   validate({ body: SetupMfaSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const userId = req.headers['x-user-id'] as string;
     if (!userId) throw new UnauthorizedError('Unauthorized');

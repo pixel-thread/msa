@@ -8,7 +8,7 @@ import { Prisma } from '@prisma/client';
 
 export const postLog = [
   validate({ body: LogIngestSchema.strict() }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const body = req.body;
     const context = body?.context;
@@ -27,7 +27,7 @@ export const postLog = [
 
 export const postLogBatch = [
   validate({ body: LogBatchSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const { logs } = req.body!;
     await createLogsBatch({

@@ -16,7 +16,7 @@ import { logger } from '@src/shared/logger';
 
 export const postSignIn = [
   validate({ body: SignInSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const user = await getUserFirst({ where: { email: req.body?.email } });
 

@@ -5,7 +5,7 @@ import { logger } from '@src/shared/logger';
 import { getAssociation, withRole } from '@src/features/meetings/routes/_helpers';
 
 export const postMarkRead = [
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const announcementId = req.params.announcementId;

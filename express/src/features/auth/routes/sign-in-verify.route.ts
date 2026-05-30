@@ -14,7 +14,7 @@ import { logger } from '@src/shared/logger';
 
 export const postSignInVerify = [
   validate({ body: VerifySignInSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId }, 'POST /api/auth/sign-in/verify - Request started');
     const { code } = req.body as VerifySignInInput;

@@ -14,7 +14,7 @@ const VerifyMfaSchema = z.object({ code: z.string().length(6, 'Code must be 6 di
 
 export const postMfaVerify = [
   validate({ body: VerifyMfaSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const userId = req.headers['x-user-id'] as string;
     logger.info({ traceId, userId }, 'POST /api/auth/mfa/verify - Request started');

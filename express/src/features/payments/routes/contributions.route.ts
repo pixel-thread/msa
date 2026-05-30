@@ -40,7 +40,7 @@ const ContributionIdParamsSchema = z.object({
 
 export const listContributions = [
   validate({ query: ContributionsQuerySchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, query: req.query }, 'GET /api/payments/contributions - Request started');
     const association = await getAssociation(req);
@@ -79,7 +79,7 @@ export const listContributions = [
 
 export const generateContributions = [
   validate({ body: GenerateContributionsSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, year: req.body.year, month: req.body.month }, 'POST /api/payments/contributions - Request started');
     const association = await getAssociation(req);
@@ -102,7 +102,7 @@ export const generateContributions = [
 
 export const waiveContributionHandler = [
   validate({ body: WaiveContributionSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, contributionPeriodId: req.body.contributionPeriodId }, 'PATCH /api/payments/contributions - Request started');
     await getAssociation(req);
@@ -120,7 +120,7 @@ export const waiveContributionHandler = [
 
 export const getContribution = [
   validate({ params: ContributionIdParamsSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, contributionId: req.params.contributionId }, 'GET /api/payments/contributions/[contributionId] - Request started');
     const association = await getAssociation(req);

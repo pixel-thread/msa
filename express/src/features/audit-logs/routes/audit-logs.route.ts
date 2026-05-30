@@ -8,7 +8,7 @@ import { getAssociation, withRole } from '@src/features/meetings/routes/_helpers
 import { logger } from '@src/shared/logger';
 
 export const getAuditLogs = [
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /api/audit-logs - Request started');

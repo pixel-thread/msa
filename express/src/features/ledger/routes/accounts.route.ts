@@ -50,7 +50,7 @@ async function withRole(req: Request, role: UserRole) {
 
 export const listAccounts = [
   validate({ query: AccountQuerySchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /api/ledger/accounts - Request started');
@@ -67,7 +67,7 @@ export const listAccounts = [
 
 export const createAccountHandler = [
   validate({ body: CreateAccountSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'POST /api/ledger/accounts - Request started');

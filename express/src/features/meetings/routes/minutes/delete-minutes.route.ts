@@ -5,7 +5,7 @@ import { deleteMeetingMinute } from '@src/features/meetings/services/minutes';
 import { logger } from '@src/shared/logger';
 import { getAssociation, withRole } from '../_helpers';
 
-export const deleteMinute = async (req: Request, res: Response, _next?: NextFunction) => {
+export const deleteMinute = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
   const association = await getAssociation(req);
   const meetingId = req.params.meetingId as string; const minutesId = req.params.minutesId as string;

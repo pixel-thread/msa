@@ -18,7 +18,7 @@ async function getAssociation(req: Request) {
 
 export const recordPayment = [
   validate({ body: RecordManualPaymentSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, userId: req.body.userId }, 'POST /api/payments/record - Request started');
     const association = await getAssociation(req);

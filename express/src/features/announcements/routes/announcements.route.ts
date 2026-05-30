@@ -11,7 +11,7 @@ const CreateAnnouncementSchema = {} as any;
 const AnnouncementQuerySchema = {} as any;
 
 export const getAnnouncements = [
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, query: req.query }, 'GET /api/announcements - Request started');
@@ -32,7 +32,7 @@ export const getAnnouncements = [
 ];
 
 export const postAnnouncement = [
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId }, 'POST /api/announcements - Request started');

@@ -36,7 +36,7 @@ async function requireRole(req: Request, role: UserRole) {
 
 export const getMemberLedger = [
   validate({ query: QuerySchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /api/ledger/member/[memberId] - Request started');

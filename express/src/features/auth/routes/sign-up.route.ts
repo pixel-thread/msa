@@ -14,7 +14,7 @@ import { logger } from '@src/shared/logger';
 
 export const postSignUp = [
   validate({ body: MembershipApplicationSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, email: req.body?.email }, 'POST /api/auth/sign-up - Request started');
     const {

@@ -10,7 +10,7 @@ import { logger } from '@src/shared/logger';
 
 export const getMembershipApplicationsHandler = [
   validate({ query: GetMembershipApplicationsQuerySchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, status: (req.query as any)?.status }, 'GET /api/admin/membership-applications - Request started');
     const user = await withRole(req, UserRole.SECRETARY);
@@ -27,9 +27,9 @@ export const getMembershipApplicationsHandler = [
 
 export const postApproveApplication = [
   validate({ params: MembershipApplicationParamsSchema, body: ApproveApplicationSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    const applicationId = req.params.applicationId;
+    const applicationId = req.params.applicationId as string;
     if (!applicationId) {
       logger.error({ traceId }, 'POST /api/admin/membership-applications/[applicationId]/approve - Application not found (missing params)');
       throw new NotFoundError('Application not found');
@@ -63,9 +63,9 @@ export const postApproveApplication = [
 
 export const postRejectApplication = [
   validate({ params: MembershipApplicationParamsSchema, body: RejectApplicationSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    const applicationId = req.params.applicationId;
+    const applicationId = req.params.applicationId as string;
     if (!applicationId) {
       logger.error({ traceId }, 'POST /api/admin/membership-applications/[applicationId]/reject - Application not found (missing params)');
       throw new NotFoundError('Application not found');

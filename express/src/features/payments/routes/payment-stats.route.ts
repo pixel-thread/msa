@@ -15,7 +15,7 @@ async function getAssociation(req: Request) {
 }
 
 export const paymentStats = [
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId }, 'GET /api/payments/stats - Request started');
     const association = await getAssociation(req);

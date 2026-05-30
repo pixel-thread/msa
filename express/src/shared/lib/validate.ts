@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, type RequestHandler } from 'express';
 import type { ZodType } from 'zod';
 import { ValidationError } from '@src/shared/errors';
 import { formatZodIssues } from '@src/shared/validators/format-zod-issues';
@@ -24,7 +24,7 @@ export function validate<
   TParams extends Record<string, string> = Record<string, string>,
 >(
   schemas: ValidationSchemas<TBody, TQuery, TParams>,
-) {
+): RequestHandler {
   return (req: Request<TParams, any, TBody, TQuery>, _res: Response, next: NextFunction) => {
     try {
       if (schemas.body) {

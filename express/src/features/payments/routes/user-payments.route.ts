@@ -32,7 +32,7 @@ const UserPaymentsQuerySchema = z.object({
 
 export const userPayments = [
   validate({ params: UserPaymentsParamsSchema, query: UserPaymentsQuerySchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, userId: req.params.userId }, 'GET /api/payments/users/[userId] - Request started');
     const association = await getAssociation(req);
@@ -80,7 +80,7 @@ const UserContributionsQuerySchema = z.object({
 
 export const userContributions = [
   validate({ params: UserContributionsParamsSchema, query: UserContributionsQuerySchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, userId: req.params.userId }, 'GET /api/payments/users/[userId]/contributions - Request started');
     const association = await getAssociation(req);

@@ -31,7 +31,7 @@ async function requireRole(req: Request, role: UserRole) {
 
 export const listEntries = [
   validate({ query: LedgerQueryParams }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /api/ledger/entries - Request started');
@@ -48,7 +48,7 @@ export const listEntries = [
 
 export const createEntry = [
   validate({ body: CreateLedgerEntrySchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'POST /api/ledger/entries - Request started');
@@ -69,7 +69,7 @@ export const createEntry = [
   },
 ];
 
-export const approveEntryHandler = async (req: Request, res: Response, _next?: NextFunction) => {
+export const approveEntryHandler = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
   const association = await getAssociation(req);
   logger.info({ traceId, associationId: association.id }, 'POST /api/ledger/entries/[entryId]/approve - Request started');

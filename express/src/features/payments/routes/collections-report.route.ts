@@ -20,7 +20,7 @@ async function getAssociation(req: Request) {
 
 export const collectionsReport = [
   validate({ query: CollectionReportQuerySchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const query = req.query as any;
     logger.info({ traceId, year: query.year, month: query.month }, 'GET /api/payments/reports/collections - Request started');

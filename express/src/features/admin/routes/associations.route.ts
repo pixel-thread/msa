@@ -22,7 +22,7 @@ const ParamsSchema = z.object({
 });
 
 export const getAssociations = [
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId }, 'GET /api/admin/associations - Request started');
     const user = await withRole(req, UserRole.SUPER_ADMIN);
@@ -38,7 +38,7 @@ export const getAssociations = [
 
 export const postAssociation = [
   validate({ body: CreateAssociationSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, name: req.body?.name }, 'POST /api/admin/associations - Request started');
     const user = await withRole(req, UserRole.SUPER_ADMIN);
@@ -65,13 +65,13 @@ export const postAssociation = [
 ];
 
 export const getAssociationById = [
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, id: req.params.id }, 'GET /api/admin/associations/[id] - Request started');
     const user = await withRole(req, UserRole.SUPER_ADMIN);
     logger.info({ traceId, userId: user.id, roles: user.role }, 'GET /api/admin/associations/[id] - User authorized');
     const association = await findUniqueAssociation({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
     });
     if (!association) {
       logger.error({ traceId, id: req.params.id }, 'GET /api/admin/associations/[id] - Association not found');
@@ -84,13 +84,13 @@ export const getAssociationById = [
 
 export const putAssociation = [
   validate({ body: CreateAssociationSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, id: req.params.id, name: req.body?.name }, 'PUT /api/admin/associations/[id] - Request started');
     const user = await withRole(req, UserRole.SUPER_ADMIN);
     logger.info({ traceId, userId: user.id, roles: user.role }, 'PUT /api/admin/associations/[id] - User authorized');
     const existing = await findUniqueAssociation({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
     });
     if (!existing) {
       logger.error({ traceId, id: req.params.id }, 'PUT /api/admin/associations/[id] - Association Not Found');
@@ -98,8 +98,8 @@ export const putAssociation = [
     }
     if (req.body?.slug !== existing.slug || req.body?.name !== existing.name) {
       const conflict = await findFirstAssociation({
-        where: {
-          id: { not: req.params.id },
+      where: {
+        id: { not: req.params.id as string },
           OR: [{ slug: req.body?.slug }, { name: req.body?.name }],
         },
         take: 1,
@@ -110,7 +110,7 @@ export const putAssociation = [
       }
     }
     const updated = await updateAssociation({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
       data: req.body as CreateAssociationInput,
     });
     logger.info({ traceId, id: req.params.id }, 'PUT /api/admin/associations/[id] - Success');
@@ -119,20 +119,20 @@ export const putAssociation = [
 ];
 
 export const deleteAssociationById = [
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, id: req.params.id }, 'DELETE /api/admin/associations/[id] - Request started');
     const user = await withRole(req, UserRole.SUPER_ADMIN);
     logger.info({ traceId, userId: user.id, roles: user.role }, 'DELETE /api/admin/associations/[id] - User authorized');
     const existing = await findUniqueAssociation({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
     });
     if (!existing) {
       logger.error({ traceId, id: req.params.id }, 'DELETE /api/admin/associations/[id] - Association Not Found');
       throw new NotFoundError('Association Not Found');
     }
     const deleted = await deleteAssociation({
-      id: req.params.id,
+      id: req.params.id as string,
     });
     logger.info({ traceId, id: req.params.id }, 'DELETE /api/admin/associations/[id] - Success');
     return success(res, { data: deleted, message: 'Association deleted successfully' }, 200);
@@ -141,7 +141,7 @@ export const deleteAssociationById = [
 
 export const postAssociationMember = [
   validate({ body: AddAssociationMemberSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, targetUserId: req.body?.user_id, targetAssociationId: req.body?.association_id }, 'POST /api/admin/associations/[id]/member - Request started');
     const user = await withRole(req, UserRole.SUPER_ADMIN);

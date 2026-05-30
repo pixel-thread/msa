@@ -15,7 +15,7 @@ const TrainingParamsSchema = z.object({
 
 export const getModule = [
   validate({ params: TrainingParamsSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /training/modules/{moduleId} - Request started');
@@ -32,7 +32,7 @@ export const getModule = [
 
 export const updateModuleHandler = [
   validate({ params: TrainingParamsSchema, body: UpdateTrainingModuleSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'PATCH /training/modules/{moduleId} - Request started');
@@ -53,7 +53,7 @@ export const updateModuleHandler = [
 
 export const deleteModuleHandler = [
   validate({ params: TrainingParamsSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'DELETE /training/modules/{moduleId} - Request started');

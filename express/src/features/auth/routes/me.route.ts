@@ -6,7 +6,7 @@ import { getAuthCachedUser, cacheAuthUser } from '@src/features/auth/lib/cache';
 import { env } from '@src/env';
 import { logger } from '@src/shared/logger';
 
-export const getMe = async (req: Request, res: Response, _next?: NextFunction) => {
+export const getMe = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
   const userId = req.headers['x-user-id'] as string;
   logger.info({ traceId, userId }, 'GET /api/auth/me - Request started');

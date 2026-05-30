@@ -20,7 +20,7 @@ async function getAssociation(req: Request) {
 
 export const createOrder = [
   validate({ body: CreateOrderSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId }, 'POST /api/payments/order - Request started');
     const association = await getAssociation(req);

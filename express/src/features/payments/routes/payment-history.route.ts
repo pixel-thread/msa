@@ -18,7 +18,7 @@ async function getAssociation(req: Request) {
 
 export const paymentHistory = [
   validate({ query: PaymentHistoryQuerySchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, query: req.query }, 'GET /api/payments/history - Request started');
     await getAssociation(req);

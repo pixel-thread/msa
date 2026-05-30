@@ -48,7 +48,7 @@ async function withRole(req: Request, role: UserRole) {
 
 export const getTicket = [
   validate({ params: ParamsSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const userId = req.headers['x-user-id'] as string;
@@ -71,7 +71,7 @@ export const getTicket = [
 
 export const deleteTicket = [
   validate({ params: ParamsSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const actorId = req.headers['x-user-id'] as string;
@@ -93,7 +93,7 @@ export const deleteTicket = [
 
 export const respondToTicket = [
   validate({ params: ParamsSchema, body: RespondDsarSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const ticketId = req.params.ticketId as string;
@@ -112,7 +112,7 @@ export const respondToTicket = [
 
 export const assignTicket = [
   validate({ params: ParamsSchema, body: AssignSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const ticketId = req.params.ticketId as string;
@@ -135,7 +135,7 @@ export const assignTicket = [
 
 export const rejectTicket = [
   validate({ params: ParamsSchema, body: RejectSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const ticketId = req.params.ticketId as string;

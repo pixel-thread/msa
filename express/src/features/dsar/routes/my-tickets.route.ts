@@ -37,7 +37,7 @@ async function withRole(req: Request, role: UserRole) {
 
 export const listMyTickets = [
   validate({ query: DsarQuerySchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /api/dsar/my - Request started');
@@ -61,7 +61,7 @@ export const listMyTickets = [
   },
 ];
 
-export const getMyTicket = async (req: Request, res: Response, _next?: NextFunction) => {
+export const getMyTicket = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
   const association = await getAssociation(req);
   logger.info({ traceId, associationId: association.id }, 'GET /api/dsar/my/[ticketId] - Request started');

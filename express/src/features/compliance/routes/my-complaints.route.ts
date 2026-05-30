@@ -10,7 +10,7 @@ import { getAssociation } from './_helpers';
 
 export const listMyComplaints = [
   validate({ query: ComplaintQuerySchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const userId = req.headers['x-user-id'] as string;
     if (!userId) {
@@ -46,7 +46,7 @@ export const listMyComplaints = [
 
 export const getMyComplaint = [
   validate({ params: ComplaintParamsSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const userId = req.headers['x-user-id'] as string;
     if (!userId) {

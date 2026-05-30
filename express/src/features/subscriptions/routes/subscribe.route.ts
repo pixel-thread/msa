@@ -10,7 +10,7 @@ import { getAssociation, withRole } from '@src/features/meetings/routes/_helpers
 
 export const postSubscribe = [
   validate({ body: SubscribeSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'POST /api/subscriptions/subscribe - Request started');

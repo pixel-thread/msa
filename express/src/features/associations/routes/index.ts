@@ -1,7 +1,19 @@
 import { Router } from 'express';
-import { getAssociationByUser, postAssociationCreate, getCurrentAssociation, getAssociationDetail, patchAssociationDetail, postDeactivateAssociation, postUploadLogo, postAddMember } from './associations.route';
+import { auth } from '@src/middleware/auth';
+import {
+  getAssociationByUser,
+  postAssociationCreate,
+  getCurrentAssociation,
+  getAssociationDetail,
+  patchAssociationDetail,
+  postDeactivateAssociation,
+  postUploadLogo,
+  postAddMember,
+} from './associations.route';
 
 const router = Router();
+
+router.use(auth);
 
 router.get('/', getAssociationByUser);
 router.post('/', postAssociationCreate);

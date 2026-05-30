@@ -17,7 +17,7 @@ async function getAssociation(req: Request) {
 
 export const submitDsar = [
   validate({ body: SubmitDsarSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'POST /api/dsar/submit - Request started');

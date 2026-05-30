@@ -10,7 +10,7 @@ import { getAssociation, withRole } from './_helpers';
 
 export const listComplaints = [
   validate({ query: ComplaintQuerySchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /compliance - Request started');
@@ -42,7 +42,7 @@ export const listComplaints = [
 
 export const createComplaintHandler = [
   validate({ body: CreateComplaintSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'POST /compliance - Request started');

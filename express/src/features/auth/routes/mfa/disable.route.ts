@@ -12,7 +12,7 @@ const DisableMfaSchema = z.object({ password: z.string().min(1, 'Password is req
 
 export const postMfaDisable = [
   validate({ body: DisableMfaSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const userId = req.headers['x-user-id'] as string;
     logger.info({ traceId, userId }, 'POST /api/auth/mfa/disable - Request started');

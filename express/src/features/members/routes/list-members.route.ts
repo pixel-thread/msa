@@ -1,4 +1,4 @@
-import { Request, NextFunction, Response } from 'express';
+import { Request, NextFunction, Response, type RequestHandler } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { prisma } from '@src/shared/lib/prisma';
@@ -16,9 +16,9 @@ const QuerySchema = z.object({
   search: z.string().optional(),
 });
 
-export const listMembers = [
+export const listMembers: RequestHandler[] = [
   validate({ query: QuerySchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const userId = req.headers['x-user-id'] as string;
     if (!userId) throw new UnauthorizedError('Unauthorized');

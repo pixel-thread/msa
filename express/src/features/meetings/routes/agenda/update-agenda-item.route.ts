@@ -16,7 +16,7 @@ const UpdateAgendaItemSchema = z.object({
 
 export const patchUpdateAgendaItem = [
   validate({ body: UpdateAgendaItemSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'PATCH /api/meetings/[meetingId]/agenda/[itemId] - Request started');

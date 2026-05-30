@@ -16,7 +16,7 @@ const ResendSignInCodeSchema = z.object({ mfa_temp_token: z.string() });
 
 export const postSignInResend = [
   validate({ body: ResendSignInCodeSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const mfaCookie = req.cookies?.mfa_temp_token || req.body?.mfa_temp_token;
     if (!mfaCookie) throw new BadRequestError('Session expired. Please signin again');
 

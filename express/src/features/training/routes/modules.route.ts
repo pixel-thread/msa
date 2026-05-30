@@ -9,7 +9,7 @@ import { logger } from '@src/shared/logger';
 import { getAssociation, withRole } from './_helpers';
 
 export const getModules = [
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /training/modules - Request started');
@@ -35,7 +35,7 @@ export const getModules = [
 
 export const postModules = [
   validate({ body: CreateTrainingModuleSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'POST /training/modules - Request started');

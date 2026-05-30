@@ -15,7 +15,7 @@ const ParamsSchema = z.object({ meetingId: z.string('Invalid meeting ID') });
 
 export const postAddAgendaItem = [
   validate({ params: ParamsSchema, body: CreateAgendaItemSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const meetingId = req.params.meetingId as string;

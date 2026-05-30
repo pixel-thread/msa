@@ -15,7 +15,7 @@ const MeetingParamsSchema = z.object({
 
 export const getMeeting = [
   validate({ params: MeetingParamsSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const meetingId = req.params.meetingId as string;

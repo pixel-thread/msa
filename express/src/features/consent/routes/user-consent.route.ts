@@ -50,7 +50,7 @@ async function withRole(req: Request, role: UserRole) {
 
 export const getReceipt = [
   validate({ params: ConsentReceiptParamsSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const receiptId = req.params.receiptId as string;
@@ -69,7 +69,7 @@ export const getReceipt = [
 
 export const updateReceipt = [
   validate({ params: ConsentReceiptParamsSchema, body: UpdateConsentReceiptSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const receiptId = req.params.receiptId as string;
@@ -93,7 +93,7 @@ export const updateReceipt = [
 
 export const deleteReceipt = [
   validate({ params: ConsentReceiptParamsSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const receiptId = req.params.receiptId as string;
@@ -114,7 +114,7 @@ export const deleteReceipt = [
 
 export const getUserConsents = [
   validate({ params: UserParamsSchema, query: UserQuerySchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const targetUserId = req.params.userId as string;

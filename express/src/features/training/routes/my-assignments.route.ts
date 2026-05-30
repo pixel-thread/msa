@@ -6,7 +6,7 @@ import { logger } from '@src/shared/logger';
 import { getAssociation, withRole } from './_helpers';
 
 export const getMyAssignments = [
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /training/my-assignments - Request started');
@@ -22,7 +22,7 @@ export const getMyAssignments = [
 ];
 
 export const getMyCompletions = [
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /training/my-completions - Request started');

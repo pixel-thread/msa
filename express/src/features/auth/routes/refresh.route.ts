@@ -15,7 +15,7 @@ import { logger } from '@src/shared/logger';
 
 export const postRefresh = [
   validate({ body: RefreshTokenSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId }, 'POST /api/auth/refresh - Request started');
     const bodyToken = req.body?.token;

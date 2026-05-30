@@ -18,7 +18,7 @@ async function getAssociation(req: Request) {
 
 export const grantConsent = [
   validate({ body: ConsentUpdateSchema.omit({ action: true }) }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'POST /api/consent/grant - Request started');
@@ -43,7 +43,7 @@ export const grantConsent = [
 
 export const revokeConsent = [
   validate({ body: ConsentUpdateSchema.omit({ action: true }) }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'POST /api/consent/revoke - Request started');

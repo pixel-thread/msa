@@ -13,7 +13,7 @@ const RouteParams = z.object({
 });
 
 export const getAnnouncement = [
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const announcementId = req.params.announcementId;
@@ -28,7 +28,7 @@ export const getAnnouncement = [
 ];
 
 export const putAnnouncement = [
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId }, 'PUT /api/announcements/[id] - Request started');
@@ -47,7 +47,7 @@ export const putAnnouncement = [
 ];
 
 export const deleteAnnouncement = [
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const announcementId = req.params.announcementId;
@@ -64,7 +64,7 @@ export const deleteAnnouncement = [
 ];
 
 export const patchAnnouncement = [
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const announcementId = req.params.announcementId;

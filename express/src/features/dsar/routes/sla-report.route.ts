@@ -33,7 +33,7 @@ async function withRole(req: Request, role: UserRole) {
   return { ...user, role: roles };
 }
 
-export const getSlaReport = async (req: Request, res: Response, _next?: NextFunction) => {
+export const getSlaReport = async (req: Request, res: Response, _next: NextFunction) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
   const association = await getAssociation(req);
   logger.info({ traceId, associationId: association.id }, 'GET /api/dsar/sla-report - Request started');

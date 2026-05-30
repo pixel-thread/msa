@@ -10,7 +10,7 @@ import { logger } from '@src/shared/logger';
 import z from 'zod';
 
 export const getProfile = [
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId }, 'GET /api/user - Request started');
 
@@ -28,7 +28,7 @@ export const getProfile = [
 
 export const updateProfile = [
   validate({ body: UpdateUserSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId }, 'POST /api/user - Request started');
 

@@ -25,7 +25,7 @@ const SetDefaultPlanSchema = z.object({
 });
 
 export const getPlansHandler = [
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const user = await withRole(req, UserRole.MEMBER);
@@ -37,7 +37,7 @@ export const getPlansHandler = [
 
 export const createPlanHandler = [
   validate({ body: CreateSubscriptionPlanSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     await withRole(req, UserRole.SUPER_ADMIN);
@@ -50,7 +50,7 @@ export const createPlanHandler = [
 
 export const setDefaultPlanHandler = [
   validate({ body: SetDefaultPlanSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     await withRole(req, UserRole.SUPER_ADMIN);
@@ -63,7 +63,7 @@ export const setDefaultPlanHandler = [
 
 export const updatePlanHandler = [
   validate({ body: UpdatePlanSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const user = await withRole(req, UserRole.SUPER_ADMIN);
@@ -77,7 +77,7 @@ export const updatePlanHandler = [
 ];
 
 export const deletePlanHandler = [
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const user = await withRole(req, UserRole.PRESIDENT);

@@ -8,7 +8,7 @@ import { logger } from '@src/shared/logger';
 import { getAssociation, withRole } from './_helpers';
 
 export const getCompletions = [
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /training/completions - Request started');
@@ -28,7 +28,7 @@ export const getCompletions = [
 
 export const postCompletion = [
   validate({ body: AdminRecordCompletionSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'POST /training/completions - Request started');

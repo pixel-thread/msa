@@ -17,7 +17,7 @@ async function getAssociation(req: Request) {
 
 export const verifyPayment = [
   validate({ body: VerifyPaymentSchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, razorpayOrderId: req.body.razorpayOrderId }, 'POST /api/payments/verify - Request started');
     await getAssociation(req);

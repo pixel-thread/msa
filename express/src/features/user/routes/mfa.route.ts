@@ -5,7 +5,7 @@ import { getUser, updateUser } from '@src/features/user/services';
 import { logger } from '@src/shared/logger';
 
 export const toggleMfa = [
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId }, 'POST /api/user/mfa - Request started');
 

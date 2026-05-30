@@ -11,7 +11,7 @@ import { getAssociation, withRole } from './_helpers';
 
 export const getMeetings = [
   validate({ query: MeetingQuerySchema }),
-  async (req: Request, res: Response, _next?: NextFunction) => {
+  async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /api/meetings - Request started');
