@@ -3,7 +3,7 @@
 // ---- Security: MEMBER role or higher
 
 // External libs
-import { Request, NextFunction, Response } from 'express';
+import { Request, Response, RequestHandler } from 'express';
 
 // Shared utilities
 import { success } from '@src/shared/utils/responses';
@@ -64,7 +64,7 @@ async function withRole(req: Request, role: UserRole) {
 
 // ---- Handler
 
-export const getMyConsent = asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
+export const getMyConsent: RequestHandler = asyncHandler(async (req: Request, res: Response) => {
   // ---- Extract tracing context
 
   const traceId = (req.traceId as string) || '';

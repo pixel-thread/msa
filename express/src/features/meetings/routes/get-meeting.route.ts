@@ -19,7 +19,7 @@ const MeetingParamsSchema = z.object({
 /** GET /api/meetings/[meetingId] - Get details of a single meeting. */
 export const getMeeting: RequestHandler[] = [
   validate({ params: MeetingParamsSchema }),
-  asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const meetingId = req.params.meetingId as string;

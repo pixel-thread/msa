@@ -1,4 +1,4 @@
-import { Request, NextFunction, Response } from 'express';
+import { Request, Response, RequestHandler } from 'express';
 
 import { success } from '@src/shared/utils/responses';
 import { asyncHandler } from '@src/shared/utils/async-handler';
@@ -18,7 +18,7 @@ import { getAuthCachedUser, cacheAuthUser } from '@src/features/auth/lib/cache';
  * Returns the authenticated user's profile from the database. In production,
  * caches the result to reduce database load on repeated requests.
  */
-export const getMe = asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
+export const getMe: RequestHandler = asyncHandler(async (req: Request, res: Response) => {
   const traceId = (req.traceId as string) || '';
   const userId = req.userId as string;
   logger.info({ traceId, userId }, 'GET /api/auth/me - Request started');

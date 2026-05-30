@@ -8,7 +8,7 @@ import {
 
 // ---- Routes -----------------------------------------------------------------
 
-const router = Router();
+const router:Router= Router();
 
 // Subscription expiry trigger
 router.post('/subscription-expiry', postSubscriptionExpiry);

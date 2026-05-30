@@ -4,7 +4,7 @@
 
 // ---- External Libraries
 
-import { Request, NextFunction, Response } from 'express';
+import { Request, NextFunction, Response, RequestHandler } from 'express';
 
 // ---- Shared Utilities
 
@@ -88,31 +88,33 @@ async function withRole(req: Request, role: UserRole) {
 // Security: Requires DPO role
 // ============================================================================
 
-export const getSlaReport = asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
-  const traceId = (req.traceId as string) || '';
+export const getSlaReport: RequestHandler = asyncHandler(
+  async (req: Request, res: Response, _next: NextFunction) => {
+    const traceId = (req.traceId as string) || '';
 
-  // ---- Auth: Resolve association
+    // ---- Auth: Resolve association
 
-  const association = await getAssociation(req);
+    const association = await getAssociation(req);
 
-  // ---- Auth log
+    // ---- Auth log
 
-  logger.info(
-    { traceId, associationId: association.id },
-    'GET /api/dsar/sla-report - Request started',
-  );
+    logger.info(
+      { traceId, associationId: association.id },
+      'GET /api/dsar/sla-report - Request started',
+    );
 
-  // ---- Auth: Verify role
+    // ---- Auth: Verify role
 
-  await withRole(req, UserRole.DPO);
+    await withRole(req, UserRole.DPO);
 
-  // ---- Business logic: Fetch SLA report
+    // ---- Business logic: Fetch SLA report
 
-  const report = await getDsarSlaStatus(association.id);
+    const report = await getDsarSlaStatus(association.id);
 
-  // ---- Result log
+    // ---- Result log
 
-  logger.info({ traceId }, 'GET /api/dsar/sla-report - Success');
+    logger.info({ traceId }, 'GET /api/dsar/sla-report - Success');
 
-  return success(res, { data: report, message: '' });
-});
+    return success(res, { data: report, message: '' });
+  },
+);

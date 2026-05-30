@@ -4,7 +4,7 @@
 
 // ---- External Libraries
 
-import { Request, NextFunction, Response } from 'express';
+import { Request, NextFunction, Response, RequestHandler } from 'express';
 
 // ---- Shared Utilities
 
@@ -88,28 +88,33 @@ async function withRole(req: Request, role: UserRole) {
 // Security: Requires DPO role
 // ============================================================================
 
-export const listAdmins = asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
-  const traceId = (req.traceId as string) || '';
+export const listAdmins: RequestHandler = asyncHandler(
+  async (req: Request, res: Response, _next: NextFunction) => {
+    const traceId = (req.traceId as string) || '';
 
-  // ---- Auth: Resolve association
+    // ---- Auth: Resolve association
 
-  const association = await getAssociation(req);
+    const association = await getAssociation(req);
 
-  // ---- Auth log
+    // ---- Auth log
 
-  logger.info({ traceId, associationId: association.id }, 'GET /api/dsar/admins - Request started');
+    logger.info(
+      { traceId, associationId: association.id },
+      'GET /api/dsar/admins - Request started',
+    );
 
-  // ---- Auth: Verify role
+    // ---- Auth: Verify role
 
-  await withRole(req, UserRole.DPO);
+    await withRole(req, UserRole.DPO);
 
-  // ---- Business logic: Fetch admins
+    // ---- Business logic: Fetch admins
 
-  const admins = await findAssociationAdmins(association.id);
+    const admins = await findAssociationAdmins(association.id);
 
-  // ---- Result log
+    // ---- Result log
 
-  logger.info({ traceId, count: admins.length }, 'GET /api/dsar/admins - Success');
+    logger.info({ traceId, count: admins.length }, 'GET /api/dsar/admins - Success');
 
-  return success(res, { data: admins });
-});
+    return success(res, { data: admins });
+  },
+);

@@ -5,7 +5,7 @@ import { Router } from 'express';
 // ---- Router Setup
 
 /** Placeholder router for unimplemented DSAR endpoints. */
-const router = Router();
+const router:Router= Router();
 
 // ---- Catch-All Handler
 

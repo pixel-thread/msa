@@ -2,7 +2,7 @@
 // External libs
 // ---------------------------------------------------------------------------
 
-import { Request, NextFunction, Response } from 'express';
+import { Request, NextFunction, Response, RequestHandler } from 'express';
 
 // ---------------------------------------------------------------------------
 // Prisma
@@ -31,27 +31,29 @@ import { getSummary } from '@src/features/ledger/services/ledger.service';
 // Security: FINANCE role required
 // ---------------------------------------------------------------------------
 
-export const getLedgerSummary = asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
-  const traceId = (req.traceId as string) || '';
+export const getLedgerSummary: RequestHandler = asyncHandler(
+  async (req: Request, res: Response, _next: NextFunction) => {
+    const traceId = (req.traceId as string) || '';
 
-  // ---- Resolve association -------------------------------------------------
+    // ---- Resolve association -------------------------------------------------
 
-  const association = await getAssociation(req);
-  logger.info(
-    { traceId, associationId: association.id },
-    'GET /api/ledger/summary - Request started',
-  );
+    const association = await getAssociation(req);
+    logger.info(
+      { traceId, associationId: association.id },
+      'GET /api/ledger/summary - Request started',
+    );
 
-  // ---- Authorize (FINANCE role) --------------------------------------------
+    // ---- Authorize (FINANCE role) --------------------------------------------
 
-  await withRole(req, UserRole.FINANCE);
+    await withRole(req, UserRole.FINANCE);
 
-  // ---- Business logic ------------------------------------------------------
+    // ---- Business logic ------------------------------------------------------
 
-  const data = await getSummary(association.id);
+    const data = await getSummary(association.id);
 
-  // ---- Result --------------------------------------------------------------
+    // ---- Result --------------------------------------------------------------
 
-  logger.info({ traceId, count: data.accounts.length }, 'GET /api/ledger/summary - Success');
-  return success(res, { data });
-});
+    logger.info({ traceId, count: data.accounts.length }, 'GET /api/ledger/summary - Success');
+    return success(res, { data });
+  },
+);
