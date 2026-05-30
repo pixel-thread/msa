@@ -1,4 +1,5 @@
 import { passwordValidation } from '@validator/auth';
+import { ALLOW_REGEX } from '@src/shared/constants';
 import z from 'zod';
 
 // ---- Sign Up ----
@@ -67,7 +68,11 @@ export type SignInInput = z.infer<typeof SignInSchema>;
 
 export const VerifySignInSchema = z
   .object({
-    code: z.string().length(6, 'Code must be 6 digits'),
+    code: z
+      .string()
+      .regex(/^\d{6}$/, 'Code must be 6 digits')
+      .regex(ALLOW_REGEX.NUMERIC_ONLY, 'Code must be 6 digits')
+      .length(6, 'Code must be 6 digits'),
     mfa_temp_token: z.string().optional(),
   })
   .strict();

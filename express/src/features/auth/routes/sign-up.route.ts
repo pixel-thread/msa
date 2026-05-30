@@ -7,7 +7,7 @@ import { asyncHandler } from '@src/shared/utils/async-handler';
 import { logger } from '@src/shared/logger';
 import { env } from '@src/env';
 
-import { ConflictError } from '@src/shared/errors';
+import { BadRequestError, ConflictError } from '@src/shared/errors';
 
 import { findFirstAssociation } from '@src/features/associations/services/findFirstAssociation';
 import { findFirstMember } from '@src/features/members/services/findFirstMember';
@@ -69,7 +69,7 @@ export const postSignUp: RequestHandler[] = [
     // Prevent duplicate active accounts for the same email address
     if (user && user.status === 'ACTIVE') {
       logger.error({ traceId, email }, 'POST /api/auth/sign-up - Active User already exists');
-      throw new ConflictError('An Active User already exist with this email');
+      throw new BadRequestError('Invalid email');
     }
 
     // ---- Create membership application ----

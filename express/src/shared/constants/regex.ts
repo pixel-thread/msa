@@ -7,7 +7,7 @@
  */
 
 /** Positive-validation regex patterns for common input formats. */
-export const ALLOW = {
+export const ALLOW_REGEX = {
   EMAIL: /^[\w.%+-]+@[a-zA-Z\d-]+\.[a-zA-Z]{2,}$/,
 
   PASSWORD: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/,
@@ -62,7 +62,7 @@ export const ALLOW = {
 };
 
 /** Negative-validation regex patterns for detecting unsafe input. */
-export const DENY = {
+export const DENY_REGEX = {
   HTML_TAGS: /<[^>]*>/,
 
   SQL_INJECTION: /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|ALTER|CREATE|EXEC)\b)|(--)|(;)|(')/i,
