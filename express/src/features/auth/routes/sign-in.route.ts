@@ -7,16 +7,8 @@ import { asyncHandler } from '@src/shared/utils/async-handler';
 import { logger } from '@src/shared/logger';
 import { env } from '@src/env';
 
-import {
-  verifyPassword,
-  hashToken,
-  generateOTP,
-} from '@src/shared/lib/password';
-import {
-  signAccessToken,
-  signRefreshToken,
-  signMfaTempToken,
-} from '@src/shared/lib/jwt';
+import { verifyPassword, hashToken, generateOTP } from '@src/shared/lib/password';
+import { signAccessToken, signRefreshToken, signMfaTempToken } from '@src/shared/lib/jwt';
 import { sendVerificationEmail } from '@src/shared/lib/email';
 
 import { ForbiddenError, UnauthorizedError } from '@src/shared/errors';
@@ -137,14 +129,14 @@ export const postSignIn: RequestHandler[] = [
     res.cookie('access_token', accessToken, {
       httpOnly: true,
       secure: env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'none',
       maxAge: 15 * 60 * 1000,
       path: '/',
     });
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
       secure: env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: '/',
     });

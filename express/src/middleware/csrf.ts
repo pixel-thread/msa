@@ -19,7 +19,7 @@ export function csrf(req: Request, res: Response, next: NextFunction) {
     res.cookie('csrf-token', token, {
       httpOnly: false,
       secure: env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'none',
       path: '/',
       maxAge: 60 * 60 * 24,
     });

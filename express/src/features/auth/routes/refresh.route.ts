@@ -35,7 +35,9 @@ export const postRefresh: RequestHandler[] = [
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'POST /api/auth/refresh - Request started');
+
     const bodyToken = req.body?.token;
+
     const refreshCookie = req.cookies?.refresh_token || bodyToken;
 
     if (!refreshCookie) throw new UnauthorizedError('Refresh token not found');
