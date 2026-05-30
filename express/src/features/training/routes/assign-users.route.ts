@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UserRole } from '@prisma/client';
@@ -34,7 +34,7 @@ const BulkRemoveAssignSchema = z.object({
 
 export const getAssignments = [
   validate({ params: ParamsSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /training/modules/{moduleId}/assign - Request started');
@@ -51,7 +51,7 @@ export const getAssignments = [
 
 export const postAssign = [
   validate({ params: ParamsSchema, body: AssignTrainingSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'POST /training/modules/{moduleId}/assign - Request started');
@@ -76,7 +76,7 @@ export const postAssign = [
 
 export const putBulkAssign = [
   validate({ params: ParamsSchema, body: BulkAssignTrainingSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'PUT /training/modules/{moduleId}/assign - Request started');
@@ -101,7 +101,7 @@ export const putBulkAssign = [
 
 export const deleteAssignment = [
   validate({ params: ParamsSchema, body: RemoveAssignSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'DELETE /training/modules/{moduleId}/assign - Request started');
@@ -126,7 +126,7 @@ export const deleteAssignment = [
 
 export const patchBulkRemove = [
   validate({ params: ParamsSchema, body: BulkRemoveAssignSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'PATCH /training/modules/{moduleId}/assign - Request started');
@@ -150,7 +150,7 @@ export const patchBulkRemove = [
 ];
 
 export const getAssignedUsersHandler = [
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /training/modules/{moduleId}/assigned-users - Request started');

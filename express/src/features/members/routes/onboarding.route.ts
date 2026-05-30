@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { prisma } from '@src/shared/lib/prisma';
@@ -22,7 +22,7 @@ const OnboardingSchema = z.object({
 
 export const onboarding = [
   validate({ body: OnboardingSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const userId = req.headers['x-user-id'] as string;
     if (!userId) throw new UnauthorizedError('Unauthorized');

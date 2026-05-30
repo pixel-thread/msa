@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { success } from '@src/shared/utils/responses';
 import { ForbiddenError } from '@src/shared/errors';
 import { UserRole } from '@prisma/client';
@@ -8,7 +8,7 @@ import { getAssociation, withRole } from '@src/features/meetings/routes/_helpers
 import { logger } from '@src/shared/logger';
 
 export const getAuditLogs = [
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /api/audit-logs - Request started');

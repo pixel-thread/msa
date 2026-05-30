@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { prisma } from '@src/shared/lib/prisma';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
@@ -18,7 +18,7 @@ async function getAssociation(req: Request) {
 
 export const recordPayment = [
   validate({ body: RecordManualPaymentSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, userId: req.body.userId }, 'POST /api/payments/record - Request started');
     const association = await getAssociation(req);

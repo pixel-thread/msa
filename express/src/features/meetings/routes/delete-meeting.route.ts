@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { success } from '@src/shared/utils/responses';
 import { ForbiddenError } from '@src/shared/errors';
 import { UserRole } from '@prisma/client';
@@ -7,7 +7,7 @@ import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
 import { logger } from '@src/shared/logger';
 import { getAssociation, withRole } from './_helpers';
 
-export const deleteMeetingHandler = async (req: Request, res: Response) => {
+export const deleteMeetingHandler = async (req: Request, res: Response, _next?: NextFunction) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
   const association = await getAssociation(req);
   const meetingId = req.params.meetingId as string;

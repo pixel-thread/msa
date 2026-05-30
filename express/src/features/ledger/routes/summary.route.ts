@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
 import { prisma } from '@src/shared/lib/prisma';
@@ -26,7 +26,7 @@ async function requireRole(req: Request, role: UserRole) {
   return user;
 }
 
-export const getLedgerSummary = async (req: Request, res: Response) => {
+export const getLedgerSummary = async (req: Request, res: Response, _next?: NextFunction) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
   const association = await getAssociation(req);
   logger.info({ traceId, associationId: association.id }, 'GET /api/ledger/summary - Request started');

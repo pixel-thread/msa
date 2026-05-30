@@ -1,11 +1,11 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { success } from '@src/shared/utils/responses';
 import { UserRole, MeetingStatus } from '@prisma/client';
 import { updateMeeting } from '@src/features/meetings/services/updateMeeting';
 import { logger } from '@src/shared/logger';
 import { getAssociation, withRole } from './_helpers';
 
-export const postIssueNotice = async (req: Request, res: Response) => {
+export const postIssueNotice = async (req: Request, res: Response, _next?: NextFunction) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
   const association = await getAssociation(req);
   logger.info({ traceId, associationId: association.id }, 'POST /api/meetings/[meetingId]/notice - Request started');

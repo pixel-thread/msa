@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { ConflictError, NotFoundError } from '@src/shared/errors';
@@ -22,7 +22,7 @@ const ParamsSchema = z.object({
 });
 
 export const getAssociations = [
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId }, 'GET /api/admin/associations - Request started');
     const user = await withRole(req, UserRole.SUPER_ADMIN);
@@ -38,7 +38,7 @@ export const getAssociations = [
 
 export const postAssociation = [
   validate({ body: CreateAssociationSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, name: req.body?.name }, 'POST /api/admin/associations - Request started');
     const user = await withRole(req, UserRole.SUPER_ADMIN);
@@ -65,7 +65,7 @@ export const postAssociation = [
 ];
 
 export const getAssociationById = [
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, id: req.params.id }, 'GET /api/admin/associations/[id] - Request started');
     const user = await withRole(req, UserRole.SUPER_ADMIN);
@@ -84,7 +84,7 @@ export const getAssociationById = [
 
 export const putAssociation = [
   validate({ body: CreateAssociationSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, id: req.params.id, name: req.body?.name }, 'PUT /api/admin/associations/[id] - Request started');
     const user = await withRole(req, UserRole.SUPER_ADMIN);
@@ -119,7 +119,7 @@ export const putAssociation = [
 ];
 
 export const deleteAssociationById = [
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, id: req.params.id }, 'DELETE /api/admin/associations/[id] - Request started');
     const user = await withRole(req, UserRole.SUPER_ADMIN);
@@ -141,7 +141,7 @@ export const deleteAssociationById = [
 
 export const postAssociationMember = [
   validate({ body: AddAssociationMemberSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, targetUserId: req.body?.user_id, targetAssociationId: req.body?.association_id }, 'POST /api/admin/associations/[id]/member - Request started');
     const user = await withRole(req, UserRole.SUPER_ADMIN);

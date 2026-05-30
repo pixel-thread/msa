@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UserRole, ComplianceCheckStatus as PrismaComplianceCheckStatus, Prisma } from '@prisma/client';
@@ -11,7 +11,7 @@ import { getAssociation, withRole } from './_helpers';
 
 export const listChecks = [
   validate({ query: ComplianceCheckQuerySchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /compliance/checks - Request started');
@@ -42,7 +42,7 @@ export const listChecks = [
 
 export const getCheck = [
   validate({ params: ComplianceCheckParamsSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id, checkId: req.params.checkId }, 'GET /compliance/checks/:checkId - Request started');
@@ -62,7 +62,7 @@ export const getCheck = [
 
 export const runChecks = [
   validate({ body: TriggerComplianceCheckSchema.optional() }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'POST /compliance/checks - Request started');
@@ -102,7 +102,7 @@ export const runChecks = [
 
 export const deleteCheck = [
   validate({ params: ComplianceCheckParamsSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id, checkId: req.params.checkId }, 'DELETE /compliance/checks/:checkId - Request started');

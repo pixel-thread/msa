@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { prisma } from '@src/shared/lib/prisma';
@@ -12,13 +12,13 @@ import z from 'zod';
 
 const QuerySchema = z.object({
   page: pageNumberValidation,
-  status: z.nativeEnum(UserStatus).optional(),
+  status: z.enum(UserStatus).optional(),
   search: z.string().optional(),
 });
 
 export const listMembers = [
   validate({ query: QuerySchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const userId = req.headers['x-user-id'] as string;
     if (!userId) throw new UnauthorizedError('Unauthorized');
@@ -28,11 +28,16 @@ export const listMembers = [
       include: { association: true },
     });
     if (!user || !user.associationId) throw new ForbiddenError('User association not found');
-    const association = { id: user.association.id, slug: user.association.slug, name: user.association.name };
+    const association = {
+      id: user.association.id,
+      slug: user.association.slug,
+      name: user.association.name,
+    };
 
     logger.info({ traceId, associationId: association.id }, 'GET /api/members - Request started');
 
-    if (!user.role.includes(UserRole.SECRETARY)) throw new ForbiddenError('Insufficient permissions');
+    if (!user.role.includes(UserRole.SECRETARY))
+      throw new ForbiddenError('Insufficient permissions');
 
     logger.info({ traceId, userId: user.id }, 'GET /api/members - User authorized');
 

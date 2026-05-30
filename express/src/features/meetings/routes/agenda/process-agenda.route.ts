@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UserRole } from '@prisma/client';
@@ -12,7 +12,7 @@ const ParamsSchema = z.object({ meetingId: z.string('Invalid meeting ID') });
 
 export const patchProcessAgendaOperations = [
   validate({ params: ParamsSchema, body: AgendaOperationSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const meetingId = req.params.meetingId as string;

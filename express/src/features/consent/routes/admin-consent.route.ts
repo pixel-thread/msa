@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
@@ -44,7 +44,7 @@ async function withRole(req: Request, role: UserRole) {
 
 export const getAllConsentRecords = [
   validate({ query: AllConsentRecordsQuerySchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /api/consent/all - Request started');
@@ -61,7 +61,7 @@ export const getAllConsentRecords = [
 
 export const getConsentHistory = [
   validate({ query: HistoryQuerySchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /api/consent/history - Request started');
@@ -77,7 +77,7 @@ export const getConsentHistory = [
   },
 ];
 
-export const getConsentReport = async (req: Request, res: Response) => {
+export const getConsentReport = async (req: Request, res: Response, _next?: NextFunction) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
   const association = await getAssociation(req);
   logger.info({ traceId, associationId: association.id }, 'GET /api/consent/report - Request started');

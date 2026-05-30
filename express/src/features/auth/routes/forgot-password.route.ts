@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { ForgotPasswordInput, ForgotPasswordSchema } from '@src/features/auth/validators';
@@ -12,7 +12,7 @@ import { logger } from '@src/shared/logger';
 
 export const postForgotPassword = [
   validate({ body: ForgotPasswordSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const { email } = req.body as ForgotPasswordInput;
     const user = await getUserFirst({ where: { email } });
 

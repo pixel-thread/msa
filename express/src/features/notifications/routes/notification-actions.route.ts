@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError, ValidationError, NotFoundError } from '@src/shared/errors';
@@ -26,7 +26,7 @@ const LinkNotificationSchema = z.object({
 
 export const postRegisterPushToken = [
   validate({ body: RegisterPushTokenSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId }, 'POST /api/notifications/register - Request started');
     const token = req.body?.token;
@@ -39,7 +39,7 @@ export const postRegisterPushToken = [
 
 export const postLinkNotification = [
   validate({ body: LinkNotificationSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId }, 'POST /api/notifications/link - Request started');
     const userId = req.headers['x-user-id'];
@@ -53,7 +53,7 @@ export const postLinkNotification = [
 
 export const patchNotificationStatus = [
   validate({ body: UpdateNotificationSchema, params: NotificationRouteParams }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId }, 'PATCH /api/notifications/[notificationId]/status - Request started');
     const user = await withRole(req, UserRole.MEMBER);

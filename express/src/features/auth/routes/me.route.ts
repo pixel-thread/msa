@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError } from '@src/shared/errors';
 import { getUniqueUser } from '@src/shared/services/user/get-unique-user';
@@ -6,7 +6,7 @@ import { getAuthCachedUser, cacheAuthUser } from '@src/features/auth/lib/cache';
 import { env } from '@src/env';
 import { logger } from '@src/shared/logger';
 
-export const getMe = async (req: Request, res: Response) => {
+export const getMe = async (req: Request, res: Response, _next?: NextFunction) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
   const userId = req.headers['x-user-id'] as string;
   logger.info({ traceId, userId }, 'GET /api/auth/me - Request started');

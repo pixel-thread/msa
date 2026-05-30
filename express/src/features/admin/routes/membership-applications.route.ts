@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { NotFoundError } from '@src/shared/errors';
@@ -10,7 +10,7 @@ import { logger } from '@src/shared/logger';
 
 export const getMembershipApplicationsHandler = [
   validate({ query: GetMembershipApplicationsQuerySchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, status: (req.query as any)?.status }, 'GET /api/admin/membership-applications - Request started');
     const user = await withRole(req, UserRole.SECRETARY);
@@ -27,7 +27,7 @@ export const getMembershipApplicationsHandler = [
 
 export const postApproveApplication = [
   validate({ params: MembershipApplicationParamsSchema, body: ApproveApplicationSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const applicationId = req.params.applicationId;
     if (!applicationId) {
@@ -63,7 +63,7 @@ export const postApproveApplication = [
 
 export const postRejectApplication = [
   validate({ params: MembershipApplicationParamsSchema, body: RejectApplicationSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const applicationId = req.params.applicationId;
     if (!applicationId) {

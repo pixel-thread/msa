@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { ForbiddenError } from '@src/shared/errors';
@@ -17,7 +17,7 @@ const AttendeeParamsSchema = z.object({
 
 export const patchUpdateAttendee = [
   validate({ params: AttendeeParamsSchema, body: UpdateAttendeeSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const meetingId = req.params.meetingId as string; const targetUserId = req.params.userId as string;
@@ -50,7 +50,7 @@ export const patchUpdateAttendee = [
   },
 ];
 
-export const deleteRemoveAttendee = async (req: Request, res: Response) => {
+export const deleteRemoveAttendee = async (req: Request, res: Response, _next?: NextFunction) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
   const association = await getAssociation(req);
   const meetingId = req.params.meetingId as string; const targetUserId = req.params.userId as string;

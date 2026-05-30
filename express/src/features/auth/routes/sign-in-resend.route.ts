@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { verifyMfaTempToken } from '@src/shared/lib/jwt';
@@ -16,7 +16,7 @@ const ResendSignInCodeSchema = z.object({ mfa_temp_token: z.string() });
 
 export const postSignInResend = [
   validate({ body: ResendSignInCodeSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const mfaCookie = req.cookies?.mfa_temp_token || req.body?.mfa_temp_token;
     if (!mfaCookie) throw new BadRequestError('Session expired. Please signin again');
 

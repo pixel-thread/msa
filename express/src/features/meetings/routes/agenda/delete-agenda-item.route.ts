@@ -1,11 +1,11 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { success } from '@src/shared/utils/responses';
 import { UserRole } from '@prisma/client';
 import { deleteAgendaItem } from '@src/features/meetings/services/deleteAgendaItem';
 import { logger } from '@src/shared/logger';
 import { getAssociation, withRole } from '../_helpers';
 
-export const deleteAgendaItemHandler = async (req: Request, res: Response) => {
+export const deleteAgendaItemHandler = async (req: Request, res: Response, _next?: NextFunction) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
   const association = await getAssociation(req);
   logger.info({ traceId, associationId: association.id }, 'DELETE /api/meetings/[meetingId]/agenda/[itemId] - Request started');

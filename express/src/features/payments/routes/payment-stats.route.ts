@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { prisma } from '@src/shared/lib/prisma';
 import { success } from '@src/shared/utils/responses';
 import { logger } from '@src/shared/logger';
@@ -15,7 +15,7 @@ async function getAssociation(req: Request) {
 }
 
 export const paymentStats = [
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId }, 'GET /api/payments/stats - Request started');
     const association = await getAssociation(req);

@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { BadRequestError, ForbiddenError, NotFoundError } from '@src/shared/errors';
@@ -31,7 +31,7 @@ try {
 }
 
 export const getMemberTypes = [
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /api/member-types - Request started');
@@ -45,7 +45,7 @@ export const getMemberTypes = [
 
 export const postMemberType = [
   ...(CreateMemberTypeSchema ? [validate({ body: CreateMemberTypeSchema })] : []),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'POST /api/member-types - Request started');
@@ -61,7 +61,7 @@ export const postMemberType = [
 ];
 
 export const getMemberTypeById = [
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /api/member-types/[memberTypeId] - Request started');
@@ -80,7 +80,7 @@ export const getMemberTypeById = [
 
 export const patchMemberType = [
   ...(UpdateMemberTypeSchema ? [validate({ body: UpdateMemberTypeSchema })] : []),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'PATCH /api/member-types/[memberTypeId] - Request started');
@@ -98,7 +98,7 @@ export const patchMemberType = [
 ];
 
 export const deleteMemberType = [
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'DELETE /api/member-types/[memberTypeId] - Request started');

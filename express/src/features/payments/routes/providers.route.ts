@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { prisma } from '@src/shared/lib/prisma';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
@@ -31,7 +31,7 @@ async function getAssociation(req: Request) {
 }
 
 export const listProviders = [
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId }, 'GET /api/payments/providers - Request started');
     const association = await getAssociation(req);
@@ -43,7 +43,7 @@ export const listProviders = [
 
 export const createProviderHandler = [
   validate({ body: UpsertPaymentProviderSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, provider: req.body.provider }, 'POST /api/payments/providers - Request started');
     const association = await getAssociation(req);
@@ -61,7 +61,7 @@ export const createProviderHandler = [
 ];
 
 export const providerStatus = [
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId }, 'GET /api/payments/providers/status - Request started');
     const association = await getAssociation(req);
@@ -82,7 +82,7 @@ export const providerStatus = [
 
 export const getProvider = [
   validate({ params: ProviderIdParamSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, providerId: req.params.providerId }, 'GET /api/payments/providers/[providerId] - Request started');
     const association = await getAssociation(req);
@@ -101,7 +101,7 @@ export const getProvider = [
 
 export const updateProviderHandler = [
   validate({ params: ProviderIdParamSchema, body: UpdatePaymentProviderSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, providerId: req.params.providerId }, 'PATCH /api/payments/providers/[providerId] - Request started');
     const association = await getAssociation(req);
@@ -125,7 +125,7 @@ export const updateProviderHandler = [
 
 export const deleteProviderHandler = [
   validate({ params: ProviderIdParamSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, providerId: req.params.providerId }, 'DELETE /api/payments/providers/[providerId] - Request started');
     const association = await getAssociation(req);
@@ -143,7 +143,7 @@ export const deleteProviderHandler = [
 
 export const activateProvider = [
   validate({ params: ProviderIdParamSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, providerId: req.params?.providerId }, 'POST /api/payments/providers/[providerId]/activate - Request started');
     const association = await getAssociation(req);
@@ -168,7 +168,7 @@ export const activateProvider = [
 
 export const testProvider = [
   validate({ params: ProviderIdParamSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId, providerId: req.params.providerId }, 'POST /api/payments/providers/[providerId]/test - Request started');
     const association = await getAssociation(req);
@@ -196,7 +196,7 @@ export const testProvider = [
 
 export const verifyTestProvider = [
   validate({ params: ProviderIdParamSchema, body: VerifyPaymentSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId }, 'POST /api/payments/providers/[providerId]/test/verify - Request started');
     await getAssociation(req);

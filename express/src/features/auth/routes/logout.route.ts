@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { SignOutSchema } from '@src/features/auth/validators';
@@ -9,7 +9,7 @@ import { logger } from '@src/shared/logger';
 
 export const postLogout = [
   validate({ body: SignOutSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId }, 'POST /api/auth/logout - Request started');
     const bodyToken = req.body?.token || req.cookies?.refresh_token;

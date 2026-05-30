@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { success } from '@src/shared/utils/responses';
 import { UserRole } from '@prisma/client';
 import { logger } from '@src/shared/logger';
@@ -6,7 +6,7 @@ import { getAssociation, withRole } from '@src/features/meetings/routes/_helpers
 import { deleteFromBucket } from '@src/shared/lib/supabase/storage';
 
 export const postUploadImage = [
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     const announcementId = req.params.announcementId;

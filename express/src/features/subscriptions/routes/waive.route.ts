@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { ValidationError } from '@src/shared/errors';
@@ -10,7 +10,7 @@ import { getAssociation, withRole } from '@src/features/meetings/routes/_helpers
 
 export const postWaive = [
   validate({ body: WaiveSubscriptionSchema }),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, _next?: NextFunction) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'POST /api/subscriptions/waive - Request started');
