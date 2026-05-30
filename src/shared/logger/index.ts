@@ -1,5 +1,7 @@
+'use client';
 import { env } from '@src/env';
 import { safeStringify } from '../utils/helper/safe-stringify';
+import axios from 'axios';
 
 type LogLevel = 'info' | 'warn' | 'error' | 'debug';
 
@@ -15,7 +17,6 @@ interface QueuedLog {
 }
 
 const isProduction = env.NEXT_PUBLIC_NODE_ENV === 'production';
-const isServer = typeof window === 'undefined';
 
 const BATCH_SIZE = 10;
 const FLUSH_INTERVAL_MS = 5000;
@@ -39,11 +40,7 @@ const formatMessage = (level: LogLevel, message: string, context?: LogContext): 
 };
 
 const flushClient = async (batch: QueuedLog[]) => {
-  await fetch(`${env.NEXT_PUBLIC_API_BASE_URL}/logs/batch`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ logs: batch }),
-  });
+  await axios.post(`${env.NEXT_PUBLIC_API_BASE_URL}/logs/batch`, batch);
 };
 
 const flush = async () => {
@@ -94,13 +91,6 @@ const log = (level: LogLevel, message: string, context?: LogContext) => {
 
   enqueue(level, message, context);
 };
-
-if (isServer && isProduction) {
-  process.on('beforeExit', () => {
-    flush();
-    if (flushTimer) clearInterval(flushTimer);
-  });
-}
 
 export const logger = {
   info: (message: string, context?: LogContext) => log('info', message, context),
