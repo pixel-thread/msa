@@ -33,7 +33,7 @@ const SupplementParamsSchema = z.object({
 export const getSupplements: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
       logger.info(
@@ -59,7 +59,7 @@ export const getSupplements: RequestHandler[] = [
 export const postSupplement: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
       logger.info(
@@ -137,7 +137,7 @@ export const postSupplement: RequestHandler[] = [
 export const getSupplement: RequestHandler[] = [
   validate({ params: SupplementParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
       logger.info(
@@ -170,7 +170,7 @@ export const getSupplement: RequestHandler[] = [
 export const updateSupplementHandler: RequestHandler[] = [
   validate({ params: SupplementParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
       logger.info(
@@ -265,7 +265,7 @@ export const updateSupplementHandler: RequestHandler[] = [
 export const deleteSupplementHandler: RequestHandler[] = [
   validate({ params: SupplementParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
       logger.info(

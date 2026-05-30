@@ -3,7 +3,7 @@ import { verifyAccessToken } from '@src/shared/lib/jwt';
 import { UnauthorizedError } from '@src/shared/errors';
 import { API_PUBLIC_ROUTES, PUBLIC_PAGE_PATH } from '@src/shared/constants';
 
-export function auth(req: Request, _res: Response, next: NextFunction) {
+export async function auth(req: Request, _res: Response, next: NextFunction) {
   const path = req.path;
   const basePath = '/api' + path;
 
@@ -24,10 +24,13 @@ export function auth(req: Request, _res: Response, next: NextFunction) {
     return next(new UnauthorizedError('Authentication required'));
   }
 
-  verifyAccessToken(token)
-    .then((payload) => {
-      req.headers['x-user-id'] = payload.sub;
-      next();
-    })
-    .catch(next);
+  const payload = await verifyAccessToken(token);
+
+  if (!payload) {
+    return next(new UnauthorizedError('Invalid token'));
+  }
+
+  req.userId = payload.sub;
+
+  next();
 }

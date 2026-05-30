@@ -14,7 +14,7 @@ const ROLE_HIERARCHY: Record<UserRole, number> = {
 };
 
 export async function getAssociation(req: Request) {
-  const userId = req.headers['x-user-id'] as string;
+  const userId = req.userId as string;
   if (!userId) throw new UnauthorizedError('Unauthorized');
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -25,7 +25,7 @@ export async function getAssociation(req: Request) {
 }
 
 export async function withRole(req: Request, role: UserRole) {
-  const userId = req.headers['x-user-id'] as string;
+  const userId = req.userId as string;
   if (!userId) throw new UnauthorizedError('Unauthorized');
   const user = await getUniqueUser({ where: { id: userId } });
   if (!user) throw new UnauthorizedError('Unauthorized');

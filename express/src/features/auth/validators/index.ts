@@ -19,7 +19,7 @@ export const SignUpSchema = z
     country: z.string().optional(),
     postalCode: z.string().optional(),
   })
-  .refine((val) => !Boolean(val.lastName === val.firstName), {
+  .refine((val) => val.lastName === val.firstName, {
     message: 'First name and last name cannot be the same',
   })
   .refine(

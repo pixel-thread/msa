@@ -5,34 +5,18 @@ import { BadRequestError, ForbiddenError, NotFoundError } from '@src/shared/erro
 import { UserRole } from '@prisma/client';
 import { getAssociation, withRole } from '@src/features/meetings/routes/_helpers';
 import { logger } from '@src/shared/logger';
-
-let findManyMemberTypes: any;
-let createMemberType: any;
-let findUniqueMemberType: any;
-let updateMemberType: any;
-let _deleteMemberType: any;
-let CreateMemberTypeSchema: any;
-let UpdateMemberTypeSchema: any;
-let MemberTypeParamsSchema: any;
-
-try {
-  const memberTypeServices = require('@feature/member-type/services');
-  findManyMemberTypes = memberTypeServices.findManyMemberTypes;
-  createMemberType = memberTypeServices.createMemberType;
-  findUniqueMemberType = memberTypeServices.findUniqueMemberType;
-  updateMemberType = memberTypeServices.updateMemberType;
-  _deleteMemberType = memberTypeServices.deleteMemberType;
-  const memberTypeValidators = require('@feature/member-type/validators');
-  CreateMemberTypeSchema = memberTypeValidators.CreateMemberTypeSchema;
-  UpdateMemberTypeSchema = memberTypeValidators.UpdateMemberTypeSchema;
-  MemberTypeParamsSchema = memberTypeValidators.MemberTypeParamsSchema;
-} catch {
-  // services and validators not yet created
-}
+import {
+  findManyMemberTypes,
+  findUniqueMemberType,
+  createMemberType,
+  updateMemberType,
+  deleteMemberType as _deleteMemberType,
+} from '@feature/member-types/services';
+import { CreateMemberTypeSchema, UpdateMemberTypeSchema } from '@feature/member-types/validators';
 
 export const getMemberTypes: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },
@@ -51,7 +35,7 @@ export const getMemberTypes: RequestHandler[] = [
 export const postMemberType: RequestHandler[] = [
   ...(CreateMemberTypeSchema ? [validate({ body: CreateMemberTypeSchema })] : []),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },
@@ -60,17 +44,19 @@ export const postMemberType: RequestHandler[] = [
     if (!req.body) throw new BadRequestError('Invalid request body');
     const user = await withRole(req, UserRole.PRESIDENT);
     logger.info({ traceId, userId: user.id }, 'POST /api/member-types - User authorized');
-    const memberType = createMemberType
-      ? await createMemberType({ associationId: association.id, actorId: user.id, data: req.body })
-      : {};
-    logger.info({ traceId, memberTypeId: memberType.id }, 'POST /api/member-types - Success');
+    const memberType = await createMemberType({
+      associationId: association.id,
+      actorId: user.id,
+      data: req.body,
+    });
+    logger.info({ traceId, memberTypeId: memberType?.id }, 'POST /api/member-types - Success');
     return success(res, { data: memberType }, 201);
   },
 ];
 
 export const getMemberTypeById: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },
@@ -82,10 +68,9 @@ export const getMemberTypeById: RequestHandler[] = [
       { traceId, userId: user.id },
       'GET /api/member-types/[memberTypeId] - User authorized',
     );
-    const { memberTypeId } = req.params;
-    const memberType = findUniqueMemberType
-      ? await findUniqueMemberType({ associationId: association.id, memberTypeId })
-      : null;
+    const memberTypeId = req.params.memberTypeId as string;
+
+    const memberType = await findUniqueMemberType({ associationId: association.id, memberTypeId });
     if (!memberType) throw new NotFoundError('Member type not found');
     logger.info({ traceId, memberTypeId }, 'GET /api/member-types/[memberTypeId] - Success');
     return success(res, { data: memberType, message: 'Member type found' });
@@ -95,7 +80,7 @@ export const getMemberTypeById: RequestHandler[] = [
 export const patchMemberType: RequestHandler[] = [
   ...(UpdateMemberTypeSchema ? [validate({ body: UpdateMemberTypeSchema })] : []),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },
@@ -108,15 +93,13 @@ export const patchMemberType: RequestHandler[] = [
       { traceId, userId: user.id },
       'PATCH /api/member-types/[memberTypeId] - User authorized',
     );
-    const { memberTypeId } = req.params;
-    const memberType = updateMemberType
-      ? await updateMemberType({
-          associationId: association.id,
-          actorId: user.id,
-          memberTypeId,
-          data: req.body,
-        })
-      : {};
+    const memberTypeId = req.params.memberTypeId as string;
+    const memberType = await updateMemberType({
+      associationId: association.id,
+      actorId: user.id,
+      memberTypeId,
+      data: req.body,
+    });
     logger.info({ traceId, memberTypeId }, 'PATCH /api/member-types/[memberTypeId] - Success');
     return success(res, { data: memberType, message: 'Member type updated successfully' });
   },
@@ -124,7 +107,7 @@ export const patchMemberType: RequestHandler[] = [
 
 export const deleteMemberType: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },
@@ -136,10 +119,11 @@ export const deleteMemberType: RequestHandler[] = [
       { traceId, userId: user.id },
       'DELETE /api/member-types/[memberTypeId] - User authorized',
     );
-    const { memberTypeId } = req.params;
+    const memberTypeId = req.params.memberTypeId as string;
     if (_deleteMemberType) {
       await _deleteMemberType({ associationId: association.id, actorId: user.id, memberTypeId });
     }
+
     logger.info({ traceId, memberTypeId }, 'DELETE /api/member-types/[memberTypeId] - Success');
     return success(res, { data: null, message: 'Member type deleted successfully' });
   },

@@ -38,7 +38,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@eslint/js": "^9.26.0",
+    "@eslint/js": "^9.39.4",
     "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",
@@ -46,12 +46,13 @@
     "@types/node": "^20",
     "@types/pg": "^8.20.0",
     "@types/ssh2-sftp-client": "^9.0.6",
-    "eslint": "^9.26.0",
+    "eslint": "^9.39.4",
+    "globals": "^17.6.0",
     "prettier": "^3.8.3",
     "prisma": "^7.8.0",
     "tsx": "^4.21.0",
     "typescript": "^5",
-    "typescript-eslint": "^8.32.0"
+    "typescript-eslint": "^8.60.0"
   },
   "engines": {
     "node": "20.x"

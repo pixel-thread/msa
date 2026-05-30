@@ -12,7 +12,7 @@ import { getAssociation, withRole } from './_helpers';
 export const listComplaints: RequestHandler[] = [
   validate({ query: ComplaintQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /compliance - Request started');
     const user = await withRole(req, UserRole.DPO);
@@ -53,7 +53,7 @@ export const listComplaints: RequestHandler[] = [
 export const createComplaintHandler: RequestHandler[] = [
   validate({ body: CreateComplaintSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'POST /compliance - Request started');
     const user = await withRole(req, UserRole.DPO);
@@ -62,7 +62,7 @@ export const createComplaintHandler: RequestHandler[] = [
       'POST /compliance - User authorized',
     );
 
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     const complaint = await createComplaint({
       associationId: association.id,
       userId,

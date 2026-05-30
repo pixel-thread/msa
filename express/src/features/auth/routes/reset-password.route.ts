@@ -13,7 +13,7 @@ import { logger } from '@src/shared/logger';
 export const postResetPassword: RequestHandler[] = [
   validate({ body: ResetPasswordSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'POST /api/auth/reset-password - Request started');
     const { token, password } = req.body as ResetPasswordInput;
 

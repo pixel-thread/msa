@@ -10,7 +10,7 @@ import { getUserPaymentHistory } from '@src/features/payments/services/payment.s
 import { getUserContributionSummary } from '@src/features/payments/services/contribution.service';
 
 async function getAssociation(req: Request) {
-  const userId = req.headers['x-user-id'] as string;
+  const userId = req.userId as string;
   if (!userId) throw new UnauthorizedError('Unauthorized');
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -23,10 +23,10 @@ async function getAssociation(req: Request) {
 export const paymentHistory: RequestHandler[] = [
   validate({ query: PaymentHistoryQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info({ traceId, query: req.query }, 'GET /api/payments/history - Request started');
     await getAssociation(req);
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     const page = (req.query as any)?.page ?? 1;
     const [history, summary] = await Promise.all([
       getUserPaymentHistory(userId, page),

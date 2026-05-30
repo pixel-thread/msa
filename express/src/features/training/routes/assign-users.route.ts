@@ -36,7 +36,7 @@ const BulkRemoveAssignSchema = z.object({
 export const getAssignments: RequestHandler[] = [
   validate({ params: ParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },
@@ -60,7 +60,7 @@ export const getAssignments: RequestHandler[] = [
 export const postAssign: RequestHandler[] = [
   validate({ params: ParamsSchema, body: AssignTrainingSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },
@@ -94,7 +94,7 @@ export const postAssign: RequestHandler[] = [
 export const putBulkAssign: RequestHandler[] = [
   validate({ params: ParamsSchema, body: BulkAssignTrainingSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },
@@ -128,7 +128,7 @@ export const putBulkAssign: RequestHandler[] = [
 export const deleteAssignment: RequestHandler[] = [
   validate({ params: ParamsSchema, body: RemoveAssignSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },
@@ -162,7 +162,7 @@ export const deleteAssignment: RequestHandler[] = [
 export const patchBulkRemove: RequestHandler[] = [
   validate({ params: ParamsSchema, body: BulkRemoveAssignSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },
@@ -195,7 +195,7 @@ export const patchBulkRemove: RequestHandler[] = [
 
 export const getAssignedUsersHandler: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },

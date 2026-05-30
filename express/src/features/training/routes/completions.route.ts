@@ -35,7 +35,7 @@ const MetadataSchema = z.object({
 export const getModuleCompletions: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
       logger.info(
@@ -61,7 +61,7 @@ export const getModuleCompletions: RequestHandler[] = [
 export const postModuleComplete: RequestHandler[] = [
   validate({ params: ModuleParamsSchema, body: RecordCompletionSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
       logger.info(
@@ -95,7 +95,7 @@ export const postModuleComplete: RequestHandler[] = [
 export const postAdminComplete: RequestHandler[] = [
   validate({ params: AssignmentParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
       logger.info(

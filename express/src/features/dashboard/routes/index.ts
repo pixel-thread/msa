@@ -9,7 +9,7 @@ const router = Router();
 
 router.get('/overview', auth, async (req, res, next) => {
   try {
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     if (!userId) throw new UnauthorizedError('Unauthorized');
 
     const user = await prisma.user.findUnique({

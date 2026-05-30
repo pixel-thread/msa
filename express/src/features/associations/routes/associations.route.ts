@@ -32,7 +32,7 @@ const BodySchema = z.object({
 
 export const getAssociationByUser: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId }, 'GET /api/associations - Request started');
     const user = await withRole(req, UserRole.MEMBER);
@@ -48,7 +48,7 @@ export const getAssociationByUser: RequestHandler[] = [
 export const postAssociationCreate: RequestHandler[] = [
   validate({ body: CreateAssociationSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info({ traceId, name: req.body?.name }, 'POST /api/associations - Request started');
     const user = await withRole(req, UserRole.SUPER_ADMIN);
     logger.info(
@@ -79,7 +79,7 @@ export const postAssociationCreate: RequestHandler[] = [
 
 export const getCurrentAssociation: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId }, 'GET /api/associations/current - Request started');
     const user = await withRole(req, UserRole.MEMBER);
@@ -98,7 +98,7 @@ export const getCurrentAssociation: RequestHandler[] = [
 
 export const getAssociationDetail: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, associationId: req.params.associationId as string },
       'GET /api/associations/[associationId] - Request started',
@@ -129,7 +129,7 @@ export const getAssociationDetail: RequestHandler[] = [
 export const patchAssociationDetail: RequestHandler[] = [
   validate({ body: UpdateAssociationSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, associationId: req.params.associationId as string },
       'PATCH /api/associations/[associationId] - Request started',
@@ -179,7 +179,7 @@ export const patchAssociationDetail: RequestHandler[] = [
 
 export const postDeactivateAssociation: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, associationId: req.params.associationId as string },
       'POST /api/associations/[associationId]/deactivate - Request started',
@@ -189,7 +189,7 @@ export const postDeactivateAssociation: RequestHandler[] = [
       { traceId, userId: user.id, roles: user.role },
       'POST /api/associations/[associationId]/deactivate - User authorized',
     );
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     if (!userId) {
       logger.error(
         { traceId },
@@ -230,7 +230,7 @@ export const postDeactivateAssociation: RequestHandler[] = [
 
 export const postUploadLogo: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },
@@ -277,7 +277,7 @@ export const postUploadLogo: RequestHandler[] = [
 export const postAddMember: RequestHandler[] = [
   validate({ body: BodySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       {

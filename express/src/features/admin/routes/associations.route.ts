@@ -19,7 +19,7 @@ import type { CreateAssociationInput } from '@validator/associations';
 
 export const getAssociations: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'GET /api/admin/associations - Request started');
     const user = await withRole(req, UserRole.SUPER_ADMIN);
     logger.info(
@@ -41,7 +41,7 @@ export const getAssociations: RequestHandler[] = [
 export const postAssociation: RequestHandler[] = [
   validate({ body: CreateAssociationSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, name: req.body?.name },
       'POST /api/admin/associations - Request started',
@@ -80,7 +80,7 @@ export const postAssociation: RequestHandler[] = [
 
 export const getAssociationById: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, id: req.params.id },
       'GET /api/admin/associations/[id] - Request started',
@@ -108,7 +108,7 @@ export const getAssociationById: RequestHandler[] = [
 export const putAssociation: RequestHandler[] = [
   validate({ body: CreateAssociationSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, id: req.params.id, name: req.body?.name },
       'PUT /api/admin/associations/[id] - Request started',
@@ -155,7 +155,7 @@ export const putAssociation: RequestHandler[] = [
 
 export const deleteAssociationById: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, id: req.params.id },
       'DELETE /api/admin/associations/[id] - Request started',
@@ -186,7 +186,7 @@ export const deleteAssociationById: RequestHandler[] = [
 export const postAssociationMember: RequestHandler[] = [
   validate({ body: AddAssociationMemberSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, targetUserId: req.body?.user_id, targetAssociationId: req.body?.association_id },
       'POST /api/admin/associations/[id]/member - Request started',

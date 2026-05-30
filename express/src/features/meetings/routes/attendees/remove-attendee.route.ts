@@ -19,7 +19,7 @@ const AttendeeParamsSchema = z.object({
 export const patchUpdateAttendee: RequestHandler[] = [
   validate({ params: AttendeeParamsSchema, body: UpdateAttendeeSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const meetingId = req.params.meetingId as string;
     const targetUserId = req.params.userId as string;
@@ -29,7 +29,7 @@ export const patchUpdateAttendee: RequestHandler[] = [
     );
 
     const user = await withRole(req, UserRole.MEMBER);
-    const requestingUserId = req.headers['x-user-id'] as string;
+    const requestingUserId = req.userId as string;
 
     logger.info(
       { traceId, userId: user.id, role: user.role, meetingId, targetUserId },
@@ -65,7 +65,7 @@ export const patchUpdateAttendee: RequestHandler[] = [
 ];
 
 export const deleteRemoveAttendee = async (req: Request, res: Response, _next: NextFunction) => {
-  const traceId = (req.headers['x-trace-id'] as string) || '';
+  const traceId = (req.traceId as string) || '';
   const association = await getAssociation(req);
   const meetingId = req.params.meetingId as string;
   const targetUserId = req.params.userId as string;

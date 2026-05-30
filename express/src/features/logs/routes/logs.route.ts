@@ -10,7 +10,7 @@ import { Prisma } from '@prisma/client';
 export const postLog: RequestHandler[] = [
   validate({ body: LogIngestSchema.strict() }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const body = req.body;
     const context = body?.context;
     const level = body?.level;
@@ -38,7 +38,7 @@ export const postLog: RequestHandler[] = [
 export const postLogBatch: RequestHandler[] = [
   validate({ body: LogBatchSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const { logs } = req.body!;
     await createLogsBatch({
       data: logs.map((l: any) => ({

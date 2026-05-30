@@ -17,7 +17,7 @@ const TrainingParamsSchema = z.object({
 export const getModule: RequestHandler[] = [
   validate({ params: TrainingParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },
@@ -43,7 +43,7 @@ export const getModule: RequestHandler[] = [
 export const updateModuleHandler: RequestHandler[] = [
   validate({ params: TrainingParamsSchema, body: UpdateTrainingModuleSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },
@@ -73,7 +73,7 @@ export const updateModuleHandler: RequestHandler[] = [
 export const deleteModuleHandler: RequestHandler[] = [
   validate({ params: TrainingParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },

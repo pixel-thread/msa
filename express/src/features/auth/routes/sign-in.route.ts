@@ -18,7 +18,7 @@ import { logger } from '@src/shared/logger';
 export const postSignIn: RequestHandler[] = [
   validate({ body: SignInSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const user = await getUserFirst({ where: { email: req.body?.email } });
 
     if (user?.lockedUntil && user.lockedUntil > new Date()) {

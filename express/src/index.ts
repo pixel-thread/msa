@@ -23,7 +23,7 @@ async function bootstrap() {
   app.use(express.json({ limit: '5mb' }));
   app.use(rateLimiter);
 
-  app.get('/health', (_req, res) => {
+  app.get('api/v1/health', (_req, res) => {
     res.json({ success: true, message: 'OK' });
   });
 

@@ -21,8 +21,8 @@ const UpdateUserStatusParamsSchema = z.object({
 export const updateStatus: RequestHandler[] = [
   validate({ body: UpdateUserStatusSchema, params: UpdateUserStatusParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
-    const userId = req.headers['x-user-id'] as string;
+    const traceId = (req.traceId as string) || '';
+    const userId = req.userId as string;
     if (!userId) throw new UnauthorizedError('Unauthorized');
 
     const user = await prisma.user.findUnique({

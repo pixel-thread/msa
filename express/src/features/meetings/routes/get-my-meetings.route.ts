@@ -16,7 +16,7 @@ const QuerySchema = z.object({
 export const getMyMeetings: RequestHandler[] = [
   validate({ query: QuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },
@@ -29,7 +29,7 @@ export const getMyMeetings: RequestHandler[] = [
       'GET /api/meetings/my - User authorized',
     );
 
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     const page = (req.query as any)?.page || 1;
 
     const { meetings, pagination } = await findManyMeetings({

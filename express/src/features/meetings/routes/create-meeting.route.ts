@@ -13,11 +13,11 @@ import { getAssociation, withRole } from './_helpers';
 export const postCreateMeeting: RequestHandler[] = [
   validate({ body: CreateMeetingSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'POST /api/meetings - Request started');
 
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     const user = await withRole(req, UserRole.SECRETARY);
 
     if (!hasHighRoleAccess(user.role)) {

@@ -10,7 +10,7 @@ import { RecordManualPaymentSchema } from '@src/features/payments/validators';
 import { recordManualPayment } from '@src/features/payments/services/payment.service';
 
 async function getAssociation(req: Request) {
-  const userId = req.headers['x-user-id'] as string;
+  const userId = req.userId as string;
   if (!userId) throw new UnauthorizedError('Unauthorized');
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -23,13 +23,13 @@ async function getAssociation(req: Request) {
 export const recordPayment: RequestHandler[] = [
   validate({ body: RecordManualPaymentSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, userId: req.body.userId },
       'POST /api/payments/record - Request started',
     );
     const association = await getAssociation(req);
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { id: true, role: true },

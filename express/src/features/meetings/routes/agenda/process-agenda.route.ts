@@ -14,7 +14,7 @@ const ParamsSchema = z.object({ meetingId: z.string('Invalid meeting ID') });
 export const patchProcessAgendaOperations: RequestHandler[] = [
   validate({ params: ParamsSchema, body: AgendaOperationSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const meetingId = req.params.meetingId as string;
     logger.info(

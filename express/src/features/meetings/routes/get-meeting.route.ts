@@ -17,7 +17,7 @@ const MeetingParamsSchema = z.object({
 export const getMeeting: RequestHandler[] = [
   validate({ params: MeetingParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const meetingId = req.params.meetingId as string;
     logger.info(
@@ -31,7 +31,7 @@ export const getMeeting: RequestHandler[] = [
       'GET /api/meetings/[meetingId] - User authorized',
     );
 
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
 
     const meeting = await findUniqueMeeting({ meetingId, associationId: association.id });
 

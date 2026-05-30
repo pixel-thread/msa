@@ -16,7 +16,7 @@ import { getAssociation, withRole } from './_helpers';
 export const getMeetings: RequestHandler[] = [
   validate({ query: MeetingQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, associationId: association.id }, 'GET /api/meetings - Request started');
 
@@ -29,7 +29,7 @@ export const getMeetings: RequestHandler[] = [
     const query = req.query as { page?: number; type?: string; status?: string };
     if (!query) throw new ForbiddenError('Invalid query parameters');
 
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     const { page, type, status } = query;
 
     if (hasHighRoleAccess(user.role)) {

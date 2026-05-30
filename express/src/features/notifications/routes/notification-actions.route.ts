@@ -28,7 +28,7 @@ const LinkNotificationSchema = z.object({
 export const postRegisterPushToken: RequestHandler[] = [
   validate({ body: RegisterPushTokenSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'POST /api/notifications/register - Request started');
     const token = req.body?.token;
     if (!token) throw new ValidationError('Missing token');
@@ -41,9 +41,9 @@ export const postRegisterPushToken: RequestHandler[] = [
 export const postLinkNotification: RequestHandler[] = [
   validate({ body: LinkNotificationSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'POST /api/notifications/link - Request started');
-    const userId = req.headers['x-user-id'];
+    const userId = req.userId
     if (!userId) throw new UnauthorizedError('User ID is required');
     if (!req.body?.token) throw new ValidationError('Token is required');
     const pushToken = await upsertPushToken(req.body.token, userId as string);
@@ -55,14 +55,14 @@ export const postLinkNotification: RequestHandler[] = [
 export const patchNotificationStatus: RequestHandler[] = [
   validate({ body: UpdateNotificationSchema, params: NotificationRouteParams }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'PATCH /api/notifications/[notificationId]/status - Request started');
     const user = await withRole(req, UserRole.MEMBER);
     logger.info(
       { traceId, userId: user.id },
       'PATCH /api/notifications/[notificationId]/status - User authorized',
     );
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     if (!userId) throw new UnauthorizedError('Unauthorized');
     const isNotificaitonExist = await findUniqueNotification({
       where: { id: req.params.notificationId, userId },

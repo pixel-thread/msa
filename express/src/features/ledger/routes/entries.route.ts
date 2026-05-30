@@ -15,7 +15,7 @@ import { buildPagination } from '@src/shared/utils';
 import { logger } from '@src/shared/logger';
 
 async function getAssociation(req: Request) {
-  const userId = req.headers['x-user-id'] as string;
+  const userId = req.userId as string;
   if (!userId) throw new UnauthorizedError('Unauthorized');
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -26,7 +26,7 @@ async function getAssociation(req: Request) {
 }
 
 async function requireRole(req: Request, role: UserRole) {
-  const userId = req.headers['x-user-id'] as string;
+  const userId = req.userId as string;
   if (!userId) throw new UnauthorizedError('Unauthorized');
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) throw new UnauthorizedError('User not found');
@@ -46,7 +46,7 @@ async function requireRole(req: Request, role: UserRole) {
 export const listEntries: RequestHandler[] = [
   validate({ query: LedgerQueryParams }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },
@@ -66,14 +66,14 @@ export const listEntries: RequestHandler[] = [
 export const createEntry: RequestHandler[] = [
   validate({ body: CreateLedgerEntrySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },
       'POST /api/ledger/entries - Request started',
     );
 
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     await requireRole(req, UserRole.FINANCE);
 
     logger.info({ traceId, userId }, 'POST /api/ledger/entries - User authorized');
@@ -90,7 +90,7 @@ export const createEntry: RequestHandler[] = [
 ];
 
 export const approveEntryHandler = async (req: Request, res: Response, _next: NextFunction) => {
-  const traceId = (req.headers['x-trace-id'] as string) || '';
+  const traceId = (req.traceId as string) || '';
   const association = await getAssociation(req);
   logger.info(
     { traceId, associationId: association.id },
@@ -98,7 +98,7 @@ export const approveEntryHandler = async (req: Request, res: Response, _next: Ne
   );
 
   await requireRole(req, UserRole.PRESIDENT);
-  const userId = req.headers['x-user-id'] as string;
+  const userId = req.userId as string;
 
   const { entryId } = req.params;
 

@@ -16,7 +16,7 @@ const MySubscriptionQuerySchema = z.object({
 export const getMySubscriptionHandler: RequestHandler[] = [
   validate({ query: MySubscriptionQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },

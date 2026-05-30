@@ -12,8 +12,8 @@ import { getAssociation } from './_helpers';
 export const listMyComplaints: RequestHandler[] = [
   validate({ query: ComplaintQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
-    const userId = req.headers['x-user-id'] as string;
+    const traceId = (req.traceId as string) || '';
+    const userId = req.userId as string;
     if (!userId) {
       logger.error({ traceId }, 'GET /compliance/my - Unauthorized (missing x-user-id)');
       throw new UnauthorizedError('Unauthorized');
@@ -57,8 +57,8 @@ export const listMyComplaints: RequestHandler[] = [
 export const getMyComplaint: RequestHandler[] = [
   validate({ params: ComplaintParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
-    const userId = req.headers['x-user-id'] as string;
+    const traceId = (req.traceId as string) || '';
+    const userId = req.userId as string;
     if (!userId) {
       logger.error(
         { traceId },

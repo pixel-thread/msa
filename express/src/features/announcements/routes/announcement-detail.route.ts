@@ -15,7 +15,7 @@ const RouteParams = z.object({
 
 export const getAnnouncement: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const announcementId = req.params.announcementId;
     if (!announcementId) throw new ForbiddenError('Invalid announcement id');
@@ -30,13 +30,13 @@ export const getAnnouncement: RequestHandler[] = [
 
 export const putAnnouncement: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId }, 'PUT /api/announcements/[id] - Request started');
     if (!req.body) throw new ForbiddenError('Invalid request body');
     const announcementId = req.params.announcementId;
     if (!announcementId) throw new ForbiddenError('Invalid announcement id');
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     const user = await withRole(req, UserRole.MEMBER);
     logger.info(
       { traceId, userId, announcementId },
@@ -53,12 +53,12 @@ export const putAnnouncement: RequestHandler[] = [
 
 export const deleteAnnouncement: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const announcementId = req.params.announcementId;
     if (!announcementId) throw new ForbiddenError('Invalid announcement id');
     logger.info({ traceId, announcementId }, 'DELETE /api/announcements/[id] - Request started');
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     const user = await withRole(req, UserRole.MEMBER);
     logger.info(
       { traceId, userId, announcementId },
@@ -77,12 +77,12 @@ export const deleteAnnouncement: RequestHandler[] = [
 
 export const patchAnnouncement: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const announcementId = req.params.announcementId;
     if (!announcementId) throw new ForbiddenError('Invalid announcement id');
     logger.info({ traceId, announcementId }, 'PATCH /api/announcements/[id] - Request started');
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     const user = await withRole(req, UserRole.MEMBER);
     logger.info(
       { traceId, userId, announcementId },

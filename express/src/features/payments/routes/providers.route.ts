@@ -32,7 +32,7 @@ import {
 } from '@src/features/payments/services/payment.service';
 
 async function getAssociation(req: Request) {
-  const userId = req.headers['x-user-id'] as string;
+  const userId = req.userId as string;
   if (!userId) throw new UnauthorizedError('Unauthorized');
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -44,7 +44,7 @@ async function getAssociation(req: Request) {
 
 export const listProviders: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'GET /api/payments/providers - Request started');
     const association = await getAssociation(req);
     const providers = await getProvidersByAssociation(association.id);
@@ -56,7 +56,7 @@ export const listProviders: RequestHandler[] = [
 export const createProviderHandler: RequestHandler[] = [
   validate({ body: UpsertPaymentProviderSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, provider: req.body.provider },
       'POST /api/payments/providers - Request started',
@@ -77,10 +77,10 @@ export const createProviderHandler: RequestHandler[] = [
 
 export const providerStatus: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'GET /api/payments/providers/status - Request started');
     const association = await getAssociation(req);
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
     if (!user || !user.role.includes(UserRole.MEMBER)) {
       throw new ForbiddenError('Insufficient permissions');
@@ -104,13 +104,13 @@ export const providerStatus: RequestHandler[] = [
 export const getProvider: RequestHandler[] = [
   validate({ params: ProviderIdParamSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, providerId: req.params.providerId },
       'GET /api/payments/providers/[providerId] - Request started',
     );
     const association = await getAssociation(req);
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
     if (!user || !user.role.includes(UserRole.PRESIDENT)) {
       throw new ForbiddenError('Insufficient permissions');
@@ -132,13 +132,13 @@ export const getProvider: RequestHandler[] = [
 export const updateProviderHandler: RequestHandler[] = [
   validate({ params: ProviderIdParamSchema, body: UpdatePaymentProviderSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, providerId: req.params.providerId },
       'PATCH /api/payments/providers/[providerId] - Request started',
     );
     const association = await getAssociation(req);
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
     if (!user || !user.role.includes(UserRole.PRESIDENT)) {
       throw new ForbiddenError('Insufficient permissions');
@@ -168,13 +168,13 @@ export const updateProviderHandler: RequestHandler[] = [
 export const deleteProviderHandler: RequestHandler[] = [
   validate({ params: ProviderIdParamSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, providerId: req.params.providerId },
       'DELETE /api/payments/providers/[providerId] - Request started',
     );
     const association = await getAssociation(req);
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
     if (!user || !user.role.includes(UserRole.PRESIDENT)) {
       throw new ForbiddenError('Insufficient permissions');
@@ -195,13 +195,13 @@ export const deleteProviderHandler: RequestHandler[] = [
 export const activateProvider: RequestHandler[] = [
   validate({ params: ProviderIdParamSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, providerId: req.params?.providerId },
       'POST /api/payments/providers/[providerId]/activate - Request started',
     );
     const association = await getAssociation(req);
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
     if (!user || !user.role.includes(UserRole.PRESIDENT)) {
       throw new ForbiddenError('Insufficient permissions');
@@ -235,13 +235,13 @@ export const activateProvider: RequestHandler[] = [
 export const testProvider: RequestHandler[] = [
   validate({ params: ProviderIdParamSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, providerId: req.params.providerId },
       'POST /api/payments/providers/[providerId]/test - Request started',
     );
     const association = await getAssociation(req);
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { id: true, role: true },
@@ -278,13 +278,13 @@ export const testProvider: RequestHandler[] = [
 export const verifyTestProvider: RequestHandler[] = [
   validate({ params: ProviderIdParamSchema, body: VerifyPaymentSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId },
       'POST /api/payments/providers/[providerId]/test/verify - Request started',
     );
     await getAssociation(req);
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
     if (!user || !user.role.includes(UserRole.PRESIDENT)) {
       throw new ForbiddenError('Insufficient permissions');

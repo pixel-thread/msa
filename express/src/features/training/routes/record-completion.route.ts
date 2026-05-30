@@ -10,7 +10,7 @@ import { getAssociation, withRole } from './_helpers';
 
 export const getCompletions: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },
@@ -38,7 +38,7 @@ export const getCompletions: RequestHandler[] = [
 export const postCompletion: RequestHandler[] = [
   validate({ body: AdminRecordCompletionSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },

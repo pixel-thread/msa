@@ -28,7 +28,7 @@ import { pageNumberValidation } from '@src/shared/validators/common';
 import { PAGE_SIZE } from '@src/shared/constants';
 
 async function getAssociation(req: Request) {
-  const userId = req.headers['x-user-id'] as string;
+  const userId = req.userId as string;
   if (!userId) throw new UnauthorizedError('Unauthorized');
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -53,10 +53,10 @@ const ContributionIdParamsSchema = z.object({
 export const listContributions: RequestHandler[] = [
   validate({ query: ContributionsQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info({ traceId, query: req.query }, 'GET /api/payments/contributions - Request started');
     const association = await getAssociation(req);
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
     if (!user || !user.role.includes(UserRole.FINANCE)) {
       throw new ForbiddenError('Insufficient permissions');
@@ -113,13 +113,13 @@ export const listContributions: RequestHandler[] = [
 export const generateContributions: RequestHandler[] = [
   validate({ body: GenerateContributionsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, year: req.body.year, month: req.body.month },
       'POST /api/payments/contributions - Request started',
     );
     const association = await getAssociation(req);
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
     if (!user || !user.role.includes(UserRole.FINANCE)) {
       throw new ForbiddenError('Insufficient permissions');
@@ -149,13 +149,13 @@ export const generateContributions: RequestHandler[] = [
 export const waiveContributionHandler: RequestHandler[] = [
   validate({ body: WaiveContributionSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, contributionPeriodId: req.body.contributionPeriodId },
       'PATCH /api/payments/contributions - Request started',
     );
     await getAssociation(req);
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
     if (!user || !user.role.includes(UserRole.FINANCE)) {
       throw new ForbiddenError('Insufficient permissions');
@@ -173,7 +173,7 @@ export const waiveContributionHandler: RequestHandler[] = [
 export const getContribution: RequestHandler[] = [
   validate({ params: ContributionIdParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, contributionId: req.params.contributionId },
       'GET /api/payments/contributions/[contributionId] - Request started',

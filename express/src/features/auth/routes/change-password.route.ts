@@ -13,8 +13,8 @@ import { logger } from '@src/shared/logger';
 export const postChangePassword: RequestHandler[] = [
   validate({ body: ChangePasswordSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
-    const userId = req.headers['x-user-id'] as string;
+    const traceId = (req.traceId as string) || '';
+    const userId = req.userId as string;
     logger.info({ traceId, userId }, 'POST /api/auth/change-password - Request started');
     if (!userId) throw new UnauthorizedError('User not found');
 

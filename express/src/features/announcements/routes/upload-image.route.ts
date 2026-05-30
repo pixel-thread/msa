@@ -8,7 +8,7 @@ import { deleteFromBucket } from '@src/shared/lib/supabase/storage';
 
 export const postUploadImage: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const announcementId = req.params.announcementId;
     logger.info(

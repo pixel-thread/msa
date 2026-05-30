@@ -38,7 +38,7 @@ const ROLE_HIERARCHY: Record<UserRole, number> = {
 };
 
 async function getAssociation(req: Request) {
-  const userId = req.headers['x-user-id'] as string;
+  const userId = req.userId as string;
   if (!userId) throw new UnauthorizedError('Unauthorized');
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -49,7 +49,7 @@ async function getAssociation(req: Request) {
 }
 
 async function withRole(req: Request, role: UserRole) {
-  const userId = req.headers['x-user-id'] as string;
+  const userId = req.userId as string;
   if (!userId) throw new UnauthorizedError('Unauthorized');
   const user = await getUniqueUser({ where: { id: userId } });
   if (!user) throw new UnauthorizedError('Unauthorized');
@@ -65,7 +65,7 @@ async function withRole(req: Request, role: UserRole) {
 export const getReceipt: RequestHandler[] = [
   validate({ params: ConsentReceiptParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const receiptId = req.params.receiptId as string;
 
@@ -87,7 +87,7 @@ export const getReceipt: RequestHandler[] = [
 export const updateReceipt: RequestHandler[] = [
   validate({ params: ConsentReceiptParamsSchema, body: UpdateConsentReceiptSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const receiptId = req.params.receiptId as string;
 
@@ -103,7 +103,7 @@ export const updateReceipt: RequestHandler[] = [
     const receipt = await ConsentService.updateConsentReceipt(
       association.id,
       receiptId,
-      req.headers['x-user-id'] as string,
+      req.userId as string,
       req.body,
     );
 
@@ -115,7 +115,7 @@ export const updateReceipt: RequestHandler[] = [
 export const deleteReceipt: RequestHandler[] = [
   validate({ params: ConsentReceiptParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const receiptId = req.params.receiptId as string;
 
@@ -129,7 +129,7 @@ export const deleteReceipt: RequestHandler[] = [
     await ConsentService.deleteConsentReceipt(
       association.id,
       receiptId,
-      req.headers['x-user-id'] as string,
+      req.userId as string,
     );
 
     logger.info({ traceId }, 'DELETE /api/consent/[receiptId] - Success');
@@ -140,7 +140,7 @@ export const deleteReceipt: RequestHandler[] = [
 export const getUserConsents: RequestHandler[] = [
   validate({ params: UserParamsSchema, query: UserQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const targetUserId = req.params.userId as string;
 

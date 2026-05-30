@@ -33,7 +33,7 @@ const SetDefaultPlanSchema = z.object({
 
 export const getPlansHandler: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const user = await withRole(req, UserRole.MEMBER);
     logger.info({ traceId, role: user.role }, 'GET /api/subscriptions/plans - Fetching plans');
@@ -45,7 +45,7 @@ export const getPlansHandler: RequestHandler[] = [
 export const createPlanHandler: RequestHandler[] = [
   validate({ body: CreateSubscriptionPlanSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     await withRole(req, UserRole.SUPER_ADMIN);
     if (!req.body) throw new ValidationError('Invalid request body');
@@ -58,7 +58,7 @@ export const createPlanHandler: RequestHandler[] = [
 export const setDefaultPlanHandler: RequestHandler[] = [
   validate({ body: SetDefaultPlanSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     await withRole(req, UserRole.SUPER_ADMIN);
     if (!req.body) throw new ValidationError('Invalid request body');
@@ -71,7 +71,7 @@ export const setDefaultPlanHandler: RequestHandler[] = [
 export const updatePlanHandler: RequestHandler[] = [
   validate({ body: UpdatePlanSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const user = await withRole(req, UserRole.SUPER_ADMIN);
     logger.info(
@@ -88,7 +88,7 @@ export const updatePlanHandler: RequestHandler[] = [
 
 export const deletePlanHandler: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const user = await withRole(req, UserRole.PRESIDENT);
     logger.info(

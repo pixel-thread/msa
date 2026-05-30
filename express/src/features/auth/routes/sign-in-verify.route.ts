@@ -16,7 +16,7 @@ import { logger } from '@src/shared/logger';
 export const postSignInVerify: RequestHandler[] = [
   validate({ body: VerifySignInSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'POST /api/auth/sign-in/verify - Request started');
     const { code } = req.body as VerifySignInInput;
     const mfaCookie = req.cookies?.mfa_temp_token || req.body?.mfa_temp_token;

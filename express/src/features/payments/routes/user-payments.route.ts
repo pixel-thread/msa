@@ -25,7 +25,7 @@ import { pageNumberValidation } from '@src/shared/validators/common';
 import { PAGE_SIZE } from '@src/shared/constants';
 
 async function getAssociation(req: Request) {
-  const userId = req.headers['x-user-id'] as string;
+  const userId = req.userId as string;
   if (!userId) throw new UnauthorizedError('Unauthorized');
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -42,13 +42,13 @@ const UserPaymentsQuerySchema = z.object({
 export const userPayments: RequestHandler[] = [
   validate({ params: UserPaymentsParamsSchema, query: UserPaymentsQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, userId: req.params.userId },
       'GET /api/payments/users/[userId] - Request started',
     );
     const association = await getAssociation(req);
-    const authUserId = req.headers['x-user-id'] as string;
+    const authUserId = req.userId as string;
     const authUser = await prisma.user.findUnique({
       where: { id: authUserId },
       select: { role: true },
@@ -99,13 +99,13 @@ const UserContributionsQuerySchema = z.object({
 export const userContributions: RequestHandler[] = [
   validate({ params: UserContributionsParamsSchema, query: UserContributionsQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, userId: req.params.userId },
       'GET /api/payments/users/[userId]/contributions - Request started',
     );
     const association = await getAssociation(req);
-    const authUserId = req.headers['x-user-id'] as string;
+    const authUserId = req.userId as string;
     const authUser = await prisma.user.findUnique({
       where: { id: authUserId },
       select: { role: true },

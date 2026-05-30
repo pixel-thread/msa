@@ -9,7 +9,7 @@ import { SubmitDsarSchema } from '@src/features/dsar/validators';
 import { logger } from '@src/shared/logger';
 
 async function getAssociation(req: Request) {
-  const userId = req.headers['x-user-id'] as string;
+  const userId = req.userId as string;
   if (!userId) throw new UnauthorizedError('Unauthorized');
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -22,14 +22,14 @@ async function getAssociation(req: Request) {
 export const submitDsar: RequestHandler[] = [
   validate({ body: SubmitDsarSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },
       'POST /api/dsar/submit - Request started',
     );
 
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
 
     const ticket = await submitDsarTicket({
       associationId: association.id,

@@ -21,7 +21,7 @@ import { logger } from '@src/shared/logger';
 export const getMembershipApplicationsHandler: RequestHandler[] = [
   validate({ query: GetMembershipApplicationsQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     logger.info(
       { traceId, status: (req.query as any)?.status },
       'GET /api/admin/membership-applications - Request started',
@@ -47,7 +47,7 @@ export const getMembershipApplicationsHandler: RequestHandler[] = [
 export const postApproveApplication: RequestHandler[] = [
   validate({ params: MembershipApplicationParamsSchema, body: ApproveApplicationSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const applicationId = req.params.applicationId as string;
     if (!applicationId) {
       logger.error(
@@ -65,7 +65,7 @@ export const postApproveApplication: RequestHandler[] = [
       { traceId, userId: user.id, roles: user.role },
       'POST /api/admin/membership-applications/[applicationId]/approve - User authorized',
     );
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     if (!userId) {
       logger.error(
         { traceId },
@@ -102,7 +102,7 @@ export const postApproveApplication: RequestHandler[] = [
 export const postRejectApplication: RequestHandler[] = [
   validate({ params: MembershipApplicationParamsSchema, body: RejectApplicationSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const applicationId = req.params.applicationId as string;
     if (!applicationId) {
       logger.error(
@@ -120,7 +120,7 @@ export const postRejectApplication: RequestHandler[] = [
       { traceId, userId: user.id, roles: user.role },
       'POST /api/admin/membership-applications/[applicationId]/reject - User authorized',
     );
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     if (!userId) {
       logger.error(
         { traceId },

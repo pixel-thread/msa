@@ -35,7 +35,7 @@ const CertificateParamsSchema = z.object({
 export const getCertificates: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
       logger.info(
@@ -61,7 +61,7 @@ export const getCertificates: RequestHandler[] = [
 export const postCertificate: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
       logger.info(
@@ -139,7 +139,7 @@ export const postCertificate: RequestHandler[] = [
 export const getCertificate: RequestHandler[] = [
   validate({ params: CertificateParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
       logger.info(
@@ -172,7 +172,7 @@ export const getCertificate: RequestHandler[] = [
 export const patchCertificate: RequestHandler[] = [
   validate({ params: CertificateParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
       logger.info(
@@ -267,7 +267,7 @@ export const patchCertificate: RequestHandler[] = [
 export const deleteCertificateHandler: RequestHandler[] = [
   validate({ params: CertificateParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
       logger.info(
@@ -310,7 +310,7 @@ export const deleteCertificateHandler: RequestHandler[] = [
 export const postCertificateTemplate: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
       logger.info(
@@ -377,7 +377,7 @@ export const postCertificateTemplate: RequestHandler[] = [
 export const deleteCertificateTemplate: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
   async (req: Request, res: Response, next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     try {
       const association = await getAssociation(req);
       logger.info(

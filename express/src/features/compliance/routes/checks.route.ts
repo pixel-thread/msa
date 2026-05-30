@@ -28,7 +28,7 @@ import { getAssociation, withRole } from './_helpers';
 export const listChecks: RequestHandler[] = [
   validate({ query: ComplianceCheckQuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },
@@ -71,7 +71,7 @@ export const listChecks: RequestHandler[] = [
 export const getCheck: RequestHandler[] = [
   validate({ params: ComplianceCheckParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id, checkId: req.params.checkId },
@@ -100,7 +100,7 @@ export const getCheck: RequestHandler[] = [
 export const runChecks: RequestHandler[] = [
   validate({ body: TriggerComplianceCheckSchema.optional() }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id },
@@ -146,7 +146,7 @@ export const runChecks: RequestHandler[] = [
 export const deleteCheck: RequestHandler[] = [
   validate({ params: ComplianceCheckParamsSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info(
       { traceId, associationId: association.id, checkId: req.params.checkId },

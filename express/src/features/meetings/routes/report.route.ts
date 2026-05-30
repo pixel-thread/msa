@@ -6,7 +6,7 @@ import { logger } from '@src/shared/logger';
 import { getAssociation, withRole } from './_helpers';
 
 export const getMeetingReport = async (req: Request, res: Response, _next: NextFunction) => {
-  const traceId = (req.headers['x-trace-id'] as string) || '';
+  const traceId = (req.traceId as string) || '';
   const association = await getAssociation(req);
   const user = await withRole(req, UserRole.SECRETARY);
 

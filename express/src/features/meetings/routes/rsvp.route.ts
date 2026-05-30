@@ -21,7 +21,7 @@ const RsvpSchema = z.object({
 export const postRsvp: RequestHandler[] = [
   validate({ body: RsvpSchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const meetingId = req.params.meetingId as string;
     logger.info({ traceId, meetingId }, 'POST /api/meetings/[meetingId]/rsvp - Request started');
@@ -32,7 +32,7 @@ export const postRsvp: RequestHandler[] = [
       'POST /api/meetings/[meetingId]/rsvp - User authorized',
     );
 
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     if (!userId) throw new ForbiddenError('Unauthorized');
 
     logger.info(

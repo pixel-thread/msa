@@ -7,12 +7,12 @@ import { getAssociation, withRole } from '@src/features/meetings/routes/_helpers
 
 export const postMarkRead: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     const announcementId = req.params.announcementId;
     if (!announcementId) throw new Error('Invalid announcement id');
     logger.info({ traceId, announcementId }, 'POST /api/announcements/[id]/read - Request started');
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     await withRole(req, UserRole.MEMBER);
     logger.info(
       { traceId, userId, announcementId },

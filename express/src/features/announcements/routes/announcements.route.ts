@@ -13,7 +13,7 @@ const AnnouncementQuerySchema = {} as any;
 
 export const getAnnouncements: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId, query: req.query }, 'GET /api/announcements - Request started');
     const user = await withRole(req, UserRole.MEMBER);
@@ -43,7 +43,7 @@ export const getAnnouncements: RequestHandler[] = [
 
 export const postAnnouncement: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
+    const traceId = (req.traceId as string) || '';
     const association = await getAssociation(req);
     logger.info({ traceId }, 'POST /api/announcements - Request started');
     const user = await withRole(req, UserRole.SECRETARY);
@@ -52,7 +52,7 @@ export const postAnnouncement: RequestHandler[] = [
       'POST /api/announcements - User authorized',
     );
     if (!req.body) throw new ForbiddenError('Invalid request body');
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.userId as string;
     const isPublishing = req.body.status === AnnouncementStatus.PUBLISHED;
     logger.info(
       {
