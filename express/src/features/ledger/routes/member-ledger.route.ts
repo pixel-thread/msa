@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
@@ -36,21 +36,19 @@ async function requireRole(req: Request, role: UserRole) {
 
 export const getMemberLedger = [
   validate({ query: QuerySchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'GET /api/ledger/member/[memberId] - Request started');
+    const association = await getAssociation(req);
+    logger.info({ traceId, associationId: association.id }, 'GET /api/ledger/member/[memberId] - Request started');
 
-      await requireRole(req, UserRole.FINANCE);
+    await requireRole(req, UserRole.FINANCE);
 
-      const { memberId } = req.params;
-      const page = (req.query as any).page || 1;
+    const { memberId } = req.params;
+    const page = (req.query as any).page || 1;
 
-      const { entries, total } = await getMemberEntries(memberId, page);
+    const { entries, total } = await getMemberEntries(memberId, page);
 
-      logger.info({ traceId, memberId, count: entries.length }, 'GET /api/ledger/member/[memberId] - Success');
-      return success(res, { data: entries, meta: buildPagination(total, page) });
-    } catch (e) { next(e); }
+    logger.info({ traceId, memberId, count: entries.length }, 'GET /api/ledger/member/[memberId] - Success');
+    return success(res, { data: entries, meta: buildPagination(total, page) });
   },
 ];

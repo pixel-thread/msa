@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
 import { prisma } from '@src/shared/lib/prisma';
@@ -33,17 +33,15 @@ async function withRole(req: Request, role: UserRole) {
   return { ...user, role: roles };
 }
 
-export const getSlaReport = async (req: Request, res: Response, next: NextFunction) => {
+export const getSlaReport = async (req: Request, res: Response) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
-  try {
-    const association = await getAssociation(req);
-    logger.info({ traceId, associationId: association.id }, 'GET /api/dsar/sla-report - Request started');
+  const association = await getAssociation(req);
+  logger.info({ traceId, associationId: association.id }, 'GET /api/dsar/sla-report - Request started');
 
-    await withRole(req, UserRole.DPO);
+  await withRole(req, UserRole.DPO);
 
-    const report = await getDsarSlaStatus(association.id);
+  const report = await getDsarSlaStatus(association.id);
 
-    logger.info({ traceId }, 'GET /api/dsar/sla-report - Success');
-    return success(res, { data: report, message: '' });
-  } catch (e) { next(e); }
+  logger.info({ traceId }, 'GET /api/dsar/sla-report - Success');
+  return success(res, { data: report, message: '' });
 };

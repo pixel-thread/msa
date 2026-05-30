@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
@@ -37,28 +37,26 @@ async function withRole(req: Request, role: UserRole) {
 
 export const listTickets = [
   validate({ query: DsarQuerySchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'GET /api/dsar - Request started');
+    const association = await getAssociation(req);
+    logger.info({ traceId, associationId: association.id }, 'GET /api/dsar - Request started');
 
-      await withRole(req, UserRole.DPO);
+    await withRole(req, UserRole.DPO);
 
-      const result = await findDsarTickets({
-        associationId: association.id,
-        userId: req.query.userId as string | undefined,
-        filters: {
-          status: (req.query as any).status,
-          requestType: (req.query as any).requestType,
-        },
-        pagination: {
-          page: (req.query as any).page ?? 1,
-        },
-      });
+    const result = await findDsarTickets({
+      associationId: association.id,
+      userId: req.query.userId as string | undefined,
+      filters: {
+        status: (req.query as any).status,
+        requestType: (req.query as any).requestType,
+      },
+      pagination: {
+        page: (req.query as any).page ?? 1,
+      },
+    });
 
-      logger.info({ traceId, count: result.tickets.length }, 'GET /api/dsar - Success');
-      return success(res, { data: result.tickets, meta: result.pagination });
-    } catch (e) { next(e); }
+    logger.info({ traceId, count: result.tickets.length }, 'GET /api/dsar - Success');
+    return success(res, { data: result.tickets, meta: result.pagination });
   },
 ];

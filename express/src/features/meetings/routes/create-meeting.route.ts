@@ -11,7 +11,7 @@ import { getAssociation, withRole } from './_helpers';
 
 export const postCreateMeeting = [
   validate({ body: CreateMeetingSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     try {
       const association = await getAssociation(req);

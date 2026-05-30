@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
@@ -50,37 +50,33 @@ async function withRole(req: Request, role: UserRole) {
 
 export const listAccounts = [
   validate({ query: AccountQuerySchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'GET /api/ledger/accounts - Request started');
+    const association = await getAssociation(req);
+    logger.info({ traceId, associationId: association.id }, 'GET /api/ledger/accounts - Request started');
 
-      await withRole(req, UserRole.FINANCE);
+    await withRole(req, UserRole.FINANCE);
 
-      const page = (req.query as any).page || 1;
-      const { accounts, total } = await getAccounts(association.id, page);
+    const page = (req.query as any).page || 1;
+    const { accounts, total } = await getAccounts(association.id, page);
 
-      logger.info({ traceId, count: accounts.length }, 'GET /api/ledger/accounts - Success');
-      return success(res, { data: accounts, meta: buildPagination(total, page) });
-    } catch (e) { next(e); }
+    logger.info({ traceId, count: accounts.length }, 'GET /api/ledger/accounts - Success');
+    return success(res, { data: accounts, meta: buildPagination(total, page) });
   },
 ];
 
 export const createAccountHandler = [
   validate({ body: CreateAccountSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'POST /api/ledger/accounts - Request started');
+    const association = await getAssociation(req);
+    logger.info({ traceId, associationId: association.id }, 'POST /api/ledger/accounts - Request started');
 
-      await withRole(req, UserRole.FINANCE);
+    await withRole(req, UserRole.FINANCE);
 
-      const account = await createAccount(association.id, req.body);
+    const account = await createAccount(association.id, req.body);
 
-      logger.info({ traceId, accountId: account.id }, 'POST /api/ledger/accounts - Success');
-      return success(res, { data: account }, 201);
-    } catch (e) { next(e); }
+    logger.info({ traceId, accountId: account.id }, 'POST /api/ledger/accounts - Success');
+    return success(res, { data: account }, 201);
   },
 ];

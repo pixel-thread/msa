@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError, ValidationError, NotFoundError } from '@src/shared/errors';
@@ -26,42 +26,34 @@ const LinkNotificationSchema = z.object({
 
 export const postRegisterPushToken = [
   validate({ body: RegisterPushTokenSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      logger.info({ traceId }, 'POST /api/notifications/register - Request started');
-      const token = req.body?.token;
-      if (!token) throw new ValidationError('Missing token');
-      const pushToken = await upsertPushToken(token);
-      logger.info({ traceId, tokenId: pushToken.id }, 'POST /api/notifications/register - Success');
-      return success(res, { data: pushToken });
-    } catch (e) {
-      next(e);
-    }
+    logger.info({ traceId }, 'POST /api/notifications/register - Request started');
+    const token = req.body?.token;
+    if (!token) throw new ValidationError('Missing token');
+    const pushToken = await upsertPushToken(token);
+    logger.info({ traceId, tokenId: pushToken.id }, 'POST /api/notifications/register - Success');
+    return success(res, { data: pushToken });
   },
 ];
 
 export const postLinkNotification = [
   validate({ body: LinkNotificationSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      logger.info({ traceId }, 'POST /api/notifications/link - Request started');
-      const userId = req.headers['x-user-id'];
-      if (!userId) throw new UnauthorizedError('User ID is required');
-      if (!req.body?.token) throw new ValidationError('Token is required');
-      const pushToken = await upsertPushToken(req.body.token, userId as string);
-      logger.info({ traceId, tokenId: pushToken.id }, 'POST /api/notifications/link - Success');
-      return success(res, { data: pushToken }, 201);
-    } catch (e) {
-      next(e);
-    }
+    logger.info({ traceId }, 'POST /api/notifications/link - Request started');
+    const userId = req.headers['x-user-id'];
+    if (!userId) throw new UnauthorizedError('User ID is required');
+    if (!req.body?.token) throw new ValidationError('Token is required');
+    const pushToken = await upsertPushToken(req.body.token, userId as string);
+    logger.info({ traceId, tokenId: pushToken.id }, 'POST /api/notifications/link - Success');
+    return success(res, { data: pushToken }, 201);
   },
 ];
 
 export const patchNotificationStatus = [
   validate({ body: UpdateNotificationSchema, params: NotificationRouteParams }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     logger.info({ traceId }, 'PATCH /api/notifications/[notificationId]/status - Request started');
     const user = await withRole(req, UserRole.MEMBER);

@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { prisma } from '@src/shared/lib/prisma';
 import { success } from '@src/shared/utils/responses';
 import { logger } from '@src/shared/logger';
@@ -15,33 +15,31 @@ async function getAssociation(req: Request) {
 }
 
 export const getPayment = [
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      logger.info({ traceId }, 'GET /api/payments/[id] - Request started');
-      const association = await getAssociation(req);
-      const paymentId = req.params.paymentId;
-      if (!paymentId) throw new NotFoundError('Payment ID');
-      const userId = req.headers['x-user-id'] as string;
-      const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, role: true } });
-      if (!user || !user.role.includes(UserRole.MEMBER)) {
-        throw new ForbiddenError('Insufficient permissions');
-      }
-      logger.info({ traceId, userId: user.id, paymentId }, 'GET /api/payments/[id] - User authorized');
-      const transaction = await getTransactionById(paymentId, association.id);
-      if (!transaction) throw new NotFoundError('Transaction');
-      const adminRoles: UserRole[] = [
-        UserRole.FINANCE,
-        UserRole.SECRETARY,
-        UserRole.PRESIDENT,
-        UserRole.SUPER_ADMIN,
-      ];
-      const isFinance = user.role.some((r) => adminRoles.includes(r));
-      if (!isFinance && transaction.userId !== user.id) {
-        throw new ForbiddenError('You do not have permission to view this transaction');
-      }
-      logger.info({ traceId, paymentId }, 'GET /api/payments/[id] - Success');
-      return success(res, { data: transaction });
-    } catch (e) { next(e); }
+    logger.info({ traceId }, 'GET /api/payments/[id] - Request started');
+    const association = await getAssociation(req);
+    const paymentId = req.params.paymentId;
+    if (!paymentId) throw new NotFoundError('Payment ID');
+    const userId = req.headers['x-user-id'] as string;
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, role: true } });
+    if (!user || !user.role.includes(UserRole.MEMBER)) {
+      throw new ForbiddenError('Insufficient permissions');
+    }
+    logger.info({ traceId, userId: user.id, paymentId }, 'GET /api/payments/[id] - User authorized');
+    const transaction = await getTransactionById(paymentId, association.id);
+    if (!transaction) throw new NotFoundError('Transaction');
+    const adminRoles: UserRole[] = [
+      UserRole.FINANCE,
+      UserRole.SECRETARY,
+      UserRole.PRESIDENT,
+      UserRole.SUPER_ADMIN,
+    ];
+    const isFinance = user.role.some((r) => adminRoles.includes(r));
+    if (!isFinance && transaction.userId !== user.id) {
+      throw new ForbiddenError('You do not have permission to view this transaction');
+    }
+    logger.info({ traceId, paymentId }, 'GET /api/payments/[id] - Success');
+    return success(res, { data: transaction });
   },
 ];

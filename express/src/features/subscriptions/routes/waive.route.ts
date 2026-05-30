@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { ValidationError } from '@src/shared/errors';
@@ -10,22 +10,20 @@ import { getAssociation, withRole } from '@src/features/meetings/routes/_helpers
 
 export const postWaive = [
   validate({ body: WaiveSubscriptionSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'POST /api/subscriptions/waive - Request started');
-      const user = await withRole(req, UserRole.SECRETARY);
-      logger.info({ traceId, userId: user.id }, 'User authorized');
-      if (!req.body) throw new ValidationError('Invalid request body');
-      const updated = await waiveSubscription({
-        subscriptionId: req.body.subscriptionId,
-        reason: req.body.reason,
-        userId: user.id,
-        associationId: association.id,
-      });
-      logger.info({ traceId, subscriptionId: req.body.subscriptionId }, 'Subscription waived');
-      return success(res, { data: updated });
-    } catch (e) { next(e); }
+    const association = await getAssociation(req);
+    logger.info({ traceId, associationId: association.id }, 'POST /api/subscriptions/waive - Request started');
+    const user = await withRole(req, UserRole.SECRETARY);
+    logger.info({ traceId, userId: user.id }, 'User authorized');
+    if (!req.body) throw new ValidationError('Invalid request body');
+    const updated = await waiveSubscription({
+      subscriptionId: req.body.subscriptionId,
+      reason: req.body.reason,
+      userId: user.id,
+      associationId: association.id,
+    });
+    logger.info({ traceId, subscriptionId: req.body.subscriptionId }, 'Subscription waived');
+    return success(res, { data: updated });
   },
 ];

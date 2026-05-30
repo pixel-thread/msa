@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
@@ -17,22 +17,20 @@ async function getAssociation(req: Request) {
 
 export const submitDsar = [
   validate({ body: SubmitDsarSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'POST /api/dsar/submit - Request started');
+    const association = await getAssociation(req);
+    logger.info({ traceId, associationId: association.id }, 'POST /api/dsar/submit - Request started');
 
-      const userId = req.headers['x-user-id'] as string;
+    const userId = req.headers['x-user-id'] as string;
 
-      const ticket = await submitDsarTicket({
-        associationId: association.id,
-        userId,
-        data: req.body,
-      });
+    const ticket = await submitDsarTicket({
+      associationId: association.id,
+      userId,
+      data: req.body,
+    });
 
-      logger.info({ traceId, userId, ticketId: ticket.id }, 'POST /api/dsar/submit - Success');
-      return success(res, { data: ticket }, 201);
-    } catch (e) { next(e); }
+    logger.info({ traceId, userId, ticketId: ticket.id }, 'POST /api/dsar/submit - Success');
+    return success(res, { data: ticket }, 201);
   },
 ];

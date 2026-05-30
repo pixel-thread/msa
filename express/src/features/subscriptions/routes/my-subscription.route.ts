@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UserRole } from '@prisma/client';
@@ -14,16 +14,14 @@ const MySubscriptionQuerySchema = z.object({
 
 export const getMySubscriptionHandler = [
   validate({ query: MySubscriptionQuerySchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'GET /api/subscriptions/my - Request started');
-      const page = (req.query as any)?.page || 1;
-      const user = await withRole(req, UserRole.MEMBER);
-      logger.info({ traceId, userId: user.id }, 'User authorized');
-      const result = await getMySubscription(user.id, page);
-      return success(res, result);
-    } catch (e) { next(e); }
+    const association = await getAssociation(req);
+    logger.info({ traceId, associationId: association.id }, 'GET /api/subscriptions/my - Request started');
+    const page = (req.query as any)?.page || 1;
+    const user = await withRole(req, UserRole.MEMBER);
+    logger.info({ traceId, userId: user.id }, 'User authorized');
+    const result = await getMySubscription(user.id, page);
+    return success(res, result);
   },
 ];

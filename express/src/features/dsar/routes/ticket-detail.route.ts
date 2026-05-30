@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError, ForbiddenError, NotFoundError, BadRequestError } from '@src/shared/errors';
@@ -48,119 +48,109 @@ async function withRole(req: Request, role: UserRole) {
 
 export const getTicket = [
   validate({ params: ParamsSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      const userId = req.headers['x-user-id'] as string;
-      const ticketId = req.params.ticketId as string;
+    const association = await getAssociation(req);
+    const userId = req.headers['x-user-id'] as string;
+    const ticketId = req.params.ticketId as string;
 
-      logger.info({ traceId, associationId: association.id, ticketId }, 'GET /api/dsar/[ticketId] - Request started');
+    logger.info({ traceId, associationId: association.id, ticketId }, 'GET /api/dsar/[ticketId] - Request started');
 
-      const ticket = await findUniqueDsarTicket(ticketId, association.id);
-      if (!ticket) throw new NotFoundError('DSAR ticket not found');
+    const ticket = await findUniqueDsarTicket(ticketId, association.id);
+    if (!ticket) throw new NotFoundError('DSAR ticket not found');
 
-      const isOwner = ticket.userId === userId;
-      if (!isOwner) {
-        await withRole(req, UserRole.DPO);
-      }
+    const isOwner = ticket.userId === userId;
+    if (!isOwner) {
+      await withRole(req, UserRole.DPO);
+    }
 
-      logger.info({ traceId }, 'GET /api/dsar/[ticketId] - Success');
-      return success(res, { data: ticket });
-    } catch (e) { next(e); }
+    logger.info({ traceId }, 'GET /api/dsar/[ticketId] - Success');
+    return success(res, { data: ticket });
   },
 ];
 
 export const deleteTicket = [
   validate({ params: ParamsSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      const actorId = req.headers['x-user-id'] as string;
-      const ticketId = req.params.ticketId as string;
+    const association = await getAssociation(req);
+    const actorId = req.headers['x-user-id'] as string;
+    const ticketId = req.params.ticketId as string;
 
-      logger.info({ traceId, associationId: association.id, ticketId }, 'DELETE /api/dsar/[ticketId] - Request started');
+    logger.info({ traceId, associationId: association.id, ticketId }, 'DELETE /api/dsar/[ticketId] - Request started');
 
-      await withRole(req, UserRole.DPO);
+    await withRole(req, UserRole.DPO);
 
-      const ticket = await findUniqueDsarTicket(ticketId, association.id);
-      if (!ticket) throw new NotFoundError('DSAR ticket not found');
+    const ticket = await findUniqueDsarTicket(ticketId, association.id);
+    if (!ticket) throw new NotFoundError('DSAR ticket not found');
 
-      await deleteDsarTicket({ associationId: association.id, ticketId, actorId });
+    await deleteDsarTicket({ associationId: association.id, ticketId, actorId });
 
-      logger.info({ traceId }, 'DELETE /api/dsar/[ticketId] - Success');
-      return success(res, { data: null, message: 'DSAR ticket deleted successfully' });
-    } catch (e) { next(e); }
+    logger.info({ traceId }, 'DELETE /api/dsar/[ticketId] - Success');
+    return success(res, { data: null, message: 'DSAR ticket deleted successfully' });
   },
 ];
 
 export const respondToTicket = [
   validate({ params: ParamsSchema, body: RespondDsarSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      const ticketId = req.params.ticketId as string;
+    const association = await getAssociation(req);
+    const ticketId = req.params.ticketId as string;
 
-      logger.info({ traceId, associationId: association.id, ticketId }, 'POST /api/dsar/[ticketId]/respond - Request started');
+    logger.info({ traceId, associationId: association.id, ticketId }, 'POST /api/dsar/[ticketId]/respond - Request started');
 
-      const actorId = req.headers['x-user-id'] as string;
-      await withRole(req, UserRole.DPO);
+    const actorId = req.headers['x-user-id'] as string;
+    await withRole(req, UserRole.DPO);
 
-      const ticket = await respondToDsarTicket({ associationId: association.id, ticketId, actorId, data: req.body });
+    const ticket = await respondToDsarTicket({ associationId: association.id, ticketId, actorId, data: req.body });
 
-      logger.info({ traceId }, 'POST /api/dsar/[ticketId]/respond - Success');
-      return success(res, { data: ticket });
-    } catch (e) { next(e); }
+    logger.info({ traceId }, 'POST /api/dsar/[ticketId]/respond - Success');
+    return success(res, { data: ticket });
   },
 ];
 
 export const assignTicket = [
   validate({ params: ParamsSchema, body: AssignSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      const ticketId = req.params.ticketId as string;
+    const association = await getAssociation(req);
+    const ticketId = req.params.ticketId as string;
 
-      logger.info({ traceId, associationId: association.id, ticketId }, 'PATCH /api/dsar/[ticketId]/assign - Request started');
+    logger.info({ traceId, associationId: association.id, ticketId }, 'PATCH /api/dsar/[ticketId]/assign - Request started');
 
-      const actorId = req.headers['x-user-id'] as string;
-      await withRole(req, UserRole.DPO);
+    const actorId = req.headers['x-user-id'] as string;
+    await withRole(req, UserRole.DPO);
 
-      const user = await getUniqueUser({ where: { id: req.body.assignedToId } });
-      if (!user) throw new NotFoundError('User not found');
-      if (!hasHighRoleAccess(user.role as UserRole[])) throw new BadRequestError('User does not have the required role');
+    const user = await getUniqueUser({ where: { id: req.body.assignedToId } });
+    if (!user) throw new NotFoundError('User not found');
+    if (!hasHighRoleAccess(user.role as UserRole[])) throw new BadRequestError('User does not have the required role');
 
-      const ticket = await assignDsarTicket({ associationId: association.id, ticketId, actorId, assignedToId: req.body.assignedToId });
+    const ticket = await assignDsarTicket({ associationId: association.id, ticketId, actorId, assignedToId: req.body.assignedToId });
 
-      logger.info({ traceId }, 'PATCH /api/dsar/[ticketId]/assign - Success');
-      return success(res, { data: ticket });
-    } catch (e) { next(e); }
+    logger.info({ traceId }, 'PATCH /api/dsar/[ticketId]/assign - Success');
+    return success(res, { data: ticket });
   },
 ];
 
 export const rejectTicket = [
   validate({ params: ParamsSchema, body: RejectSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      const ticketId = req.params.ticketId as string;
+    const association = await getAssociation(req);
+    const ticketId = req.params.ticketId as string;
 
-      logger.info({ traceId, associationId: association.id, ticketId }, 'POST /api/dsar/[ticketId]/reject - Request started');
+    logger.info({ traceId, associationId: association.id, ticketId }, 'POST /api/dsar/[ticketId]/reject - Request started');
 
-      const actorId = req.headers['x-user-id'] as string;
-      await withRole(req, UserRole.DPO);
+    const actorId = req.headers['x-user-id'] as string;
+    await withRole(req, UserRole.DPO);
 
-      const ticket = await respondToDsarTicket({
-        associationId: association.id, ticketId, actorId,
-        data: { status: DsarStatus.REJECTED, rejectedReason: req.body.reason },
-      });
+    const ticket = await respondToDsarTicket({
+      associationId: association.id, ticketId, actorId,
+      data: { status: DsarStatus.REJECTED, rejectedReason: req.body.reason },
+    });
 
-      logger.info({ traceId }, 'POST /api/dsar/[ticketId]/reject - Success');
-      return success(res, { data: ticket });
-    } catch (e) { next(e); }
+    logger.info({ traceId }, 'POST /api/dsar/[ticketId]/reject - Success');
+    return success(res, { data: ticket });
   },
 ];

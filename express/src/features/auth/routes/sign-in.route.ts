@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { SignInSchema } from '@src/features/auth/validators';
@@ -16,9 +16,8 @@ import { logger } from '@src/shared/logger';
 
 export const postSignIn = [
   validate({ body: SignInSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
       const user = await getUserFirst({ where: { email: req.body?.email } });
 
       if (user?.lockedUntil && user.lockedUntil > new Date()) {

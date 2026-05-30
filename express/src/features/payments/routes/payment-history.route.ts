@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { prisma } from '@src/shared/lib/prisma';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
@@ -18,22 +18,20 @@ async function getAssociation(req: Request) {
 
 export const paymentHistory = [
   validate({ query: PaymentHistoryQuerySchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      logger.info({ traceId, query: req.query }, 'GET /api/payments/history - Request started');
-      await getAssociation(req);
-      const userId = req.headers['x-user-id'] as string;
-      const page = (req.query as any)?.page ?? 1;
-      const [history, summary] = await Promise.all([
-        getUserPaymentHistory(userId, page),
-        getUserContributionSummary(userId),
-      ]);
-      logger.info({ traceId, count: history.transactions.length }, 'GET /api/payments/history - Success');
-      return success(res, {
-        data: { transactions: history.transactions, summary },
-        meta: history.pagination,
-      });
-    } catch (e) { next(e); }
+    logger.info({ traceId, query: req.query }, 'GET /api/payments/history - Request started');
+    await getAssociation(req);
+    const userId = req.headers['x-user-id'] as string;
+    const page = (req.query as any)?.page ?? 1;
+    const [history, summary] = await Promise.all([
+      getUserPaymentHistory(userId, page),
+      getUserContributionSummary(userId),
+    ]);
+    logger.info({ traceId, count: history.transactions.length }, 'GET /api/payments/history - Success');
+    return success(res, {
+      data: { transactions: history.transactions, summary },
+      meta: history.pagination,
+    });
   },
 ];

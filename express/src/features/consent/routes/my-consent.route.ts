@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
 import { prisma } from '@src/shared/lib/prisma';
@@ -33,20 +33,18 @@ async function withRole(req: Request, role: UserRole) {
   return { ...user, role: roles };
 }
 
-export const getMyConsent = async (req: Request, res: Response, next: NextFunction) => {
+export const getMyConsent = async (req: Request, res: Response) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
-  try {
-    const association = await getAssociation(req);
-    logger.info({ traceId, associationId: association.id }, 'GET /api/consent/my - Request started');
+  const association = await getAssociation(req);
+  logger.info({ traceId, associationId: association.id }, 'GET /api/consent/my - Request started');
 
-    await withRole(req, UserRole.MEMBER);
+  await withRole(req, UserRole.MEMBER);
 
-    const userId = req.headers['x-user-id'] as string;
-    if (!userId) throw new UnauthorizedError('User ID not found');
+  const userId = req.headers['x-user-id'] as string;
+  if (!userId) throw new UnauthorizedError('User ID not found');
 
-    const consentState = await ConsentService.getUserConsentState(userId, association.id);
+  const consentState = await ConsentService.getUserConsentState(userId, association.id);
 
-    logger.info({ traceId }, 'GET /api/consent/my - Success');
-    return success(res, { data: consentState });
-  } catch (e) { next(e); }
+  logger.info({ traceId }, 'GET /api/consent/my - Success');
+  return success(res, { data: consentState });
 };

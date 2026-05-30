@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { prisma } from '@src/shared/lib/prisma';
 import { success } from '@src/shared/utils/responses';
 import { logger } from '@src/shared/logger';
@@ -15,20 +15,18 @@ async function getAssociation(req: Request) {
 }
 
 export const paymentStats = [
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      logger.info({ traceId }, 'GET /api/payments/stats - Request started');
-      const association = await getAssociation(req);
-      const userId = req.headers['x-user-id'] as string;
-      const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
-      if (!user || !user.role.includes(UserRole.FINANCE)) {
-        throw new ForbiddenError('Insufficient permissions');
-      }
-      logger.info({ traceId }, 'GET /api/payments/stats - User authorized');
-      const data = await getFinancialStats(association.id);
-      logger.info({ traceId }, 'GET /api/payments/stats - Success');
-      return success(res, { data: data.stats, meta: data.pagination });
-    } catch (e) { next(e); }
+    logger.info({ traceId }, 'GET /api/payments/stats - Request started');
+    const association = await getAssociation(req);
+    const userId = req.headers['x-user-id'] as string;
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
+    if (!user || !user.role.includes(UserRole.FINANCE)) {
+      throw new ForbiddenError('Insufficient permissions');
+    }
+    logger.info({ traceId }, 'GET /api/payments/stats - User authorized');
+    const data = await getFinancialStats(association.id);
+    logger.info({ traceId }, 'GET /api/payments/stats - Success');
+    return success(res, { data: data.stats, meta: data.pagination });
   },
 ];

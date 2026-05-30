@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { env } from '@src/env';
@@ -14,9 +14,8 @@ import { logger } from '@src/shared/logger';
 
 export const postSignUp = [
   validate({ body: MembershipApplicationSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
       logger.info({ traceId, email: req.body?.email }, 'POST /api/auth/sign-up - Request started');
       const {
         email, phone, associationSlug, firstName, lastName, dateOfBirth, age,

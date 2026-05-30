@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
 import { prisma } from '@src/shared/lib/prisma';
@@ -33,17 +33,15 @@ async function withRole(req: Request, role: UserRole) {
   return { ...user, role: roles };
 }
 
-export const listAdmins = async (req: Request, res: Response, next: NextFunction) => {
+export const listAdmins = async (req: Request, res: Response) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
-  try {
-    const association = await getAssociation(req);
-    logger.info({ traceId, associationId: association.id }, 'GET /api/dsar/admins - Request started');
+  const association = await getAssociation(req);
+  logger.info({ traceId, associationId: association.id }, 'GET /api/dsar/admins - Request started');
 
-    await withRole(req, UserRole.DPO);
+  await withRole(req, UserRole.DPO);
 
-    const admins = await findAssociationAdmins(association.id);
+  const admins = await findAssociationAdmins(association.id);
 
-    logger.info({ traceId, count: admins.length }, 'GET /api/dsar/admins - Success');
-    return success(res, { data: admins });
-  } catch (e) { next(e); }
+  logger.info({ traceId, count: admins.length }, 'GET /api/dsar/admins - Success');
+  return success(res, { data: admins });
 };

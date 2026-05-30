@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError, ForbiddenError, NotFoundError } from '@src/shared/errors';
@@ -37,48 +37,44 @@ async function withRole(req: Request, role: UserRole) {
 
 export const listMyTickets = [
   validate({ query: DsarQuerySchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'GET /api/dsar/my - Request started');
+    const association = await getAssociation(req);
+    logger.info({ traceId, associationId: association.id }, 'GET /api/dsar/my - Request started');
 
-      const userId = req.headers['x-user-id'] as string;
+    const userId = req.headers['x-user-id'] as string;
 
-      const result = await findDsarTickets({
-        associationId: association.id,
-        userId,
-        filters: {
-          status: (req.query as any).status,
-          requestType: (req.query as any).requestType,
-        },
-        pagination: {
-          page: (req.query as any).page ?? 1,
-        },
-      });
+    const result = await findDsarTickets({
+      associationId: association.id,
+      userId,
+      filters: {
+        status: (req.query as any).status,
+        requestType: (req.query as any).requestType,
+      },
+      pagination: {
+        page: (req.query as any).page ?? 1,
+      },
+    });
 
-      logger.info({ traceId, userId, count: result.tickets.length }, 'GET /api/dsar/my - Success');
-      return success(res, { data: result.tickets, meta: result.pagination });
-    } catch (e) { next(e); }
+    logger.info({ traceId, userId, count: result.tickets.length }, 'GET /api/dsar/my - Success');
+    return success(res, { data: result.tickets, meta: result.pagination });
   },
 ];
 
-export const getMyTicket = async (req: Request, res: Response, next: NextFunction) => {
+export const getMyTicket = async (req: Request, res: Response) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
-  try {
-    const association = await getAssociation(req);
-    logger.info({ traceId, associationId: association.id }, 'GET /api/dsar/my/[ticketId] - Request started');
+  const association = await getAssociation(req);
+  logger.info({ traceId, associationId: association.id }, 'GET /api/dsar/my/[ticketId] - Request started');
 
-    await withRole(req, UserRole.MEMBER);
-    const userId = req.headers['x-user-id'] as string;
+  await withRole(req, UserRole.MEMBER);
+  const userId = req.headers['x-user-id'] as string;
 
-    const ticketId = req.params.ticketId as string;
-    const ticket = await findUniqueDsarTicket(ticketId, association.id);
+  const ticketId = req.params.ticketId as string;
+  const ticket = await findUniqueDsarTicket(ticketId, association.id);
 
-    if (!ticket) throw new NotFoundError('Ticket not found');
-    if (ticket.userId !== userId) throw new ForbiddenError('Not authorized to view this ticket');
+  if (!ticket) throw new NotFoundError('Ticket not found');
+  if (ticket.userId !== userId) throw new ForbiddenError('Not authorized to view this ticket');
 
-    logger.info({ traceId, ticketId }, 'GET /api/dsar/my/[ticketId] - Success');
-    return success(res, { data: ticket });
-  } catch (e) { next(e); }
+  logger.info({ traceId, ticketId }, 'GET /api/dsar/my/[ticketId] - Success');
+  return success(res, { data: ticket });
 };

@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { ChangePasswordInput, ChangePasswordSchema } from '@src/features/auth/validators';
@@ -11,9 +11,8 @@ import { logger } from '@src/shared/logger';
 
 export const postChangePassword = [
   validate({ body: ChangePasswordSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
       const userId = req.headers['x-user-id'] as string;
       logger.info({ traceId, userId }, 'POST /api/auth/change-password - Request started');
       if (!userId) throw new UnauthorizedError('User not found');

@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { prisma } from '@src/shared/lib/prisma';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
@@ -17,19 +17,17 @@ async function getAssociation(req: Request) {
 
 export const verifyPayment = [
   validate({ body: VerifyPaymentSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      logger.info({ traceId, razorpayOrderId: req.body.razorpayOrderId }, 'POST /api/payments/verify - Request started');
-      await getAssociation(req);
-      logger.info({ traceId, razorpayOrderId: req.body.razorpayOrderId }, 'POST /api/payments/verify - Verifying payment');
-      const result = await verifyAndCompletePayment({
-        razorpayOrderId: req.body.razorpayOrderId,
-        razorpayPaymentId: req.body.razorpayPaymentId,
-        razorpaySignature: req.body.razorpaySignature,
-      });
-      logger.info({ traceId, razorpayOrderId: req.body.razorpayOrderId }, 'POST /api/payments/verify - Success');
-      return success(res, { data: result, message: 'Payment verified and completed successfully' }, 200);
-    } catch (e) { next(e); }
+    logger.info({ traceId, razorpayOrderId: req.body.razorpayOrderId }, 'POST /api/payments/verify - Request started');
+    await getAssociation(req);
+    logger.info({ traceId, razorpayOrderId: req.body.razorpayOrderId }, 'POST /api/payments/verify - Verifying payment');
+    const result = await verifyAndCompletePayment({
+      razorpayOrderId: req.body.razorpayOrderId,
+      razorpayPaymentId: req.body.razorpayPaymentId,
+      razorpaySignature: req.body.razorpaySignature,
+    });
+    logger.info({ traceId, razorpayOrderId: req.body.razorpayOrderId }, 'POST /api/payments/verify - Success');
+    return success(res, { data: result, message: 'Payment verified and completed successfully' }, 200);
   },
 ];

@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { prisma } from '@src/shared/lib/prisma';
@@ -11,9 +11,8 @@ import { logger } from '@src/shared/logger';
 
 export const getMemberLedger = [
   validate({ params: LedgerRouteParams, query: LedgerQueryParams }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
       const userId = req.headers['x-user-id'] as string;
       if (!userId) throw new UnauthorizedError('Unauthorized');
 

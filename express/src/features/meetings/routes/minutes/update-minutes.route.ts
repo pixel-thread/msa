@@ -15,7 +15,7 @@ const ParamsSchema = z.object({
 
 export const patchUpdateMinute = [
   validate({ params: ParamsSchema, body: UpdateMeetingMinuteSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     try {
       const association = await getAssociation(req);

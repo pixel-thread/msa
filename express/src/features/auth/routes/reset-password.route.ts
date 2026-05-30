@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { ResetPasswordInput, ResetPasswordSchema } from '@src/features/auth/validators';
@@ -11,9 +11,8 @@ import { logger } from '@src/shared/logger';
 
 export const postResetPassword = [
   validate({ body: ResetPasswordSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
       logger.info({ traceId }, 'POST /api/auth/reset-password - Request started');
       const { token, password } = req.body as ResetPasswordInput;
 

@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError, ForbiddenError, BadRequestError, NotFoundError } from '@src/shared/errors';
@@ -50,95 +50,87 @@ async function withRole(req: Request, role: UserRole) {
 
 export const getReceipt = [
   validate({ params: ConsentReceiptParamsSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      const receiptId = req.params.receiptId as string;
+    const association = await getAssociation(req);
+    const receiptId = req.params.receiptId as string;
 
-      logger.info({ traceId, associationId: association.id, receiptId }, 'GET /api/consent/[receiptId] - Request started');
+    logger.info({ traceId, associationId: association.id, receiptId }, 'GET /api/consent/[receiptId] - Request started');
 
-      await withRole(req, UserRole.DPO);
+    await withRole(req, UserRole.DPO);
 
-      const receipt = await ConsentService.findUniqueConsentReceipt(association.id, receiptId);
-      if (!receipt) throw new NotFoundError('Consent receipt not found');
+    const receipt = await ConsentService.findUniqueConsentReceipt(association.id, receiptId);
+    if (!receipt) throw new NotFoundError('Consent receipt not found');
 
-      logger.info({ traceId }, 'GET /api/consent/[receiptId] - Success');
-      return success(res, { data: receipt });
-    } catch (e) { next(e); }
+    logger.info({ traceId }, 'GET /api/consent/[receiptId] - Success');
+    return success(res, { data: receipt });
   },
 ];
 
 export const updateReceipt = [
   validate({ params: ConsentReceiptParamsSchema, body: UpdateConsentReceiptSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      const receiptId = req.params.receiptId as string;
+    const association = await getAssociation(req);
+    const receiptId = req.params.receiptId as string;
 
-      logger.info({ traceId, associationId: association.id, receiptId }, 'PATCH /api/consent/[receiptId] - Request started');
+    logger.info({ traceId, associationId: association.id, receiptId }, 'PATCH /api/consent/[receiptId] - Request started');
 
-      if (!req.body) throw new BadRequestError('Request body is required');
+    if (!req.body) throw new BadRequestError('Request body is required');
 
-      await withRole(req, UserRole.DPO);
+    await withRole(req, UserRole.DPO);
 
-      const receipt = await ConsentService.updateConsentReceipt(
-        association.id, receiptId,
-        req.headers['x-user-id'] as string,
-        req.body,
-      );
+    const receipt = await ConsentService.updateConsentReceipt(
+      association.id, receiptId,
+      req.headers['x-user-id'] as string,
+      req.body,
+    );
 
-      logger.info({ traceId }, 'PATCH /api/consent/[receiptId] - Success');
-      return success(res, { data: receipt, message: 'Consent receipt updated successfully' });
-    } catch (e) { next(e); }
+    logger.info({ traceId }, 'PATCH /api/consent/[receiptId] - Success');
+    return success(res, { data: receipt, message: 'Consent receipt updated successfully' });
   },
 ];
 
 export const deleteReceipt = [
   validate({ params: ConsentReceiptParamsSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      const receiptId = req.params.receiptId as string;
+    const association = await getAssociation(req);
+    const receiptId = req.params.receiptId as string;
 
-      logger.info({ traceId, associationId: association.id, receiptId }, 'DELETE /api/consent/[receiptId] - Request started');
+    logger.info({ traceId, associationId: association.id, receiptId }, 'DELETE /api/consent/[receiptId] - Request started');
 
-      await withRole(req, UserRole.DPO);
+    await withRole(req, UserRole.DPO);
 
-      await ConsentService.deleteConsentReceipt(
-        association.id, receiptId,
-        req.headers['x-user-id'] as string,
-      );
+    await ConsentService.deleteConsentReceipt(
+      association.id, receiptId,
+      req.headers['x-user-id'] as string,
+    );
 
-      logger.info({ traceId }, 'DELETE /api/consent/[receiptId] - Success');
-      return success(res, { data: null, message: 'Consent receipt deleted successfully' });
-    } catch (e) { next(e); }
+    logger.info({ traceId }, 'DELETE /api/consent/[receiptId] - Success');
+    return success(res, { data: null, message: 'Consent receipt deleted successfully' });
   },
 ];
 
 export const getUserConsents = [
   validate({ params: UserParamsSchema, query: UserQuerySchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      const targetUserId = req.params.userId as string;
+    const association = await getAssociation(req);
+    const targetUserId = req.params.userId as string;
 
-      logger.info({ traceId, associationId: association.id, targetUserId }, 'GET /api/consent/users/[userId] - Request started');
+    logger.info({ traceId, associationId: association.id, targetUserId }, 'GET /api/consent/users/[userId] - Request started');
 
-      await withRole(req, UserRole.DPO);
+    await withRole(req, UserRole.DPO);
 
-      const page = (req.query as any).page || 1;
-      const data = await ConsentService.getUserConsentHistoryById(targetUserId, association.id, page);
+    const page = (req.query as any).page || 1;
+    const data = await ConsentService.getUserConsentHistoryById(targetUserId, association.id, page);
 
-      if (data.records.length === 0) {
-        throw new NotFoundError('No consent records found for this user');
-      }
+    if (data.records.length === 0) {
+      throw new NotFoundError('No consent records found for this user');
+    }
 
-      logger.info({ traceId, count: data.records.length }, 'GET /api/consent/users/[userId] - Success');
-      return success(res, { data: data.records, meta: data.pagination });
-    } catch (e) { next(e); }
+    logger.info({ traceId, count: data.records.length }, 'GET /api/consent/users/[userId] - Success');
+    return success(res, { data: data.records, meta: data.pagination });
   },
 ];

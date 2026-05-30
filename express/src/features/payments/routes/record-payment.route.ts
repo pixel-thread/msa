@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { prisma } from '@src/shared/lib/prisma';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
@@ -18,30 +18,28 @@ async function getAssociation(req: Request) {
 
 export const recordPayment = [
   validate({ body: RecordManualPaymentSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      logger.info({ traceId, userId: req.body.userId }, 'POST /api/payments/record - Request started');
-      const association = await getAssociation(req);
-      const userId = req.headers['x-user-id'] as string;
-      const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, role: true } });
-      if (!user || !user.role.includes(UserRole.FINANCE)) {
-        throw new ForbiddenError('Insufficient permissions');
-      }
-      logger.info({ traceId, userId: user.id }, 'POST /api/payments/record - User authorized');
-      logger.info({ traceId, targetUserId: req.body.userId, amount: req.body.amount }, 'POST /api/payments/record - Recording manual payment');
-      const transaction = await recordManualPayment({
-        associationId: association.id,
-        userId: req.body.userId,
-        amount: req.body.amount,
-        method: req.body.method,
-        notes: req.body.notes,
-        receiptNumber: req.body.receiptNumber,
-        referenceNumber: req.body.referenceNumber,
-        createdById: user.id,
-      });
-      logger.info({ traceId, transactionId: transaction.id }, 'POST /api/payments/record - Success');
-      return success(res, { data: transaction, message: 'Payment recorded and allocated successfully' }, 201);
-    } catch (e) { next(e); }
+    logger.info({ traceId, userId: req.body.userId }, 'POST /api/payments/record - Request started');
+    const association = await getAssociation(req);
+    const userId = req.headers['x-user-id'] as string;
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, role: true } });
+    if (!user || !user.role.includes(UserRole.FINANCE)) {
+      throw new ForbiddenError('Insufficient permissions');
+    }
+    logger.info({ traceId, userId: user.id }, 'POST /api/payments/record - User authorized');
+    logger.info({ traceId, targetUserId: req.body.userId, amount: req.body.amount }, 'POST /api/payments/record - Recording manual payment');
+    const transaction = await recordManualPayment({
+      associationId: association.id,
+      userId: req.body.userId,
+      amount: req.body.amount,
+      method: req.body.method,
+      notes: req.body.notes,
+      receiptNumber: req.body.receiptNumber,
+      referenceNumber: req.body.referenceNumber,
+      createdById: user.id,
+    });
+    logger.info({ traceId, transactionId: transaction.id }, 'POST /api/payments/record - Success');
+    return success(res, { data: transaction, message: 'Payment recorded and allocated successfully' }, 201);
   },
 ];

@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { VerifySignInInput, VerifySignInSchema } from '@src/features/auth/validators';
@@ -14,9 +14,8 @@ import { logger } from '@src/shared/logger';
 
 export const postSignInVerify = [
   validate({ body: VerifySignInSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
       logger.info({ traceId }, 'POST /api/auth/sign-in/verify - Request started');
       const { code } = req.body as VerifySignInInput;
       const mfaCookie = req.cookies?.mfa_temp_token || req.body?.mfa_temp_token;

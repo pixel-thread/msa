@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError } from '@src/shared/errors';
 import { getUniqueUser } from '@src/shared/services/user/get-unique-user';

@@ -5,7 +5,7 @@ import { deleteAgendaItem } from '@src/features/meetings/services/deleteAgendaIt
 import { logger } from '@src/shared/logger';
 import { getAssociation, withRole } from '../_helpers';
 
-export const deleteAgendaItemHandler = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteAgendaItemHandler = async (req: Request, res: Response) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
   try {
     const association = await getAssociation(req);

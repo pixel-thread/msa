@@ -5,7 +5,7 @@ import { updateMeeting } from '@src/features/meetings/services/updateMeeting';
 import { logger } from '@src/shared/logger';
 import { getAssociation, withRole } from './_helpers';
 
-export const postIssueNotice = async (req: Request, res: Response, next: NextFunction) => {
+export const postIssueNotice = async (req: Request, res: Response) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
   try {
     const association = await getAssociation(req);

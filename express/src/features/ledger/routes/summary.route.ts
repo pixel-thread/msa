@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
 import { prisma } from '@src/shared/lib/prisma';
@@ -26,17 +26,15 @@ async function requireRole(req: Request, role: UserRole) {
   return user;
 }
 
-export const getLedgerSummary = async (req: Request, res: Response, next: NextFunction) => {
+export const getLedgerSummary = async (req: Request, res: Response) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
-  try {
-    const association = await getAssociation(req);
-    logger.info({ traceId, associationId: association.id }, 'GET /api/ledger/summary - Request started');
+  const association = await getAssociation(req);
+  logger.info({ traceId, associationId: association.id }, 'GET /api/ledger/summary - Request started');
 
-    await requireRole(req, UserRole.FINANCE);
+  await requireRole(req, UserRole.FINANCE);
 
-    const data = await getSummary(association.id);
+  const data = await getSummary(association.id);
 
-    logger.info({ traceId, count: data.accounts.length }, 'GET /api/ledger/summary - Success');
-    return success(res, { data });
-  } catch (e) { next(e); }
+  logger.info({ traceId, count: data.accounts.length }, 'GET /api/ledger/summary - Success');
+  return success(res, { data });
 };

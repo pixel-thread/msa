@@ -17,7 +17,7 @@ const AttendeeParamsSchema = z.object({
 
 export const patchUpdateAttendee = [
   validate({ params: AttendeeParamsSchema, body: UpdateAttendeeSchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     try {
       const association = await getAssociation(req);
@@ -52,7 +52,7 @@ export const patchUpdateAttendee = [
   },
 ];
 
-export const deleteRemoveAttendee = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteRemoveAttendee = async (req: Request, res: Response) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
   try {
     const association = await getAssociation(req);

@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
@@ -44,54 +44,48 @@ async function withRole(req: Request, role: UserRole) {
 
 export const getAllConsentRecords = [
   validate({ query: AllConsentRecordsQuerySchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'GET /api/consent/all - Request started');
+    const association = await getAssociation(req);
+    logger.info({ traceId, associationId: association.id }, 'GET /api/consent/all - Request started');
 
-      await withRole(req, UserRole.DPO);
+    await withRole(req, UserRole.DPO);
 
-      const page = (req.query as any).page ?? 1;
-      const { records, total } = await ConsentService.getAllConsentRecords(association.id, req.query as any);
+    const page = (req.query as any).page ?? 1;
+    const { records, total } = await ConsentService.getAllConsentRecords(association.id, req.query as any);
 
-      logger.info({ traceId, count: records.length }, 'GET /api/consent/all - Success');
-      return success(res, { data: records, meta: buildPagination(total, page) });
-    } catch (e) { next(e); }
+    logger.info({ traceId, count: records.length }, 'GET /api/consent/all - Success');
+    return success(res, { data: records, meta: buildPagination(total, page) });
   },
 ];
 
 export const getConsentHistory = [
   validate({ query: HistoryQuerySchema }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-    try {
-      const association = await getAssociation(req);
-      logger.info({ traceId, associationId: association.id }, 'GET /api/consent/history - Request started');
+    const association = await getAssociation(req);
+    logger.info({ traceId, associationId: association.id }, 'GET /api/consent/history - Request started');
 
-      const userId = req.headers['x-user-id'] as string;
-      if (!userId) throw new UnauthorizedError();
+    const userId = req.headers['x-user-id'] as string;
+    if (!userId) throw new UnauthorizedError();
 
-      const page = (req.query as any).page || 1;
-      const data = await ConsentService.getConsentHistory(userId, association.id, page);
+    const page = (req.query as any).page || 1;
+    const data = await ConsentService.getConsentHistory(userId, association.id, page);
 
-      logger.info({ traceId, userId }, 'GET /api/consent/history - Success');
-      return success(res, { data: data.history, meta: data.pagination });
-    } catch (e) { next(e); }
+    logger.info({ traceId, userId }, 'GET /api/consent/history - Success');
+    return success(res, { data: data.history, meta: data.pagination });
   },
 ];
 
-export const getConsentReport = async (req: Request, res: Response, next: NextFunction) => {
+export const getConsentReport = async (req: Request, res: Response) => {
   const traceId = (req.headers['x-trace-id'] as string) || '';
-  try {
-    const association = await getAssociation(req);
-    logger.info({ traceId, associationId: association.id }, 'GET /api/consent/report - Request started');
+  const association = await getAssociation(req);
+  logger.info({ traceId, associationId: association.id }, 'GET /api/consent/report - Request started');
 
-    await withRole(req, UserRole.DPO);
+  await withRole(req, UserRole.DPO);
 
-    const report = await ConsentService.getConsentReport(association.id);
+  const report = await ConsentService.getConsentReport(association.id);
 
-    logger.info({ traceId }, 'GET /api/consent/report - Success');
-    return success(res, { data: report });
-  } catch (e) { next(e); }
+  logger.info({ traceId }, 'GET /api/consent/report - Success');
+  return success(res, { data: report });
 };
