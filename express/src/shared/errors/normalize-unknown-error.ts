@@ -9,7 +9,7 @@ import {
   ValidationError,
 } from './classes/http-errors';
 import { Prisma } from '@prisma/client';
-import { JWTClaimValidationFailed, JOSEError } from 'jose/errors';
+import { errors } from 'jose';
 import { logger } from '../logger';
 
 /** Type guard to check if an error is a Prisma-specific error. */
@@ -29,12 +29,12 @@ const isPrismaError = (
 };
 
 /** Type guard to check if an error is a JWT validation error. */
-const isJwtError = (error: unknown): error is JWTClaimValidationFailed => {
-  return error instanceof JOSEError;
+const isJwtError = (error: unknown): error is errors.JWTClaimValidationFailed => {
+  return error instanceof errors.JOSEError;
 };
 
 /** Checks whether an unknown value is a Supabase Storage error-shaped object. */
-export function isSupabaseStorageError(error: unknown) {
+export function isSupabaseStorageError(error: unknown): boolean {
   if (typeof error !== 'object' || error === null) return false;
 
   const err = error as Record<string, unknown>;
@@ -54,13 +54,18 @@ export function isSupabaseStorageError(error: unknown) {
 export const normalizeUnknownError = (error: unknown, traceId?: string): AppError => {
   const isProd = env.NODE_ENV === 'production';
 
-  if (isJwtError(error) || error instanceof UnauthorizedError) {
-    logger.error({ ...error, traceId }, error.message);
+  if (isJwtError(error)) {
+    logger.error({ error, traceId }, error.message);
+    return new UnauthorizedError(error.message);
+  }
+
+  if (error instanceof UnauthorizedError) {
+    logger.error({ error, traceId }, error.message);
     return new UnauthorizedError(error.message);
   }
 
   if (error instanceof NotFoundError) {
-    logger.error({ ...error, traceId }, error.message);
+    logger.error({ error, traceId }, error.message);
     return new NotFoundError(error.message);
   }
 
@@ -70,12 +75,12 @@ export const normalizeUnknownError = (error: unknown, traceId?: string): AppErro
   }
 
   if (error instanceof ZodError) {
-    logger.info({ ...error, traceId }, error.message);
+    logger.info({ error, traceId }, error.message);
     return new ValidationError(error.message, error.issues);
   }
 
   if (error instanceof PaymentError) {
-    logger.error({ ...error, traceId }, error.message);
+    logger.error({ error, traceId }, error.message);
     return new PaymentError(error.message, error.code, error.statusCode);
   }
 
@@ -96,3 +101,4 @@ export const normalizeUnknownError = (error: unknown, traceId?: string): AppErro
   logger.error({ error, traceId }, displayMessage);
   return new AppError('INTERNAL_ERROR', displayMessage, 500);
 };
+
