@@ -6,7 +6,7 @@ import { LogIngestSchema, LogQuerySchema } from '@src/shared/validators/logs';
 import { type Log } from '@prisma/client';
 // import { logger } from "@src/shared/logger/server";
 
-export const GET = withValidation({ query: LogQuerySchema }, async (req, _ctx, { query }) => {
+export const GET = withValidation({ query: LogQuerySchema }, async (_req, _ctx, { query }) => {
   // logger.info({ traceId }, "GET /api/logs - Request started");
 
   const {

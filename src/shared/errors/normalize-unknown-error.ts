@@ -52,11 +52,12 @@ export const normalizeUnknownError = (error: unknown, traceId?: string): AppErro
   const isProd = env.NODE_ENV === 'production';
 
   if (isJwtError(error) || error instanceof UnauthorizedError) {
-    logger.error({ ...error, traceId }, 'UnauthorizedError');
+    logger.error({ ...error, traceId }, error.message);
     return new UnauthorizedError(error.message);
   }
 
   if (error instanceof NotFoundError) {
+    logger.error({ ...error, traceId }, error.message);
     return new NotFoundError(error.message);
   }
 
@@ -66,11 +67,12 @@ export const normalizeUnknownError = (error: unknown, traceId?: string): AppErro
   }
 
   if (error instanceof ZodError) {
+    logger.info({ ...error, traceId }, error.message);
     return new ValidationError(error.message, error.issues);
   }
 
   if (error instanceof PaymentError) {
-    logger.error({ ...error, traceId }, 'PaymentError');
+    logger.error({ ...error, traceId }, error.message);
     return new PaymentError(error.message, error.code, error.statusCode);
   }
 
@@ -80,6 +82,7 @@ export const normalizeUnknownError = (error: unknown, traceId?: string): AppErro
   }
 
   if (error instanceof AppError) {
+    logger.error({ error, traceId }, error.message);
     return error;
   }
 
@@ -87,6 +90,6 @@ export const normalizeUnknownError = (error: unknown, traceId?: string): AppErro
 
   const displayMessage = isProd ? 'Internal Server Error' : message;
 
-  logger.error({ error, traceId }, 'Internal Server Error');
+  logger.error({ error, traceId }, displayMessage);
   return new AppError('INTERNAL_ERROR', displayMessage, 500);
 };
