@@ -9,6 +9,15 @@ interface ValidationSchemas<TBody, TQuery, TParams> {
   query?: ZodType<TQuery>;
 }
 
+function defineProp<T extends Record<string, unknown>>(obj: Record<string, unknown>, key: string, value: T[keyof T & string]): void {
+  Object.defineProperty(obj, key, {
+    value,
+    writable: true,
+    configurable: true,
+    enumerable: true,
+  });
+}
+
 export function validate<
   TBody = never,
   TQuery = never,
@@ -26,18 +35,19 @@ export function validate<
             formatZodIssues(result.error.issues),
           );
         }
-        req.body = result.data;
+        defineProp(req, 'body', result.data);
       }
 
       if (schemas.query) {
-        const result = schemas.query.safeParse(req.query);
+        const parsed = req.query;
+        const result = schemas.query.safeParse(parsed);
         if (!result.success) {
           throw new ValidationError(
             result.error.issues[0]?.message || 'Validation failed',
             formatZodIssues(result.error.issues),
           );
         }
-        req.query = result.data as TQuery;
+        defineProp(req, 'query', result.data);
       }
 
       if (schemas.params) {
@@ -48,7 +58,7 @@ export function validate<
             formatZodIssues(result.error.issues),
           );
         }
-        req.params = result.data as TParams;
+        defineProp(req, 'params', result.data as Record<string, string>);
       }
 
       next();

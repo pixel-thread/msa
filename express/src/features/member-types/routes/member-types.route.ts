@@ -10,7 +10,7 @@ let findManyMemberTypes: any;
 let createMemberType: any;
 let findUniqueMemberType: any;
 let updateMemberType: any;
-let deleteMemberType: any;
+let _deleteMemberType: any;
 let CreateMemberTypeSchema: any;
 let UpdateMemberTypeSchema: any;
 let MemberTypeParamsSchema: any;
@@ -21,7 +21,7 @@ try {
   createMemberType = memberTypeServices.createMemberType;
   findUniqueMemberType = memberTypeServices.findUniqueMemberType;
   updateMemberType = memberTypeServices.updateMemberType;
-  deleteMemberType = memberTypeServices.deleteMemberType;
+  _deleteMemberType = memberTypeServices.deleteMemberType;
   const memberTypeValidators = require('@feature/member-type/validators');
   CreateMemberTypeSchema = memberTypeValidators.CreateMemberTypeSchema;
   UpdateMemberTypeSchema = memberTypeValidators.UpdateMemberTypeSchema;
@@ -115,8 +115,8 @@ export const deleteMemberType = [
       const user = await withRole(req, UserRole.PRESIDENT);
       logger.info({ traceId, userId: user.id }, 'DELETE /api/member-types/[memberTypeId] - User authorized');
       const { memberTypeId } = req.params;
-      if (deleteMemberType) {
-        await deleteMemberType({ associationId: association.id, actorId: user.id, memberTypeId });
+      if (_deleteMemberType) {
+        await _deleteMemberType({ associationId: association.id, actorId: user.id, memberTypeId });
       }
       logger.info({ traceId, memberTypeId }, 'DELETE /api/member-types/[memberTypeId] - Success');
       return success(res, { data: null, message: 'Member type deleted successfully' });
