@@ -9,7 +9,7 @@ import {
 import { postMarkRead } from './mark-read.route';
 import { postUploadImage } from './upload-image.route';
 
-const router = Router();
+const router: Router = Router();
 
 router.get('/', getAnnouncements);
 router.post('/', postAnnouncement);

@@ -18,13 +18,14 @@ import {
   CreateAssociationSchema,
   UpdateAssociationSchema,
 } from '@src/features/associations/validators';
-import { getAssociation, withRole } from '@src/features/meetings/routes/_helpers';
 import { uploadToBucket } from '@src/shared/lib/supabase/storage';
 import { logger } from '@src/shared/logger';
 import { z } from 'zod';
 import type { CreateAssociationInput } from '@validator/associations';
 import { findUniqueMember } from '@src/features/members/services/findUniqueMember';
 import { updateMember } from '@src/features/members/services/updateMember';
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 
 const BodySchema = z.object({
   memberId: z.string(),

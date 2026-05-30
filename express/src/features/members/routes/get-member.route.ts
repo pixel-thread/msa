@@ -16,13 +16,16 @@ export const getMember: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     const userId = req.userId as string;
+
     if (!userId) throw new UnauthorizedError('Unauthorized');
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: { association: true },
     });
+
     if (!user || !user.associationId) throw new ForbiddenError('User association not found');
+
     const association = {
       id: user.association.id,
       slug: user.association.slug,

@@ -14,7 +14,7 @@ import {
   NotificationRouteParams,
 } from '@src/shared/validators/notification';
 import { logger } from '@src/shared/logger';
-import { withRole } from '@src/features/meetings/routes/_helpers';
+import { withRole } from '@utils/with-role';
 import { z } from 'zod';
 
 const RegisterPushTokenSchema = z.object({
@@ -43,7 +43,7 @@ export const postLinkNotification: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'POST /api/notifications/link - Request started');
-    const userId = req.userId
+    const userId = req.userId;
     if (!userId) throw new UnauthorizedError('User ID is required');
     if (!req.body?.token) throw new ValidationError('Token is required');
     const pushToken = await upsertPushToken(req.body.token, userId as string);
@@ -65,7 +65,7 @@ export const patchNotificationStatus: RequestHandler[] = [
     const userId = req.userId as string;
     if (!userId) throw new UnauthorizedError('Unauthorized');
     const isNotificaitonExist = await findUniqueNotification({
-      where: { id: req.params.notificationId, userId },
+      where: { id: req.params.notificationId as string, userId },
     });
     if (!isNotificaitonExist) throw new NotFoundError('Notification not found.');
     const payload = {
@@ -75,7 +75,7 @@ export const patchNotificationStatus: RequestHandler[] = [
       receivedAt: req.body?.isReceived ? new Date() : null,
     };
     const notification = await updateNotificationStatus({
-      where: { id: req.params.notificationId },
+      where: { id: req.params.notificationId as string },
       data: payload,
     });
     logger.info(

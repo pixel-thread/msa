@@ -22,16 +22,16 @@ export const PUBLIC_PAGE_PATH = [
  * Publicly accessible API endpoints that do not require authentication.
  */
 export const API_PUBLIC_ROUTES = [
-  '/api/health',
-  '/api/docs',
-  '/api/auth/refresh',
-  '/api/auth/sign-up',
-  '/api/auth/sign-in',
-  '/api/auth/sign-in/verify',
-  '/api/auth/forgot-password',
-  '/api/auth/reset-password',
-  '/api/payments/webhook',
-  '/api/logs',
+  '/health',
+  '/docs',
+  '/auth/refresh',
+  '/auth/sign-up',
+  '/auth/sign-in',
+  '/auth/sign-in/verify',
+  '/auth/forgot-password',
+  '/auth/reset-password',
+  '/payments/webhook',
+  '/logs',
 ] as const;
 
 /**

@@ -40,7 +40,7 @@ async function bootstrap() {
       const router = routeModule.default;
 
       if (router) {
-        const apiPath = `/api/v1/${folderName}`;
+        const apiPath = `/api/${folderName}`;
         app.use(apiPath, router);
         logger.debug(`  ✓ Mounted ${apiPath}`);
         mountedCount++;

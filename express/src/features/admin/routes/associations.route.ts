@@ -13,9 +13,9 @@ import { updateAssociation } from '@src/features/associations/services/updateAss
 import { deleteAssociation } from '@src/features/associations/services/deleteAssociation';
 import { CreateAssociationSchema } from '@src/features/associations/validators';
 import { AddAssociationMemberSchema } from '@src/features/associations/validators/associations';
-import { withRole } from '@src/features/meetings/routes/_helpers';
 import { logger } from '@src/shared/logger';
 import type { CreateAssociationInput } from '@validator/associations';
+import { withRole } from '@src/shared/utils/with-role';
 
 export const getAssociations: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {

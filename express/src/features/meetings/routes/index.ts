@@ -24,16 +24,16 @@ import { patchUpdateMinute } from './minutes/update-minutes.route';
 import { deleteMinute } from './minutes/delete-minutes.route';
 import { getMeetingReport } from './report.route';
 
-const router = Router();
+const router: Router = Router();
 
 // Static routes must be defined before parameterized routes
-router.get('/my', ...(getMyMeetings as any));
+router.get('/my', getMyMeetings);
 
 // Meeting CRUD
-router.get('/', ...(getMeetings as any));
-router.post('/', ...(postCreateMeeting as any));
-router.get('/:meetingId', ...(getMeeting as any));
-router.patch('/:meetingId', ...(patchUpdateMeeting as any));
+router.get('/', getMeetings);
+router.post('/', postCreateMeeting);
+router.get('/:meetingId', getMeeting);
+router.patch('/:meetingId', patchUpdateMeeting);
 router.delete('/:meetingId', deleteMeetingHandler);
 
 // Meeting actions

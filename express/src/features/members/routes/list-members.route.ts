@@ -9,6 +9,8 @@ import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
 import { pageNumberValidation } from '@src/shared/validators/common';
 import { logger } from '@src/shared/logger';
 import z from 'zod';
+import { auth } from '@src/middleware/auth';
+import { withRole } from '@src/shared/utils/with-role';
 
 const QuerySchema = z.object({
   page: pageNumberValidation,
@@ -17,11 +19,12 @@ const QuerySchema = z.object({
 });
 
 export const listMembers: RequestHandler[] = [
+  auth,
   validate({ query: QuerySchema }),
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
 
-    const userId = req.userId;
+    const userId: string = (req.userId as string) || '';
 
     if (!userId) throw new UnauthorizedError('Unauthorized');
 
@@ -38,8 +41,7 @@ export const listMembers: RequestHandler[] = [
 
     logger.info({ traceId, associationId: association.id }, 'GET /api/members - Request started');
 
-    if (!user.role.includes(UserRole.SECRETARY))
-      throw new ForbiddenError('Insufficient permissions');
+    await withRole(req, UserRole.SECRETARY);
 
     logger.info({ traceId, userId: user.id }, 'GET /api/members - User authorized');
 

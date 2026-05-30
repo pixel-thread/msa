@@ -1,16 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyAccessToken } from '@src/shared/lib/jwt';
 import { UnauthorizedError } from '@src/shared/errors';
-import { API_PUBLIC_ROUTES, PUBLIC_PAGE_PATH } from '@src/shared/constants';
+import { API_PUBLIC_ROUTES } from '@src/shared/constants';
 
 export async function auth(req: Request, _res: Response, next: NextFunction) {
   const path = req.path;
   const basePath = '/api' + path;
 
-  if (API_PUBLIC_ROUTES.some((r) => basePath.startsWith(r))) {
-    return next();
-  }
-  if (PUBLIC_PAGE_PATH.some((p) => path === p)) {
+  if (API_PUBLIC_ROUTES.some((r) => basePath === r)) {
     return next();
   }
 
