@@ -11,6 +11,7 @@ import {
 } from '@src/shared/errors';
 import { UserRole } from '@prisma/client';
 import { findUniqueMember } from '@src/features/members/services/findUniqueMember';
+import { withRole } from '@src/shared/utils/with-role';
 import { logger } from '@src/shared/logger';
 import z from 'zod';
 
@@ -39,8 +40,7 @@ export const deleteMember: RequestHandler[] = [
       'DELETE /api/members/[memberId] - Request started',
     );
 
-    if (!user.role.includes(UserRole.SECRETARY))
-      throw new ForbiddenError('Insufficient permissions');
+    await withRole(req, UserRole.SECRETARY);
 
     const params = req.params as z.infer<typeof ParamSchema>;
 

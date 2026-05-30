@@ -4,8 +4,9 @@ import { prisma } from '@src/shared/lib/prisma';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { logger } from '@src/shared/logger';
-import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
 import { UserRole } from '@prisma/client';
+import { withRole } from '@src/shared/utils/with-role';
+import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
 import { RecordManualPaymentSchema } from '@src/features/payments/validators';
 import { recordManualPayment } from '@src/features/payments/services/payment.service';
 
@@ -29,14 +30,7 @@ export const recordPayment: RequestHandler[] = [
       'POST /api/payments/record - Request started',
     );
     const association = await getAssociation(req);
-    const userId = req.userId as string;
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { id: true, role: true },
-    });
-    if (!user || !user.role.includes(UserRole.FINANCE)) {
-      throw new ForbiddenError('Insufficient permissions');
-    }
+    const user = await withRole(req, UserRole.FINANCE);
     logger.info({ traceId, userId: user.id }, 'POST /api/payments/record - User authorized');
     logger.info(
       { traceId, targetUserId: req.body.userId, amount: req.body.amount },

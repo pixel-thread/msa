@@ -3,8 +3,9 @@ import type { RequestHandler } from 'express';
 import { prisma } from '@src/shared/lib/prisma';
 import { success } from '@src/shared/utils/responses';
 import { logger } from '@src/shared/logger';
-import { UnauthorizedError, ForbiddenError, NotFoundError } from '@src/shared/errors';
 import { UserRole } from '@prisma/client';
+import { withRole } from '@src/shared/utils/with-role';
+import { UnauthorizedError, ForbiddenError, NotFoundError } from '@src/shared/errors';
 import { getTransactionById } from '@src/features/payments/services/payment.service';
 
 async function getAssociation(req: Request) {
@@ -25,14 +26,7 @@ export const getReceipt: RequestHandler[] = [
     const association = await getAssociation(req);
     const paymentId = req.params.paymentId;
     if (!paymentId) throw new NotFoundError('Payment ID');
-    const userId = req.userId as string;
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { id: true, role: true },
-    });
-    if (!user || !user.role.includes(UserRole.MEMBER)) {
-      throw new ForbiddenError('Insufficient permissions');
-    }
+    const user = await withRole(req, UserRole.MEMBER);
     logger.info(
       { traceId, userId: user.id, paymentId },
       'GET /api/payments/[id]/receipt - User authorized',

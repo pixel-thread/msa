@@ -5,8 +5,9 @@ import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 import { logger } from '@src/shared/logger';
-import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
 import { UserRole } from '@prisma/client';
+import { withRole } from '@src/shared/utils/with-role';
+import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
 import { CollectionReportQuerySchema } from '@src/features/payments/validators';
 import { findContributionPeriods } from '@src/features/payments/services/findContributionPeriods';
 import { PAGE_SIZE } from '@src/shared/constants';
@@ -32,11 +33,7 @@ export const collectionsReport: RequestHandler[] = [
       'GET /api/payments/reports/collections - Request started',
     );
     const association = await getAssociation(req);
-    const userId = req.userId as string;
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
-    if (!user || !user.role.includes(UserRole.FINANCE)) {
-      throw new ForbiddenError('Insufficient permissions');
-    }
+    await withRole(req, UserRole.FINANCE);
     logger.info({ traceId }, 'GET /api/payments/reports/collections - User authorized');
     const { contributions: collections, total } = await findContributionPeriods({
       where: {

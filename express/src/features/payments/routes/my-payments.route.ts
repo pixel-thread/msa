@@ -5,8 +5,9 @@ import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 import { logger } from '@src/shared/logger';
-import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
 import { UserRole } from '@prisma/client';
+import { withRole } from '@src/shared/utils/with-role';
+import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
 import { PaymentHistoryQuerySchema } from '@src/features/payments/validators';
 import { findPaymentTransactions } from '@src/features/payments/services/findPaymentTransactions';
 
@@ -28,10 +29,7 @@ export const myPayments: RequestHandler[] = [
     logger.info({ traceId, query: req.query }, 'GET /api/payments/my - Request started');
     const association = await getAssociation(req);
     const userId = req.userId as string;
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
-    if (!user || !user.role.includes(UserRole.MEMBER)) {
-      throw new ForbiddenError('Insufficient permissions');
-    }
+    await withRole(req, UserRole.MEMBER);
     logger.info({ traceId, userId }, 'GET /api/payments/my - User authorized');
     const { page = 1, pageSize = 20 } = (req.query as any) || {};
     const skip = (page - 1) * pageSize;

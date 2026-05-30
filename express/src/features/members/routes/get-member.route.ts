@@ -8,6 +8,7 @@ import { UserRole } from '@prisma/client';
 import { findFirstMember } from '@src/features/members/services/findFirstMember';
 import { logger } from '@src/shared/logger';
 import z from 'zod';
+import { withRole } from '@src/shared/utils/with-role';
 
 const ParamSchema = z.object({ memberId: z.uuid() });
 
@@ -37,7 +38,7 @@ export const getMember: RequestHandler[] = [
       'GET /api/members/[memberId] - Request started',
     );
 
-    if (!user.role.includes(UserRole.DPO)) throw new ForbiddenError('Insufficient permissions');
+    await withRole(req, UserRole.DPO);
 
     logger.info({ traceId, userId: user.id }, 'GET /api/members/[memberId] - User authorized');
 

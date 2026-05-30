@@ -7,29 +7,59 @@ import { logger } from '@src/shared/logger';
 import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
+import { findManyAnnouncements } from '../services';
+import { validate } from '@src/shared/lib/validate';
 
 export const getAnnouncements: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
+
     logger.info({ traceId, query: req.query }, 'GET /api/announcements - Request started');
+
     const user = await withRole(req, UserRole.MEMBER);
+
     logger.info(
       { traceId, userId: user.id, roles: user.role },
       'GET /api/announcements - User authorized',
     );
     const query = req.query as any;
+
     if (!query) throw new ForbiddenError('Invalid query parameters');
 
     if (hasHighRoleAccess(user.role)) {
-      const result = {} as any;
+      const result = await findManyAnnouncements({
+        associationId: user.associationId,
+        filters: {
+          status: 'PUBLISHED',
+          priority: query.priority,
+          search: query.search,
+        },
+        pagination: {
+          page: query.page,
+        },
+      });
 
       logger.info(
-        { traceId, count: result.announcements?.length },
+        {
+          traceId,
+          total: result.pagination.total,
+          page: result.pagination.page,
+          pageSize: result.pagination.pageSize,
+        },
         'GET /api/announcements - Success',
       );
       return success(res, { data: result.announcements, meta: result.pagination });
     }
-    const result = {} as any;
+
+    const result = await findManyAnnouncements({
+      associationId: user.associationId,
+      filters: {
+        status: 'PUBLISHED',
+        priority: query.priority,
+        search: query.search,
+      },
+    });
+
     logger.info(
       { traceId, count: result.announcements?.length },
       'GET /api/announcements - Success',
@@ -49,7 +79,6 @@ export const postAnnouncement: RequestHandler[] = [
       'POST /api/announcements - User authorized',
     );
     if (!req.body) throw new ForbiddenError('Invalid request body');
-    const userId = req.userId as string;
     const isPublishing = req.body.status === AnnouncementStatus.PUBLISHED;
     logger.info(
       {

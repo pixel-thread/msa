@@ -6,6 +6,7 @@ import { prisma } from '@src/shared/lib/prisma';
 import { ForbiddenError, UnauthorizedError } from '@src/shared/errors';
 import { UserRole } from '@prisma/client';
 import { getUserPaymentHistory } from '@feature/payments/services/payment.service';
+import { withRole } from '@src/shared/utils/with-role';
 import { getUserContributionSummary } from '@feature/payments/services/contribution.service';
 import { LedgerQueryParams, LedgerRouteParams } from '@src/features/ledger/validators';
 import { logger } from '@src/shared/logger';
@@ -37,7 +38,7 @@ export const getMemberLedger: RequestHandler[] = [
       'GET /api/members/[memberId]/ledger - Request started',
     );
 
-    if (!user.role.includes(UserRole.FINANCE)) throw new ForbiddenError('Insufficient permissions');
+    await withRole(req, UserRole.FINANCE);
 
     logger.info(
       { traceId, userId: user.id },

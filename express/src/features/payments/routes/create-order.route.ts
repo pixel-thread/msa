@@ -4,8 +4,9 @@ import { prisma } from '@src/shared/lib/prisma';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { logger } from '@src/shared/logger';
-import { UnauthorizedError, ForbiddenError, NotFoundError } from '@src/shared/errors';
 import { UserRole } from '@prisma/client';
+import { withRole } from '@src/shared/utils/with-role';
+import { UnauthorizedError, ForbiddenError, NotFoundError } from '@src/shared/errors';
 import { CreateOrderSchema } from '@src/features/payments/validators';
 import { createPaymentOrder } from '@src/features/payments/services/payment.service';
 import { findSubscriptionPlans } from '@src/features/payments/services/findSubscriptionPlans';
@@ -28,14 +29,7 @@ export const createOrder: RequestHandler[] = [
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'POST /api/payments/order - Request started');
     const association = await getAssociation(req);
-    const userId = req.userId as string;
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { id: true, role: true, memberTypeId: true },
-    });
-    if (!user || !user.role.includes(UserRole.MEMBER)) {
-      throw new ForbiddenError('Insufficient permissions');
-    }
+    const user = await withRole(req, UserRole.MEMBER);
     logger.info({ traceId, userId: user.id }, 'POST /api/payments/order - User authorized');
     const typeId = user?.memberTypeId;
     const associationActivePaymentProvider = await getActiveProvider(association.id);

@@ -6,6 +6,7 @@ import { prisma } from '@src/shared/lib/prisma';
 import { ForbiddenError, UnauthorizedError, ValidationError } from '@src/shared/errors';
 import { UserRole } from '@prisma/client';
 import { updateMember } from '@src/features/members/services/updateMember';
+import { withRole } from '@src/shared/utils/with-role';
 import { logger } from '@src/shared/logger';
 import z from 'zod';
 
@@ -49,8 +50,7 @@ export const updateMemberRoute: RequestHandler[] = [
       'PATCH /api/members/[memberId] - Request started',
     );
 
-    if (!user.role.includes(UserRole.SECRETARY))
-      throw new ForbiddenError('Insufficient permissions');
+    await withRole(req, UserRole.SECRETARY);
 
     logger.info({ traceId, userId: user.id }, 'PATCH /api/members/[memberId] - User authorized');
 

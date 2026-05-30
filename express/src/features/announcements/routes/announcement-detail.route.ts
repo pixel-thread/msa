@@ -1,17 +1,12 @@
 import { Request, NextFunction, Response } from 'express';
 import type { RequestHandler } from 'express';
-import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { ForbiddenError } from '@src/shared/errors';
-import { UserRole, AnnouncementStatus } from '@prisma/client';
+import { UserRole } from '@prisma/client';
 import { logger } from '@src/shared/logger';
-import { getAssociation, withRole } from '@src/features/meetings/routes/_helpers';
 import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
-import { z } from 'zod';
-
-const RouteParams = z.object({
-  announcementId: z.uuid(),
-});
+import { getAssociation } from '@src/shared/services/association/get-association';
+import { withRole } from '@src/shared/utils/with-role';
 
 export const getAnnouncement: RequestHandler[] = [
   async (req: Request, res: Response, _next: NextFunction) => {

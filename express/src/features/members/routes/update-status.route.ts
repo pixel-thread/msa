@@ -5,6 +5,7 @@ import { success } from '@src/shared/utils/responses';
 import { prisma } from '@src/shared/lib/prisma';
 import { ForbiddenError, NotFoundError, UnauthorizedError } from '@src/shared/errors';
 import { UserRole, UserStatus } from '@prisma/client';
+import { withRole } from '@src/shared/utils/with-role';
 import { findFirstMember } from '@src/features/members/services/findFirstMember';
 import { updateMember } from '@src/features/members/services/updateMember';
 import { logger } from '@src/shared/logger';
@@ -41,8 +42,7 @@ export const updateStatus: RequestHandler[] = [
       'PATCH /api/members/[memberId]/status - Request started',
     );
 
-    if (!user.role.includes(UserRole.PRESIDENT))
-      throw new ForbiddenError('Insufficient permissions');
+    await withRole(req, UserRole.PRESIDENT);
 
     logger.info(
       { traceId, userId: user.id },

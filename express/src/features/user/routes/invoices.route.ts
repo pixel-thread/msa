@@ -6,6 +6,7 @@ import { prisma } from '@src/shared/lib/prisma';
 import { ForbiddenError, UnauthorizedError } from '@src/shared/errors';
 import { UserRole } from '@prisma/client';
 import { getUserInvoices, getUserInvoice } from '@src/features/user/services';
+import { withRole } from '@src/shared/utils/with-role';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 import { pageNumberValidation } from '@src/shared/validators';
 import { logger } from '@src/shared/logger';
@@ -42,7 +43,7 @@ export const listInvoices: RequestHandler[] = [
       'GET /api/user/invoices - Request started',
     );
 
-    if (!user.role.includes(UserRole.MEMBER)) throw new ForbiddenError('Insufficient permissions');
+    await withRole(req, UserRole.MEMBER);
 
     logger.info({ traceId, userId: user.id }, 'GET /api/user/invoices - User authorized');
 
@@ -92,7 +93,7 @@ export const getInvoice: RequestHandler[] = [
       'GET /api/user/invoices/[invoiceId] - Request started',
     );
 
-    if (!user.role.includes(UserRole.MEMBER)) throw new ForbiddenError('Insufficient permissions');
+    await withRole(req, UserRole.MEMBER);
 
     logger.info(
       { traceId, userId: user.id },

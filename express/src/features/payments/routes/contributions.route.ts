@@ -5,6 +5,7 @@ import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 import { logger } from '@src/shared/logger';
+import { withRole } from '@src/shared/utils/with-role';
 import {
   UnauthorizedError,
   ForbiddenError,
@@ -56,11 +57,7 @@ export const listContributions: RequestHandler[] = [
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId, query: req.query }, 'GET /api/payments/contributions - Request started');
     const association = await getAssociation(req);
-    const userId = req.userId as string;
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
-    if (!user || !user.role.includes(UserRole.FINANCE)) {
-      throw new ForbiddenError('Insufficient permissions');
-    }
+    await withRole(req, UserRole.FINANCE);
     logger.info({ traceId }, 'GET /api/payments/contributions - User authorized');
     const page = (req.query as any)?.page || 1;
     const {
@@ -119,11 +116,7 @@ export const generateContributions: RequestHandler[] = [
       'POST /api/payments/contributions - Request started',
     );
     const association = await getAssociation(req);
-    const userId = req.userId as string;
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
-    if (!user || !user.role.includes(UserRole.FINANCE)) {
-      throw new ForbiddenError('Insufficient permissions');
-    }
+    await withRole(req, UserRole.FINANCE);
     logger.info({ traceId }, 'POST /api/payments/contributions - User authorized');
     logger.info(
       { traceId, year: req.body.year, month: req.body.month },
@@ -155,11 +148,7 @@ export const waiveContributionHandler: RequestHandler[] = [
       'PATCH /api/payments/contributions - Request started',
     );
     await getAssociation(req);
-    const userId = req.userId as string;
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
-    if (!user || !user.role.includes(UserRole.FINANCE)) {
-      throw new ForbiddenError('Insufficient permissions');
-    }
+    await withRole(req, UserRole.FINANCE);
     logger.info({ traceId }, 'PATCH /api/payments/contributions - User authorized');
     const waived = await waiveContribution(req.body.contributionPeriodId, req.body.reason);
     logger.info(

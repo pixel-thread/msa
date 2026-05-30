@@ -11,6 +11,7 @@ import {
 } from '@src/shared/errors';
 import { UserRole } from '@prisma/client';
 import { findFirstMember } from '@src/features/members/services/findFirstMember';
+import { withRole } from '@src/shared/utils/with-role';
 import { updateMember } from '@src/features/members/services/updateMember';
 import { logger } from '@src/shared/logger';
 import z from 'zod';
@@ -46,8 +47,7 @@ export const addRole: RequestHandler[] = [
       'POST /api/members/[memberId]/role - Request started',
     );
 
-    if (!user.role.includes(UserRole.PRESIDENT))
-      throw new ForbiddenError('Insufficient permissions');
+    await withRole(req, UserRole.PRESIDENT);
 
     logger.info(
       { traceId, userId: user.id },
@@ -107,8 +107,7 @@ export const removeRole: RequestHandler[] = [
       'PUT /api/members/[memberId]/role - Request started',
     );
 
-    if (!user.role.includes(UserRole.PRESIDENT))
-      throw new ForbiddenError('Insufficient permissions');
+    await withRole(req, UserRole.PRESIDENT);
 
     logger.info({ traceId, userId: user.id }, 'PUT /api/members/[memberId]/role - User authorized');
 

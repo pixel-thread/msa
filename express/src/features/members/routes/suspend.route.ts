@@ -11,6 +11,7 @@ import {
 } from '@src/shared/errors';
 import { UserRole } from '@prisma/client';
 import { findUniqueMember } from '@src/features/members/services/findUniqueMember';
+import { withRole } from '@src/shared/utils/with-role';
 import { updateMember } from '@src/features/members/services/updateMember';
 import { logger } from '@src/shared/logger';
 import z from 'zod';
@@ -42,8 +43,7 @@ export const suspendMember: RequestHandler[] = [
       'POST /api/members/[memberId]/suspend - Request started',
     );
 
-    if (!user.role.includes(UserRole.PRESIDENT))
-      throw new ForbiddenError('Insufficient permissions');
+    await withRole(req, UserRole.PRESIDENT);
 
     logger.info(
       { traceId, userId: user.id },

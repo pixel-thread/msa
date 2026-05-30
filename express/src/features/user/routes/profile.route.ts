@@ -6,6 +6,7 @@ import { prisma } from '@src/shared/lib/prisma';
 import { ForbiddenError, UnauthorizedError } from '@src/shared/errors';
 import { UserRole } from '@prisma/client';
 import { getUser, updateUser } from '@src/features/user/services';
+import { withRole } from '@src/shared/utils/with-role';
 import { UpdateUserSchema } from '@src/features/user/validators';
 import { logger } from '@src/shared/logger';
 import z from 'zod';
@@ -41,7 +42,7 @@ export const updateProfile: RequestHandler[] = [
       include: { association: true },
     });
     if (!user || !user.associationId) throw new ForbiddenError('User association not found');
-    if (!user.role.includes(UserRole.MEMBER)) throw new ForbiddenError('Insufficient permissions');
+    await withRole(req, UserRole.MEMBER);
 
     logger.info({ traceId, userId: user.id }, 'POST /api/user - User authorized');
 

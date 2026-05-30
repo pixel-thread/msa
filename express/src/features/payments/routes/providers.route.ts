@@ -11,6 +11,7 @@ import {
   NotFoundError,
 } from '@src/shared/errors';
 import { UserRole } from '@prisma/client';
+import { withRole } from '@src/shared/utils/with-role';
 import {
   UpsertPaymentProviderSchema,
   UpdatePaymentProviderSchema,
@@ -80,11 +81,7 @@ export const providerStatus: RequestHandler[] = [
     const traceId = (req.traceId as string) || '';
     logger.info({ traceId }, 'GET /api/payments/providers/status - Request started');
     const association = await getAssociation(req);
-    const userId = req.userId as string;
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
-    if (!user || !user.role.includes(UserRole.MEMBER)) {
-      throw new ForbiddenError('Insufficient permissions');
-    }
+    const user = await withRole(req, UserRole.MEMBER);
     logger.info(
       { traceId, userId: user.id },
       'GET /api/payments/providers/status - User authorized',
@@ -110,11 +107,7 @@ export const getProvider: RequestHandler[] = [
       'GET /api/payments/providers/[providerId] - Request started',
     );
     const association = await getAssociation(req);
-    const userId = req.userId as string;
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
-    if (!user || !user.role.includes(UserRole.PRESIDENT)) {
-      throw new ForbiddenError('Insufficient permissions');
-    }
+    const user = await withRole(req, UserRole.PRESIDENT);
     logger.info(
       { traceId, providerId: req.params.providerId },
       'GET /api/payments/providers/[providerId] - User authorized',
@@ -138,11 +131,7 @@ export const updateProviderHandler: RequestHandler[] = [
       'PATCH /api/payments/providers/[providerId] - Request started',
     );
     const association = await getAssociation(req);
-    const userId = req.userId as string;
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
-    if (!user || !user.role.includes(UserRole.PRESIDENT)) {
-      throw new ForbiddenError('Insufficient permissions');
-    }
+    const user = await withRole(req, UserRole.PRESIDENT);
     logger.info(
       { traceId, providerId: req.params.providerId },
       'PATCH /api/payments/providers/[providerId] - User authorized',
@@ -174,11 +163,7 @@ export const deleteProviderHandler: RequestHandler[] = [
       'DELETE /api/payments/providers/[providerId] - Request started',
     );
     const association = await getAssociation(req);
-    const userId = req.userId as string;
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
-    if (!user || !user.role.includes(UserRole.PRESIDENT)) {
-      throw new ForbiddenError('Insufficient permissions');
-    }
+    const user = await withRole(req, UserRole.PRESIDENT);
     logger.info(
       { traceId, providerId: req.params.providerId },
       'DELETE /api/payments/providers/[providerId] - User authorized',
@@ -201,11 +186,7 @@ export const activateProvider: RequestHandler[] = [
       'POST /api/payments/providers/[providerId]/activate - Request started',
     );
     const association = await getAssociation(req);
-    const userId = req.userId as string;
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
-    if (!user || !user.role.includes(UserRole.PRESIDENT)) {
-      throw new ForbiddenError('Insufficient permissions');
-    }
+    await withRole(req, UserRole.PRESIDENT);
     logger.info(
       { traceId, providerId: req.params?.providerId },
       'POST /api/payments/providers/[providerId]/activate - User authorized',
@@ -241,14 +222,7 @@ export const testProvider: RequestHandler[] = [
       'POST /api/payments/providers/[providerId]/test - Request started',
     );
     const association = await getAssociation(req);
-    const userId = req.userId as string;
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { id: true, role: true },
-    });
-    if (!user || !user.role.includes(UserRole.PRESIDENT)) {
-      throw new ForbiddenError('Insufficient permissions');
-    }
+    const user = await withRole(req, UserRole.PRESIDENT);
     logger.info(
       { traceId, userId: user.id, providerId: req.params.providerId },
       'POST /api/payments/providers/[providerId]/test - User authorized',
@@ -284,11 +258,7 @@ export const verifyTestProvider: RequestHandler[] = [
       'POST /api/payments/providers/[providerId]/test/verify - Request started',
     );
     await getAssociation(req);
-    const userId = req.userId as string;
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
-    if (!user || !user.role.includes(UserRole.PRESIDENT)) {
-      throw new ForbiddenError('Insufficient permissions');
-    }
+    await withRole(req, UserRole.PRESIDENT);
     logger.info(
       { traceId },
       'POST /api/payments/providers/[providerId]/test/verify - User authorized',
