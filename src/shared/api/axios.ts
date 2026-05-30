@@ -63,7 +63,7 @@ axiosClient.interceptors.request.use(
     (config as ExtendedConfig).__startTime = Date.now();
 
     logger.info(`[→ ${method}] ${path}`, {
-      'x-trace-id': traceId,
+      traceId,
     });
 
     return config;
@@ -80,7 +80,7 @@ axiosClient.interceptors.response.use(
     const traceId = (config.headers?.['x-trace-id'] as string) ?? '';
 
     logger.info(`[← ${method}] ${path} — ${response.status} (${duration}ms)`, {
-      'x-trace-id': traceId,
+      traceId,
       status: response.status,
       durationMs: duration,
     });
@@ -97,7 +97,7 @@ axiosClient.interceptors.response.use(
     const errorMessage = error.message;
 
     logger.error(`[← ${method}] ${path} — ${status} (${duration}ms) — ${errorMessage}`, {
-      'x-trace-id': traceId,
+      traceId,
       status,
       durationMs: duration,
       error: errorMessage,
