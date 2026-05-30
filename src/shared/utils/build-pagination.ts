@@ -1,4 +1,3 @@
-import 'server-only';
 import { PAGE_SIZE } from '../constants';
 import { PaginationMeta } from '../types';
 
