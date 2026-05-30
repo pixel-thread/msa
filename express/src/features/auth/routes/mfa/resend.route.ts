@@ -47,6 +47,5 @@ export const postMfaResend = [
       if (env.NODE_ENV === 'development') logger.debug({ otp }, 'OTP sent to ');
 
       return success(res, { message: 'Verification code sent to your email', data: { codeSent: true } });
-    } catch (e) { next(e); }
   },
 ];

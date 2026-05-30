@@ -35,6 +35,5 @@ export const postChangePassword = [
 
       logger.info({ traceId, userId }, 'POST /api/auth/change-password - Success');
       return success(res, { data: null, message: 'Password changed successfully. Please sign in again on other devices.' });
-    } catch (e) { next(e); }
   },
 ];

@@ -57,6 +57,5 @@ export const updateStatus = [
       logger.info({ traceId, memberId, status: body?.status }, 'PATCH /api/members/[memberId]/status - Success');
 
       return success(res, { data: updatedUser, message: 'User status updated successfully' });
-    } catch (e) { next(e); }
   },
 ];

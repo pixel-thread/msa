@@ -52,6 +52,5 @@ export const postSignUp = [
         message: 'Application submitted successfully. Your membership request is pending approval.',
         data: { id: application.id, email: application.email, status: application.status, createdAt: application.createdAt },
       }, 201);
-    } catch (e) { next(e); }
   },
 ];

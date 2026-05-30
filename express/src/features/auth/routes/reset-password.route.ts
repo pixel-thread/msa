@@ -38,6 +38,5 @@ export const postResetPassword = [
 
       logger.info({ traceId, userId: user.id }, 'POST /api/auth/reset-password - Success');
       return success(res, { data: true, message: 'Password reset successfully. Please sign in with your new password.' });
-    } catch (e) { next(e); }
   },
 ];

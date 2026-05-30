@@ -119,6 +119,5 @@ export const postSignIn = [
         message: 'Signed in successfully',
         data: { access_token: accessToken, refresh_token: refreshToken },
       });
-    } catch (e) { next(e); }
   },
 ];

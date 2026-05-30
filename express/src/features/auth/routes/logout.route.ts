@@ -27,6 +27,5 @@ export const postLogout = [
 
       logger.info({ traceId }, 'POST /api/auth/logout - Success');
       return success(res, { message: 'Logged out successfully', data: null });
-    } catch (e) { next(e); }
   },
 ];

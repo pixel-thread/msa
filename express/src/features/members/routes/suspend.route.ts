@@ -53,6 +53,5 @@ export const suspendMember = [
       logger.info({ traceId, memberId: params?.memberId }, 'POST /api/members/[memberId]/suspend - Success');
 
       return success(res, { data: updatedMember, message: 'Member suspended successfully' });
-    } catch (e) { next(e); }
   },
 ];

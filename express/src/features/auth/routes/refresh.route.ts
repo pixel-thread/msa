@@ -75,6 +75,5 @@ export const postRefresh = [
 
       logger.info({ traceId, userId: user.id }, 'POST /api/auth/refresh - Success');
       return success(res, { message: 'Token refreshed successfully', data: { access_token: newAccessToken, refresh_token: newRefreshToken } });
-    } catch (e) { next(e); }
   },
 ];

@@ -79,6 +79,5 @@ export const updateMemberRoute = [
           dateOfJoiningAssociation: updatedUser.dateOfJoiningAssociation,
         },
       });
-    } catch (e) { next(e); }
   },
 ];

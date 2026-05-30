@@ -64,6 +64,5 @@ export const postSignInVerify = [
 
       logger.info({ traceId, userId: user.id }, 'POST /api/auth/sign-in/verify - Success');
       return success(res, { message: 'Signed in successfully', data: { access_token: accessToken, refresh_token: refreshToken } });
-    } catch (e) { next(e); }
   },
 ];

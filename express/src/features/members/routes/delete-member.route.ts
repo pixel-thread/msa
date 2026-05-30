@@ -44,6 +44,5 @@ export const deleteMember = [
       logger.info({ traceId, memberId: params.memberId }, 'DELETE /api/members/[memberId] - Success');
 
       return success(res, { data: null, message: 'Member deleted successfully' });
-    } catch (e) { next(e); }
   },
 ];

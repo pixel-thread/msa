@@ -58,6 +58,5 @@ export const listMembers = [
       logger.info({ traceId, count: members.data.length }, 'GET /api/members - Success');
 
       return success(res, { data: members.data, meta: members.pagination });
-    } catch (e) { next(e); }
   },
 ];

@@ -46,6 +46,5 @@ export const postMfaSetup = [
       if (authUser && env.NODE_ENV === 'development') logger.debug({ otp }, 'OTP:');
 
       return success(res, { message: 'Verification code sent to your email', data: { pending: true, codeSent: true } });
-    } catch (e) { next(e); }
   },
 ];

@@ -13,31 +13,30 @@ import { logger } from '@src/shared/logger';
 export const postForgotPassword = [
   validate({ body: ForgotPasswordSchema }),
   async (req: Request, res: Response) => {
-      const { email } = req.body as ForgotPasswordInput;
-      const user = await getUserFirst({ where: { email } });
+    const { email } = req.body as ForgotPasswordInput;
+    const user = await getUserFirst({ where: { email } });
 
-      if (!user) {
-        return success(res, { message: 'A reset email will be sent', data: null });
-      }
-
-      const resetToken = await signPasswordResetToken(user.id);
-      const hashedToken = hashToken(resetToken);
-      const resetExpiry = new Date();
-      resetExpiry.setHours(resetExpiry.getHours() + 1);
-
-      await updateUser({
-        where: { id: user.id },
-        data: { passwordResetToken: hashedToken, passwordResetExpires: resetExpiry },
-      });
-
-      if (env.NODE_ENV === 'production') {
-        await sendPasswordResetEmail(user.email, resetToken);
-      }
-      if (env.NODE_ENV === 'development') {
-        logger.debug({ token: resetToken }, 'Reset password Token');
-      }
-
+    if (!user) {
       return success(res, { message: 'A reset email will be sent', data: null });
-    } catch (e) { next(e); }
+    }
+
+    const resetToken = await signPasswordResetToken(user.id);
+    const hashedToken = hashToken(resetToken);
+    const resetExpiry = new Date();
+    resetExpiry.setHours(resetExpiry.getHours() + 1);
+
+    await updateUser({
+      where: { id: user.id },
+      data: { passwordResetToken: hashedToken, passwordResetExpires: resetExpiry },
+    });
+
+    if (env.NODE_ENV === 'production') {
+      await sendPasswordResetEmail(user.email, resetToken);
+    }
+    if (env.NODE_ENV === 'development') {
+      logger.debug({ token: resetToken }, 'Reset password Token');
+    }
+
+    return success(res, { message: 'A reset email will be sent', data: null });
   },
 ];

@@ -69,6 +69,5 @@ export const onboarding = [
         },
         message: 'Onboarding completed successfully',
       });
-    } catch (e) { next(e); }
   },
 ];

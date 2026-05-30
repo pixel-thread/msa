@@ -34,6 +34,5 @@ export const postMfaDisable = [
 
       logger.info({ traceId, userId }, 'POST /api/auth/mfa/disable - Success');
       return success(res, { message: 'MFA disabled successfully', data: { mfaEnabled: false } });
-    } catch (e) { next(e); }
   },
 ];

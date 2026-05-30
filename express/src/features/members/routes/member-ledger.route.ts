@@ -43,6 +43,5 @@ export const getMemberLedger = [
         data: { transactions: history.transactions, summary },
         meta: history.pagination,
       });
-    } catch (e) { next(e); }
   },
 ];

@@ -42,6 +42,5 @@ export const postMfaVerify = [
 
       logger.info({ traceId, userId }, 'POST /api/auth/mfa/verify - Success');
       return success(res, { message: 'MFA enabled successfully', data: { mfaEnabled: true } });
-    } catch (e) { next(e); }
   },
 ];

@@ -62,6 +62,5 @@ export const getMember = [
       logger.info({ traceId, memberId: params.memberId }, 'GET /api/members/[memberId] - Success');
 
       return success(res, { data: member });
-    } catch (e) { next(e); }
   },
 ];
