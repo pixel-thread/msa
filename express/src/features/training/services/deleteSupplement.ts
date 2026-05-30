@@ -1,5 +1,10 @@
-import { prisma } from '@lib/prisma';
+// ---- External libs ----
 import { AuditAction, Prisma } from '@prisma/client';
+
+// ---- Shared utilities ----
+import { prisma } from '@lib/prisma';
+
+// ---- Interfaces ----
 
 /** Parameters for deleting a training supplement. */
 interface DeleteSupplementProps {
@@ -9,7 +14,13 @@ interface DeleteSupplementProps {
   actorId: string;
 }
 
-/** Delete a training supplement and its associated file with audit logging. */
+// ---- Service ----
+
+/**
+ * Delete a training supplement and its associated file with audit logging.
+ *
+ * Business intent: Also returns the storageKey so the caller can delete from Supabase.
+ */
 export async function deleteSupplement({
   associationId,
   moduleId,
@@ -17,6 +28,7 @@ export async function deleteSupplement({
   actorId,
 }: DeleteSupplementProps) {
   return await prisma.$transaction(async (tx) => {
+    // Fetch supplement with its file info before deletion
     const supplement = await tx.trainingSupplement.findFirst({
       where: { id: supplementId, moduleId, module: { associationId } },
       include: { file: true },
@@ -29,14 +41,17 @@ export async function deleteSupplement({
     const storageKey = supplement.file?.storageKey;
     const fileId = supplement.fileId;
 
+    // Delete the supplement (cascades to file record)
     await tx.trainingSupplement.delete({
       where: { id: supplementId },
     });
 
+    // Clean up the file record
     if (fileId) {
       await tx.file.delete({ where: { id: fileId } });
     }
 
+    // Audit the deletion
     await tx.auditLog.create({
       data: {
         associationId,

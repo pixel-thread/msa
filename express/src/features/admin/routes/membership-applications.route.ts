@@ -1,7 +1,14 @@
+/**
+ * @file Membership Applications Route Handlers
+ * @description This file contains the request handlers for reviewing membership applications.
+ * It provides functionality for listing, approving, and rejecting applications.
+ */
+
 import { Request, NextFunction, Response } from 'express';
 import type { RequestHandler } from 'express';
 
-// Shared utilities
+import { UserRole } from '@prisma/client';
+
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { NotFoundError } from '@src/shared/errors';
@@ -9,17 +16,11 @@ import { withRole } from '@src/shared/utils/with-role';
 import { asyncHandler } from '@src/shared/utils/async-handler';
 import { logger } from '@src/shared/logger';
 
-// Prisma
-import { UserRole } from '@prisma/client';
-
-// Membership application services
 import {
   getMembershipApplications,
   approveMembershipApplication,
   rejectMembershipApplication,
 } from '@src/features/membership-applications/services';
-
-// Validators
 import {
   GetMembershipApplicationsQuerySchema,
   MembershipApplicationParamsSchema,
@@ -27,12 +28,11 @@ import {
   RejectApplicationSchema,
 } from '@src/features/membership-applications/validators';
 
-// ---------------------------------------------------------------------------
-// GET /api/admin/membership-applications
-// List membership applications with optional status filter and pagination.
-// Security: SECRETARY role required.
-// ---------------------------------------------------------------------------
-
+/**
+ * @description List membership applications with optional status filter and pagination.
+ * @security SECRETARY role required.
+ * @route GET /api/admin/membership-applications
+ */
 export const getMembershipApplicationsHandler: RequestHandler[] = [
   validate({ query: GetMembershipApplicationsQuerySchema }),
 
@@ -65,18 +65,23 @@ export const getMembershipApplicationsHandler: RequestHandler[] = [
       'GET /api/admin/membership-applications - Success',
     );
 
-    return success(res, { data: result.data, meta: result.pagination });
+    return success(res, {
+      data: result.data,
+      meta: result.pagination,
+    });
   }),
 ];
 
-// ---------------------------------------------------------------------------
-// POST /api/admin/membership-applications/:applicationId/approve
-// Approve a membership application and provision a user account.
-// Security: SECRETARY role required. Reviewed-by derived from x-user-id header.
-// ---------------------------------------------------------------------------
-
+/**
+ * @description Approve a membership application and provision a user account.
+ * @security SECRETARY role required.
+ * @route POST /api/admin/membership-applications/:applicationId/approve
+ */
 export const postApproveApplication: RequestHandler[] = [
-  validate({ params: MembershipApplicationParamsSchema, body: ApproveApplicationSchema }),
+  validate({
+    params: MembershipApplicationParamsSchema,
+    body: ApproveApplicationSchema,
+  }),
 
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -86,8 +91,7 @@ export const postApproveApplication: RequestHandler[] = [
     if (!applicationId) {
       logger.error(
         { traceId },
-        'POST /api/admin/membership-applications/[applicationId]/approve - '
-          + 'Application not found (missing params)',
+        'POST /api/admin/membership-applications/[applicationId]/approve - Application not found (missing params)',
       );
 
       throw new NotFoundError('Application not found');
@@ -112,8 +116,7 @@ export const postApproveApplication: RequestHandler[] = [
     if (!userId) {
       logger.error(
         { traceId },
-        'POST /api/admin/membership-applications/[applicationId]/approve - '
-          + 'User not found (missing x-user-id header)',
+        'POST /api/admin/membership-applications/[applicationId]/approve - User not found (missing x-user-id header)',
       );
 
       throw new NotFoundError('User not found');
@@ -148,14 +151,16 @@ export const postApproveApplication: RequestHandler[] = [
   }),
 ];
 
-// ---------------------------------------------------------------------------
-// POST /api/admin/membership-applications/:applicationId/reject
-// Reject a membership application with a required reason.
-// Security: SECRETARY role required. Reviewed-by derived from x-user-id header.
-// ---------------------------------------------------------------------------
-
+/**
+ * @description Reject a membership application with a required reason.
+ * @security SECRETARY role required.
+ * @route POST /api/admin/membership-applications/:applicationId/reject
+ */
 export const postRejectApplication: RequestHandler[] = [
-  validate({ params: MembershipApplicationParamsSchema, body: RejectApplicationSchema }),
+  validate({
+    params: MembershipApplicationParamsSchema,
+    body: RejectApplicationSchema,
+  }),
 
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -165,8 +170,7 @@ export const postRejectApplication: RequestHandler[] = [
     if (!applicationId) {
       logger.error(
         { traceId },
-        'POST /api/admin/membership-applications/[applicationId]/reject - '
-          + 'Application not found (missing params)',
+        'POST /api/admin/membership-applications/[applicationId]/reject - Application not found (missing params)',
       );
 
       throw new NotFoundError('Application not found');
@@ -191,8 +195,7 @@ export const postRejectApplication: RequestHandler[] = [
     if (!userId) {
       logger.error(
         { traceId },
-        'POST /api/admin/membership-applications/[applicationId]/reject - '
-          + 'User not found (missing x-user-id header)',
+        'POST /api/admin/membership-applications/[applicationId]/reject - User not found (missing x-user-id header)',
       );
 
       throw new NotFoundError('User not found');

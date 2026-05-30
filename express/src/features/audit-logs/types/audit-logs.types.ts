@@ -1,3 +1,5 @@
+// ---- Audit-log types
+
 /** Represents a single audit log entry. */
 export interface AuditLogEntry {
   id: string;

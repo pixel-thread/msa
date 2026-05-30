@@ -1,4 +1,12 @@
+// ---------------------------------------------------------------------------
+// Prisma
+// ---------------------------------------------------------------------------
+
 import { prisma } from '@lib/prisma';
+
+// ---------------------------------------------------------------------------
+// Interface
+// ---------------------------------------------------------------------------
 
 /** Parameters for finding a unique member type. */
 interface FindUniqueMemberTypeProps {
@@ -6,7 +14,20 @@ interface FindUniqueMemberTypeProps {
   memberTypeId: string;
 }
 
-/** Find a single member type by ID within a specific association. */
+// ---------------------------------------------------------------------------
+// Find unique member type
+//
+// Looks up a member type scoped to the given association. Returns the count
+// of linked users and subscription plans alongside the record so callers can
+// decide whether deletion is safe.
+// ---------------------------------------------------------------------------
+
+/**
+ * Find a single member type by ID within a specific association.
+ *
+ * WHY: member types are association-scoped; a direct Prisma findUnique by
+ * id alone could return a record from a different association.
+ */
 export async function findUniqueMemberType({
   associationId,
   memberTypeId,

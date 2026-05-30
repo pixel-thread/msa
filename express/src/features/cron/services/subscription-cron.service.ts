@@ -1,6 +1,9 @@
-import { prisma } from '@src/shared/lib/prisma';
 import { AuditAction } from '@prisma/client';
+
+import { prisma } from '@src/shared/lib/prisma';
 import { logAction } from '@src/shared/services/audit-logs';
+
+// ---- Interfaces -------------------------------------------------------------
 
 /** Result of processing expired subscriptions for a single association. */
 export interface SubscriptionExpiryResult {
@@ -11,13 +14,20 @@ export interface SubscriptionExpiryResult {
   error?: string;
 }
 
-/** Expire overdue subscriptions for a given association. */
+// ---- Service: Individual Association ----------------------------------------
+
+/**
+ * Expire overdue subscriptions for a given association.
+ * Finds active subscriptions past their end date (up to 100), marks them as EXPIRED,
+ * and logs an audit action. Returns a summary result for the association.
+ */
 export async function expireOverdueSubscriptions(
   associationId: string,
 ): Promise<SubscriptionExpiryResult> {
   try {
     const now = new Date();
 
+    // ----- Validate association exists
     const association = await prisma.association.findUnique({
       where: { id: associationId },
       select: { slug: true },
@@ -33,6 +43,7 @@ export async function expireOverdueSubscriptions(
       };
     }
 
+    // ----- Find overdue subscriptions
     const expiredSubscriptions = await prisma.subscription.findMany({
       where: {
         user: { associationId },
@@ -52,6 +63,7 @@ export async function expireOverdueSubscriptions(
       };
     }
 
+    // ----- Bulk-expire subscriptions
     await prisma.subscription.updateMany({
       where: {
         id: { in: expiredSubscriptions.map((s) => s.id) },
@@ -61,6 +73,7 @@ export async function expireOverdueSubscriptions(
       },
     });
 
+    // ----- Audit log
     await logAction({
       associationId,
       actorId: '',
@@ -85,7 +98,12 @@ export async function expireOverdueSubscriptions(
   }
 }
 
-/** Run subscription expiry check for all active associations. */
+// ---- Service: All Associations ----------------------------------------------
+
+/**
+ * Run subscription expiry check for all active associations.
+ * Processes every active association concurrently and returns their results.
+ */
 export async function runSubscriptionExpiryCron(): Promise<SubscriptionExpiryResult[]> {
   const associations = await prisma.association.findMany({
     where: { isActive: true },

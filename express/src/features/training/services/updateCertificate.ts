@@ -1,6 +1,13 @@
-import { prisma } from '@lib/prisma';
-import { UpdateTrainingCertificateInput } from '../validators/training';
+// ---- External libs ----
 import { AuditAction, Prisma } from '@prisma/client';
+
+// ---- Shared utilities ----
+import { prisma } from '@lib/prisma';
+
+// ---- Validators ----
+import { UpdateTrainingCertificateInput } from '../validators/training';
+
+// ---- Interfaces ----
 
 /** Parameters for updating a training certificate. */
 interface UpdateCertificateProps {
@@ -13,7 +20,15 @@ interface UpdateCertificateProps {
   fileId?: string;
 }
 
-/** Update a training certificate, optionally replacing the file, with audit logging. */
+// ---- Service ----
+
+/**
+ * Update a training certificate, optionally replacing the file, with audit logging.
+ *
+ * Business intent: When a new certificate file is uploaded, the old file record
+ * is cleaned up from the database and the old storage key is returned for
+ * Supabase blob deletion.
+ */
 export async function updateCertificate({
   associationId,
   moduleId,
@@ -24,6 +39,7 @@ export async function updateCertificate({
   fileId,
 }: UpdateCertificateProps) {
   return await prisma.$transaction(async (tx) => {
+    // Fetch the existing certificate with its file info
     const certificate = await tx.trainingCertificate.findFirst({
       where: { id: certificateId, moduleId, module: { associationId } },
       include: { file: true },
@@ -33,9 +49,11 @@ export async function updateCertificate({
       throw new Error('Training certificate not found');
     }
 
+    // Capture old storage key for cleanup
     const oldStorageKey = certificate.file?.storageKey;
     const oldFileId = certificate.fileId;
 
+    // Build the update payload
     const updateData: Record<string, unknown> = {};
 
     if (data.certificateNumber !== undefined) {
@@ -66,15 +84,18 @@ export async function updateCertificate({
       updateData.id = fileId;
     }
 
+    // Apply the update
     const updated = await tx.trainingCertificate.update({
       where: { id: certificateId },
       data: updateData,
     });
 
+    // Clean up the old file record if replaced
     if (oldFileId && fileId && oldFileId !== fileId) {
       await tx.file.delete({ where: { id: oldFileId } });
     }
 
+    // Audit the update
     await tx.auditLog.create({
       data: {
         associationId,

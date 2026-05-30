@@ -1,6 +1,9 @@
-// ---------------------------------------------------------------------------
-// Announcements services barrel export
-// ---------------------------------------------------------------------------
+/**
+ * @file index.ts
+ * @description Announcements services barrel export.
+ *
+ * @module features/announcements/services
+ */
 
 export * from './createAnnouncement';
 export * from './updateAnnouncement';

@@ -1,8 +1,22 @@
-import { prisma } from '@src/shared/lib/prisma';
-import type { AuditLogEntry, AuditLogQuery } from '../types';
+// ---- Audit-log service
+
+// Shared utilities
 import { buildPagination } from '@src/shared/utils/build-pagination';
 
-/** Retrieve paginated audit log entries for a given association, with optional filters. */
+// Prisma
+import { prisma } from '@src/shared/lib/prisma';
+
+// Types
+import type { AuditLogEntry, AuditLogQuery } from '../types';
+
+// ---- findAuditLogs
+
+/**
+ * Retrieve paginated audit log entries for a given association, with optional filters.
+ *
+ * Supports filtering by action type, resource type, actor ID, and date range.
+ * Returns formatted log entries and pagination metadata.
+ */
 export async function findAuditLogs(
   associationId: string,
   query: AuditLogQuery,
@@ -10,6 +24,8 @@ export async function findAuditLogs(
   logs: AuditLogEntry[];
   pagination: ReturnType<typeof buildPagination>;
 }> {
+  // ---- Build query filter from optional parameters
+
   const { page, limit, action, resourceType, actorId, fromDate, toDate } = query;
 
   const where: Record<string, unknown> = { associationId };
@@ -22,6 +38,8 @@ export async function findAuditLogs(
     if (fromDate) (where.createdAt as Record<string, Date>).gte = fromDate;
     if (toDate) (where.createdAt as Record<string, Date>).lte = toDate;
   }
+
+  // ---- Execute paginated query and count concurrently
 
   const [logs, total] = await Promise.all([
     prisma.auditLog.findMany({
@@ -37,6 +55,8 @@ export async function findAuditLogs(
     }),
     prisma.auditLog.count({ where }),
   ]);
+
+  // ---- Format raw database rows into API response shape
 
   const formattedLogs: AuditLogEntry[] = logs.map((log) => ({
     id: log.id,
@@ -58,11 +78,20 @@ export async function findAuditLogs(
   };
 }
 
-/** Retrieve audit log statistics (totals for 7 days, 30 days, all time, and top actions). */
+// ---- getAuditLogStats
+
+/**
+ * Retrieve audit log statistics for a given association.
+ *
+ * Provides counts for 7-day, 30-day, and all-time periods,
+ * plus the top 10 most frequent actions.
+ */
 export async function getAuditLogStats(associationId: string) {
   const now = new Date();
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+  // ---- Fetch all stats concurrently
 
   const [last7Days, last30Days, total, byAction] = await Promise.all([
     prisma.auditLog.count({

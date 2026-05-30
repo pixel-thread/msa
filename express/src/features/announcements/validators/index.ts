@@ -1,28 +1,65 @@
+/**
+ * @file Announcements Validators
+ * @description Zod schemas for validating announcement-related requests.
+ */
+
 import z from 'zod';
-import { AnnouncementStatus, AnnouncementPriority, UserRole } from '@prisma/client';
+import {
+  AnnouncementStatus,
+  AnnouncementPriority,
+  UserRole,
+} from '@prisma/client';
 
-import { pageNumberValidation, pageSizeValidation } from '@src/shared/validators/common';
+import {
+  pageNumberValidation,
+  pageSizeValidation,
+} from '@src/shared/validators/common';
 
-import { MAX_IMAGE_SIZE, ALLOWED_IMAGE_FORMATS, ALLOWED_MIME_TYPES } from '@src/shared/constants';
+import {
+  MAX_IMAGE_SIZE,
+  ALLOWED_IMAGE_FORMATS,
+  ALLOWED_MIME_TYPES,
+} from '@src/shared/constants';
 
-// ---------------------------------------------------------------------------
-// Schemas for the announcements feature
-// ---------------------------------------------------------------------------
+// -- Create Announcement Schema ---------------------------------------------
 
-/** Schema for creating a new announcement. */
+/**
+ * Schema for creating a new announcement.
+ */
 export const CreateAnnouncementSchema = z.object({
+  /** Title of the announcement. */
   title: z.string().min(1).max(200),
+
+  /** Brief summary of the announcement. */
   summary: z.string().max(500).optional(),
+
+  /** Main markdown content of the announcement. */
   content: z.string().min(1),
+
+  /** Publishing status. Defaults to DRAFT. */
   status: z.enum(AnnouncementStatus).default(AnnouncementStatus.DRAFT),
+
+  /** Display priority level. Defaults to NORMAL. */
   priority: z.enum(AnnouncementPriority).default(AnnouncementPriority.NORMAL),
+
+  /** List of roles targeted by this announcement. */
   targetRoles: z.array(z.enum(UserRole)).default([]),
+
+  /** Whether the announcement should be pinned to the top. */
   isPinned: z.boolean().default(false),
+
+  /** Scheduled publication date. */
   publishedAt: z.coerce.date().optional(),
+
+  /** Expiration date for the announcement. */
   expiresAt: z.coerce.date().optional(),
 });
 
-/** Schema for updating an existing announcement. All fields are optional. */
+// -- Update Announcement Schema ---------------------------------------------
+
+/**
+ * Schema for updating an existing announcement. All fields are optional.
+ */
 export const UpdateAnnouncementSchema = z.object({
   title: z.string().min(1).max(200).optional(),
   summary: z.string().max(500).optional(),
@@ -36,26 +73,52 @@ export const UpdateAnnouncementSchema = z.object({
   expiresAt: z.coerce.date().optional().nullable(),
 });
 
-/** Schema for announcement listing query parameters. */
+// -- Query Parameter Schemas ------------------------------------------------
+
+/**
+ * Schema for announcement listing query parameters.
+ */
 export const AnnouncementQuerySchema = z.object({
+  /** Page number for pagination. */
   page: pageNumberValidation,
+
+  /** Number of records per page. */
   limit: pageSizeValidation,
+
+  /** Filter by status. */
   status: z.enum(AnnouncementStatus).optional(),
+
+  /** Filter by priority. */
   priority: z.enum(AnnouncementPriority).optional(),
+
+  /** Search term for title and summary. */
   search: z.string().optional(),
 });
 
-/** Schema for the publish/archive/unpublish action body. */
+// -- Action Schemas ---------------------------------------------------------
+
+/**
+ * Schema for the publish/archive/unpublish action body.
+ */
 export const PublishAnnouncementSchema = z.object({
+  /** Date when the announcement was published. */
   publishedAt: z.coerce.date().optional(),
 });
 
-/** Schema for announcement route parameters (announcementId). */
+/**
+ * Schema for announcement route parameters.
+ */
 export const AnnouncementRouteParams = z.object({
+  /** Unique ID of the announcement. */
   announcementId: z.uuid(),
 });
 
-/** Schema for announcement image upload form data. Validates file size, extension, and MIME type. */
+// -- File Upload Schema -----------------------------------------------------
+
+/**
+ * Schema for announcement image upload form data.
+ * Validates file size, extension, name, and MIME type.
+ */
 export const AnnouncementUploadFormData = z.object({
   file: z
     .instanceof(File, { message: 'File is required' })
@@ -63,7 +126,6 @@ export const AnnouncementUploadFormData = z.object({
     .refine((f) => f.type, { message: 'File type is required' })
     .refine((file) => {
       const extension = file.name.split('.').pop()?.toLowerCase();
-
       return extension && ALLOWED_IMAGE_FORMATS.includes(extension as never);
     }, 'Invalid file extension')
     .refine((f) => ALLOWED_MIME_TYPES.includes(f.type as never), {
@@ -79,9 +141,7 @@ export const AnnouncementUploadFormData = z.object({
     }),
 });
 
-// ---------------------------------------------------------------------------
-// Inferred types
-// ---------------------------------------------------------------------------
+// -- Inferred Types ---------------------------------------------------------
 
 export type CreateAnnouncementInput = z.infer<typeof CreateAnnouncementSchema>;
 

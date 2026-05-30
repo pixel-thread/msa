@@ -1,5 +1,10 @@
-import { prisma } from '@lib/prisma';
+// ---- External libs ----
 import { AuditAction, Prisma } from '@prisma/client';
+
+// ---- Shared utilities ----
+import { prisma } from '@lib/prisma';
+
+// ---- Interfaces ----
 
 /** Parameters for deleting a certificate template. */
 interface DeleteCertificateTemplateProps {
@@ -8,12 +13,16 @@ interface DeleteCertificateTemplateProps {
   actorId: string;
 }
 
+// ---- Service ----
+
 /**
  * Removes the certificate template from a training module and cleans up
  * the associated File record.
  *
- * Tenant-scoped by associationId. Requires DPO role (enforced by caller).
+ * Business intent: After deletion, the module no longer has a template linked.
  * Returns the storageKey so the caller can delete from Supabase storage.
+ *
+ * Tenant-scoped by associationId. Requires DPO role (enforced by caller).
  */
 export async function deleteCertificateTemplate({
   associationId,
@@ -21,6 +30,7 @@ export async function deleteCertificateTemplate({
   actorId,
 }: DeleteCertificateTemplateProps) {
   return await prisma.$transaction(async (tx) => {
+    // Find the module and verify it has a template
     const mod = await tx.trainingModule.findFirst({
       where: { id: moduleId, associationId },
     });
@@ -29,6 +39,7 @@ export async function deleteCertificateTemplate({
       throw new Error('No certificate template found');
     }
 
+    // Fetch the template with its file info
     const template = await tx.trainingCertificateTemplate.findUnique({
       where: { id: mod.certificateTemplateId },
       include: { file: true },
@@ -41,19 +52,23 @@ export async function deleteCertificateTemplate({
     const storageKey = template.file?.storageKey;
     const fileId = template.fileId;
 
+    // Unlink the template from the module first
     await tx.trainingModule.update({
       where: { id: moduleId },
       data: { certificateTemplateId: null },
     });
 
+    // Delete the template record
     await tx.trainingCertificateTemplate.delete({
       where: { id: template.id },
     });
 
+    // Clean up the associated file record
     if (fileId) {
       await tx.file.delete({ where: { id: fileId } }).catch(() => {});
     }
 
+    // Audit the deletion
     await tx.auditLog.create({
       data: {
         associationId,

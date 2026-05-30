@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------------------
+// Ledger endpoint path constants
+// ---------------------------------------------------------------------------
+
 /** Endpoint path constants for the ledger feature. */
 export const ledgerEndpoints = {
   accounts: '/ledger/accounts' as const,

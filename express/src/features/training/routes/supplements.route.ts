@@ -1,27 +1,40 @@
+// ---- External libs ----
 import { Request, Response, NextFunction } from 'express';
 import type { RequestHandler } from 'express';
+
+// ---- Shared utilities ----
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { prisma } from '@src/shared/lib/prisma';
-import { UserRole } from '@prisma/client';
-import {
-  findManySupplements,
-  createSupplement,
-  updateSupplement,
-  deleteSupplement,
-} from '@src/features/training/services';
-import {
-  CreateSupplementSchema,
-  UpdateSupplementSchema,
-} from '@src/features/training/validators/training';
 import { uploadToBucket, deleteFromBucket } from '@src/shared/lib/supabase/storage';
 import { BadRequestError, NotFoundError } from '@src/shared/errors';
 import { env } from '@src/env';
 import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
-import { z } from 'zod';
 import { asyncHandler } from '@src/shared/utils/async-handler';
+
+// ---- Prisma ----
+import { UserRole } from '@prisma/client';
+
+// ---- Services ----
+import {
+  findManySupplements,
+  createSupplement,
+  updateSupplement,
+  deleteSupplement,
+} from '@src/features/training/services';
+
+// ---- Validators ----
+import {
+  CreateSupplementSchema,
+  UpdateSupplementSchema,
+} from '@src/features/training/validators/training';
+
+// ---- External libs ----
+import { z } from 'zod';
+
+// ---- Schemas ----
 
 /** Schema for module ID path parameter. */
 const ModuleParamsSchema = z.object({
@@ -34,20 +47,33 @@ const SupplementParamsSchema = z.object({
   supplementId: z.string().uuid('Invalid supplement ID'),
 });
 
-/** GET /training/modules/:moduleId/supplements - List supplements for a module. */
+// ---------------------------------------------------------------------------
+// GET /training/modules/:moduleId/supplements
+// Description: List supplements for a module
+// Security:    MEMBER role required
+// ---------------------------------------------------------------------------
+
 export const getSupplements: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
+
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
+
+    // Resolve association
     try {
       const association = await getAssociation(req);
+
       logger.info(
         { traceId, associationId: association.id },
         'GET /training/modules/{moduleId}/supplements - Request started',
       );
+
+      // Authorize: minimum MEMBER role
       await withRole(req, UserRole.MEMBER);
+
       logger.info({ traceId }, 'GET /training/modules/{moduleId}/supplements - User authorized');
 
+      // Fetch supplements
       const supplements = await findManySupplements({
         associationId: association.id,
         moduleId: req.params.moduleId,
@@ -61,23 +87,36 @@ export const getSupplements: RequestHandler[] = [
   }),
 ];
 
-/** POST /training/modules/:moduleId/supplements - Upload a supplement (DPO role required). */
+// ---------------------------------------------------------------------------
+// POST /training/modules/:moduleId/supplements
+// Description: Upload a supplement file
+// Security:    DPO role required
+// ---------------------------------------------------------------------------
+
 export const postSupplement: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
+
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
+
+    // Resolve association
     try {
       const association = await getAssociation(req);
+
       logger.info(
         { traceId, associationId: association.id, moduleId: req.params.moduleId },
         'POST /training/modules/{moduleId}/supplements - Request started',
       );
+
+      // Authorize: DPO role required
       const user = await withRole(req, UserRole.DPO);
+
       logger.info(
         { traceId, userId: user.id },
         'POST /training/modules/{moduleId}/supplements - User authorized',
       );
 
+      // Parse request: file + metadata JSON
       const { moduleId } = req.params;
       const file = (req as any).file as Express.Multer.File | undefined;
       const metadataRaw = req.body.metadata as string | undefined;
@@ -86,6 +125,7 @@ export const postSupplement: RequestHandler[] = [
         throw new BadRequestError('File and metadata are required');
       }
 
+      // Validate metadata against schema
       let metadata: z.infer<typeof CreateSupplementSchema>;
       try {
         metadata = CreateSupplementSchema.parse(JSON.parse(metadataRaw));
@@ -98,6 +138,7 @@ export const postSupplement: RequestHandler[] = [
         throw new BadRequestError('File is empty');
       }
 
+      // Upload file to Supabase storage
       const webFile = new File([file.buffer], file.originalname, { type: file.mimetype });
       const uploadResult = await uploadToBucket(
         webFile,
@@ -105,6 +146,7 @@ export const postSupplement: RequestHandler[] = [
         traceId,
       );
 
+      // Create a File record in the database
       const fileRecord = await prisma.file.create({
         data: {
           associationId: association.id,
@@ -120,6 +162,7 @@ export const postSupplement: RequestHandler[] = [
         },
       });
 
+      // Create the supplement record
       const supplement = await createSupplement({
         associationId: association.id,
         moduleId,
@@ -140,23 +183,36 @@ export const postSupplement: RequestHandler[] = [
   }),
 ];
 
-/** GET /training/modules/:moduleId/supplements/:supplementId - Retrieve a single supplement. */
+// ---------------------------------------------------------------------------
+// GET /training/modules/:moduleId/supplements/:supplementId
+// Description: Retrieve a single supplement
+// Security:    MEMBER role required
+// ---------------------------------------------------------------------------
+
 export const getSupplement: RequestHandler[] = [
   validate({ params: SupplementParamsSchema }),
+
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
+
+    // Resolve association
     try {
       const association = await getAssociation(req);
+
       logger.info(
         { traceId, associationId: association.id },
         'GET /training/modules/{moduleId}/supplements/{supplementId} - Request started',
       );
+
+      // Authorize: minimum MEMBER role
       await withRole(req, UserRole.MEMBER);
+
       logger.info(
         { traceId },
         'GET /training/modules/{moduleId}/supplements/{supplementId} - User authorized',
       );
 
+      // Find supplement by filtering the module's supplement list
       const { moduleId, supplementId } = req.params;
       const supplements = await findManySupplements({ associationId: association.id, moduleId });
       const supplement = supplements.find((s) => s.id === supplementId);
@@ -174,23 +230,36 @@ export const getSupplement: RequestHandler[] = [
   }),
 ];
 
-/** PATCH /training/modules/:moduleId/supplements/:supplementId - Update a supplement (DPO role required). */
+// ---------------------------------------------------------------------------
+// PATCH /training/modules/:moduleId/supplements/:supplementId
+// Description: Update a supplement (optionally replace file)
+// Security:    DPO role required
+// ---------------------------------------------------------------------------
+
 export const updateSupplementHandler: RequestHandler[] = [
   validate({ params: SupplementParamsSchema }),
+
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
+
+    // Resolve association
     try {
       const association = await getAssociation(req);
+
       logger.info(
         { traceId, associationId: association.id },
         'PATCH /training/modules/{moduleId}/supplements/{supplementId} - Request started',
       );
+
+      // Authorize: DPO role required
       const user = await withRole(req, UserRole.DPO);
+
       logger.info(
         { traceId, userId: user.id },
         'PATCH /training/modules/{moduleId}/supplements/{supplementId} - User authorized',
       );
 
+      // Parse request: optional file + required metadata JSON
       const { moduleId, supplementId } = req.params;
       const file = (req as any).file as Express.Multer.File | undefined;
       const metadataRaw = req.body.metadata as string | undefined;
@@ -199,6 +268,7 @@ export const updateSupplementHandler: RequestHandler[] = [
         throw new BadRequestError('Metadata is required');
       }
 
+      // Validate metadata
       let metadata: z.infer<typeof UpdateSupplementSchema>;
       try {
         metadata = UpdateSupplementSchema.parse(JSON.parse(metadataRaw));
@@ -207,6 +277,7 @@ export const updateSupplementHandler: RequestHandler[] = [
         throw error;
       }
 
+      // Upload new file if provided
       let downloadUrl: string | undefined;
       let fileId: string | undefined;
 
@@ -241,6 +312,7 @@ export const updateSupplementHandler: RequestHandler[] = [
         fileId = fileRecord.id;
       }
 
+      // Apply the update (old file cleanup happens in service)
       const { supplement, oldStorageKey } = await updateSupplement({
         associationId: association.id,
         moduleId,
@@ -251,6 +323,7 @@ export const updateSupplementHandler: RequestHandler[] = [
         fileId,
       });
 
+      // Clean up old file from storage
       if (oldStorageKey) {
         try {
           await deleteFromBucket(oldStorageKey);
@@ -270,23 +343,36 @@ export const updateSupplementHandler: RequestHandler[] = [
   }),
 ];
 
-/** DELETE /training/modules/:moduleId/supplements/:supplementId - Delete a supplement (DPO role required). */
+// ---------------------------------------------------------------------------
+// DELETE /training/modules/:moduleId/supplements/:supplementId
+// Description: Delete a supplement and its file
+// Security:    DPO role required
+// ---------------------------------------------------------------------------
+
 export const deleteSupplementHandler: RequestHandler[] = [
   validate({ params: SupplementParamsSchema }),
+
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
+
+    // Resolve association
     try {
       const association = await getAssociation(req);
+
       logger.info(
         { traceId, associationId: association.id },
         'DELETE /training/modules/{moduleId}/supplements/{supplementId} - Request started',
       );
+
+      // Authorize: DPO role required
       const user = await withRole(req, UserRole.DPO);
+
       logger.info(
         { traceId, userId: user.id },
         'DELETE /training/modules/{moduleId}/supplements/{supplementId} - User authorized',
       );
 
+      // Delete the supplement (cascades to file record)
       const { moduleId, supplementId } = req.params;
       const result = await deleteSupplement({
         associationId: association.id,
@@ -295,6 +381,7 @@ export const deleteSupplementHandler: RequestHandler[] = [
         actorId: user.id,
       });
 
+      // Clean up file from storage
       if (result.storageKey) {
         try {
           await deleteFromBucket(result.storageKey);

@@ -1,14 +1,12 @@
-// ---------------------------------------------------------------------------
-// Associations feature router — aggregates all association sub-routes
-// behind authentication
-// ---------------------------------------------------------------------------
+/**
+ * @file Associations Feature Router
+ * @description This file aggregates all association sub-routes behind authentication.
+ */
 
 import { Router, type Router as ExpressRouter } from 'express';
 
-// Middleware
 import { auth } from '@src/middleware/auth';
 
-// Association route handlers
 import {
   getAssociationByUser,
   postAssociationCreate,
@@ -20,8 +18,9 @@ import {
   postAddMember,
 } from './associations.route';
 
-// ---------------------------------------------------------------------------
-
+/**
+ * Express router for associations.
+ */
 const router: ExpressRouter = Router();
 
 // All association routes require authentication

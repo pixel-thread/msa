@@ -1,5 +1,8 @@
 import { Prisma } from '@prisma/client';
+
 import { prisma } from '@src/shared/lib/prisma';
+
+// ---- Types ----
 
 /** Props for creating a verification code. */
 type Props = {
@@ -7,7 +10,9 @@ type Props = {
   data: Prisma.VerificationCodeCreateInput;
 };
 
-/** Create a new verification code in the database. */
+// ---- Service ----
+
+/** Persist a new verification code (e.g. OTP) for flows such as MFA setup, sign-in MFA, or password reset. */
 export async function createVerificationCode(props: Props) {
   return await prisma.verificationCode.create(props);
 }

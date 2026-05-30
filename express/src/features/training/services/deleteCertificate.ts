@@ -1,5 +1,10 @@
-import { prisma } from '@lib/prisma';
+// ---- External libs ----
 import { AuditAction, Prisma } from '@prisma/client';
+
+// ---- Shared utilities ----
+import { prisma } from '@lib/prisma';
+
+// ---- Interfaces ----
 
 /** Parameters for deleting a training certificate. */
 interface DeleteCertificateProps {
@@ -9,7 +14,13 @@ interface DeleteCertificateProps {
   actorId: string;
 }
 
-/** Delete a training certificate and its associated file with audit logging. */
+// ---- Service ----
+
+/**
+ * Delete a training certificate and its associated file with audit logging.
+ *
+ * Business intent: Also returns the storageKey so the caller can delete from Supabase.
+ */
 export async function deleteCertificate({
   associationId,
   moduleId,
@@ -17,6 +28,7 @@ export async function deleteCertificate({
   actorId,
 }: DeleteCertificateProps) {
   return await prisma.$transaction(async (tx) => {
+    // Fetch certificate with its file info before deletion
     const certificate = await tx.trainingCertificate.findFirst({
       where: { id: certificateId, moduleId, module: { associationId } },
       include: { file: true },
@@ -29,14 +41,17 @@ export async function deleteCertificate({
     const storageKey = certificate.file?.storageKey;
     const fileId = certificate.fileId;
 
+    // Delete the certificate record
     await tx.trainingCertificate.delete({
       where: { id: certificateId },
     });
 
+    // Clean up the file record
     if (fileId) {
       await tx.file.delete({ where: { id: fileId } });
     }
 
+    // Audit the deletion
     await tx.auditLog.create({
       data: {
         associationId,

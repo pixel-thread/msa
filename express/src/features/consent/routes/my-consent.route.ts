@@ -1,12 +1,26 @@
+// ---- GET /api/consent/my
+// ---- Description: Retrieve the current user's consent state for all purposes.
+// ---- Security: MEMBER role or higher
+
+// External libs
 import { Request, NextFunction, Response } from 'express';
+
+// Shared utilities
 import { success } from '@src/shared/utils/responses';
 import { UnauthorizedError, ForbiddenError } from '@src/shared/errors';
+import { logger } from '@src/shared/logger';
+import { getUniqueUser } from '@src/shared/services/user/get-unique-user';
+import { asyncHandler } from '@src/shared/utils/async-handler';
+
+// Prisma
 import { prisma } from '@src/shared/lib/prisma';
 import { UserRole } from '@prisma/client';
+
+// Services
 import { ConsentService } from '@src/features/consent/services/consent.service';
-import { getUniqueUser } from '@src/shared/services/user/get-unique-user';
-import { logger } from '@src/shared/logger';
-import { asyncHandler } from '@src/shared/utils/async-handler';
+
+// ---- Helper: Role hierarchy for permission checks
+// Lower number = higher privilege. SUPER_ADMIN (0) is the highest.
 
 const ROLE_HIERARCHY: Record<UserRole, number> = {
   SUPER_ADMIN: 0,
@@ -16,6 +30,9 @@ const ROLE_HIERARCHY: Record<UserRole, number> = {
   DPO: 4,
   MEMBER: 5,
 };
+
+// ---- Helper: getAssociation
+// Resolves the user's association from the request context.
 
 async function getAssociation(req: Request) {
   const userId = req.userId as string;
@@ -27,6 +44,9 @@ async function getAssociation(req: Request) {
   if (!user || !user.associationId) throw new ForbiddenError('User association not found');
   return { id: user.association.id, slug: user.association.slug, name: user.association.name };
 }
+
+// ---- Helper: withRole
+// Ensures the authenticated user meets the minimum role requirement.
 
 async function withRole(req: Request, role: UserRole) {
   const userId = req.userId as string;
@@ -42,18 +62,32 @@ async function withRole(req: Request, role: UserRole) {
   return { ...user, role: roles };
 }
 
-/** GET /api/consent/my - Retrieve the current user's consent state for all purposes. */
+// ---- Handler
+
 export const getMyConsent = asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
+  // ---- Extract tracing context
+
   const traceId = (req.traceId as string) || '';
+
+  // ---- Auth: verify association membership
+
   const association = await getAssociation(req);
   logger.info({ traceId, associationId: association.id }, 'GET /api/consent/my - Request started');
 
+  // ---- Auth: verify user has at least MEMBER role
+
   await withRole(req, UserRole.MEMBER);
+
+  // ---- Resolve the requesting user ID
 
   const userId = req.userId as string;
   if (!userId) throw new UnauthorizedError('User ID not found');
 
+  // ---- Fetch the user's current consent state
+
   const consentState = await ConsentService.getUserConsentState(userId, association.id);
+
+  // ---- Log success and return response
 
   logger.info({ traceId }, 'GET /api/consent/my - Success');
   return success(res, { data: consentState });

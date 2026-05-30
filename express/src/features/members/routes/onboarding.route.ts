@@ -1,15 +1,28 @@
+// ---------------------------------------------------------------------------
+// External libs
+// ---------------------------------------------------------------------------
 import { Request, NextFunction, Response } from 'express';
 import type { RequestHandler } from 'express';
+import { z } from 'zod';
+
+// ---------------------------------------------------------------------------
+// Shared utilities
+// ---------------------------------------------------------------------------
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { prisma } from '@src/shared/lib/prisma';
 import { ForbiddenError, UnauthorizedError, ValidationError } from '@src/shared/errors';
-import { updateMember } from '@src/features/members/services/updateMember';
 import { logger } from '@src/shared/logger';
-import { z } from 'zod';
 import { asyncHandler } from '@src/shared/utils/async-handler';
 
-/** Schema for validating the onboarding request body. */
+// ---------------------------------------------------------------------------
+// Services
+// ---------------------------------------------------------------------------
+import { updateMember } from '@src/features/members/services/updateMember';
+
+// ---------------------------------------------------------------------------
+// Schema — validate the onboarding request body
+// ---------------------------------------------------------------------------
 const OnboardingSchema = z.object({
   dateOfJoiningGovt: z
     .string()
@@ -23,11 +36,20 @@ const OnboardingSchema = z.object({
   designation: z.string().min(2).max(100).trim(),
 });
 
-/** Route handler for completing member onboarding (sets initial profile details). */
+// ---------------------------------------------------------------------------
+// POST /api/members/onboarding  —  Complete initial profile setup for the
+//   currently-authenticated user
+// Security: any authenticated user (self-service)
+// Business intent: capture government joining date, association joining date,
+//   mobile number and designation that the member did not supply during
+//   registration.
+// ---------------------------------------------------------------------------
 export const onboarding: RequestHandler[] = [
   validate({ body: OnboardingSchema }),
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
+
+    // ── Auth ────────────────────────────────────────────────────────────────
     const userId = req.userId as string;
     if (!userId) throw new UnauthorizedError('Unauthorized');
 
@@ -36,26 +58,31 @@ export const onboarding: RequestHandler[] = [
       include: { association: true },
     });
     if (!user || !user.associationId) throw new ForbiddenError('User association not found');
+
     const association = {
       id: user.association.id,
       slug: user.association.slug,
       name: user.association.name,
     };
 
+    // ── Auth log ────────────────────────────────────────────────────────────
     logger.info(
       { traceId, associationId: association.id },
       'POST /api/members/onboarding - Request started',
     );
 
+    // Re-check userId (belt-and-suspenders after the prisma call above)
     if (!userId) {
       throw new UnauthorizedError('Unauthorized');
     }
 
+    // ── Validate body ───────────────────────────────────────────────────────
     const body = req.body as z.infer<typeof OnboardingSchema>;
     if (!body) {
       throw new ValidationError('Invalid request body');
     }
 
+    // ── Business logic — persist onboarding data ────────────────────────────
     const updatedUser = await updateMember({
       where: { id: userId },
       data: {
@@ -66,6 +93,7 @@ export const onboarding: RequestHandler[] = [
       },
     });
 
+    // ── Result log & response ───────────────────────────────────────────────
     logger.info({ traceId, userId: user.id }, 'POST /api/members/onboarding - Success');
 
     return success(res, {

@@ -1,6 +1,13 @@
+// ---------------------------------------------------------------------------
+// Shared types
+// ---------------------------------------------------------------------------
 import type { UserRole, UserStatus } from '@src/shared/types';
 
-/** Full member record including profile details and attendance count. */
+// ---------------------------------------------------------------------------
+// Member — full profile including attendance count
+// Business intent: used in the single-member detail view where all fields
+//   plus meeting-attendance metadata are needed.
+// ---------------------------------------------------------------------------
 export type Member = {
   id: string;
   name: string;
@@ -19,7 +26,11 @@ export type Member = {
   };
 };
 
-/** Summary member record used in list views. */
+// ---------------------------------------------------------------------------
+// MemberListItem — summary record used in list views
+// Business intent: lighter shape returned by paginated directory endpoints
+//   to minimise payload size.
+// ---------------------------------------------------------------------------
 export type MemberListItem = {
   id: string;
   name: string;
@@ -30,5 +41,7 @@ export type MemberListItem = {
   createdAt: Date;
 };
 
-/** Alias for a single MemberListItem. */
+// ---------------------------------------------------------------------------
+// Members — alias for a single MemberListItem
+// ---------------------------------------------------------------------------
 export type Members = MemberListItem;

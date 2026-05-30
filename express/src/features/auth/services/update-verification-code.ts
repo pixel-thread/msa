@@ -1,5 +1,8 @@
 import { Prisma } from '@prisma/client';
+
 import { prisma } from '@src/shared/lib/prisma';
+
+// ---- Types ----
 
 /** Props for updating a verification code. */
 type Props = {
@@ -9,7 +12,9 @@ type Props = {
   data: Prisma.VerificationCodeUpdateInput;
 };
 
-/** Update a verification code in the database. */
+// ---- Service ----
+
+/** Update a verification code — used to increment attempt counters and mark codes as used after successful OTP validation. */
 export async function updateVerificationCode(props: Props) {
   return await prisma.verificationCode.update(props);
 }

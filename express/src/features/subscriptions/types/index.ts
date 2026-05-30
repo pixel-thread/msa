@@ -1,3 +1,5 @@
+// ---- Types -------------------------------------------------------------------
+
 /** Supported billing cycle types. */
 type BillCycle = 'MONTHLY' | 'YEARLY';
 

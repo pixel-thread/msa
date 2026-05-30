@@ -1,17 +1,16 @@
+// ---- Consent types
+
+// Shared types
 import type { ConsentPurpose, ConsentStatus } from '@src/shared/types';
 
-/**
- * Represents a user's current consent state for a specific purpose.
- */
+/** Represents a user's current consent state for a specific purpose. */
 export interface UserConsentState {
   purpose: ConsentPurpose;
   status: ConsentStatus;
   updatedAt: Date;
 }
 
-/**
- * Represents a consent receipt record.
- */
+/** Represents a consent receipt record. */
 export interface ConsentReceiptRecord {
   id: string;
   userId: string;
@@ -29,9 +28,7 @@ export interface ConsentReceiptRecord {
   };
 }
 
-/**
- * Represents a summary report of consent statuses.
- */
+/** Represents a summary report of consent statuses. */
 export interface ConsentSummaryReport {
   purpose: ConsentPurpose;
   grantedCount: number;
@@ -39,9 +36,7 @@ export interface ConsentSummaryReport {
   totalCount: number;
 }
 
-/**
- * Consent record as returned from the API (with user info and string dates).
- */
+/** Consent record as returned from the API (with user info and string dates). */
 export interface ConsentRecord extends Omit<ConsentReceiptRecord, 'createdAt'> {
   createdAt: string;
   user?: {

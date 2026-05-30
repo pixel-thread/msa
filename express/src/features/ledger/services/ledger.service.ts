@@ -1,13 +1,32 @@
+// ---------------------------------------------------------------------------
+// Prisma
+// ---------------------------------------------------------------------------
+
 import { Prisma, ApprovalStatus } from '@prisma/client';
 import { prisma } from '@src/shared/lib/prisma';
+
+// ---------------------------------------------------------------------------
+// Shared utilities
+// ---------------------------------------------------------------------------
+
 import { ValidationError, NotFoundError } from '@src/shared/errors';
 import { PAGE_SIZE } from '@src/shared/constants';
 
 // ---------------------------------------------------------------------------
-// Internal: Auto-create ledger entry for payment transactions
+// Auto-create ledger entry for payment transactions
+//
+// Called internally when a payment transaction completes. Maps the payment
+// method to the appropriate debit account (1001 for cash, 1002 for non-cash)
+// and credits revenue account 3001. The entry is auto-approved since it
+// originates from a trusted internal process.
 // ---------------------------------------------------------------------------
 
-/** Auto-create a ledger entry for a payment transaction. */
+/**
+ * Auto-create a ledger entry for a payment transaction.
+ *
+ * WHY: Every completed payment must produce a double-entry ledger record.
+ * The mapping (method → account code) ensures correct categorisation.
+ */
 export async function createLedgerEntry(
   tx: Prisma.TransactionClient,
   paymentTransactionId: string,
@@ -15,6 +34,8 @@ export async function createLedgerEntry(
   description: string,
   createdById: string,
 ) {
+  // ---- Look up the originating transaction -------------------------------
+
   const transaction = await tx.paymentTransaction.findUnique({
     where: { id: paymentTransactionId },
     select: { associationId: true, method: true },
@@ -23,6 +44,8 @@ export async function createLedgerEntry(
   if (!transaction) {
     throw new Error(`Transaction ${paymentTransactionId} not found during ledger generation.`);
   }
+
+  // ---- Resolve debit/credit accounts by payment method -------------------
 
   const isCash = transaction.method === 'CASH';
   const debitAccountCode = isCash ? '1001' : '1002';
@@ -51,6 +74,8 @@ export async function createLedgerEntry(
     );
   }
 
+  // ---- Create the auto-approved entry ------------------------------------
+
   return tx.ledgerEntry.create({
     data: {
       paymentTransactionId,
@@ -77,7 +102,7 @@ export async function createLedgerEntry(
 }
 
 // ---------------------------------------------------------------------------
-// Ledger Entries
+// Interfaces
 // ---------------------------------------------------------------------------
 
 /** Input for creating a manual ledger entry. */
@@ -91,7 +116,24 @@ export interface CreateManualEntryInput {
   }>;
 }
 
-/** Retrieve paginated ledger entries for an association. */
+/** Input for creating a new account. */
+export interface CreateAccountInput {
+  code: string;
+  name: string;
+  type: string;
+  description?: string;
+}
+
+// ---------------------------------------------------------------------------
+// Ledger Entries
+// ---------------------------------------------------------------------------
+
+/**
+ * Retrieve paginated ledger entries for an association.
+ *
+ * WHY: The finance dashboard shows a paginated list of entries with
+ * related lines and the originating payment transaction.
+ */
 export async function getEntries(associationId: string, page = 1) {
   const validPage = Math.max(1, page);
   const skip = (validPage - 1) * PAGE_SIZE;
@@ -112,12 +154,20 @@ export async function getEntries(associationId: string, page = 1) {
   return { entries, total, page: validPage };
 }
 
-/** Create a manual ledger entry with validation (balanced debits/credits, active accounts). */
+/**
+ * Create a manual ledger entry with validation.
+ *
+ * WHY: Finance officers may record offline transactions. The entry must
+ * be balanced (debits === credits) and reference only active accounts
+ * that belong to the current association.
+ */
 export async function createManualEntry(
   associationId: string,
   userId: string,
   input: CreateManualEntryInput,
 ) {
+  // ---- Validate: at least one debit and one credit line ------------------
+
   const debits = input.lines.filter((l) => l.isDebit);
   const credits = input.lines.filter((l) => !l.isDebit);
 
@@ -127,6 +177,8 @@ export async function createManualEntry(
     );
   }
 
+  // ---- Validate: debits must equal credits --------------------------------
+
   const totalDebits = debits.reduce((sum, l) => sum + l.amount, 0);
   const totalCredits = credits.reduce((sum, l) => sum + l.amount, 0);
 
@@ -135,6 +187,8 @@ export async function createManualEntry(
       `Ledger entry is not balanced. Total debits (${totalDebits.toFixed(2)}) must equal total credits (${totalCredits.toFixed(2)}).`,
     );
   }
+
+  // ---- Validate: all referenced accounts exist and are active -------------
 
   const accountIds = input.lines.map((l) => l.accountId);
   const uniqueAccountIds = Array.from(new Set(accountIds));
@@ -149,6 +203,8 @@ export async function createManualEntry(
   if (accountsCount !== uniqueAccountIds.length) {
     throw new ValidationError('One or more selected accounts are invalid or inactive.');
   }
+
+  // ---- Persist the entry -------------------------------------------------
 
   return prisma.ledgerEntry.create({
     data: {
@@ -167,7 +223,12 @@ export async function createManualEntry(
   });
 }
 
-/** Approve a ledger entry by ID. */
+/**
+ * Approve a ledger entry by ID.
+ *
+ * WHY: Entries created by FINANCE require PRESIDENT approval before they
+ * are considered final. This two-person rule prevents unauthorised postings.
+ */
 export async function approveEntry(entryId: string, approvedById: string) {
   const existing = await prisma.ledgerEntry.findUnique({ where: { id: entryId } });
 
@@ -188,15 +249,12 @@ export async function approveEntry(entryId: string, approvedById: string) {
 // Accounts
 // ---------------------------------------------------------------------------
 
-/** Input for creating a new account. */
-export interface CreateAccountInput {
-  code: string;
-  name: string;
-  type: string;
-  description?: string;
-}
-
-/** Retrieve paginated active accounts for an association. */
+/**
+ * Retrieve paginated active accounts for an association.
+ *
+ * WHY: The chart of accounts is shown in the accounts management UI;
+ * inactive accounts are hidden from day-to-day selection.
+ */
 export async function getAccounts(associationId: string, page = 1) {
   const validPage = Math.max(1, page);
   const skip = (validPage - 1) * PAGE_SIZE;
@@ -216,7 +274,12 @@ export async function getAccounts(associationId: string, page = 1) {
   return { accounts, total, page: validPage };
 }
 
-/** Create a new account for an association. */
+/**
+ * Create a new account for an association.
+ *
+ * WHY: Finance officers may extend the chart of accounts with custom
+ * codes (e.g. expense categories specific to the association).
+ */
 export async function createAccount(associationId: string, input: CreateAccountInput) {
   return prisma.account.create({
     data: {
@@ -233,6 +296,12 @@ export async function createAccount(associationId: string, input: CreateAccountI
 // Summary
 // ---------------------------------------------------------------------------
 
+/**
+ * Retrieve a snapshot of all accounts with a summary.
+ *
+ * WHY: The finance dashboard header shows an at-a-glance overview.
+ * TODO: compute actual balance totals per account.
+ */
 export async function getSummary(associationId: string) {
   const accounts = await prisma.account.findMany({
     where: { associationId },
@@ -245,6 +314,11 @@ export async function getSummary(associationId: string) {
 // Member-specific ledger entries
 // ---------------------------------------------------------------------------
 
+/**
+ * Retrieve paginated ledger entries scoped to a single member.
+ *
+ * WHY: The member profile page shows a per-member transaction history.
+ */
 export async function getMemberEntries(memberId: string, page = 1) {
   const validPage = Math.max(1, page);
   const skip = (validPage - 1) * PAGE_SIZE;

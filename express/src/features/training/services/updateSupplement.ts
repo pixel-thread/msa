@@ -1,6 +1,13 @@
-import { prisma } from '@lib/prisma';
-import { UpdateSupplementInput } from '../validators/training';
+// ---- External libs ----
 import { AuditAction, Prisma } from '@prisma/client';
+
+// ---- Shared utilities ----
+import { prisma } from '@lib/prisma';
+
+// ---- Validators ----
+import { UpdateSupplementInput } from '../validators/training';
+
+// ---- Interfaces ----
 
 /** Parameters for updating a training supplement. */
 interface UpdateSupplementProps {
@@ -13,7 +20,14 @@ interface UpdateSupplementProps {
   fileId?: string;
 }
 
-/** Update a training supplement, optionally replacing the file, with audit logging. */
+// ---- Service ----
+
+/**
+ * Update a training supplement, optionally replacing the file, with audit logging.
+ *
+ * Business intent: When a new file is uploaded, the old file record is cleaned up
+ * and the storageKey is returned so the caller can delete the old blob from storage.
+ */
 export async function updateSupplement({
   associationId,
   moduleId,
@@ -24,6 +38,7 @@ export async function updateSupplement({
   fileId,
 }: UpdateSupplementProps) {
   return await prisma.$transaction(async (tx) => {
+    // Fetch existing supplement with its file info
     const supplement = await tx.trainingSupplement.findFirst({
       where: { id: supplementId, moduleId, module: { associationId } },
       include: { file: true },
@@ -33,9 +48,11 @@ export async function updateSupplement({
       throw new Error('Training supplement not found');
     }
 
+    // Capture old file info before mutation (needed for cleanup)
     const oldStorageKey = supplement.file?.storageKey;
     const oldFileId = supplement.fileId;
 
+    // Apply the update
     const updated = await tx.trainingSupplement.update({
       where: { id: supplementId },
       data: {
@@ -45,10 +62,12 @@ export async function updateSupplement({
       },
     });
 
+    // Clean up the old file record if replaced
     if (oldFileId && fileId && oldFileId !== fileId) {
       await tx.file.delete({ where: { id: oldFileId } });
     }
 
+    // Audit the update
     await tx.auditLog.create({
       data: {
         associationId,

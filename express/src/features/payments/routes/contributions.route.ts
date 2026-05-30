@@ -1,5 +1,13 @@
+// ---------------------------------------------------------------------------
+// ENDPOINT:  CRUD /api/payments/contributions
+// SECURITY:  Requires FINANCE role (except where noted)
+// PURPOSE:   Manage contribution periods — list, generate monthly records,
+//            waive individual periods, and view a single period by ID.
+// ---------------------------------------------------------------------------
+
 import { Request, NextFunction, Response } from 'express';
 import type { RequestHandler } from 'express';
+
 import { prisma } from '@src/shared/lib/prisma';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
@@ -29,16 +37,7 @@ import { pageNumberValidation } from '@src/shared/validators/common';
 import { PAGE_SIZE } from '@src/shared/constants';
 import { asyncHandler } from '@src/shared/utils/async-handler';
 
-async function getAssociation(req: Request) {
-  const userId = req.userId as string;
-  if (!userId) throw new UnauthorizedError('Unauthorized');
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: { association: true },
-  });
-  if (!user || !user.associationId) throw new ForbiddenError('User association not found');
-  return { id: user.association.id, slug: user.association.slug, name: user.association.name };
-}
+// ---- Validation schemas ----
 
 const ContributionsQuerySchema = z.object({
   page: pageNumberValidation,
@@ -52,14 +51,49 @@ const ContributionIdParamsSchema = z.object({
   contributionId: z.string().uuid('Invalid contribution ID'),
 });
 
+// ---- Helpers ----
+
+/**
+ * Resolve the authenticated user's association for multi-tenant scoping.
+ */
+async function getAssociation(req: Request) {
+  const userId = req.userId as string;
+  if (!userId) throw new UnauthorizedError('Unauthorized');
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { association: true },
+  });
+
+  if (!user || !user.associationId) throw new ForbiddenError('User association not found');
+
+  return { id: user.association.id, slug: user.association.slug, name: user.association.name };
+}
+
+// ===========================================================================
+// LIST /api/payments/contributions
+// ===========================================================================
+
 export const listContributions: RequestHandler[] = [
+  // Step 1: Validate query params
   validate({ query: ContributionsQuerySchema }),
+
+  // Step 2: Execute
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
+
+    // --- Log: request started ---
     logger.info({ traceId, query: req.query }, 'GET /api/payments/contributions - Request started');
+
+    // --- Auth: resolve association ---
     const association = await getAssociation(req);
+
+    // --- Auth: enforce FINANCE role ---
+    // Only finance officers can view the full contributions list
     await withRole(req, UserRole.FINANCE);
     logger.info({ traceId }, 'GET /api/payments/contributions - User authorized');
+
+    // --- Business logic: build filters and fetch ---
     const page = (req.query as any)?.page || 1;
     const {
       status,
@@ -78,6 +112,7 @@ export const listContributions: RequestHandler[] = [
     if (filterUserId) where.userId = filterUserId;
     if (year) where.year = year;
     if (month) where.month = month;
+
     const { contributions, total } = await findContributionPeriods({
       where: where as Parameters<typeof findContributionPeriods>[0]['where'],
       page,
@@ -100,35 +135,58 @@ export const listContributions: RequestHandler[] = [
         },
       },
     });
+
+    // --- Log: success ---
     logger.info(
       { traceId, count: contributions.length },
       'GET /api/payments/contributions - Success',
     );
+
+    // --- Response ---
     return success(res, { data: contributions, meta: buildPagination(total, page) });
   }),
 ];
 
+// ===========================================================================
+// GENERATE /api/payments/contributions
+// ===========================================================================
+
 export const generateContributions: RequestHandler[] = [
+  // Step 1: Validate request body
   validate({ body: GenerateContributionsSchema }),
+
+  // Step 2: Execute
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
+
+    // --- Log: request started ---
     logger.info(
       { traceId, year: req.body.year, month: req.body.month },
       'POST /api/payments/contributions - Request started',
     );
+
+    // --- Auth: resolve association ---
     const association = await getAssociation(req);
+
+    // --- Auth: enforce FINANCE role ---
     await withRole(req, UserRole.FINANCE);
     logger.info({ traceId }, 'POST /api/payments/contributions - User authorized');
+
+    // --- Business logic: generate monthly contributions ---
     logger.info(
       { traceId, year: req.body.year, month: req.body.month },
       'POST /api/payments/contributions - Generating contributions',
     );
     const count = await generateMonthlyContributions(association.id, req.body.year, req.body.month);
     const overdueCount = await markOverdueContributions(association.id);
+
+    // --- Log: success ---
     logger.info(
       { traceId, generated: count, markedOverdue: overdueCount },
       'POST /api/payments/contributions - Success',
     );
+
+    // --- Response ---
     return success(
       res,
       {
@@ -140,35 +198,68 @@ export const generateContributions: RequestHandler[] = [
   }),
 ];
 
+// ===========================================================================
+// WAIVE PATCH /api/payments/contributions
+// ===========================================================================
+
 export const waiveContributionHandler: RequestHandler[] = [
+  // Step 1: Validate request body
   validate({ body: WaiveContributionSchema }),
+
+  // Step 2: Execute
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
+
+    // --- Log: request started ---
     logger.info(
       { traceId, contributionPeriodId: req.body.contributionPeriodId },
       'PATCH /api/payments/contributions - Request started',
     );
+
+    // --- Auth: resolve association ---
     await getAssociation(req);
+
+    // --- Auth: enforce FINANCE role ---
+    // Waiving contributions is a financial decision — restricted to finance
     await withRole(req, UserRole.FINANCE);
     logger.info({ traceId }, 'PATCH /api/payments/contributions - User authorized');
+
+    // --- Business logic: waive the contribution period ---
     const waived = await waiveContribution(req.body.contributionPeriodId, req.body.reason);
+
+    // --- Log: success ---
     logger.info(
       { traceId, contributionPeriodId: req.body.contributionPeriodId },
       'PATCH /api/payments/contributions - Success',
     );
+
+    // --- Response ---
     return success(res, { data: waived, message: 'Contribution period waived successfully' }, 200);
   }),
 ];
 
+// ===========================================================================
+// GET /api/payments/contributions/:contributionId
+// ===========================================================================
+
 export const getContribution: RequestHandler[] = [
+  // Step 1: Validate path params
   validate({ params: ContributionIdParamsSchema }),
+
+  // Step 2: Execute
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
+
+    // --- Log: request started ---
     logger.info(
       { traceId, contributionId: req.params.contributionId },
       'GET /api/payments/contributions/[contributionId] - Request started',
     );
+
+    // --- Auth: resolve association ---
     const association = await getAssociation(req);
+
+    // --- Business logic: fetch single contribution period ---
     const contribution = await findUniqueContributionPeriod({
       where: { id: req.params.contributionId, associationId: association.id },
       include: {
@@ -190,10 +281,14 @@ export const getContribution: RequestHandler[] = [
       },
     });
     if (!contribution) throw new NotFoundError('Contribution not found');
+
+    // --- Log: success ---
     logger.info(
       { traceId, contributionId: req.params.contributionId },
       'GET /api/payments/contributions/[contributionId] - Success',
     );
+
+    // --- Response ---
     return success(res, { data: contribution });
   }),
 ];

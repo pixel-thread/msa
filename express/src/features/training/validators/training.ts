@@ -1,5 +1,8 @@
+// ---- External libs ----
 import { z } from 'zod';
 import { UserRole } from '@prisma/client';
+
+// ---- Module schemas ----
 
 /** Schema for creating a training module. */
 export const CreateTrainingModuleSchema = z.object({
@@ -22,13 +25,14 @@ export const UpdateTrainingModuleSchema = z.object({
   version: z.number().int().positive().optional(),
 });
 
-/** Schema for recording a completion (no body fields). */
-export const RecordCompletionSchema = z.object({});
-
 /** Validated type for creating a training module. */
 export type CreateTrainingModuleInput = z.infer<typeof CreateTrainingModuleSchema>;
+
 /** Validated type for updating a training module. */
 export type UpdateTrainingModuleInput = z.infer<typeof UpdateTrainingModuleSchema>;
+
+// ---- Assignment schemas ----
+
 /** Schema for assigning training to a user. */
 export const AssignTrainingSchema = z.object({
   userId: z.uuid('Invalid user ID'),
@@ -39,6 +43,17 @@ export const BulkAssignTrainingSchema = z.object({
   userIds: z.array(z.uuid('Invalid user ID')).min(1, 'At least one user is required'),
 });
 
+/** Validated type for assigning training. */
+export type AssignTrainingInput = z.infer<typeof AssignTrainingSchema>;
+
+/** Validated type for bulk-assigning training. */
+export type BulkAssignTrainingInput = z.infer<typeof BulkAssignTrainingSchema>;
+
+// ---- Completion schemas ----
+
+/** Schema for recording a completion (no body fields). */
+export const RecordCompletionSchema = z.object({});
+
 /** Schema for admin recording a completion for another user. */
 export const AdminRecordCompletionSchema = z.object({
   userId: z.uuid('Invalid user ID'),
@@ -48,12 +63,11 @@ export const AdminRecordCompletionSchema = z.object({
 
 /** Validated type for recording a completion. */
 export type RecordCompletionInput = z.infer<typeof RecordCompletionSchema>;
+
 /** Validated type for admin-recorded completion. */
 export type AdminRecordCompletionInput = z.infer<typeof AdminRecordCompletionSchema>;
-/** Validated type for assigning training. */
-export type AssignTrainingInput = z.infer<typeof AssignTrainingSchema>;
-/** Validated type for bulk-assigning training. */
-export type BulkAssignTrainingInput = z.infer<typeof BulkAssignTrainingSchema>;
+
+// ---- Supplement schemas ----
 
 /** Schema for creating a training supplement. */
 export const CreateSupplementSchema = z.object({
@@ -73,8 +87,11 @@ export const UpdateSupplementSchema = z.object({
 
 /** Validated type for creating a supplement. */
 export type CreateSupplementInput = z.infer<typeof CreateSupplementSchema>;
+
 /** Validated type for updating a supplement. */
 export type UpdateSupplementInput = z.infer<typeof UpdateSupplementSchema>;
+
+// ---- Certificate schemas ----
 
 /** Schema for creating a training certificate. */
 export const CreateTrainingCertificateSchema = z.object({
@@ -93,5 +110,6 @@ export const UpdateTrainingCertificateSchema = z.object({
 
 /** Validated type for creating a certificate. */
 export type CreateTrainingCertificateInput = z.infer<typeof CreateTrainingCertificateSchema>;
+
 /** Validated type for updating a certificate. */
 export type UpdateTrainingCertificateInput = z.infer<typeof UpdateTrainingCertificateSchema>;

@@ -1,36 +1,52 @@
+/**
+ * @file findManyAnnouncements.ts
+ * @description Service for retrieving multiple announcements with filters and pagination.
+ *
+ * @module features/announcements/services
+ */
+
 import { prisma } from '@lib/prisma';
 import { AnnouncementStatus, AnnouncementPriority, Prisma } from '@prisma/client';
 
 import { PAGE_SIZE } from '@src/shared/constants';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-/** Props for finding announcements with filters and pagination. */
-interface FindManyAnnouncementsProps {
+/**
+ * Props for finding announcements with filters and pagination.
+ *
+ * @interface FindManyAnnouncementsProps
+ */
+export interface FindManyAnnouncementsProps {
   /** The association to scope results to. */
   associationId: string;
+
   /** Optional filters by status, priority, and search term. */
   filters?: {
+    /** Filter by publication status. */
     status?: AnnouncementStatus;
+
+    /** Filter by priority level. */
     priority?: AnnouncementPriority;
+
+    /** Search term for title or summary. Matches only published announcements. */
     search?: string;
   };
+
   /** Pagination options. */
   pagination?: {
+    /** The page number to retrieve. Defaults to 1. */
     page?: number;
   };
 }
 
-// ---------------------------------------------------------------------------
-// Find many announcements
-// ---------------------------------------------------------------------------
-
 /**
  * Find announcements for an association with optional filtering and pagination.
+ *
  * Returns announcements ordered by pinned status, then published date, then creation date.
+ * Includes author details, associated image file, and read receipt metrics.
+ *
+ * @param {FindManyAnnouncementsProps} props - The search and pagination properties.
+ * @returns {Promise<{ announcements: any[], pagination: any }>} List of announcements and pagination metadata.
  */
 export async function findManyAnnouncements({
   associationId,
@@ -41,7 +57,7 @@ export async function findManyAnnouncements({
   const limit = PAGE_SIZE;
   const skip = (page - 1) * limit;
 
-  // Build the Prisma where clause from the provided filters
+  // 1. Build the Prisma where clause from the provided filters
   const where: Prisma.AnnouncementWhereInput = {
     associationId,
     ...(filters?.status && { status: filters.status }),
@@ -55,16 +71,24 @@ export async function findManyAnnouncements({
     }),
   };
 
-  // Fetch matching records and total count in parallel
+  // 2. Data Retrieval: Fetch matching records and total count in parallel
   const [announcements, total] = await Promise.all([
     prisma.announcement.findMany({
       where,
       skip,
       take: limit,
-      orderBy: [{ isPinned: 'desc' }, { publishedAt: 'desc' }, { createdAt: 'desc' }],
+      orderBy: [
+        { isPinned: 'desc' },
+        { publishedAt: 'desc' },
+        { createdAt: 'desc' },
+      ],
       include: {
         author: {
-          select: { id: true, name: true, imageUrl: true },
+          select: {
+            id: true,
+            name: true,
+            imageUrl: true,
+          },
         },
         imageFile: {
           select: {
@@ -78,13 +102,16 @@ export async function findManyAnnouncements({
         },
         readReceipts: true,
         _count: {
-          select: { readReceipts: true },
+          select: {
+            readReceipts: true,
+          },
         },
       },
     }),
     prisma.announcement.count({ where }),
   ]);
 
+  // 3. Response: Return announcements and calculated pagination metadata
   return {
     announcements,
     pagination: buildPagination(total, page, limit),

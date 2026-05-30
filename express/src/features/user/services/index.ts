@@ -1,16 +1,38 @@
-import { Prisma } from '@prisma/client';
-import { PAGE_SIZE } from '@src/shared/constants';
+// Shared utilities
 import { prisma } from '@src/shared/lib/prisma';
+import { PAGE_SIZE } from '@src/shared/constants';
 
-/** Props for updating a user. */
+// ---- Prisma
+
+import { Prisma } from '@prisma/client';
+
+// ---------------------------------------------------------------------------
+// User Service — Data Access Layer
+//
+// Provides CRUD wrappers around the Prisma-generated models for User and
+// PaymentTransaction. Each function encapsulates the field selection so that
+// callers (route handlers) do not need to know the underlying database schema
+// and cannot accidentally leak sensitive fields.
+// ---------------------------------------------------------------------------
+
+// ---- Types
+
+/** Properties required to update a single user record. */
 type Props = {
-  /** The unique identifier of the user to update. */
+  /** Unique Prisma identifier (id, email, etc.) for the user to update. */
   where: Prisma.UserWhereUniqueInput;
-  /** The data to update. */
+  /** Fields and values to update on the user record. */
   data: Prisma.UserUpdateInput;
 };
 
-/** Update a user's profile in the database. */
+// ---------------------------------------------------------------------------
+// updateUser
+//
+// Persist profile changes to the user table. Returns a curated subset of
+// fields so that sensitive or internal columns (e.g. passwordHash, role) are
+// never leaked to the caller.
+// ---------------------------------------------------------------------------
+
 export async function updateUser({ where, data }: Props) {
   return await prisma.user.update({
     where,
@@ -27,7 +49,14 @@ export async function updateUser({ where, data }: Props) {
   });
 }
 
-/** Fetch a single user by unique identifier. */
+// ---------------------------------------------------------------------------
+// getUser
+//
+// Retrieve a single user by any unique identifier (id, email, etc.). Returns
+// a safe subset of fields including mfaEnabled so the caller can determine
+// whether multi-factor authentication is required before proceeding.
+// ---------------------------------------------------------------------------
+
 export async function getUser(where: Prisma.UserWhereUniqueInput) {
   return await prisma.user.findUnique({
     where,
@@ -44,15 +73,25 @@ export async function getUser(where: Prisma.UserWhereUniqueInput) {
   });
 }
 
-/** Props for listing user invoices with pagination. */
+// ---- Types
+
+/** Properties for fetching a paginated list of a user's payment transactions. */
 type GetUserInvoicesProps = {
-  /** Filter criteria for finding payment transactions. */
+  /** Prisma filter criteria to scope the invoice query (e.g. by user or association). */
   where: Prisma.PaymentTransactionWhereInput;
-  /** Page number (defaults to 1). */
+  /** Page number for pagination — defaults to 1 if omitted. */
   page?: number;
 };
 
-/** Fetch a paginated list of invoices for a user. Returns the invoices and total count. */
+// ---------------------------------------------------------------------------
+// getUserInvoices
+//
+// Fetch a paginated list of payment transactions (invoices) matching the
+// given filter. Runs both the data query and the count query inside a single
+// Prisma $transaction to guarantee read consistency. Returns a tuple of
+// [data: PaymentTransaction[], total: number].
+// ---------------------------------------------------------------------------
+
 export async function getUserInvoices({ where, page = 1 }: GetUserInvoicesProps) {
   return await prisma.$transaction([
     prisma.paymentTransaction.findMany({
@@ -70,13 +109,22 @@ export async function getUserInvoices({ where, page = 1 }: GetUserInvoicesProps)
   ]);
 }
 
-/** Props for fetching a single user invoice. */
+// ---- Types
+
+/** Properties for fetching a single payment transaction by unique identifier. */
 type GetUserInvoiceProps = {
-  /** Unique identifier for the payment transaction. */
+  /** Unique Prisma identifier for the payment transaction to retrieve. */
   where: Prisma.PaymentTransactionWhereUniqueInput;
 };
 
-/** Fetch a single invoice by unique identifier, including association, user, and allocation details. */
+// ---------------------------------------------------------------------------
+// getUserInvoice
+//
+// Retrieve a single invoice by its ID, eagerly loading the associated
+// association, user details (name, email, membership number, designation),
+// and allocation periods. Returns null when no matching transaction is found.
+// ---------------------------------------------------------------------------
+
 export async function getUserInvoice({ where }: GetUserInvoiceProps) {
   return await prisma.paymentTransaction.findUnique({
     where,
@@ -95,13 +143,21 @@ export async function getUserInvoice({ where }: GetUserInvoiceProps) {
   });
 }
 
-/** Props for fetching multiple users. */
+// ---- Types
+
+/** Properties for querying multiple users with an optional Prisma filter. */
 type GetUsersProps = {
-  /** Filter criteria for finding users. */
+  /** Prisma filter criteria to scope which users are returned. */
   where: Prisma.UserWhereInput;
 };
 
-/** Fetch multiple users matching the given criteria. */
+// ---------------------------------------------------------------------------
+// getUsers
+//
+// Retrieve all users matching the provided filter. Intended for admin or
+// search use-cases where a list of users is needed rather than a single one.
+// ---------------------------------------------------------------------------
+
 export async function getUsers(props: GetUsersProps) {
   return await prisma.user.findMany(props);
 }

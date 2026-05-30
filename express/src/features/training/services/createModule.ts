@@ -1,6 +1,13 @@
-import { prisma } from '@lib/prisma';
-import { CreateTrainingModuleInput } from '../validators/training';
+// ---- External libs ----
 import { AuditAction, Prisma, UserRole } from '@prisma/client';
+
+// ---- Shared utilities ----
+import { prisma } from '@lib/prisma';
+
+// ---- Validators ----
+import { CreateTrainingModuleInput } from '../validators/training';
+
+// ---- Interfaces ----
 
 /** Parameters for creating a training module. */
 interface CreateModuleProps {
@@ -9,9 +16,17 @@ interface CreateModuleProps {
   data: CreateTrainingModuleInput;
 }
 
-/** Create a training module with audit logging and auto-assignment to matching users. */
+// ---- Service ----
+
+/**
+ * Create a training module with audit logging and auto-assignment to matching users.
+ *
+ * Business intent: When a new training module is created, users whose roles match
+ * the requiredForRoles list are automatically assigned so they can start training.
+ */
 export async function createModule({ associationId, actorId, data }: CreateModuleProps) {
   return await prisma.$transaction(async (tx) => {
+    // Create the training module record
     const trainingModule = await tx.trainingModule.create({
       data: {
         associationId,
@@ -19,6 +34,7 @@ export async function createModule({ associationId, actorId, data }: CreateModul
       },
     });
 
+    // Audit log the creation
     await tx.auditLog.create({
       data: {
         associationId,
@@ -30,6 +46,7 @@ export async function createModule({ associationId, actorId, data }: CreateModul
       },
     });
 
+    // Auto-assign to users whose roles match the required roles
     const targetRoles = data.requiredForRoles || [UserRole.MEMBER];
 
     if (targetRoles.length > 0) {

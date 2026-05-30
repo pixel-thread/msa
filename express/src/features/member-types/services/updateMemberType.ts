@@ -1,7 +1,25 @@
+// ---------------------------------------------------------------------------
+// Prisma
+// ---------------------------------------------------------------------------
+
 import { prisma } from '@lib/prisma';
-import { UpdateMemberTypeInput } from '../validators';
 import { AuditAction, Prisma } from '@prisma/client';
+
+// ---------------------------------------------------------------------------
+// Shared utilities
+// ---------------------------------------------------------------------------
+
 import { ConflictError } from '@src/shared/errors';
+
+// ---------------------------------------------------------------------------
+// Validators / Types
+// ---------------------------------------------------------------------------
+
+import { UpdateMemberTypeInput } from '../validators';
+
+// ---------------------------------------------------------------------------
+// Interface
+// ---------------------------------------------------------------------------
 
 /** Parameters for updating a member type. */
 interface UpdateMemberTypeProps {
@@ -11,13 +29,28 @@ interface UpdateMemberTypeProps {
   data: UpdateMemberTypeInput;
 }
 
-/** Update a member type with duplicate-level checking and audit logging. */
+// ---------------------------------------------------------------------------
+// Update member type
+//
+// If level is being changed, rejects the operation when another member type
+// in the same association already occupies that level. Writes audit log
+// inside the same transaction.
+// ---------------------------------------------------------------------------
+
+/**
+ * Update a member type with duplicate-level checking and audit logging.
+ *
+ * WHY: Levels must remain unique per association to preserve ordering;
+ * allowing a collision would make the level sort ambiguous.
+ */
 export async function updateMemberType({
   associationId,
   actorId,
   memberTypeId,
   data,
 }: UpdateMemberTypeProps) {
+  // ---- Guard: check for level collision (exclude self) ---------------------
+
   if (data.level) {
     const existing = await prisma.memberType.findFirst({
       where: { associationId, level: data.level, NOT: { id: memberTypeId } },
@@ -27,6 +60,8 @@ export async function updateMemberType({
       throw new ConflictError(`Member type with level ${data.level} already exists`);
     }
   }
+
+  // ---- Transaction: update member type + write audit log -------------------
 
   return await prisma.$transaction(async (tx) => {
     const memberType = await tx.memberType.update({

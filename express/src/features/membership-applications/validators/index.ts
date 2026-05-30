@@ -1,14 +1,35 @@
+// ---- Membership Applications - Validators
+
+// ---- Imports
+
+// ---- External Libraries
+
 import { $Enums, UserRole } from '@prisma/client';
+import z from 'zod';
+
+// ---- Shared Validators
+
 import {
   pageNumberValidation,
   pageSizeValidation,
   uuidValidiation,
 } from '@src/shared/validators/common';
-import z from 'zod';
 
+// ---- Association Slug Constraint
+
+// Restrict membership applications to known association slugs
 const associationsSlug = ['mfsa', 'mpsa', 'mpsc'];
 
-/** Schema for validating new membership application submissions. */
+// ---- Submit Membership Application Schema
+
+/**
+ * Schema for validating new membership application submissions.
+ *
+ * Business logic:
+ * - First and last name must differ (prevents placeholder entries)
+ * - Age is calculated from dateOfBirth and must be >= 18
+ * - Association slug must match a known association
+ */
 export const MembershipApplicationSchema = z
   .object({
     email: z.email('Invalid email address'),
@@ -53,7 +74,11 @@ export const MembershipApplicationSchema = z
 /** Input type inferred from MembershipApplicationSchema. */
 export type MembershipApplicationInput = z.infer<typeof MembershipApplicationSchema>;
 
-/** Schema for validating membership application list query parameters. */
+// ---- Get Membership Applications Query Schema
+
+/**
+ * Schema for validating membership application list query parameters.
+ */
 export const GetMembershipApplicationsQuerySchema = z.object({
   status: z.enum($Enums.ApplicationStatus, 'Invalid application status').optional(),
   page: pageNumberValidation,
@@ -63,12 +88,20 @@ export const GetMembershipApplicationsQuerySchema = z.object({
 /** Input type inferred from GetMembershipApplicationsQuerySchema. */
 export type GetMembershipApplicationsQuery = z.infer<typeof GetMembershipApplicationsQuerySchema>;
 
-/** Schema for membership application ID path parameter. */
+// ---- Membership Application ID Params Schema
+
+/**
+ * Schema for membership application ID path parameter.
+ */
 export const MembershipApplicationParamsSchema = z.object({
   applicationId: uuidValidiation,
 });
 
-/** Schema for validating application approval requests. */
+// ---- Approve Application Schema
+
+/**
+ * Schema for validating application approval requests.
+ */
 export const ApproveApplicationSchema = z
   .object({
     memberTypeId: z.uuid('Invalid member type'),
@@ -80,7 +113,11 @@ export const ApproveApplicationSchema = z
 /** Input type inferred from ApproveApplicationSchema. */
 export type ApproveApplicationInput = z.infer<typeof ApproveApplicationSchema>;
 
-/** Schema for validating application rejection requests. */
+// ---- Reject Application Schema
+
+/**
+ * Schema for validating application rejection requests.
+ */
 export const RejectApplicationSchema = z
   .object({
     rejectionReason: z.string().min(10, 'Rejection reason must be at least 10 characters'),

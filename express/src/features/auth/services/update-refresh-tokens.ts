@@ -1,5 +1,8 @@
-import { prisma } from '@src/shared/lib/prisma';
 import { Prisma } from '@prisma/client';
+
+import { prisma } from '@src/shared/lib/prisma';
+
+// ---- Types ----
 
 /** Props for updating multiple refresh tokens. */
 type Props = {
@@ -9,7 +12,9 @@ type Props = {
   data: Prisma.RefreshTokenUpdateInput;
 };
 
-/** Update multiple refresh tokens matching the given criteria. */
+// ---- Service ----
+
+/** Bulk-update refresh tokens matching the given criteria — used during logout to revoke all matching tokens. */
 export async function updateRefreshTokens(props: Props) {
   return await prisma.refreshToken.updateMany(props);
 }

@@ -1,6 +1,11 @@
+// ---- External libs ----
+import { AuditAction, Prisma } from '@prisma/client';
+
+// ---- Shared utilities ----
 import { prisma } from '@lib/prisma';
 import { PAGE_SIZE } from '@src/shared/constants';
-import { AuditAction, Prisma } from '@prisma/client';
+
+// ---- Interfaces ----
 
 /** Parameters for retrieving training assignments. */
 interface GetTrainingAssignmentsProps {
@@ -9,7 +14,45 @@ interface GetTrainingAssignmentsProps {
   page?: number;
 }
 
-/** Retrieve paginated training assignments for a module. */
+/** Parameters for assigning training to a user. */
+interface AssignTrainingProps {
+  associationId: string;
+  moduleId: string;
+  userId: string;
+  assignedById: string;
+}
+
+/** Parameters for bulk assigning training. */
+interface BulkAssignTrainingProps {
+  associationId: string;
+  moduleId: string;
+  userIds: string[];
+  assignedById: string;
+}
+
+/** Parameters for removing a training assignment. */
+interface RemoveTrainingAssignmentProps {
+  associationId: string;
+  moduleId: string;
+  userId: string;
+  removedById: string;
+}
+
+/** Parameters for bulk removing training assignments. */
+interface BulkRemoveTrainingAssignmentProps {
+  associationId: string;
+  moduleId: string;
+  userIds: string[];
+  removedById: string;
+}
+
+// ---- Services ----
+
+/**
+ * Retrieve paginated training assignments for a module.
+ *
+ * Business intent: Used by secretaries to see who is assigned to a module.
+ */
 export async function getTrainingAssignments({
   associationId,
   moduleId,
@@ -49,15 +92,13 @@ export async function getTrainingAssignments({
   return { data, total };
 }
 
-/** Parameters for assigning training to a user. */
-interface AssignTrainingProps {
-  associationId: string;
-  moduleId: string;
-  userId: string;
-  assignedById: string;
-}
-
-/** Assign a user to a training module with role validation and audit logging. */
+/**
+ * Assign a user to a training module with role validation and audit logging.
+ *
+ * Business intent: DPOs manually assign specific users who need this training.
+ * Validates that the user's role matches the module's required roles.
+ * Returns existing assignment if already assigned (idempotent).
+ */
 export async function assignTraining({
   associationId,
   moduleId,
@@ -65,6 +106,7 @@ export async function assignTraining({
   assignedById,
 }: AssignTrainingProps) {
   return await prisma.$transaction(async (tx) => {
+    // Validate module exists in association
     const trainingModule = await tx.trainingModule.findFirst({
       where: { id: moduleId, associationId },
     });
@@ -73,6 +115,7 @@ export async function assignTraining({
       throw new Error('Training module not found');
     }
 
+    // Validate user exists in association
     const user = await tx.user.findFirst({
       where: { id: userId, associationId },
     });
@@ -81,6 +124,7 @@ export async function assignTraining({
       throw new Error('User not found');
     }
 
+    // Verify user's role is compatible with module requirements
     const hasMatchingRole = trainingModule.requiredForRoles.some((role) =>
       user.role.includes(role),
     );
@@ -89,6 +133,7 @@ export async function assignTraining({
       throw new Error("User's role does not match the required roles for this training module");
     }
 
+    // Idempotent: return existing assignment if present
     const existingAssignment = await tx.trainingAssignment.findUnique({
       where: { moduleId_userId: { moduleId, userId } },
     });
@@ -97,6 +142,7 @@ export async function assignTraining({
       return existingAssignment;
     }
 
+    // Create the assignment
     const assignment = await tx.trainingAssignment.create({
       data: {
         moduleId,
@@ -106,6 +152,7 @@ export async function assignTraining({
       },
     });
 
+    // Audit the assignment
     await tx.auditLog.create({
       data: {
         associationId,
@@ -121,15 +168,12 @@ export async function assignTraining({
   });
 }
 
-/** Parameters for bulk assigning training. */
-interface BulkAssignTrainingProps {
-  associationId: string;
-  moduleId: string;
-  userIds: string[];
-  assignedById: string;
-}
-
-/** Bulk assign multiple users to a training module, skipping those without matching roles. */
+/**
+ * Bulk assign multiple users to a training module, skipping those without matching roles.
+ *
+ * Business intent: DPOs can assign multiple users at once. Users whose roles don't match
+ * the module requirements are reported as skipped rather than failing the entire operation.
+ */
 export async function bulkAssignTraining({
   associationId,
   moduleId,
@@ -137,6 +181,7 @@ export async function bulkAssignTraining({
   assignedById,
 }: BulkAssignTrainingProps) {
   return await prisma.$transaction(async (tx) => {
+    // Validate module exists
     const trainingModule = await tx.trainingModule.findFirst({
       where: { id: moduleId, associationId },
     });
@@ -145,6 +190,7 @@ export async function bulkAssignTraining({
       throw new Error('Training module not found');
     }
 
+    // Fetch all target users in one query
     const users = await tx.user.findMany({
       where: {
         id: { in: userIds },
@@ -156,6 +202,7 @@ export async function bulkAssignTraining({
       throw new Error('No valid users found');
     }
 
+    // Filter by role compatibility
     const validAssignments: {
       moduleId: string;
       userId: string;
@@ -181,6 +228,7 @@ export async function bulkAssignTraining({
       }
     }
 
+    // Create only new (non-duplicate) assignments
     let createdAssignments: { moduleId: string; userId: string }[] = [];
 
     if (validAssignments.length > 0) {
@@ -200,6 +248,7 @@ export async function bulkAssignTraining({
           data: newAssignments,
         });
 
+        // Audit the bulk operation
         await tx.auditLog.create({
           data: {
             associationId,
@@ -223,15 +272,11 @@ export async function bulkAssignTraining({
   });
 }
 
-/** Parameters for removing a training assignment. */
-interface RemoveTrainingAssignmentProps {
-  associationId: string;
-  moduleId: string;
-  userId: string;
-  removedById: string;
-}
-
-/** Remove a single training assignment with audit logging. */
+/**
+ * Remove a single training assignment with audit logging.
+ *
+ * Business intent: DPOs can unassign a user from a module if the assignment was made in error.
+ */
 export async function removeTrainingAssignment({
   associationId,
   moduleId,
@@ -239,6 +284,7 @@ export async function removeTrainingAssignment({
   removedById,
 }: RemoveTrainingAssignmentProps) {
   return await prisma.$transaction(async (tx) => {
+    // Find the assignment within the association scope
     const assignment = await tx.trainingAssignment.findFirst({
       where: {
         moduleId,
@@ -251,10 +297,12 @@ export async function removeTrainingAssignment({
       throw new Error('Training assignment not found');
     }
 
+    // Delete the assignment
     await tx.trainingAssignment.delete({
       where: { id: assignment.id },
     });
 
+    // Audit the removal
     await tx.auditLog.create({
       data: {
         associationId,
@@ -270,15 +318,12 @@ export async function removeTrainingAssignment({
   });
 }
 
-/** Parameters for bulk removing training assignments. */
-interface BulkRemoveTrainingAssignmentProps {
-  associationId: string;
-  moduleId: string;
-  userIds: string[];
-  removedById: string;
-}
-
-/** Bulk remove training assignments for specified users with audit logging. */
+/**
+ * Bulk remove training assignments for specified users with audit logging.
+ *
+ * Business intent: DPOs can mass-unassign users from a module.
+ * Missing assignments are reported as notFound rather than failing entirely.
+ */
 export async function bulkRemoveTrainingAssignment({
   associationId,
   moduleId,
@@ -286,6 +331,7 @@ export async function bulkRemoveTrainingAssignment({
   removedById,
 }: BulkRemoveTrainingAssignmentProps) {
   return await prisma.$transaction(async (tx) => {
+    // Find all assignments that exist for the given users
     const existingAssignments = await tx.trainingAssignment.findMany({
       where: {
         moduleId,
@@ -303,10 +349,12 @@ export async function bulkRemoveTrainingAssignment({
     const deletedUserIds = existingAssignments.map((a) => a.userId);
     const notFoundUserIds = userIds.filter((id) => !deletedUserIds.includes(id));
 
+    // Delete all at once
     await tx.trainingAssignment.deleteMany({
       where: { id: { in: deletedIds } },
     });
 
+    // Audit the bulk removal
     await tx.auditLog.create({
       data: {
         associationId,

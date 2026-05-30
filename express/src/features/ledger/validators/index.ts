@@ -1,5 +1,20 @@
+// ---------------------------------------------------------------------------
+// Shared utilities
+// ---------------------------------------------------------------------------
+
 import { pageNumberValidation, uuidValidiation } from '@src/shared/validators/common';
+
+// ---------------------------------------------------------------------------
+// External libs
+// ---------------------------------------------------------------------------
+
 import z from 'zod';
+
+// ---------------------------------------------------------------------------
+// Ledger validators
+//
+// Schemas for ledger route params, query strings, and request bodies.
+// ---------------------------------------------------------------------------
 
 /** Schema for ledger route parameters containing a member ID. */
 export const LedgerRouteParams = z.object({ memberId: uuidValidiation });

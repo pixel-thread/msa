@@ -1,37 +1,53 @@
+/**
+ * @file findUniqueAnnouncement.ts
+ * @description Service for retrieving a single announcement by ID.
+ *
+ * @module features/announcements/services
+ */
+
 import { prisma } from '@lib/prisma';
 
 import { NotFoundError } from '@src/shared/errors';
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-/** Props for fetching a unique announcement. */
-interface FindUniqueAnnouncementProps {
-  /** The announcement ID. */
+/**
+ * Props for fetching a unique announcement.
+ *
+ * @interface FindUniqueAnnouncementProps
+ */
+export interface FindUniqueAnnouncementProps {
+  /** The unique ID of the announcement. */
   announcementId: string;
-  /** The association to scope the lookup. */
+
+  /** The ID of the association to scope the lookup. */
   associationId: string;
 }
 
-// ---------------------------------------------------------------------------
-// Find unique announcement
-// ---------------------------------------------------------------------------
-
 /**
  * Find a single announcement by ID within an association.
- * Includes author, image file, read receipts, and read-receipt count.
- * Throws NotFoundError if the announcement does not exist.
+ *
+ * This service retrieves an announcement record along with author details,
+ * associated image file, recent read receipts, and a total read-receipt count.
+ *
+ * @param {FindUniqueAnnouncementProps} props - The lookup properties.
+ * @returns {Promise<any>} The announcement record with included relations.
+ * @throws {NotFoundError} If the announcement does not exist within the association scope.
  */
 export async function findUniqueAnnouncement({
   announcementId,
   associationId,
 }: FindUniqueAnnouncementProps) {
   const announcement = await prisma.announcement.findUnique({
-    where: { id: announcementId, associationId },
+    where: {
+      id: announcementId,
+      associationId,
+    },
     include: {
       author: {
-        select: { id: true, name: true, imageUrl: true },
+        select: {
+          id: true,
+          name: true,
+          imageUrl: true,
+        },
       },
       imageFile: {
         select: {
@@ -45,15 +61,23 @@ export async function findUniqueAnnouncement({
       },
       readReceipts: {
         take: 10,
-        orderBy: { readAt: 'desc' },
+        orderBy: {
+          readAt: 'desc',
+        },
         include: {
           user: {
-            select: { id: true, name: true, membershipNumber: true },
+            select: {
+              id: true,
+              name: true,
+              membershipNumber: true,
+            },
           },
         },
       },
       _count: {
-        select: { readReceipts: true },
+        select: {
+          readReceipts: true,
+        },
       },
     },
   });

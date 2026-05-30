@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------------------
+// Payment Endpoint Constants — shared route path helpers
+// ---------------------------------------------------------------------------
+
 export const paymentEndpoints = {
   base: '/payments' as const,
   byId: (id: string) => `/payments/${id}`,

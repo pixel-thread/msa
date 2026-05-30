@@ -1,6 +1,9 @@
+// ---- Shared utilities ----
 import { prisma } from '@lib/prisma';
 import { PAGE_SIZE } from '@src/shared/constants';
 import { buildPagination } from '@src/shared/utils/build-pagination';
+
+// ---- Interfaces ----
 
 /** Parameters for finding training completions. */
 interface FindManyCompletionsProps {
@@ -10,7 +13,13 @@ interface FindManyCompletionsProps {
   page?: number;
 }
 
-/** Retrieve paginated training completions with optional module and user filters. */
+// ---- Service ----
+
+/**
+ * Retrieve paginated training completions with optional module and user filters.
+ *
+ * Business intent: Used by the admin completions view to search/filter completions.
+ */
 export async function findManyCompletions({
   associationId,
   moduleId,

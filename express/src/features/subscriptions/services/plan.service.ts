@@ -1,8 +1,21 @@
+// ---------------------------------------------------------------------------
+// Shared utilities
+// ---------------------------------------------------------------------------
 import { prisma } from '@src/shared/lib/prisma';
-import { Prisma, UserRole } from '@prisma/client';
 import { BadRequestError, NotFoundError } from '@src/shared/errors';
 import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
+
+// ---------------------------------------------------------------------------
+// Prisma
+// ---------------------------------------------------------------------------
+import { Prisma, UserRole } from '@prisma/client';
+
+// ---------------------------------------------------------------------------
+// Validators / Types
+// ---------------------------------------------------------------------------
 import type { CreateSubscriptionPlanInput } from '@feature/subscriptions/validators';
+
+// ---- Interfaces --------------------------------------------------------------
 
 /** Input for updating a subscription plan. */
 interface UpdatePlanInput {
@@ -16,7 +29,14 @@ interface UpdatePlanInput {
   memberTypeId?: string | null;
 }
 
-/** Retrieve subscription plans for an association, scoped by user role and member type. */
+// ---- getPlans ----------------------------------------------------------------
+
+/**
+ * Retrieve subscription plans for an association.
+ *
+ * High-role users see all plans. Regular users are scoped to their
+ * member-type; if no plans match, the default plan is returned as fallback.
+ */
 export async function getPlans(
   associationId: string,
   user: { role: UserRole[]; memberTypeId?: string | null },
@@ -102,7 +122,15 @@ export async function getPlans(
   return user.memberTypeId ? sortedPlans[0] : sortedPlans[0] || null;
 }
 
-/** Create a new subscription plan with an initial version. */
+// ---- createPlan --------------------------------------------------------------
+
+/**
+ * Create a new subscription plan with an initial version.
+ *
+ * Validates name-uniqueness within the association, then in a transaction
+ * unsets any existing default, creates the plan + first version, and sets
+ * the new plan as default.
+ */
 export async function createPlan(associationId: string, body: CreateSubscriptionPlanInput) {
   const isPlanExistWithSameName = await prisma.subscriptionPlan.findFirst({
     where: {
@@ -151,7 +179,14 @@ export async function createPlan(associationId: string, body: CreateSubscription
   return plan;
 }
 
-/** Set a plan as the default for an association. */
+// ---- setDefaultPlan ----------------------------------------------------------
+
+/**
+ * Set a plan as the default for an association.
+ *
+ * Ensures the plan exists within the association, then atomically clears
+ * the existing default and sets the target plan as the new default.
+ */
 export async function setDefaultPlan(associationId: string, planId: string) {
   const plan = await prisma.subscriptionPlan.findFirst({
     where: { id: planId, associationId },
@@ -176,7 +211,15 @@ export async function setDefaultPlan(associationId: string, planId: string) {
   return updated;
 }
 
-/** Update a subscription plan, creating a new version if price fields change. */
+// ---- updatePlan --------------------------------------------------------------
+
+/**
+ * Update a subscription plan, creating a new version if price fields change.
+ *
+ * Price-related fields (amount, currency, billingCycle, features) trigger
+ * a new version rather than mutating the existing one, preserving billing
+ * history. Non-price metadata is updated in-place on the plan record.
+ */
 export async function updatePlan(associationId: string, planId: string, body: UpdatePlanInput) {
   const priceFields = ['amount', 'currency', 'billingCycle', 'features'] as const;
   const hasPriceChange = priceFields.some((field) => body[field] !== undefined);
@@ -232,7 +275,14 @@ export async function updatePlan(associationId: string, planId: string, body: Up
   return plan;
 }
 
-/** Soft-delete a plan by setting it as inactive. */
+// ---- softDeletePlan ----------------------------------------------------------
+
+/**
+ * Soft-delete a plan by setting it as inactive.
+ *
+ * This preserves the plan record and associated data while removing it
+ * from active use.
+ */
 export async function softDeletePlan(associationId: string, planId: string) {
   const plan = await prisma.subscriptionPlan.update({
     where: { id: planId, associationId },

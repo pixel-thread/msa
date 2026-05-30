@@ -1,3 +1,10 @@
+/**
+ * @file mark-read.route.ts
+ * @description Route handler for marking an announcement as read.
+ *
+ * @module features/announcements/routes
+ */
+
 import { Request, NextFunction, Response } from 'express';
 import type { RequestHandler } from 'express';
 
@@ -14,21 +21,23 @@ import { UserRole } from '@prisma/client';
 // Validators
 import { AnnouncementRouteParams } from '@src/features/announcements/validators';
 
-// ---------------------------------------------------------------------------
-// POST /api/announcements/:announcementId/read
-// Mark an announcement as read by the authenticated user.
-// Security: MEMBER role required.
-// ---------------------------------------------------------------------------
-
+/**
+ * POST /api/announcements/:announcementId/read
+ * Mark an announcement as read by the authenticated user.
+ * Security: MEMBER role required.
+ *
+ * @type {RequestHandler[]}
+ */
 export const postMarkRead: RequestHandler[] = [
   validate({ params: AnnouncementRouteParams }),
 
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
-
     const announcementId = req.params.announcementId;
 
-    if (!announcementId) throw new Error('Invalid announcement id');
+    if (!announcementId) {
+      throw new Error('Invalid announcement id');
+    }
 
     logger.info(
       { traceId, announcementId },
@@ -53,6 +62,9 @@ export const postMarkRead: RequestHandler[] = [
       'POST /api/announcements/[id]/read - Success',
     );
 
-    return success(res, { data: readReceipt, message: 'Announcement marked as read' });
+    return success(res, {
+      data: readReceipt,
+      message: 'Announcement marked as read',
+    });
   }),
 ];

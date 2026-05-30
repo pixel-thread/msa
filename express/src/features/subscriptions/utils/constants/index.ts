@@ -1,3 +1,5 @@
+// ---- Constants ---------------------------------------------------------------
+
 /** Supported billing cycle options. */
 export const BILLING_CYCLES = ['MONTHLY', 'YEARLY'] as const;
 

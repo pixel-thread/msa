@@ -1,9 +1,18 @@
+// ---------------------------------------------------------------------------
+// Shared utilities
+// ---------------------------------------------------------------------------
 import { prisma } from '@src/shared/lib/prisma';
 import { NotFoundError, ConflictError, ForbiddenError } from '@src/shared/errors';
 import { PAGE_SIZE } from '@src/shared/constants';
 import { buildPagination } from '@src/shared/utils/build-pagination';
-import { UserRole } from '@prisma/client';
 import { hasHighRoleAccess } from '@src/shared/utils';
+
+// ---------------------------------------------------------------------------
+// Prisma
+// ---------------------------------------------------------------------------
+import { UserRole } from '@prisma/client';
+
+// ---- Interfaces --------------------------------------------------------------
 
 /** Parameters for subscribing a user to a plan. */
 interface SubscribeInput {
@@ -26,7 +35,24 @@ interface WaiveInput {
   associationId: string;
 }
 
-/** Subscribe a user to a plan, creating or updating their subscription. */
+/** Parameters for retrieving subscription payments. */
+interface GetSubscriptionPaymentsInput {
+  subscriptionId: string;
+  userId: string;
+  role: UserRole[];
+  associationId: string;
+  page: number;
+}
+
+// ---- subscribe ---------------------------------------------------------------
+
+/**
+ * Subscribe a user to a plan.
+ *
+ * Fetches the active plan version, checks for an existing active subscription
+ * (conflict if one exists), then upserts the subscription and creates an
+ * initial billing-history record for the upcoming period.
+ */
 export async function subscribe({ planId, userId, associationId }: SubscribeInput) {
   const plan = await prisma.subscriptionPlan.findUnique({
     where: {
@@ -101,7 +127,14 @@ export async function subscribe({ planId, userId, associationId }: SubscribeInpu
   return subscription;
 }
 
-/** Upgrade a user's subscription to a new plan version. */
+// ---- upgradeSubscription -----------------------------------------------------
+
+/**
+ * Upgrade a user's subscription to a new plan.
+ *
+ * Ensures the current subscription is active, finds the latest plan version,
+ * and creates a new billing-history record for the upgraded period.
+ */
 export async function upgradeSubscription({ planId, userId }: UpgradeInput) {
   const subscription = await prisma.subscription.findUnique({
     where: { userId },
@@ -168,7 +201,13 @@ export async function upgradeSubscription({ planId, userId }: UpgradeInput) {
   return updated;
 }
 
-/** Waive a subscription, marking it as WAIVED with a reason. */
+// ---- waiveSubscription -------------------------------------------------------
+
+/**
+ * Waive a subscription, marking it as WAIVED with a reason.
+ *
+ * Ensures the subscription belongs to the caller's association before updating.
+ */
 export async function waiveSubscription({
   subscriptionId,
   reason,
@@ -195,7 +234,14 @@ export async function waiveSubscription({
   return updated;
 }
 
-/** Retrieve the current user's subscriptions with pagination. */
+// ---- getMySubscription -------------------------------------------------------
+
+/**
+ * Retrieve the current user's subscriptions with pagination.
+ *
+ * Returns a flat list of the user's subscriptions ordered by creation date,
+ * along with pagination metadata.
+ */
 export async function getMySubscription(userId: string, page: number) {
   const [subscriptions, total] = await prisma.$transaction([
     prisma.subscription.findMany({
@@ -219,16 +265,13 @@ export async function getMySubscription(userId: string, page: number) {
   };
 }
 
-/** Parameters for retrieving subscription payments. */
-interface GetSubscriptionPaymentsInput {
-  subscriptionId: string;
-  userId: string;
-  role: UserRole[];
-  associationId: string;
-  page: number;
-}
+// ---- getSubscriptionPayments -------------------------------------------------
 
-/** Retrieve paginated payments for a subscription, with authorization checks. */
+/**
+ * Retrieve paginated payments for a subscription, with authorization checks.
+ *
+ * Only the subscription owner or users with high-role access may view payments.
+ */
 export async function getSubscriptionPayments({
   subscriptionId,
   userId,

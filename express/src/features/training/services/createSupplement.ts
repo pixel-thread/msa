@@ -1,6 +1,13 @@
-import { prisma } from '@lib/prisma';
-import { CreateSupplementInput } from '../validators/training';
+// ---- External libs ----
 import { AuditAction, Prisma } from '@prisma/client';
+
+// ---- Shared utilities ----
+import { prisma } from '@lib/prisma';
+
+// ---- Validators ----
+import { CreateSupplementInput } from '../validators/training';
+
+// ---- Interfaces ----
 
 /** Parameters for creating a training supplement. */
 interface CreateSupplementProps {
@@ -12,6 +19,8 @@ interface CreateSupplementProps {
   fileId?: string;
 }
 
+// ---- Service ----
+
 /** Create a training supplement with audit logging. */
 export async function createSupplement({
   associationId,
@@ -22,6 +31,7 @@ export async function createSupplement({
   fileId,
 }: CreateSupplementProps) {
   return await prisma.$transaction(async (tx) => {
+    // Verify the module exists in this association
     const trainingModule = await tx.trainingModule.findFirst({
       where: { id: moduleId, associationId },
     });
@@ -30,6 +40,7 @@ export async function createSupplement({
       throw new Error('Training module not found');
     }
 
+    // Create the supplement record
     const supplement = await tx.trainingSupplement.create({
       data: {
         moduleId,
@@ -39,6 +50,7 @@ export async function createSupplement({
       },
     });
 
+    // Audit the supplement creation
     await tx.auditLog.create({
       data: {
         associationId,

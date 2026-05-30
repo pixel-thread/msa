@@ -1,6 +1,9 @@
+// ---- Shared utilities ----
 import { prisma } from '@lib/prisma';
 import { PAGE_SIZE } from '@src/shared/constants';
 import { buildPagination } from '@src/shared/utils/build-pagination';
+
+// ---- Interfaces ----
 
 /** Parameters for finding user completions. */
 interface FindUserCompletionsProps {
@@ -9,7 +12,9 @@ interface FindUserCompletionsProps {
   page?: number;
 }
 
-/** Retrieve paginated training completions for a specific user. */
+// ---- Service ----
+
+/** Retrieve paginated training completions for a specific user (used on "My Completions" page). */
 export async function findUserCompletions({
   userId,
 
@@ -38,6 +43,7 @@ export async function findUserCompletions({
       orderBy: { completedAt: 'desc' },
     }),
   ]);
+
   return {
     pagination: buildPagination(total, page),
     module: trainingModule,

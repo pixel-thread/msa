@@ -1,7 +1,22 @@
-import { prisma } from '@src/shared/lib/prisma';
-import type { AssociationDetails } from '@src/shared/api';
+// ---------------------------------------------------------------------------
+// External libs
+// ---------------------------------------------------------------------------
 import { Prisma } from '@prisma/client';
+
+// ---------------------------------------------------------------------------
+// Shared utilities
+// ---------------------------------------------------------------------------
+import { prisma } from '@src/shared/lib/prisma';
 import { buildPagination } from '@src/shared/utils/build-pagination';
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+import type { AssociationDetails } from '@src/shared/api';
+
+// ---------------------------------------------------------------------------
+// Types — Props
+// ---------------------------------------------------------------------------
 
 /** Arguments for the getMembers query. */
 type Props = {
@@ -10,7 +25,12 @@ type Props = {
   search?: string;
 };
 
-/** Get a paginated list of members with optional search filtering. */
+// ---------------------------------------------------------------------------
+// Service — Get a paginated list of members with optional search filtering
+// Business intent: centralised read path for the member directory that
+//   applies consistent pagination defaults and search-over-OR logic so
+//   callers do not replicate this pattern.
+// ---------------------------------------------------------------------------
 export async function getMembers({ where, page = 1, search }: Props) {
   const pageSize = search ? 20 : 10;
 
@@ -59,12 +79,20 @@ export async function getMembers({ where, page = 1, search }: Props) {
   };
 }
 
-/** Get all members for a given association. */
+// ---------------------------------------------------------------------------
+// Service — Get all members for a given association
+// Business intent: thin convenience wrapper used when every member of an
+//   association is needed without search or pagination.
+// ---------------------------------------------------------------------------
 export async function getMembersByAssociation(association: AssociationDetails) {
   return getMembers({ where: { associationId: association.id } });
 }
 
-/** Get the total and active member counts for an association. */
+// ---------------------------------------------------------------------------
+// Service — Get the total and active member counts for an association
+// Business intent: used on dashboard widgets to display membership
+//   health without transferring full records.
+// ---------------------------------------------------------------------------
 export async function getMemberCount(associationId: string) {
   const total = await prisma.user.count({
     where: { associationId },

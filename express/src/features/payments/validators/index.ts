@@ -1,18 +1,17 @@
+// ---------------------------------------------------------------------------
+// Shared imports
+// ---------------------------------------------------------------------------
 import { z } from 'zod';
 import { PaymentMethod, ContributionStatus } from '@prisma/client';
 import { pageNumberValidation, pageSizeValidation } from '@src/shared/validators/common';
 
-// ---------------------------------------------------------------------------
-// Create Order (Razorpay)
-// ---------------------------------------------------------------------------
+// ---- Create Order (Razorpay) ----
 
 export const CreateOrderSchema = z.object({
   notes: z.string().optional(),
 });
 
-// ---------------------------------------------------------------------------
-// Verify Payment (Client callback from Razorpay Checkout)
-// ---------------------------------------------------------------------------
+// ---- Verify Payment (Client callback from Razorpay Checkout) ----
 
 export const VerifyPaymentSchema = z.object({
   razorpayOrderId: z.string().min(1, 'Razorpay order ID is required'),
@@ -20,9 +19,7 @@ export const VerifyPaymentSchema = z.object({
   razorpaySignature: z.string().min(1, 'Razorpay signature is required'),
 });
 
-// ---------------------------------------------------------------------------
-// Record Manual Payment (cash/UPI/bank transfer)
-// ---------------------------------------------------------------------------
+// ---- Record Manual Payment (cash/UPI/bank transfer) ----
 
 export const RecordManualPaymentSchema = z.object({
   userId: z.uuid(),
@@ -33,27 +30,21 @@ export const RecordManualPaymentSchema = z.object({
   referenceNumber: z.string().optional(),
 });
 
-// ---------------------------------------------------------------------------
-// Generate Monthly Contributions
-// ---------------------------------------------------------------------------
+// ---- Generate Monthly Contributions ----
 
 export const GenerateContributionsSchema = z.object({
   year: z.number().int().min(2020).max(2100),
   month: z.number().int().min(1).max(12),
 });
 
-// ---------------------------------------------------------------------------
-// Waive Contribution
-// ---------------------------------------------------------------------------
+// ---- Waive Contribution ----
 
 export const WaiveContributionSchema = z.object({
   contributionPeriodId: z.uuid(),
   reason: z.string().min(1, 'Waiver reason is required'),
 });
 
-// ---------------------------------------------------------------------------
-// Query Schemas
-// ---------------------------------------------------------------------------
+// ---- Query Schemas ----
 
 export const PaymentHistoryQuerySchema = z.object({
   page: pageNumberValidation,
@@ -99,9 +90,7 @@ export const CollectionReportQuerySchema = z.object({
   status: z.enum(ContributionStatus).optional(),
 });
 
-// ---------------------------------------------------------------------------
-// Payment Provider CRUD
-// ---------------------------------------------------------------------------
+// ---- Payment Provider CRUD ----
 
 export const UpsertPaymentProviderSchema = z.object({
   provider: z.enum(['RAZORPAY', 'STRIPE', 'PAYU', 'CASHFREE']),

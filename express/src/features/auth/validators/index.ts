@@ -1,6 +1,8 @@
 import { passwordValidation } from '@validator/auth';
 import z from 'zod';
 
+// ---- Sign Up ----
+
 export const SignUpSchema = z
   .object({
     email: z.email('Invalid email address'),
@@ -27,10 +29,10 @@ export const SignUpSchema = z
       const today = new Date();
       const dob = new Date(data.dateOfBirth);
 
-      // 1. Calculate the rough difference in years
+      // Calculate the rough difference in years
       let age = today.getFullYear() - dob.getFullYear();
 
-      // 2. Adjust if the birthday hasn't happened yet this year
+      // Adjust if the birthday hasn't happened yet this year
       const monthDiff = today.getMonth() - dob.getMonth();
       const dayDiff = today.getDate() - dob.getDate();
 
@@ -43,21 +45,14 @@ export const SignUpSchema = z
     },
     {
       message: 'You must be at least 18 years old to sign up.',
-      path: ['dateOfBirth'], // Attaches the error directly to the dateOfBirth field
+      path: ['dateOfBirth'],
     },
   )
   .strict();
 
 export type SignUpInput = z.infer<typeof SignUpSchema>;
 
-export const ResetPasswordSchema = z
-  .object({
-    token: z.string().min(1, 'Token is required'),
-    password: passwordValidation,
-  })
-  .strict();
-
-export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>;
+// ---- Sign In ----
 
 export const SignInSchema = z
   .object({
@@ -68,6 +63,8 @@ export const SignInSchema = z
 
 export type SignInInput = z.infer<typeof SignInSchema>;
 
+// ---- Sign In Verify (MFA) ----
+
 export const VerifySignInSchema = z
   .object({
     code: z.string().length(6, 'Code must be 6 digits'),
@@ -77,17 +74,23 @@ export const VerifySignInSchema = z
 
 export type VerifySignInInput = z.infer<typeof VerifySignInSchema>;
 
+// ---- Refresh Token ----
+
 export const RefreshTokenSchema = z
   .object({
     token: z.string().optional(),
   })
   .strict();
 
+// ---- Sign Out ----
+
 export const SignOutSchema = z
   .object({
     token: z.string().optional(),
   })
   .strict();
+
+// ---- Forgot Password ----
 
 export const ForgotPasswordSchema = z
   .object({
@@ -96,6 +99,19 @@ export const ForgotPasswordSchema = z
   .strict();
 
 export type ForgotPasswordInput = z.infer<typeof ForgotPasswordSchema>;
+
+// ---- Reset Password ----
+
+export const ResetPasswordSchema = z
+  .object({
+    token: z.string().min(1, 'Token is required'),
+    password: passwordValidation,
+  })
+  .strict();
+
+export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>;
+
+// ---- Change Password ----
 
 export const ChangePasswordSchema = z
   .object({

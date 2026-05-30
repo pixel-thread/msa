@@ -1,8 +1,15 @@
-import { prisma } from '@lib/prisma';
-import { RecordCompletionInput, AdminRecordCompletionInput } from '../validators/training';
+// ---- External libs ----
 import { AuditAction, Prisma } from '@prisma/client';
 
-/** Parameters for recording a completion. */
+// ---- Shared utilities ----
+import { prisma } from '@lib/prisma';
+
+// ---- Validators ----
+import { RecordCompletionInput, AdminRecordCompletionInput } from '../validators/training';
+
+// ---- Interfaces ----
+
+/** Parameters for recording a completion (self-service). */
 interface RecordCompletionProps {
   associationId: string;
   userId: string;
@@ -10,7 +17,21 @@ interface RecordCompletionProps {
   data: RecordCompletionInput;
 }
 
-/** Record a training completion for the current user with audit logging. */
+/** Parameters for admin recording a completion. */
+interface AdminRecordCompletionProps {
+  associationId: string;
+  actorId: string;
+  data: AdminRecordCompletionInput;
+}
+
+// ---- Services ----
+
+/**
+ * Record a training completion for the current user with audit logging.
+ *
+ * Business intent: Users self-report completion of a training module.
+ * Uses upsert so re-completion updates the timestamp rather than duplicating.
+ */
 export async function recordCompletion({
   associationId,
   userId,
@@ -18,10 +39,12 @@ export async function recordCompletion({
   data,
 }: RecordCompletionProps) {
   return await prisma.$transaction(async (tx) => {
+    // Verify the module exists in this association
     await tx.trainingModule.findUniqueOrThrow({
       where: { id: moduleId, associationId },
     });
 
+    // Upsert completion record (one completion per user per module)
     const completion = await tx.trainingCompletion.upsert({
       where: { userId_moduleId: { userId, moduleId } },
       create: {
@@ -35,6 +58,7 @@ export async function recordCompletion({
       },
     });
 
+    // Audit the completion
     await tx.auditLog.create({
       data: {
         associationId,
@@ -50,14 +74,12 @@ export async function recordCompletion({
   });
 }
 
-/** Parameters for admin recording a completion. */
-interface AdminRecordCompletionProps {
-  associationId: string;
-  actorId: string;
-  data: AdminRecordCompletionInput;
-}
-
-/** Admin-record a training completion for any user with audit logging. */
+/**
+ * Admin-record a training completion for any user with audit logging.
+ *
+ * Business intent: Secretaries/DPOs can record completions on behalf of members
+ * who may not have digital access or who completed training offline.
+ */
 export async function adminRecordCompletion({
   associationId,
   actorId,
@@ -66,6 +88,7 @@ export async function adminRecordCompletion({
   return await prisma.$transaction(async (tx) => {
     const { userId, moduleId, scorePercent } = data;
 
+    // Verify module and user exist in this association
     await tx.trainingModule.findUniqueOrThrow({
       where: { id: moduleId, associationId },
     });
@@ -74,6 +97,7 @@ export async function adminRecordCompletion({
       where: { id: userId, associationId },
     });
 
+    // Upsert completion
     const completion = await tx.trainingCompletion.upsert({
       where: { userId_moduleId: { userId, moduleId } },
       create: {
@@ -87,6 +111,7 @@ export async function adminRecordCompletion({
       },
     });
 
+    // Audit the admin-recorded completion
     await tx.auditLog.create({
       data: {
         associationId,

@@ -1,51 +1,68 @@
+/**
+ * @file deleteAnnouncement.ts
+ * @description Service for deleting an announcement.
+ *
+ * @module features/announcements/services
+ */
+
 import { prisma } from '@lib/prisma';
 
 import { NotFoundError, ForbiddenError } from '@src/shared/errors';
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-/** Props for deleting an announcement. */
-interface DeleteAnnouncementProps {
-  /** The announcement to delete. */
+/**
+ * Props for deleting an announcement.
+ *
+ * @interface DeleteAnnouncementProps
+ */
+export interface DeleteAnnouncementProps {
+  /** The unique ID of the announcement to delete. */
   announcementId: string;
-  /** The association the announcement belongs to. */
+
+  /** The ID of the association the announcement belongs to. */
   associationId: string;
-  /** The user requesting the deletion. */
+
+  /** The ID of the user requesting the deletion (must be the author). */
   authorId: string;
 }
 
-// ---------------------------------------------------------------------------
-// Delete announcement
-// ---------------------------------------------------------------------------
-
 /**
  * Delete an announcement.
- * Only the original author can delete their own announcements.
+ *
+ * This service ensures the announcement exists within the scoped association
+ * and that only the original author is permitted to perform the deletion.
+ *
+ * @param {DeleteAnnouncementProps} props - The deletion properties.
+ * @returns {Promise<{ success: boolean }>} Confirmation of successful deletion.
+ * @throws {NotFoundError} If the announcement is not found.
+ * @throws {ForbiddenError} If the requester is not the original author.
  */
 export async function deleteAnnouncement({
   announcementId,
   associationId,
   authorId,
 }: DeleteAnnouncementProps) {
-  // Ensure the announcement exists within the association scope
+  // 1. Verification: Ensure the announcement exists within the association scope
   const announcement = await prisma.announcement.findFirst({
-    where: { id: announcementId, associationId },
+    where: {
+      id: announcementId,
+      associationId,
+    },
   });
 
   if (!announcement) {
     throw new NotFoundError('Announcement');
   }
 
-  // Only the original author may delete the announcement
+  // 2. Authorization: Only the original author may delete the announcement
   if (announcement.authorId !== authorId) {
     throw new ForbiddenError('You can only delete your own announcements');
   }
 
-  // Perform hard delete
+  // 3. Persistence: Perform hard delete
   await prisma.announcement.delete({
-    where: { id: announcementId },
+    where: {
+      id: announcementId,
+    },
   });
 
   return { success: true };

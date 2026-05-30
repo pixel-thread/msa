@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------------------
+// Payment Types — shared domain interfaces used across the payments feature
+// ---------------------------------------------------------------------------
+
 export interface ProviderResponse {
   id: string;
   associationId: string;
@@ -98,8 +102,6 @@ export interface ContributionPeriod {
   }[];
 }
 
-export * from './razorpay-checkout';
-
 export interface ContributionSummary {
   userId: string;
   totalExpected: number;
@@ -132,3 +134,6 @@ export interface UserContributionData {
   contributions: ContributionPeriod[];
   summary: ContributionSummary;
 }
+
+// ---- Re-export Razorpay checkout types ----
+export * from './razorpay-checkout';

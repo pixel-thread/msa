@@ -1,6 +1,9 @@
-import { prisma } from '@src/shared/lib/prisma';
 import { DsarStatus, AuditAction } from '@prisma/client';
+
+import { prisma } from '@src/shared/lib/prisma';
 import { logAction } from '@src/shared/services/audit-logs';
+
+// ---- Interfaces -------------------------------------------------------------
 
 /** Result of checking DSAR SLA deadlines for a single association. */
 export interface DsarSlaResult {
@@ -13,13 +16,21 @@ export interface DsarSlaResult {
   error?: string;
 }
 
-/** Check DSAR ticket deadlines for a given association, flagging breached and at-risk tickets. */
+// ---- Service: Individual Association ----------------------------------------
+
+/**
+ * Check DSAR ticket deadlines for a given association.
+ * Counts total open tickets, identifies those past the response deadline (breached),
+ * and those due within the next 3 days (at-risk). Logs an audit event if any issues
+ * are found.
+ */
 export async function checkDsarDeadlines(associationId: string): Promise<DsarSlaResult> {
   try {
     const now = new Date();
     const threeDaysFromNow = new Date();
     threeDaysFromNow.setDate(now.getDate() + 3);
 
+    // ----- Validate association exists
     const association = await prisma.association.findUnique({
       where: { id: associationId },
       select: { slug: true },
@@ -37,6 +48,7 @@ export async function checkDsarDeadlines(associationId: string): Promise<DsarSla
       };
     }
 
+    // ----- Fetch total open tickets, breached tickets, and at-risk tickets in parallel
     const [total, breachedTickets, atRiskTickets] = await Promise.all([
       prisma.dsarTicket.count({
         where: {
@@ -65,6 +77,7 @@ export async function checkDsarDeadlines(associationId: string): Promise<DsarSla
     const breached = breachedTickets.length;
     const atRisk = atRiskTickets.length;
 
+    // ----- Log audit if there are any SLA issues
     if (breached > 0 || atRisk > 0) {
       await logAction({
         actorId: '',
@@ -95,7 +108,12 @@ export async function checkDsarDeadlines(associationId: string): Promise<DsarSla
   }
 }
 
-/** Run DSAR SLA check for all active associations. */
+// ---- Service: All Associations ----------------------------------------------
+
+/**
+ * Run DSAR SLA check for all active associations.
+ * Processes every active association concurrently and returns their results.
+ */
 export async function runDsarSlaCron(): Promise<DsarSlaResult[]> {
   const associations = await prisma.association.findMany({
     where: { isActive: true },

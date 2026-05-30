@@ -1,5 +1,8 @@
-import { prisma } from '@src/shared/lib/prisma';
 import { PaymentStatus, ContributionStatus, Prisma } from '@prisma/client';
+
+import { prisma } from '@src/shared/lib/prisma';
+
+// ---- Interfaces -------------------------------------------------------------
 
 /** Shape of the dashboard overview response. */
 export type DashboardOverview = {
@@ -42,6 +45,8 @@ export type DashboardOverview = {
   }>;
 };
 
+// ---- Helpers ----------------------------------------------------------------
+
 /** Format a date as a YYYY-MM month key. */
 function toMonthKey(date: Date): string {
   const y = date.getFullYear();
@@ -49,97 +54,33 @@ function toMonthKey(date: Date): string {
   return `${y}-${m}`;
 }
 
-/** Compute the full dashboard overview for a given association. */
-export async function getDashboardOverview(associationId: string): Promise<DashboardOverview> {
-  const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const startOfYear = new Date(now.getFullYear(), 0, 1);
-  const twelveMonthsAgo = new Date(now.getFullYear() - 1, now.getMonth(), 1);
-
-  const [totalMembers, activeMembers, newMembersThisMonth, monthRevenue, yearRevenue, duesAgg] =
-    await Promise.all([
-      prisma.user.count({ where: { associationId } }),
-      prisma.user.count({ where: { associationId, status: 'ACTIVE' } }),
-      prisma.user.count({
-        where: { associationId, createdAt: { gte: startOfMonth } },
-      }),
-      prisma.paymentTransaction.aggregate({
-        where: {
-          associationId,
-          status: PaymentStatus.COMPLETED,
-          paidAt: { gte: startOfMonth },
-        },
-        _sum: { amount: true },
-      }),
-      prisma.paymentTransaction.aggregate({
-        where: {
-          associationId,
-          status: PaymentStatus.COMPLETED,
-          paidAt: { gte: startOfYear },
-        },
-        _sum: { amount: true },
-      }),
-      prisma.contributionPeriod.aggregate({
-        where: {
-          associationId,
-          status: {
-            in: [ContributionStatus.DUE, ContributionStatus.PARTIAL, ContributionStatus.OVERDUE],
-          },
-        },
-        _sum: { dueAmount: true },
-      }),
-    ]);
-
-  const pendingDuesAmount = Number(duesAgg._sum.dueAmount || 0);
-
-  const [paymentTransactions, membersSince, activeUsers] = await Promise.all([
-    prisma.paymentTransaction.findMany({
-      where: {
-        associationId,
-        paidAt: { gte: twelveMonthsAgo },
-        status: {
-          in: [PaymentStatus.COMPLETED, PaymentStatus.PENDING, PaymentStatus.REFUNDED],
-        },
-      },
-      select: { amount: true, status: true, paidAt: true },
-    }),
-    prisma.user.findMany({
-      where: { associationId, createdAt: { gte: twelveMonthsAgo } },
-      select: { createdAt: true },
-    }),
-    prisma.user.findMany({
-      where: { associationId, status: 'ACTIVE' },
-      select: { role: true },
-    }),
-  ]);
-
-  const revenueOverTime = buildRevenueOverTime(paymentTransactions, twelveMonthsAgo);
-  const memberGrowthRaw = buildMemberCountByMonth(membersSince);
-  const memberGrowth = buildMemberGrowthSeries(memberGrowthRaw, twelveMonthsAgo, totalMembers);
-  const memberRoleDistribution = buildRoleDistribution(activeUsers);
-
-  const [paymentMethodDist, recentPaymentsRaw] = await Promise.all([
-    getPaymentMethodDistribution(associationId),
-    getRecentPayments(associationId),
-  ]);
-
-  return {
-    stats: {
-      totalMembers,
-      activeMembers,
-      newMembersThisMonth,
-      totalRevenueMonth: Number(monthRevenue._sum.amount || 0),
-      totalRevenueYear: Number(yearRevenue._sum.amount || 0),
-      pendingDuesAmount,
-      pendingDuesCount: memberGrowthRaw.length,
-    },
-    revenueOverTime,
-    memberGrowth,
-    memberRoleDistribution,
-    paymentMethodDistribution: paymentMethodDist,
-    recentPayments: recentPaymentsRaw,
-  };
+/** Generate a sorted list of YYYY-MM month keys from `from` to `to` inclusive. */
+function getMonthRange(from: Date, to: Date): string[] {
+  const months: string[] = [];
+  const current = new Date(from.getFullYear(), from.getMonth(), 1);
+  const end = new Date(to.getFullYear(), to.getMonth(), 1);
+  while (current <= end) {
+    months.push(toMonthKey(current));
+    current.setMonth(current.getMonth() + 1);
+  }
+  return months;
 }
+
+/** Fill in zero values for months that have no data, ensuring a complete series. */
+function fillMonthlyGaps(
+  grouped: Record<string, { revenue: number; pending: number; refunded: number }>,
+  since: Date,
+) {
+  const months = getMonthRange(since, new Date());
+  return months.map((month) => ({
+    month,
+    revenue: grouped[month]?.revenue ?? 0,
+    pending: grouped[month]?.pending ?? 0,
+    refunded: grouped[month]?.refunded ?? 0,
+  }));
+}
+
+// ---- Builders ---------------------------------------------------------------
 
 /** Build revenue-over-time series from payment transactions, grouped by month. */
 function buildRevenueOverTime(
@@ -203,7 +144,7 @@ function buildMemberGrowthSeries(
   });
 }
 
-/** Count how many active users have each role. */
+/** Count how many active users have each role, sorted by frequency descending. */
 function buildRoleDistribution(
   users: Array<{ role: Array<string> }>,
 ): Array<{ role: string; count: number }> {
@@ -217,6 +158,8 @@ function buildRoleDistribution(
     .map(([role, count]) => ({ role, count }))
     .sort((a, b) => b.count - a.count);
 }
+
+// ---- Data Access ------------------------------------------------------------
 
 /** Retrieve payment-method usage distribution for an association. */
 async function getPaymentMethodDistribution(associationId: string) {
@@ -253,28 +196,104 @@ async function getRecentPayments(associationId: string) {
   }));
 }
 
-/** Generate a sorted list of YYYY-MM month keys from `from` to `to` inclusive. */
-function getMonthRange(from: Date, to: Date): string[] {
-  const months: string[] = [];
-  const current = new Date(from.getFullYear(), from.getMonth(), 1);
-  const end = new Date(to.getFullYear(), to.getMonth(), 1);
-  while (current <= end) {
-    months.push(toMonthKey(current));
-    current.setMonth(current.getMonth() + 1);
-  }
-  return months;
-}
+// ---- Main Service -----------------------------------------------------------
 
-/** Fill in zero values for months that have no data, ensuring a complete series. */
-function fillMonthlyGaps(
-  grouped: Record<string, { revenue: number; pending: number; refunded: number }>,
-  since: Date,
-) {
-  const months = getMonthRange(since, new Date());
-  return months.map((month) => ({
-    month,
-    revenue: grouped[month]?.revenue ?? 0,
-    pending: grouped[month]?.pending ?? 0,
-    refunded: grouped[month]?.refunded ?? 0,
-  }));
+/**
+ * Compute the full dashboard overview for a given association.
+ * Aggregates member counts, revenue figures, dues, and derived time-series
+ * for revenue, member growth, role distribution, payment methods, and recent payments.
+ */
+export async function getDashboardOverview(associationId: string): Promise<DashboardOverview> {
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+  const twelveMonthsAgo = new Date(now.getFullYear() - 1, now.getMonth(), 1);
+
+  // ----- Aggregate stats in parallel
+  const [totalMembers, activeMembers, newMembersThisMonth, monthRevenue, yearRevenue, duesAgg] =
+    await Promise.all([
+      prisma.user.count({ where: { associationId } }),
+      prisma.user.count({ where: { associationId, status: 'ACTIVE' } }),
+      prisma.user.count({
+        where: { associationId, createdAt: { gte: startOfMonth } },
+      }),
+      prisma.paymentTransaction.aggregate({
+        where: {
+          associationId,
+          status: PaymentStatus.COMPLETED,
+          paidAt: { gte: startOfMonth },
+        },
+        _sum: { amount: true },
+      }),
+      prisma.paymentTransaction.aggregate({
+        where: {
+          associationId,
+          status: PaymentStatus.COMPLETED,
+          paidAt: { gte: startOfYear },
+        },
+        _sum: { amount: true },
+      }),
+      prisma.contributionPeriod.aggregate({
+        where: {
+          associationId,
+          status: {
+            in: [ContributionStatus.DUE, ContributionStatus.PARTIAL, ContributionStatus.OVERDUE],
+          },
+        },
+        _sum: { dueAmount: true },
+      }),
+    ]);
+
+  const pendingDuesAmount = Number(duesAgg._sum.dueAmount || 0);
+
+  // ----- Fetch time-series data in parallel
+  const [paymentTransactions, membersSince, activeUsers] = await Promise.all([
+    prisma.paymentTransaction.findMany({
+      where: {
+        associationId,
+        paidAt: { gte: twelveMonthsAgo },
+        status: {
+          in: [PaymentStatus.COMPLETED, PaymentStatus.PENDING, PaymentStatus.REFUNDED],
+        },
+      },
+      select: { amount: true, status: true, paidAt: true },
+    }),
+    prisma.user.findMany({
+      where: { associationId, createdAt: { gte: twelveMonthsAgo } },
+      select: { createdAt: true },
+    }),
+    prisma.user.findMany({
+      where: { associationId, status: 'ACTIVE' },
+      select: { role: true },
+    }),
+  ]);
+
+  // ----- Build derived series
+  const revenueOverTime = buildRevenueOverTime(paymentTransactions, twelveMonthsAgo);
+  const memberGrowthRaw = buildMemberCountByMonth(membersSince);
+  const memberGrowth = buildMemberGrowthSeries(memberGrowthRaw, twelveMonthsAgo, totalMembers);
+  const memberRoleDistribution = buildRoleDistribution(activeUsers);
+
+  // ----- Fetch payment-specific data
+  const [paymentMethodDist, recentPaymentsRaw] = await Promise.all([
+    getPaymentMethodDistribution(associationId),
+    getRecentPayments(associationId),
+  ]);
+
+  return {
+    stats: {
+      totalMembers,
+      activeMembers,
+      newMembersThisMonth,
+      totalRevenueMonth: Number(monthRevenue._sum.amount || 0),
+      totalRevenueYear: Number(yearRevenue._sum.amount || 0),
+      pendingDuesAmount,
+      pendingDuesCount: memberGrowthRaw.length,
+    },
+    revenueOverTime,
+    memberGrowth,
+    memberRoleDistribution,
+    paymentMethodDistribution: paymentMethodDist,
+    recentPayments: recentPaymentsRaw,
+  };
 }

@@ -1,4 +1,19 @@
+// ---------------------------------------------------------------------------
+// External libs
+// ---------------------------------------------------------------------------
+
 import { Router } from 'express';
+
+// ---------------------------------------------------------------------------
+// Shared utilities
+// ---------------------------------------------------------------------------
+
+import { auth } from '@src/middleware/auth';
+
+// ---------------------------------------------------------------------------
+// Route handlers
+// ---------------------------------------------------------------------------
+
 import {
   getMemberTypes,
   postMemberType,
@@ -6,18 +21,22 @@ import {
   patchMemberType,
   deleteMemberType,
 } from './member-types.route';
-import { auth } from '@src/middleware/auth';
 
-/** Member-types feature router - all routes require authentication. */
+// ---------------------------------------------------------------------------
+// Router setup – all routes require authentication
+// ---------------------------------------------------------------------------
+
 const router: Router = Router();
 
 router.use(auth);
 
+// ---- List / Create ----------------------------------------------------------
+
 router.get('/', getMemberTypes);
-
-
-
 router.post('/', postMemberType);
+
+// ---- Single-resource operations --------------------------------------------
+
 router.get('/:memberTypeId', getMemberTypeById);
 router.patch('/:memberTypeId', patchMemberType);
 router.delete('/:memberTypeId', deleteMemberType);

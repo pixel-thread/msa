@@ -1,4 +1,8 @@
+// ---- Meetings Types - Data Transfer Objects
+
 import { HIGH_ROLE_USERS } from '@src/shared/constants';
+
+// ---- Meeting DTO
 
 /** Meeting data transfer object. */
 export interface Meeting {
@@ -17,6 +21,8 @@ export interface Meeting {
   };
 }
 
+// ---- Member DTO
+
 /** Member data transfer object. */
 export interface Member {
   id: string;
@@ -25,6 +31,8 @@ export interface Member {
   role: string;
   status: string;
 }
+
+// ---- Attendee DTO
 
 /** Attendee data transfer object. */
 export interface Attendee {
@@ -38,6 +46,8 @@ export interface Attendee {
   rsvpStatus?: string;
   attendeeRole: string;
 }
+
+// ---- Form Types
 
 /** Form data for adding an attendee. */
 export interface AddAttendeeForm {

@@ -1,3 +1,11 @@
+/**
+ * @file announcements.route.ts
+ * @description Route handlers for the announcements collection.
+ * Provides endpoints for listing and creating announcements.
+ *
+ * @module features/announcements/routes
+ */
+
 import { Request, NextFunction, Response } from 'express';
 import type { RequestHandler } from 'express';
 
@@ -23,12 +31,13 @@ import {
   AnnouncementQuerySchema,
 } from '@src/features/announcements/validators';
 
-// ---------------------------------------------------------------------------
-// GET /api/announcements
-// List announcements with optional filters and pagination.
-// Security: MEMBER role required. High-role users receive pagination metadata.
-// ---------------------------------------------------------------------------
-
+/**
+ * GET /api/announcements
+ * List announcements with optional filters and pagination.
+ * Security: MEMBER role required. High-role users receive pagination metadata.
+ *
+ * @type {RequestHandler[]}
+ */
 export const getAnnouncements: RequestHandler[] = [
   validate({ query: AnnouncementQuerySchema }),
 
@@ -48,7 +57,9 @@ export const getAnnouncements: RequestHandler[] = [
     const query = req.query as any;
 
     // Reject requests with invalid query parameters
-    if (!query) throw new ForbiddenError('Invalid query parameters');
+    if (!query) {
+      throw new ForbiddenError('Invalid query parameters');
+    }
 
     // High-role users (secretaries, admins) get full pagination support
     if (hasHighRoleAccess(user.role)) {
@@ -74,7 +85,10 @@ export const getAnnouncements: RequestHandler[] = [
         'GET /api/announcements - Success',
       );
 
-      return success(res, { data: result.announcements, meta: result.pagination });
+      return success(res, {
+        data: result.announcements,
+        meta: result.pagination,
+      });
     }
 
     // Regular members — no pagination, just the default page
@@ -92,16 +106,20 @@ export const getAnnouncements: RequestHandler[] = [
       'GET /api/announcements - Success',
     );
 
-    return success(res, { data: result.announcements, meta: result.pagination });
+    return success(res, {
+      data: result.announcements,
+      meta: result.pagination,
+    });
   }),
 ];
 
-// ---------------------------------------------------------------------------
-// POST /api/announcements
-// Create a new announcement.
-// Security: SECRETARY role or higher required.
-// ---------------------------------------------------------------------------
-
+/**
+ * POST /api/announcements
+ * Create a new announcement.
+ * Security: SECRETARY role or higher required.
+ *
+ * @type {RequestHandler[]}
+ */
 export const postAnnouncement: RequestHandler[] = [
   validate({ body: CreateAnnouncementSchema }),
 
@@ -122,7 +140,9 @@ export const postAnnouncement: RequestHandler[] = [
     );
 
     // Guard against empty request body
-    if (!req.body) throw new ForbiddenError('Invalid request body');
+    if (!req.body) {
+      throw new ForbiddenError('Invalid request body');
+    }
 
     const isPublishing = req.body.status === AnnouncementStatus.PUBLISHED;
 

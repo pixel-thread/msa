@@ -1,5 +1,8 @@
-import { prisma } from '@src/shared/lib/prisma';
 import { Prisma } from '@prisma/client';
+
+import { prisma } from '@src/shared/lib/prisma';
+
+// ---- Types ----
 
 /** Props for updating a single refresh token. */
 type Props = {
@@ -9,7 +12,9 @@ type Props = {
   data: Prisma.RefreshTokenUpdateInput;
 };
 
-/** Update a single refresh token in the database. */
+// ---- Service ----
+
+/** Update a single refresh token — primarily used to mark tokens as revoked during token rotation. */
 export async function updateRefreshToken(props: Props) {
   return await prisma.refreshToken.update(props);
 }

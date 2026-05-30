@@ -1,8 +1,24 @@
-import { $Enums, UserRole } from '@prisma/client';
-import { uuidValidiation } from '@src/shared/validators/common';
+// External libs
 import z from 'zod';
 
-/** Schema for updating user profile fields. */
+// ---- Prisma
+
+import { $Enums, UserRole } from '@prisma/client';
+
+// ---- Shared utilities
+
+import { uuidValidiation } from '@src/shared/validators/common';
+
+// ---------------------------------------------------------------------------
+// User Validators
+//
+// Zod schemas for validating request bodies, query parameters, and route
+// parameters for user-facing endpoints (both self-service and admin).
+// ---------------------------------------------------------------------------
+
+// ---- Profile (self-service)
+
+/** Schema for updating the authenticated user's own profile fields. */
 export const UpdateUserSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   mobile: z
@@ -15,22 +31,26 @@ export const UpdateUserSchema = z.object({
   dateOfJoiningAssociation: z.coerce.date(),
 });
 
-/** Schema for admin get-user query parameters. */
+// ---- Admin: Get user
+
+/** Query parameters for listing / filtering users from the admin panel. */
 export const AdminGetUserQuerySchema = z.object({
   status: z.enum($Enums.UserStatus, 'Invalid User status').default('ACTIVE').optional(),
 });
 
-/** Schema for admin get-user route parameters. */
+/** Route parameters for fetching a specific user by ID (admin). */
 export const AdminGetUserParamsSchema = z.object({
   userId: uuidValidiation,
 });
 
-/** Schema for admin approve-user route parameters. */
+// ---- Admin: Approve user
+
+/** Route parameters for approving a user registration (admin). */
 export const AdminUserApproveParamsSchema = z.object({
   userId: uuidValidiation,
 });
 
-/** Schema for approving a user — specifies member type, role, and dates. */
+/** Request body for approving a user — requires member type, optional role + dates. */
 export const AdminUserApproveSchema = z
   .object({
     memberTypeId: z.uuid('Invalid member type'),

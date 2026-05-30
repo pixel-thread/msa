@@ -1,3 +1,5 @@
+// ---- Constants ---------------------------------------------------------------
+
 /** Endpoint path constants for the subscriptions feature. */
 export const subscriptionEndpoints = {
   plans: '/subscriptions/plans' as const,

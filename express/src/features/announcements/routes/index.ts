@@ -1,7 +1,10 @@
-// ---------------------------------------------------------------------------
-// Announcements feature router — aggregates all announcement sub-routes
-// behind authentication
-// ---------------------------------------------------------------------------
+/**
+ * @file index.ts
+ * @description Announcements feature router — aggregates all announcement sub-routes.
+ * Enforces authentication on all endpoints.
+ *
+ * @module features/announcements/routes
+ */
 
 import { Router } from 'express';
 
@@ -23,8 +26,12 @@ import {
 import { postMarkRead } from './mark-read.route';
 import { postUploadImage } from './upload-image.route';
 
-// ---------------------------------------------------------------------------
-
+/**
+ * Express router for announcements.
+ *
+ * All routes are prefixed with the base path defined in the main app (typically /api/announcements).
+ * Authentication middleware is applied globally to this router.
+ */
 const router: Router = Router();
 
 // All announcement routes require authentication

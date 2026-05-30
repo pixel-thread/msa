@@ -1,7 +1,14 @@
+/**
+ * @file Announcement Detail Route Handlers
+ * @description This file contains the request handlers for individual announcement operations.
+ * It provides functionality for fetching, updating, deleting, and status patching.
+ */
+
 import { Request, NextFunction, Response } from 'express';
 import type { RequestHandler } from 'express';
 
-// Shared utilities
+import { UserRole } from '@prisma/client';
+
 import { success } from '@src/shared/utils/responses';
 import { ForbiddenError } from '@src/shared/errors';
 import { validate } from '@src/shared/lib/validate';
@@ -9,26 +16,19 @@ import { withRole } from '@src/shared/utils/with-role';
 import { hasHighRoleAccess } from '@src/shared/utils/has-high-role';
 import { asyncHandler } from '@src/shared/utils/async-handler';
 import { logger } from '@src/shared/logger';
-
-// Prisma
-import { UserRole } from '@prisma/client';
-
-// Services
 import { getAssociation } from '@src/shared/services/association/get-association';
 
-// Validators
 import {
   AnnouncementRouteParams,
   UpdateAnnouncementSchema,
   PublishAnnouncementSchema,
 } from '@src/features/announcements/validators';
 
-// ---------------------------------------------------------------------------
-// GET /api/announcements/:announcementId
-// Fetch a single announcement by ID.
-// Security: MEMBER role required.
-// ---------------------------------------------------------------------------
-
+/**
+ * @description Fetch a single announcement by ID.
+ * @security MEMBER role required.
+ * @route GET /api/announcements/:announcementId
+ */
 export const getAnnouncement: RequestHandler[] = [
   validate({ params: AnnouncementRouteParams }),
 
@@ -39,10 +39,13 @@ export const getAnnouncement: RequestHandler[] = [
 
     const announcementId = req.params.announcementId;
 
-    if (!announcementId) throw new ForbiddenError('Invalid announcement id');
+    if (!announcementId) {
+      throw new ForbiddenError('Invalid announcement id');
+    }
 
     logger.info({ traceId, announcementId }, 'GET /api/announcements/[id] - Request started');
 
+    // Enforce role
     await withRole(req, UserRole.MEMBER);
 
     logger.info({ traceId, announcementId }, 'GET /api/announcements/[id] - User authorized');
@@ -52,18 +55,23 @@ export const getAnnouncement: RequestHandler[] = [
 
     logger.info({ traceId, announcementId }, 'GET /api/announcements/[id] - Success');
 
-    return success(res, { data: announcement, message: 'Successfully fetch announcement' });
+    return success(res, {
+      data: announcement,
+      message: 'Successfully fetch announcement',
+    });
   }),
 ];
 
-// ---------------------------------------------------------------------------
-// PUT /api/announcements/:announcementId
-// Update an announcement.
-// Security: MEMBER role required, but only high-role users may proceed.
-// ---------------------------------------------------------------------------
-
+/**
+ * @description Update an existing announcement.
+ * @security MEMBER role required, but only high-role users (secretary, admin) may proceed.
+ * @route PUT /api/announcements/:announcementId
+ */
 export const putAnnouncement: RequestHandler[] = [
-  validate({ params: AnnouncementRouteParams, body: UpdateAnnouncementSchema }),
+  validate({
+    params: AnnouncementRouteParams,
+    body: UpdateAnnouncementSchema,
+  }),
 
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -72,11 +80,15 @@ export const putAnnouncement: RequestHandler[] = [
 
     logger.info({ traceId }, 'PUT /api/announcements/[id] - Request started');
 
-    if (!req.body) throw new ForbiddenError('Invalid request body');
+    if (!req.body) {
+      throw new ForbiddenError('Invalid request body');
+    }
 
     const announcementId = req.params.announcementId;
 
-    if (!announcementId) throw new ForbiddenError('Invalid announcement id');
+    if (!announcementId) {
+      throw new ForbiddenError('Invalid announcement id');
+    }
 
     const userId = req.userId as string;
 
@@ -107,12 +119,11 @@ export const putAnnouncement: RequestHandler[] = [
   }),
 ];
 
-// ---------------------------------------------------------------------------
-// DELETE /api/announcements/:announcementId
-// Remove an announcement.
-// Security: MEMBER role required, but only high-role users may proceed.
-// ---------------------------------------------------------------------------
-
+/**
+ * @description Remove an announcement.
+ * @security MEMBER role required, but only high-role users (secretary, admin) may proceed.
+ * @route DELETE /api/announcements/:announcementId
+ */
 export const deleteAnnouncement: RequestHandler[] = [
   validate({ params: AnnouncementRouteParams }),
 
@@ -123,7 +134,9 @@ export const deleteAnnouncement: RequestHandler[] = [
 
     const announcementId = req.params.announcementId;
 
-    if (!announcementId) throw new ForbiddenError('Invalid announcement id');
+    if (!announcementId) {
+      throw new ForbiddenError('Invalid announcement id');
+    }
 
     logger.info({ traceId, announcementId }, 'DELETE /api/announcements/[id] - Request started');
 
@@ -155,14 +168,16 @@ export const deleteAnnouncement: RequestHandler[] = [
   }),
 ];
 
-// ---------------------------------------------------------------------------
-// PATCH /api/announcements/:announcementId
-// Publish, archive, or unpublish an announcement.
-// Security: MEMBER role required, but only high-role users may proceed.
-// ---------------------------------------------------------------------------
-
+/**
+ * @description Publish, archive, or unpublish an announcement.
+ * @security MEMBER role required, but only high-role users (secretary, admin) may proceed.
+ * @route PATCH /api/announcements/:announcementId
+ */
 export const patchAnnouncement: RequestHandler[] = [
-  validate({ params: AnnouncementRouteParams, body: PublishAnnouncementSchema }),
+  validate({
+    params: AnnouncementRouteParams,
+    body: PublishAnnouncementSchema,
+  }),
 
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -171,7 +186,9 @@ export const patchAnnouncement: RequestHandler[] = [
 
     const announcementId = req.params.announcementId;
 
-    if (!announcementId) throw new ForbiddenError('Invalid announcement id');
+    if (!announcementId) {
+      throw new ForbiddenError('Invalid announcement id');
+    }
 
     logger.info({ traceId, announcementId }, 'PATCH /api/announcements/[id] - Request started');
 

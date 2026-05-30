@@ -1,3 +1,10 @@
+/**
+ * @file upload-image.route.ts
+ * @description Route handler for uploading an image for an announcement.
+ *
+ * @module features/announcements/routes
+ */
+
 import { Request, NextFunction, Response } from 'express';
 import type { RequestHandler } from 'express';
 
@@ -17,18 +24,18 @@ import { deleteFromBucket } from '@src/shared/lib/supabase/storage';
 // Validators
 import { AnnouncementRouteParams } from '@src/features/announcements/validators';
 
-// ---------------------------------------------------------------------------
-// POST /api/announcements/:announcementId/upload
-// Upload an image for an announcement.
-// Security: SECRETARY role or higher required.
-// ---------------------------------------------------------------------------
-
+/**
+ * POST /api/announcements/:announcementId/upload
+ * Upload an image for an announcement.
+ * Security: SECRETARY role or higher required.
+ *
+ * @type {RequestHandler[]}
+ */
 export const postUploadImage: RequestHandler[] = [
   validate({ params: AnnouncementRouteParams }),
 
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
-
     const announcementId = req.params.announcementId;
 
     logger.info(

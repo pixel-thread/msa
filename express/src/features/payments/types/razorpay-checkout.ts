@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------------------
+// Razorpay Checkout Types — used by client-side checkout integration
+// ---------------------------------------------------------------------------
+
 export interface RazorpayCheckoutOptions {
   key: string;
   amount: number;
@@ -29,6 +33,7 @@ export interface RazorpayPaymentResponse {
   razorpay_signature: string;
 }
 
+// Extend Window to expose the Razorpay constructor loaded via CDN script
 declare global {
   interface Window {
     Razorpay: new (options: RazorpayCheckoutOptions) => {

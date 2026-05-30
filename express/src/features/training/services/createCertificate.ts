@@ -1,6 +1,13 @@
-import { prisma } from '@lib/prisma';
-import { CreateTrainingCertificateInput } from '../validators/training';
+// ---- External libs ----
 import { AuditAction, Prisma } from '@prisma/client';
+
+// ---- Shared utilities ----
+import { prisma } from '@lib/prisma';
+
+// ---- Validators ----
+import { CreateTrainingCertificateInput } from '../validators/training';
+
+// ---- Interfaces ----
 
 /** Parameters for creating a training certificate. */
 interface CreateCertificateProps {
@@ -12,6 +19,8 @@ interface CreateCertificateProps {
   fileId?: string;
 }
 
+// ---- Service ----
+
 /** Create a training certificate for a user with audit logging. */
 export async function createCertificate({
   associationId,
@@ -22,6 +31,7 @@ export async function createCertificate({
   fileId,
 }: CreateCertificateProps) {
   return await prisma.$transaction(async (tx) => {
+    // Verify the module exists
     const trainingModule = await tx.trainingModule.findFirst({
       where: { id: moduleId, associationId },
     });
@@ -30,6 +40,7 @@ export async function createCertificate({
       throw new Error('Training module not found');
     }
 
+    // Create the certificate record
     const certificate = await tx.trainingCertificate.create({
       data: {
         moduleId,
@@ -44,6 +55,7 @@ export async function createCertificate({
       },
     });
 
+    // Audit the certificate creation
     await tx.auditLog.create({
       data: {
         associationId,

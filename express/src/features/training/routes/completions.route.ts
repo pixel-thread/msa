@@ -1,23 +1,36 @@
+// ---- External libs ----
 import { Request, Response, NextFunction } from 'express';
 import type { RequestHandler } from 'express';
+
+// ---- Shared utilities ----
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
 import { prisma } from '@src/shared/lib/prisma';
-import { UserRole } from '@prisma/client';
-import {
-  findManyCompletions,
-  recordCompletion,
-  completeAssignment,
-} from '@src/features/training/services';
-import { RecordCompletionSchema } from '@src/features/training/validators/training';
 import { uploadToBucket } from '@src/shared/lib/supabase/storage';
 import { BadRequestError } from '@src/shared/errors';
 import { env } from '@src/env';
 import { logger } from '@src/shared/logger';
 import { getAssociation } from '@src/shared/services/association/get-association';
 import { withRole } from '@src/shared/utils/with-role';
-import { z } from 'zod';
 import { asyncHandler } from '@src/shared/utils/async-handler';
+
+// ---- Prisma ----
+import { UserRole } from '@prisma/client';
+
+// ---- Services ----
+import {
+  findManyCompletions,
+  recordCompletion,
+  completeAssignment,
+} from '@src/features/training/services';
+
+// ---- Validators ----
+import { RecordCompletionSchema } from '@src/features/training/validators/training';
+
+// ---- External libs ----
+import { z } from 'zod';
+
+// ---- Schemas ----
 
 /** Schema for module ID path parameter. */
 const ModuleParamsSchema = z.object({
@@ -30,27 +43,40 @@ const AssignmentParamsSchema = z.object({
   userId: z.string().uuid('Invalid user ID'),
 });
 
-/** Schema for completion metadata. */
+/** Schema for completion metadata (score, certificate options). */
 const MetadataSchema = z.object({
   scorePercent: z.number().min(0).max(100).optional(),
   certificateOption: z.enum(['none', 'global', 'custom']).default('none'),
   certificateNumber: z.string().max(100).optional(),
 });
 
-/** GET /training/modules/:moduleId/complete - List completions for a module. */
+// ---------------------------------------------------------------------------
+// GET /training/modules/:moduleId/complete
+// Description: List completions for a module
+// Security:    MEMBER role required
+// ---------------------------------------------------------------------------
+
 export const getModuleCompletions: RequestHandler[] = [
   validate({ params: ModuleParamsSchema }),
+
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
+
     try {
+      // Resolve association
       const association = await getAssociation(req);
+
       logger.info(
         { traceId, associationId: association.id },
         'GET /training/modules/{moduleId}/complete - Request started',
       );
+
+      // Authorize: minimum MEMBER role
       await withRole(req, UserRole.MEMBER);
+
       logger.info({ traceId }, 'GET /training/modules/{moduleId}/complete - User authorized');
 
+      // Fetch completions for this module
       const data = await findManyCompletions({
         associationId: association.id,
         moduleId: req.params.moduleId,
@@ -64,23 +90,36 @@ export const getModuleCompletions: RequestHandler[] = [
   }),
 ];
 
-/** POST /training/modules/:moduleId/complete - Record a completion for the current user. */
+// ---------------------------------------------------------------------------
+// POST /training/modules/:moduleId/complete
+// Description: Record a completion for the current user
+// Security:    SUPER_ADMIN role required (self-completion gate)
+// ---------------------------------------------------------------------------
+
 export const postModuleComplete: RequestHandler[] = [
   validate({ params: ModuleParamsSchema, body: RecordCompletionSchema }),
+
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
+
     try {
+      // Resolve association
       const association = await getAssociation(req);
+
       logger.info(
         { traceId, associationId: association.id },
         'POST /training/modules/{moduleId}/complete - Request started',
       );
+
+      // Authorize: SUPER_ADMIN role required
       const user = await withRole(req, UserRole.SUPER_ADMIN);
+
       logger.info(
         { traceId, userId: user.id },
         'POST /training/modules/{moduleId}/complete - User authorized',
       );
 
+      // Record the completion
       const completion = await recordCompletion({
         associationId: association.id,
         userId: user.id,
@@ -99,18 +138,30 @@ export const postModuleComplete: RequestHandler[] = [
   }),
 ];
 
-/** POST /training/modules/:moduleId/assignments/:userId/complete - Mark an assignment as complete (SECRETARY role required). */
+// ---------------------------------------------------------------------------
+// POST /training/modules/:moduleId/assignments/:userId/complete
+// Description: Mark an assignment as complete (admin action)
+// Security:    SECRETARY role required
+// ---------------------------------------------------------------------------
+
 export const postAdminComplete: RequestHandler[] = [
   validate({ params: AssignmentParamsSchema }),
+
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
+
     try {
+      // Resolve association
       const association = await getAssociation(req);
+
       logger.info(
         { traceId, associationId: association.id },
         'POST /training/modules/{moduleId}/assignments/{userId}/complete - Request started',
       );
+
+      // Authorize: SECRETARY role required
       const actor = await withRole(req, UserRole.SECRETARY);
+
       logger.info(
         { traceId, userId: actor.id },
         'POST /training/modules/{moduleId}/assignments/{userId}/complete - User authorized',
@@ -119,6 +170,7 @@ export const postAdminComplete: RequestHandler[] = [
       const { moduleId, userId } = req.params;
       const contentType = req.headers['content-type'] || '';
 
+      // Parse metadata based on content type (multipart vs JSON)
       let scorePercent: number | undefined;
       let certificateOption: 'none' | 'global' | 'custom' = 'none';
       let certificateNumber: string | undefined;
@@ -152,10 +204,12 @@ export const postAdminComplete: RequestHandler[] = [
         certificateNumber = parsed.certificateNumber;
       }
 
+      // Execute the completion logic
       try {
         let certificateUrl: string | undefined;
         let certificateFileId: string | undefined;
 
+        // Upload custom certificate file if provided
         if (certificateOption === 'custom' && file && file.size > 0) {
           const webFile = new File([file.buffer], file.originalname, { type: file.mimetype });
           const uploadResult = await uploadToBucket(

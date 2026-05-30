@@ -1,10 +1,15 @@
+// ---- Shared utilities ----
 import { prisma } from '@lib/prisma';
+
+// ---- Interfaces ----
 
 /** Parameters for finding a certificate template. */
 interface FindCertificateTemplateProps {
   associationId: string;
   moduleId: string;
 }
+
+// ---- Service ----
 
 /**
  * Finds the certificate template linked to a training module.

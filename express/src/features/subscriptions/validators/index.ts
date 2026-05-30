@@ -1,4 +1,9 @@
+// ---------------------------------------------------------------------------
+// External libs
+// ---------------------------------------------------------------------------
 import { z } from 'zod';
+
+// ---- Create subscription plan ------------------------------------------------
 
 /** Schema for creating a new subscription plan. */
 export const CreateSubscriptionPlanSchema = z.object({
@@ -17,10 +22,14 @@ export const CreateSubscriptionPlanSchema = z.object({
 /** Input type inferred from CreateSubscriptionPlanSchema. */
 export type CreateSubscriptionPlanInput = z.infer<typeof CreateSubscriptionPlanSchema>;
 
+// ---- Subscribe ---------------------------------------------------------------
+
 /** Schema for validating subscription signup requests. */
 export const SubscribeSchema = z.object({
   planId: z.uuid(),
 });
+
+// ---- Waive subscription -----------------------------------------------------
 
 /** Schema for validating subscription waiver requests. */
 export const WaiveSubscriptionSchema = z.object({
@@ -28,9 +37,12 @@ export const WaiveSubscriptionSchema = z.object({
   reason: z.string().min(1),
 });
 
+// ---- Upgrade subscription ----------------------------------------------------
+
 /** Schema for validating subscription upgrade requests. */
 export const UpgradeSubscriptionSchema = z.object({
   planId: z.uuid(),
 });
+
 /** Input type inferred from UpgradeSubscriptionSchema. */
 export type UpgradeSubscriptionInput = z.infer<typeof UpgradeSubscriptionSchema>;

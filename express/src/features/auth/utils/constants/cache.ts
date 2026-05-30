@@ -1,3 +1,5 @@
+// ---- Auth Cache Keys ----
+
 export const AUTH_CACHE_KEY = {
   me: (userId: string) => `auth:user:${userId}`,
 };

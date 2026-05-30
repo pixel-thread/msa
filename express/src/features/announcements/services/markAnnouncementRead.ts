@@ -1,44 +1,60 @@
+/**
+ * @file markAnnouncementRead.ts
+ * @description Service for marking an announcement as read by a user.
+ *
+ * @module features/announcements/services
+ */
+
 import { prisma } from '@lib/prisma';
 
 import { NotFoundError } from '@src/shared/errors';
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-/** Props for marking an announcement as read. */
-interface MarkAnnouncementReadProps {
-  /** The announcement to mark as read. */
+/**
+ * Props for marking an announcement as read.
+ *
+ * @interface MarkAnnouncementReadProps
+ */
+export interface MarkAnnouncementReadProps {
+  /** The unique ID of the announcement. */
   announcementId: string;
-  /** The user reading the announcement. */
+
+  /** The ID of the user reading the announcement. */
   userId: string;
-  /** The association scoping the lookup. */
+
+  /** The ID of the association scoping the lookup. */
   associationId: string;
 }
 
-// ---------------------------------------------------------------------------
-// Mark announcement as read
-// ---------------------------------------------------------------------------
-
 /**
  * Mark an announcement as read by a user.
- * Creates a new read receipt or updates the read timestamp of an existing one.
+ *
+ * This service confirms the announcement exists within the association scope
+ * and then upserts a read receipt record — creating it if it's the first read,
+ * or updating the timestamp if the user is rereading.
+ *
+ * @param {MarkAnnouncementReadProps} props - The mark-read properties.
+ * @returns {Promise<any>} The created or updated read receipt record.
+ * @throws {NotFoundError} If the announcement is not found.
  */
 export async function markAnnouncementRead({
   announcementId,
   userId,
   associationId,
 }: MarkAnnouncementReadProps) {
-  // Confirm the announcement exists within the association
+  // 1. Verification: Confirm the announcement exists within the association
   const announcement = await prisma.announcement.findUnique({
-    where: { id: announcementId, associationId },
+    where: {
+      id: announcementId,
+      associationId,
+    },
   });
 
   if (!announcement) {
     throw new NotFoundError('Announcement');
   }
 
-  // Upsert the read receipt — create if first read, otherwise update the timestamp
+  // 2. Persistence: Upsert the read receipt
+  // (create if first read, otherwise update the readAt timestamp)
   const readReceipt = await prisma.announcementRead.upsert({
     where: {
       announcementId_userId: {

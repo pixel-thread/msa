@@ -1,37 +1,37 @@
+/**
+ * @file Associations Route Handlers
+ * @description This file contains the request handlers for managing associations in the admin panel.
+ * It provides CRUD operations and member assignment for associations.
+ */
+
 import { Request, NextFunction, Response } from 'express';
 import type { RequestHandler } from 'express';
 
-// Shared utilities
+import { UserRole } from '@prisma/client';
+
 import { validate } from '@src/shared/lib/validate';
+import { prisma } from '@src/shared/lib/prisma';
 import { success } from '@src/shared/utils/responses';
 import { ConflictError, NotFoundError } from '@src/shared/errors';
 import { withRole } from '@src/shared/utils/with-role';
 import { asyncHandler } from '@src/shared/utils/async-handler';
 import { logger } from '@src/shared/logger';
 
-// Prisma
-import { UserRole } from '@prisma/client';
-import { prisma } from '@src/shared/lib/prisma';
-
-// Association services
 import { findManyAssociation } from '@src/features/associations/services/findManyAssociation';
 import { findFirstAssociation } from '@src/features/associations/services/findFirstAssociation';
 import { findUniqueAssociation } from '@src/features/associations/services/findUniqueAssociation';
 import { createAssociation } from '@src/features/associations/services/createAssociation';
 import { updateAssociation } from '@src/features/associations/services/updateAssociation';
 import { deleteAssociation } from '@src/features/associations/services/deleteAssociation';
-
-// Validators & types
 import { CreateAssociationSchema } from '@src/features/associations/validators';
 import { AddAssociationMemberSchema } from '@src/features/associations/validators/associations';
 import type { CreateAssociationInput } from '@validator/associations';
 
-// ---------------------------------------------------------------------------
-// GET /api/admin/associations
-// Retrieve all active associations, newest first.
-// Security: SUPER_ADMIN role required.
-// ---------------------------------------------------------------------------
-
+/**
+ * @description Retrieve all active associations, newest first.
+ * @security SUPER_ADMIN role required.
+ * @route GET /api/admin/associations
+ */
 export const getAssociations: RequestHandler[] = [
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -57,16 +57,18 @@ export const getAssociations: RequestHandler[] = [
       'GET /api/admin/associations - Success',
     );
 
-    return success(res, { data: data.associations, meta: data.pagination });
+    return success(res, {
+      data: data.associations,
+      meta: data.pagination,
+    });
   }),
 ];
 
-// ---------------------------------------------------------------------------
-// POST /api/admin/associations
-// Create a new association. Slug and name must be unique among active records.
-// Security: SUPER_ADMIN role required.
-// ---------------------------------------------------------------------------
-
+/**
+ * @description Create a new association. Slug and name must be unique among active records.
+ * @security SUPER_ADMIN role required.
+ * @route POST /api/admin/associations
+ */
 export const postAssociation: RequestHandler[] = [
   validate({ body: CreateAssociationSchema }),
 
@@ -116,16 +118,22 @@ export const postAssociation: RequestHandler[] = [
       'POST /api/admin/associations - Success',
     );
 
-    return success(res, { data: association, message: 'Association created successfully' }, 201);
+    return success(
+      res,
+      {
+        data: association,
+        message: 'Association created successfully',
+      },
+      201,
+    );
   }),
 ];
 
-// ---------------------------------------------------------------------------
-// GET /api/admin/associations/:id
-// Retrieve a single association by its ID.
-// Security: SUPER_ADMIN role required.
-// ---------------------------------------------------------------------------
-
+/**
+ * @description Retrieve a single association by its ID.
+ * @security SUPER_ADMIN role required.
+ * @route GET /api/admin/associations/:id
+ */
 export const getAssociationById: RequestHandler[] = [
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -160,16 +168,18 @@ export const getAssociationById: RequestHandler[] = [
 
     logger.info({ traceId, id: associationId }, 'GET /api/admin/associations/[id] - Success');
 
-    return success(res, { data: association, message: 'Association found successfully' });
+    return success(res, {
+      data: association,
+      message: 'Association found successfully',
+    });
   }),
 ];
 
-// ---------------------------------------------------------------------------
-// PUT /api/admin/associations/:id
-// Update an existing association. Checks for slug/name collisions with other records.
-// Security: SUPER_ADMIN role required.
-// ---------------------------------------------------------------------------
-
+/**
+ * @description Update an existing association. Checks for slug/name collisions with other records.
+ * @security SUPER_ADMIN role required.
+ * @route PUT /api/admin/associations/:id
+ */
 export const putAssociation: RequestHandler[] = [
   validate({ body: CreateAssociationSchema }),
 
@@ -232,16 +242,22 @@ export const putAssociation: RequestHandler[] = [
 
     logger.info({ traceId, id: associationId }, 'PUT /api/admin/associations/[id] - Success');
 
-    return success(res, { data: updated, message: 'Association updated successfully' }, 200);
+    return success(
+      res,
+      {
+        data: updated,
+        message: 'Association updated successfully',
+      },
+      200,
+    );
   }),
 ];
 
-// ---------------------------------------------------------------------------
-// DELETE /api/admin/associations/:id
-// Soft-delete an association (sets status to inactive / removed).
-// Security: SUPER_ADMIN role required.
-// ---------------------------------------------------------------------------
-
+/**
+ * @description Soft-delete an association (sets status to inactive / removed).
+ * @security SUPER_ADMIN role required.
+ * @route DELETE /api/admin/associations/:id
+ */
 export const deleteAssociationById: RequestHandler[] = [
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -281,16 +297,22 @@ export const deleteAssociationById: RequestHandler[] = [
 
     logger.info({ traceId, id: associationId }, 'DELETE /api/admin/associations/[id] - Success');
 
-    return success(res, { data: deleted, message: 'Association deleted successfully' }, 200);
+    return success(
+      res,
+      {
+        data: deleted,
+        message: 'Association deleted successfully',
+      },
+      200,
+    );
   }),
 ];
 
-// ---------------------------------------------------------------------------
-// POST /api/admin/associations/:id/member
-// Assign an existing user to an association. Guards against duplicate assignment.
-// Security: SUPER_ADMIN role required.
-// ---------------------------------------------------------------------------
-
+/**
+ * @description Assign an existing user to an association. Guards against duplicate assignment.
+ * @security SUPER_ADMIN role required.
+ * @route POST /api/admin/associations/:id/member
+ */
 export const postAssociationMember: RequestHandler[] = [
   validate({ body: AddAssociationMemberSchema }),
 
@@ -356,7 +378,13 @@ export const postAssociationMember: RequestHandler[] = [
     const updatedUser = await prisma.user.update({
       where: { id: req.body?.user_id },
       data: { association: { connect: { id: req.body?.association_id } } },
-      select: { id: true, role: true, associationId: true, email: true, name: true },
+      select: {
+        id: true,
+        role: true,
+        associationId: true,
+        email: true,
+        name: true,
+      },
     });
 
     logger.info(
@@ -368,6 +396,9 @@ export const postAssociationMember: RequestHandler[] = [
       'POST /api/admin/associations/[id]/member - Success',
     );
 
-    return success(res, { data: updatedUser, message: 'User association change successfully' });
+    return success(res, {
+      data: updatedUser,
+      message: 'User association change successfully',
+    });
   }),
 ];

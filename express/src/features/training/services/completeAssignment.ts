@@ -1,6 +1,11 @@
+// ---- External libs ----
+import { AuditAction, Prisma, TrainingAssignmentStatus } from '@prisma/client';
+
+// ---- Shared utilities ----
 import { prisma } from '@lib/prisma';
 import { PAGE_SIZE } from '@src/shared/constants';
-import { AuditAction, Prisma, TrainingAssignmentStatus } from '@prisma/client';
+
+// ---- Interfaces ----
 
 /** Parameters for completing a training assignment. */
 interface CompleteAssignmentProps {
@@ -15,7 +20,22 @@ interface CompleteAssignmentProps {
   certificateNumber?: string;
 }
 
-/** Mark a training assignment as complete, create completion record, and optionally issue a certificate. */
+/** Parameters for retrieving assigned users. */
+interface GetAssignedUsersProps {
+  associationId: string;
+  moduleId: string;
+  page?: number;
+}
+
+// ---- Services ----
+
+/**
+ * Mark a training assignment as complete, create completion record, and optionally issue a certificate.
+ *
+ * Business intent: When a secretary approves completion, the assignment status moves to COMPLETED,
+ * a TrainingCompletion record is upserted, and if certificateOption is 'global' or 'custom',
+ * a TrainingCertificate is issued. For 'global' certificates, the module's template URL is used.
+ */
 export async function completeAssignment({
   associationId,
   moduleId,
@@ -28,6 +48,7 @@ export async function completeAssignment({
   certificateNumber,
 }: CompleteAssignmentProps) {
   return await prisma.$transaction(async (tx) => {
+    // Fetch the assignment with module and certificate template info
     const assignment = await tx.trainingAssignment.findUniqueOrThrow({
       where: { moduleId_userId: { moduleId, userId } },
       include: {
@@ -46,10 +67,12 @@ export async function completeAssignment({
       },
     });
 
+    // Cross-tenant safety check: verify the module belongs to this association
     if (assignment.module.associationId !== associationId) {
       throw new Error('Module does not belong to this association');
     }
 
+    // Update assignment status to COMPLETED
     const updatedAssignment = await tx.trainingAssignment.update({
       where: { moduleId_userId: { moduleId, userId } },
       data: {
@@ -58,6 +81,7 @@ export async function completeAssignment({
       },
     });
 
+    // Upsert completion record
     const completion = await tx.trainingCompletion.upsert({
       where: { userId_moduleId: { userId, moduleId } },
       create: {
@@ -75,11 +99,13 @@ export async function completeAssignment({
     let certUrl = certificateUrl;
     let certFileId = certificateFileId;
 
+    // For 'global' certificates, use the module's template URL
     if (certificateOption === 'global' && assignment.module.certificateTemplate?.certificateUrl) {
       certUrl = assignment.module.certificateTemplate.certificateUrl;
       certFileId = assignment.module.certificateTemplate.fileId || undefined;
     }
 
+    // Issue or update certificate if applicable
     if (certificateOption !== 'none' && certUrl) {
       await tx.trainingCertificate.upsert({
         where: { userId_moduleId: { userId, moduleId } },
@@ -98,6 +124,7 @@ export async function completeAssignment({
       });
     }
 
+    // Audit the completion action
     await tx.auditLog.create({
       data: {
         associationId,
@@ -122,14 +149,12 @@ export async function completeAssignment({
   });
 }
 
-/** Parameters for retrieving assigned users. */
-interface GetAssignedUsersProps {
-  associationId: string;
-  moduleId: string;
-  page?: number;
-}
-
-/** Retrieve paginated list of users assigned to a module with their completion status. */
+/**
+ * Retrieve paginated list of users assigned to a module with their completion status.
+ *
+ * Business intent: Secretaries view the assignment roster alongside each user's
+ * completion data to track training progress.
+ */
 export async function getAssignedUsers({
   associationId,
   moduleId,
@@ -165,6 +190,7 @@ export async function getAssignedUsers({
     }),
   ]);
 
+  // Batch-fetch completions for all assigned users
   const completions = await prisma.trainingCompletion.findMany({
     where: {
       moduleId,

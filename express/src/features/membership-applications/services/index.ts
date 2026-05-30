@@ -1,9 +1,20 @@
+// ---- Membership Applications - Services
+
+// ---- Imports
+
+// ---- External Libraries
+
 import { ApplicationStatus, Prisma, UserRole } from '@prisma/client';
+
+// ---- Shared Utilities
+
 import { prisma } from '@src/shared/lib/prisma';
 import { generateRandomPassword, hashPassword } from '@src/shared/lib/password';
 import { ConflictError, NotFoundError } from '@src/shared/errors';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 import { PAGE_SIZE } from '@src/shared/constants';
+
+// ---- Types (Private)
 
 /** Parameters for creating a membership application. */
 type CreateApplicationProps = {
@@ -22,7 +33,37 @@ type CreateApplicationProps = {
   postalCode?: string;
 };
 
-/** Create a new membership application with duplicate email/phone checks. */
+/** Parameters for retrieving membership applications. */
+type GetApplicationsProps = {
+  where?: Prisma.MembershipApplicationWhereInput;
+  page?: number;
+};
+
+/** Parameters for approving a membership application. */
+type ApproveApplicationProps = {
+  applicationId: string;
+  memberTypeId: string;
+  role?: UserRole;
+  dateOfJoiningGovt?: Date;
+  reviewedBy: string;
+};
+
+/** Parameters for rejecting a membership application. */
+type RejectApplicationProps = {
+  applicationId: string;
+  rejectionReason: string;
+  reviewedBy: string;
+};
+
+// ---- Create Membership Application
+
+/**
+ * Create a new membership application with duplicate email/phone checks.
+ *
+ * Business logic:
+ * - Checks for existing applications with the same email or phone within the same association
+ * - Throws ConflictError if a duplicate is found
+ */
 export async function createMembershipApplication(data: CreateApplicationProps) {
   const existing = await prisma.membershipApplication.findFirst({
     where: {
@@ -67,13 +108,11 @@ export async function createMembershipApplication(data: CreateApplicationProps) 
   });
 }
 
-/** Parameters for retrieving membership applications. */
-type GetApplicationsProps = {
-  where?: Prisma.MembershipApplicationWhereInput;
-  page?: number;
-};
+// ---- Get Membership Applications (Paginated)
 
-/** Retrieve paginated membership applications with optional filters. */
+/**
+ * Retrieve paginated membership applications with optional filters.
+ */
 export async function getMembershipApplications({ where = {}, page = 1 }: GetApplicationsProps) {
   const pageSize = PAGE_SIZE;
   const skip = (page - 1) * pageSize;
@@ -94,23 +133,29 @@ export async function getMembershipApplications({ where = {}, page = 1 }: GetApp
   };
 }
 
-/** Find a single membership application by unique criteria. */
+// ---- Get Single Membership Application
+
+/**
+ * Find a single membership application by unique criteria.
+ */
 export async function getMembershipApplication(
   where: Prisma.MembershipApplicationWhereUniqueInput,
 ) {
   return prisma.membershipApplication.findUnique({ where });
 }
 
-/** Parameters for approving a membership application. */
-type ApproveApplicationProps = {
-  applicationId: string;
-  memberTypeId: string;
-  role?: UserRole;
-  dateOfJoiningGovt?: Date;
-  reviewedBy: string;
-};
+// ---- Approve Membership Application
 
-/** Approve a membership application, create a user account, and return temp credentials. */
+/**
+ * Approve a membership application, create a user account, and return temp credentials.
+ *
+ * Business logic:
+ * - Verifies the application exists, is not already approved/rejected
+ * - Finds the association by slug
+ * - Checks for existing user with same email in the association
+ * - Generates a random password and hashes it
+ * - Creates the user account and updates the application status to APPROVED
+ */
 export async function approveMembershipApplication({
   applicationId,
   memberTypeId,
@@ -196,14 +241,15 @@ export async function approveMembershipApplication({
   };
 }
 
-/** Parameters for rejecting a membership application. */
-type RejectApplicationProps = {
-  applicationId: string;
-  rejectionReason: string;
-  reviewedBy: string;
-};
+// ---- Reject Membership Application
 
-/** Reject a pending membership application with a reason. */
+/**
+ * Reject a pending membership application with a reason.
+ *
+ * Business logic:
+ * - Verifies the application exists and is in PENDING status
+ * - Only pending applications can be rejected
+ */
 export async function rejectMembershipApplication({
   applicationId,
   rejectionReason,

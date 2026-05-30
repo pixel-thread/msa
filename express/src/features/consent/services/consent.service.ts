@@ -1,26 +1,47 @@
+// ---- Consent service
+// ---- Business intent: Manage user consent records in compliance with DPDP Act 2023.
+// ---- Each consent action is persisted as a receipt and audited via the audit-log trail.
+
+// Shared utilities
+import { NotFoundError, BadRequestError } from '@src/shared/errors';
+import { PAGE_SIZE } from '@src/shared/constants';
+import { buildPagination } from '@src/shared/utils';
+
+// Prisma
 import { prisma } from '@src/shared/lib/prisma';
 import { AuditAction, ConsentPurpose, ConsentStatus, Prisma } from '@prisma/client';
+
+// Types
 import {
   UserConsentState,
   ConsentReceiptRecord,
   ConsentSummaryReport,
 } from '../types/consent.types';
+import { PaginationMeta } from '@src/shared/types';
+
+// Validators
 import {
   ConsentUpdateInput,
   UpdateConsentReceiptInput,
   AllConsentRecordsQueryInput,
 } from '../validators/consent.validators';
-import { NotFoundError, BadRequestError } from '@src/shared/errors';
-import { PAGE_SIZE } from '@src/shared/constants';
-import { buildPagination } from '@src/shared/utils';
-import { PaginationMeta } from '@src/shared/types';
+
+// ---- Service class
 
 /**
  * Service for managing user consent according to DPDP Act 2023.
+ *
+ * Handles consent grant/withdraw, retrieval of consent states,
+ * reporting, and audit-logging of all consent receipt changes.
  */
 export class ConsentService {
+  // ---- getUserConsentState
+
   /**
-   * Retrieves the current consent state for a user across all purposes.
+   * Retrieve the current consent state for a user across all purposes.
+   *
+   * Returns the latest status per purpose by ordering receipts by creation date
+   * and using distinct on purpose.
    *
    * @param userId - The ID of the user.
    * @param associationId - The ID of the association.
@@ -48,8 +69,13 @@ export class ConsentService {
     }));
   }
 
+  // ---- updateConsent
+
   /**
-   * Updates consent for a user for one or more purposes.
+   * Update consent for a user for one or more purposes.
+   *
+   * Creates a new consent receipt for each purpose atomically in a transaction.
+   * Supports both grant and withdraw actions via the action field.
    *
    * @param userId - The ID of the user.
    * @param associationId - The ID of the association.
@@ -67,6 +93,8 @@ export class ConsentService {
   ): Promise<ConsentReceiptRecord[]> {
     const { purposes, action, channel, metadata } = input;
 
+    // ---- Create one receipt per purpose in a single transaction
+
     const receipts = await prisma.$transaction(
       purposes.map((purpose) =>
         prisma.consentReceipt.create({
@@ -78,6 +106,7 @@ export class ConsentService {
             channel,
             ipAddress: ipAddress || null,
             userAgent: userAgent || null,
+            // TODO: wire up actual metadata handling (currently stubbed with `{} as any`)
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             metadata: (metadata || {}) as any,
           },
@@ -88,12 +117,17 @@ export class ConsentService {
     return receipts as ConsentReceiptRecord[];
   }
 
+  // ---- getConsentHistory
+
   /**
-   * Retrieves the consent history for a specific user.
+   * Retrieve the consent history for a specific user.
+   *
+   * Returns paginated consent receipts sorted by creation date descending.
    *
    * @param userId - The ID of the user.
    * @param associationId - The ID of the association.
-   * @returns A promise that resolves to an array of ConsentReceiptRecord objects.
+   * @param page - Page number for pagination.
+   * @returns A promise that resolves to an array of ConsentReceiptRecord objects and pagination metadata.
    */
   static async getConsentHistory(
     userId: string,
@@ -101,6 +135,8 @@ export class ConsentService {
     page?: number,
   ): Promise<{ history: ConsentReceiptRecord[]; pagination: PaginationMeta }> {
     const pageNumber = page || 1;
+
+    // ---- Fetch receipts and total count concurrently
 
     const [history, total] = await prisma.$transaction([
       prisma.consentReceipt.findMany({
@@ -129,8 +165,13 @@ export class ConsentService {
     };
   }
 
+  // ---- getConsentReport
+
   /**
-   * Generates a report of consent statuses across the association.
+   * Generate a report of consent statuses across the association.
+   *
+   * For each consent purpose, counts how many users have granted vs withdrawn.
+   * Uses a raw query to get the latest status per user per purpose.
    *
    * @param associationId - The ID of the association.
    * @returns A promise that resolves to an array of ConsentSummaryReport objects.
@@ -163,10 +204,16 @@ export class ConsentService {
     return report;
   }
 
+  // ---- getAllConsentRecords
+
   /**
-   * Retrieves all consent records for the association with pagination and filtering.
+   * Retrieve all consent records for the association with pagination and filtering.
+   *
+   * Supports filtering by purpose, status, and text search (user name/email).
+   *
    * @param associationId - The ID of the association.
    * @param query - Pagination and filter options.
+   * @returns Paginated consent records and total count.
    */
   static async getAllConsentRecords(
     associationId: string,
@@ -174,6 +221,8 @@ export class ConsentService {
   ): Promise<{ records: ConsentReceiptRecord[]; total: number }> {
     const page = query?.page ?? 1;
     const skip = (page - 1) * PAGE_SIZE;
+
+    // ---- Build dynamic where clause from query parameters
 
     const where: Prisma.ConsentReceiptWhereInput = { associationId };
 
@@ -191,6 +240,8 @@ export class ConsentService {
         ],
       };
     }
+
+    // ---- Fetch records and total count concurrently
 
     const [records, total] = await Promise.all([
       prisma.consentReceipt.findMany({
@@ -210,8 +261,12 @@ export class ConsentService {
     return { records: records as unknown as ConsentReceiptRecord[], total };
   }
 
+  // ---- findUniqueConsentReceipt
+
   /**
-   * Finds a single consent receipt by ID within a specific association.
+   * Find a single consent receipt by ID within a specific association.
+   *
+   * Used for individual receipt lookup by DPO users.
    *
    * @param associationId - The association ID.
    * @param receiptId - The receipt ID to look up.
@@ -232,8 +287,13 @@ export class ConsentService {
     return receipt as unknown as ConsentReceiptRecord | null;
   }
 
+  // ---- updateConsentReceipt
+
   /**
-   * Updates a single consent receipt and logs the change in the audit trail.
+   * Update a single consent receipt and log the change in the audit trail.
+   *
+   * Uses a transaction to atomically update the receipt and create an audit log entry.
+   * Only DPO users are authorized to perform this operation.
    *
    * @param associationId - The association ID.
    * @param receiptId - The receipt ID to update.
@@ -247,10 +307,14 @@ export class ConsentService {
     actorId: string,
     data: UpdateConsentReceiptInput,
   ): Promise<ConsentReceiptRecord> {
+    // ---- Verify the receipt exists before attempting update
+
     const existing = await prisma.consentReceipt.findFirst({
       where: { id: receiptId, associationId },
     });
     if (!existing) throw new NotFoundError('Consent receipt not found');
+
+    // ---- Atomically update receipt and write audit log
 
     return (await prisma.$transaction(async (tx) => {
       const updated = await tx.consentReceipt.update({
@@ -277,8 +341,13 @@ export class ConsentService {
     })) as unknown as ConsentReceiptRecord;
   }
 
+  // ---- deleteConsentReceipt
+
   /**
-   * Deletes a single consent receipt and logs the action in the audit trail.
+   * Delete a single consent receipt and log the action in the audit trail.
+   *
+   * Uses a transaction to atomically delete the receipt and create an audit log entry.
+   * Only DPO users are authorized to perform this operation.
    *
    * @param associationId - The association ID.
    * @param receiptId - The receipt ID to delete.
@@ -289,10 +358,14 @@ export class ConsentService {
     receiptId: string,
     actorId: string,
   ): Promise<void> {
+    // ---- Verify the receipt exists before attempting deletion
+
     const existing = await prisma.consentReceipt.findFirst({
       where: { id: receiptId, associationId },
     });
     if (!existing) throw new NotFoundError('Consent receipt not found');
+
+    // ---- Atomically delete receipt and write audit log
 
     await prisma.$transaction(async (tx) => {
       await tx.consentReceipt.delete({ where: { id: receiptId } });
@@ -313,8 +386,13 @@ export class ConsentService {
     });
   }
 
+  // ---- getUserConsentHistoryById
+
   /**
-   * Gets consent history for a specific user (admin view).
+   * Get consent history for a specific user (admin/DPO view).
+   *
+   * Returns paginated consent receipts for the target user,
+   * including associated user profile info (name, email).
    *
    * @param userId - The target user ID.
    * @param associationId - The association ID.
@@ -326,6 +404,8 @@ export class ConsentService {
     associationId: string,
     page: number,
   ): Promise<{ records: ConsentReceiptRecord[]; pagination: PaginationMeta }> {
+    // ---- Fetch records and total count concurrently
+
     const [records, total] = await prisma.$transaction([
       prisma.consentReceipt.findMany({
         where: { userId, associationId },
@@ -343,6 +423,7 @@ export class ConsentService {
         where: { userId, associationId },
       }),
     ]);
+
     return {
       records: records as ConsentReceiptRecord[],
       pagination: buildPagination(total, page),

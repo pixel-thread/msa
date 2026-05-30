@@ -1,3 +1,5 @@
+// ---- Auth Endpoints ----
+
 export const authEndpoints = {
   signIn: '/auth/sign-in',
   signInResendMfa: '/auth/sign-in/resend',

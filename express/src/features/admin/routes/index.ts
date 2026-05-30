@@ -1,13 +1,13 @@
-// ---------------------------------------------------------------------------
-// Admin feature router — aggregates all admin sub-routes behind authentication
-// ---------------------------------------------------------------------------
+/**
+ * @file Admin Router
+ * @description This file aggregates all admin-related feature routes behind a central router.
+ * It ensures all admin routes are protected by the authentication middleware.
+ */
 
 import { Router } from 'express';
 
-// Middleware
 import { auth } from '@src/middleware/auth';
 
-// Route handlers — associations
 import {
   getAssociations,
   postAssociation,
@@ -16,16 +16,15 @@ import {
   deleteAssociationById,
   postAssociationMember,
 } from './associations.route';
-
-// Route handlers — membership applications
 import {
   getMembershipApplicationsHandler,
   postApproveApplication,
   postRejectApplication,
 } from './membership-applications.route';
 
-// ---------------------------------------------------------------------------
-
+/**
+ * @description Central router for all admin features.
+ */
 const router: Router = Router();
 
 // All admin routes require authentication — every handler inherits this guard

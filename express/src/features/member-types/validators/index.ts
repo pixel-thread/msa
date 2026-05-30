@@ -1,4 +1,14 @@
+// ---------------------------------------------------------------------------
+// External libs
+// ---------------------------------------------------------------------------
+
 import { z } from 'zod';
+
+// ---------------------------------------------------------------------------
+// Member-type validators
+//
+// Schemas for member-type CRUD operations and path parameters.
+// ---------------------------------------------------------------------------
 
 /** Schema for creating a new member type. */
 export const CreateMemberTypeSchema = z.object({

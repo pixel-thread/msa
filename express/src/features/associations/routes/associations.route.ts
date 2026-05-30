@@ -1,53 +1,54 @@
+/**
+ * @file Associations Route Handlers
+ * @description This file contains the request handlers for the associations feature.
+ * It provides operations for viewing, creating, updating, and managing associations.
+ */
+
 import { Request, Response, NextFunction } from 'express';
 import type { RequestHandler } from 'express';
 import { z } from 'zod';
 
-// Shared utilities
+import { UserRole } from '@prisma/client';
+
+import { prisma } from '@src/shared/lib/prisma';
 import { validate } from '@src/shared/lib/validate';
 import { success } from '@src/shared/utils/responses';
-import { ConflictError, NotFoundError, UnauthorizedError, ValidationError } from '@src/shared/errors';
+import {
+  ConflictError,
+  NotFoundError,
+  UnauthorizedError,
+  ValidationError,
+} from '@src/shared/errors';
 import { withRole } from '@src/shared/utils/with-role';
 import { asyncHandler } from '@src/shared/utils/async-handler';
 import { logger } from '@src/shared/logger';
-
-// Prisma
-import { UserRole } from '@prisma/client';
-import { prisma } from '@src/shared/lib/prisma';
-
-// Storage
 import { uploadToBucket } from '@src/shared/lib/supabase/storage';
+import { getAssociation } from '@src/shared/services/association/get-association';
 
-// Services
 import { createAssociation } from '@src/features/associations/services/createAssociation';
 import { findFirstAssociation } from '@src/features/associations/services/findFirstAssociation';
 import { findUniqueAssociation } from '@src/features/associations/services/findUniqueAssociation';
 import { updateAssociation } from '@src/features/associations/services/updateAssociation';
 import { findUniqueMember } from '@src/features/members/services/findUniqueMember';
 import { updateMember } from '@src/features/members/services/updateMember';
-import { getAssociation } from '@src/shared/services/association/get-association';
-
-// Validators & types
 import {
   CreateAssociationSchema,
   UpdateAssociationSchema,
 } from '@src/features/associations/validators';
 import type { CreateAssociationInput } from '@validator/associations';
 
-// ---------------------------------------------------------------------------
-// Local schemas
-// ---------------------------------------------------------------------------
-
-/** Schema for adding a member to an association. */
+/**
+ * Local schema for adding a member to an association.
+ */
 const BodySchema = z.object({
   memberId: z.string(),
 });
 
-// ---------------------------------------------------------------------------
-// GET /api/associations
-// Retrieve the current user's association.
-// Security: MEMBER role required.
-// ---------------------------------------------------------------------------
-
+/**
+ * @description Retrieve the current user's association.
+ * @security MEMBER role required.
+ * @route GET /api/associations
+ */
 export const getAssociationByUser: RequestHandler[] = [
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -65,25 +66,30 @@ export const getAssociationByUser: RequestHandler[] = [
       'GET /api/associations - User authorized',
     );
 
-    logger.info({ traceId, associationId: association.id }, 'GET /api/associations - Success');
+    logger.info(
+      { traceId, associationId: association.id },
+      'GET /api/associations - Success',
+    );
 
     return success(res, { data: association });
   }),
 ];
 
-// ---------------------------------------------------------------------------
-// POST /api/associations
-// Create a new association. Slug and name must be unique among active records.
-// Security: SUPER_ADMIN role required.
-// ---------------------------------------------------------------------------
-
+/**
+ * @description Create a new association. Slug and name must be unique among active records.
+ * @security SUPER_ADMIN role required.
+ * @route POST /api/associations
+ */
 export const postAssociationCreate: RequestHandler[] = [
   validate({ body: CreateAssociationSchema }),
 
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
 
-    logger.info({ traceId, name: req.body?.name }, 'POST /api/associations - Request started');
+    logger.info(
+      { traceId, name: req.body?.name },
+      'POST /api/associations - Request started',
+    );
 
     // Enforce SUPER_ADMIN role — only super admins can create associations
     const user = await withRole(req, UserRole.SUPER_ADMIN);
@@ -114,20 +120,31 @@ export const postAssociationCreate: RequestHandler[] = [
     }
 
     // Persist the new association
-    const association = await createAssociation({ data: req.body as CreateAssociationInput });
+    const association = await createAssociation({
+      data: req.body as CreateAssociationInput,
+    });
 
-    logger.info({ traceId, associationId: association.id }, 'POST /api/associations - Success');
+    logger.info(
+      { traceId, associationId: association.id },
+      'POST /api/associations - Success',
+    );
 
-    return success(res, { data: association, message: 'Association created successfully' }, 201);
+    return success(
+      res,
+      {
+        data: association,
+        message: 'Association created successfully',
+      },
+      201,
+    );
   }),
 ];
 
-// ---------------------------------------------------------------------------
-// GET /api/associations/current
-// Retrieve details of the current user's association.
-// Security: MEMBER role required.
-// ---------------------------------------------------------------------------
-
+/**
+ * @description Retrieve details of the current user's association.
+ * @security MEMBER role required.
+ * @route GET /api/associations/current
+ */
 export const getCurrentAssociation: RequestHandler[] = [
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -146,7 +163,9 @@ export const getCurrentAssociation: RequestHandler[] = [
     );
 
     // Fetch full association details including relations
-    const currentAssociation = await findUniqueAssociation({ where: { id: association.id } });
+    const currentAssociation = await findUniqueAssociation({
+      where: { id: association.id },
+    });
 
     logger.info(
       { traceId, associationId: association.id },
@@ -157,12 +176,11 @@ export const getCurrentAssociation: RequestHandler[] = [
   }),
 ];
 
-// ---------------------------------------------------------------------------
-// GET /api/associations/:associationId
-// Retrieve a single association by ID.
-// Security: SUPER_ADMIN role required.
-// ---------------------------------------------------------------------------
-
+/**
+ * @description Retrieve a single association by ID.
+ * @security SUPER_ADMIN role required.
+ * @route GET /api/associations/:associationId
+ */
 export const getAssociationDetail: RequestHandler[] = [
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -200,16 +218,18 @@ export const getAssociationDetail: RequestHandler[] = [
       'GET /api/associations/[associationId] - Success',
     );
 
-    return success(res, { data: association, message: 'Association found successfully' });
+    return success(res, {
+      data: association,
+      message: 'Association found successfully',
+    });
   }),
 ];
 
-// ---------------------------------------------------------------------------
-// PATCH /api/associations/:associationId
-// Update an existing association. Checks for slug/name collisions with other records.
-// Security: SUPER_ADMIN role required.
-// ---------------------------------------------------------------------------
-
+/**
+ * @description Update an existing association. Checks for slug/name collisions with other records.
+ * @security SUPER_ADMIN role required.
+ * @route PATCH /api/associations/:associationId
+ */
 export const patchAssociationDetail: RequestHandler[] = [
   validate({ body: UpdateAssociationSchema }),
 
@@ -275,16 +295,22 @@ export const patchAssociationDetail: RequestHandler[] = [
       'PATCH /api/associations/[associationId] - Success',
     );
 
-    return success(res, { data: updated, message: 'Association updated successfully' }, 200);
+    return success(
+      res,
+      {
+        data: updated,
+        message: 'Association updated successfully',
+      },
+      200,
+    );
   }),
 ];
 
-// ---------------------------------------------------------------------------
-// POST /api/associations/:associationId/deactivate
-// Deactivate an association (soft-disable).
-// Security: SUPER_ADMIN role required.
-// ---------------------------------------------------------------------------
-
+/**
+ * @description Deactivate an association (soft-disable).
+ * @security SUPER_ADMIN role required.
+ * @route POST /api/associations/:associationId/deactivate
+ */
 export const postDeactivateAssociation: RequestHandler[] = [
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -309,8 +335,7 @@ export const postDeactivateAssociation: RequestHandler[] = [
     if (!userId) {
       logger.error(
         { traceId },
-        'POST /api/associations/[associationId]/deactivate - '
-          + 'Unauthorized (missing x-user-id header)',
+        'POST /api/associations/[associationId]/deactivate - Unauthorized (missing x-user-id header)',
       );
 
       throw new UnauthorizedError('Unauthorized');
@@ -319,15 +344,16 @@ export const postDeactivateAssociation: RequestHandler[] = [
     if (!associationId) {
       logger.error(
         { traceId },
-        'POST /api/associations/[associationId]/deactivate - '
-          + 'Association ID is required',
+        'POST /api/associations/[associationId]/deactivate - Association ID is required',
       );
 
       throw new UnauthorizedError('Association ID is required');
     }
 
     // Confirm the association exists before deactivation
-    const isAssociationExist = await findUniqueAssociation({ where: { id: associationId } });
+    const isAssociationExist = await findUniqueAssociation({
+      where: { id: associationId },
+    });
 
     if (!isAssociationExist) {
       logger.error(
@@ -356,12 +382,11 @@ export const postDeactivateAssociation: RequestHandler[] = [
   }),
 ];
 
-// ---------------------------------------------------------------------------
-// POST /api/associations/:associationId/logo
-// Upload a logo image for the association.
-// Security: SUPER_ADMIN role required.
-// ---------------------------------------------------------------------------
-
+/**
+ * @description Upload a logo image for the association.
+ * @security SUPER_ADMIN role required.
+ * @route POST /api/associations/:associationId/logo
+ */
 export const postUploadLogo: RequestHandler[] = [
   asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
     const traceId = (req.traceId as string) || '';
@@ -383,7 +408,9 @@ export const postUploadLogo: RequestHandler[] = [
     );
 
     // Confirm the association record exists
-    const existing = await prisma.association.findUnique({ where: { id: association.id } });
+    const existing = await prisma.association.findUnique({
+      where: { id: association.id },
+    });
 
     if (!existing) {
       logger.error(
@@ -418,7 +445,10 @@ export const postUploadLogo: RequestHandler[] = [
     return success(
       res,
       {
-        data: { key: uploadResult.key, url: uploadResult.url },
+        data: {
+          key: uploadResult.key,
+          url: uploadResult.url,
+        },
         message: 'Logo uploaded successfully',
       },
       201,
@@ -426,12 +456,11 @@ export const postUploadLogo: RequestHandler[] = [
   }),
 ];
 
-// ---------------------------------------------------------------------------
-// POST /api/associations/:associationId/members
-// Add an existing member to the association. Guards against duplicate assignment.
-// Security: PRESIDENT role required.
-// ---------------------------------------------------------------------------
-
+/**
+ * @description Add an existing member to the association. Guards against duplicate assignment.
+ * @security PRESIDENT role required.
+ * @route POST /api/associations/:associationId/members
+ */
 export const postAddMember: RequestHandler[] = [
   validate({ body: BodySchema }),
 
@@ -469,7 +498,9 @@ export const postAddMember: RequestHandler[] = [
     }
 
     // Verify the target member exists
-    const existingMember = await findUniqueMember({ where: { id: req.body.memberId } });
+    const existingMember = await findUniqueMember({
+      where: { id: req.body.memberId },
+    });
 
     if (!existingMember) {
       logger.error(
@@ -501,7 +532,11 @@ export const postAddMember: RequestHandler[] = [
     });
 
     logger.info(
-      { traceId, targetMemberId: req.body.memberId, associationId: association.id },
+      {
+        traceId,
+        targetMemberId: req.body.memberId,
+        associationId: association.id,
+      },
       'POST /api/associations/[associationId]/members - Success',
     );
 
