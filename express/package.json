@@ -2,12 +2,13 @@
   "name": "mfsa-api",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
+  "type": "commonjs",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "postinstall": "prisma generate",
-    "build": "tsc",
-    "start": "node dist/index.js",
+    "build": "tsc && tsc-alias",
+    "start": "node -r tsconfig-paths/register dist/index.js",
     "format": "prettier --write \"src/**/*.{ts,js,json}\"",
     "lint": "eslint src/ --ext .ts",
     "lint:fix": "eslint src/ --ext .ts --fix",
@@ -38,6 +39,7 @@
     "razorpay": "^2.9.6",
     "resend": "^6.12.3",
     "ssh2-sftp-client": "^12.1.1",
+    "tsconfig-paths": "^4.2.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -60,6 +62,7 @@
     "prisma": "^7.8.0",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.11",
+    "tsc-alias": "^1.8.17",
     "tsx": "^4.21.0",
     "typescript": "^5",
     "typescript-eslint": "^8.60.0"
