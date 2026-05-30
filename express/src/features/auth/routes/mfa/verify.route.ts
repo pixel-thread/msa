@@ -16,31 +16,31 @@ export const postMfaVerify = [
   validate({ body: VerifyMfaSchema }),
   async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-      const userId = req.headers['x-user-id'] as string;
-      logger.info({ traceId, userId }, 'POST /api/auth/mfa/verify - Request started');
-      if (!userId) throw new UnauthorizedError('Unauthorized');
+    const userId = req.headers['x-user-id'] as string;
+    logger.info({ traceId, userId }, 'POST /api/auth/mfa/verify - Request started');
+    if (!userId) throw new UnauthorizedError('Unauthorized');
 
-      const { code } = req.body;
-      const hashedCode = hashToken(code);
+    const { code } = req.body;
+    const hashedCode = hashToken(code);
 
-      const verificationCode = await getVerificationCodeFirst({
-        where: { userId, type: 'SETUP_MFA', expiresAt: { gt: new Date() }, usedAt: null },
-        orderBy: { createdAt: 'desc' },
-      });
+    const verificationCode = await getVerificationCodeFirst({
+      where: { userId, type: 'SETUP_MFA', expiresAt: { gt: new Date() }, usedAt: null },
+      orderBy: { createdAt: 'desc' },
+    });
 
-      if (!verificationCode) throw new UnauthorizedError('Invalid or expired verification code');
-      if (verificationCode.attempts >= env.OTP_MAX_ATTEMPTS) {
-        throw new TooManyRequestsError('Too many attempts. Please request a new code');
-      }
-      if (verificationCode.code !== hashedCode) {
-        await updateVerificationCode({ where: { id: verificationCode.id }, data: { attempts: { increment: 1 } } });
-        throw new UnauthorizedError('Invalid verification code');
-      }
+    if (!verificationCode) throw new UnauthorizedError('Invalid or expired verification code');
+    if (verificationCode.attempts >= env.OTP_MAX_ATTEMPTS) {
+      throw new TooManyRequestsError('Too many attempts. Please request a new code');
+    }
+    if (verificationCode.code !== hashedCode) {
+      await updateVerificationCode({ where: { id: verificationCode.id }, data: { attempts: { increment: 1 } } });
+      throw new UnauthorizedError('Invalid verification code');
+    }
 
-      await updateVerificationCode({ where: { id: verificationCode.id }, data: { usedAt: new Date() } });
-      await updateMember({ where: { id: userId }, data: { mfaEnabled: true } });
+    await updateVerificationCode({ where: { id: verificationCode.id }, data: { usedAt: new Date() } });
+    await updateMember({ where: { id: userId }, data: { mfaEnabled: true } });
 
-      logger.info({ traceId, userId }, 'POST /api/auth/mfa/verify - Success');
-      return success(res, { message: 'MFA enabled successfully', data: { mfaEnabled: true } });
+    logger.info({ traceId, userId }, 'POST /api/auth/mfa/verify - Success');
+    return success(res, { message: 'MFA enabled successfully', data: { mfaEnabled: true } });
   },
 ];

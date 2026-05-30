@@ -13,35 +13,35 @@ export const getMemberLedger = [
   validate({ params: LedgerRouteParams, query: LedgerQueryParams }),
   async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-      const userId = req.headers['x-user-id'] as string;
-      if (!userId) throw new UnauthorizedError('Unauthorized');
+    const userId = req.headers['x-user-id'] as string;
+    if (!userId) throw new UnauthorizedError('Unauthorized');
 
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        include: { association: true },
-      });
-      if (!user || !user.associationId) throw new ForbiddenError('User association not found');
-      const association = { id: user.association.id, slug: user.association.slug, name: user.association.name };
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { association: true },
+    });
+    if (!user || !user.associationId) throw new ForbiddenError('User association not found');
+    const association = { id: user.association.id, slug: user.association.slug, name: user.association.name };
 
-      logger.info({ traceId, associationId: association.id }, 'GET /api/members/[memberId]/ledger - Request started');
+    logger.info({ traceId, associationId: association.id }, 'GET /api/members/[memberId]/ledger - Request started');
 
-      if (!user.role.includes(UserRole.FINANCE)) throw new ForbiddenError('Insufficient permissions');
+    if (!user.role.includes(UserRole.FINANCE)) throw new ForbiddenError('Insufficient permissions');
 
-      logger.info({ traceId, userId: user.id }, 'GET /api/members/[memberId]/ledger - User authorized');
+    logger.info({ traceId, userId: user.id }, 'GET /api/members/[memberId]/ledger - User authorized');
 
-      const query = req.query as { page?: number };
-      const page = query?.page ?? 1;
+    const query = req.query as { page?: number };
+    const page = query?.page ?? 1;
 
-      const [history, summary] = await Promise.all([
-        getUserPaymentHistory(userId, page),
-        getUserContributionSummary(userId),
-      ]);
+    const [history, summary] = await Promise.all([
+      getUserPaymentHistory(userId, page),
+      getUserContributionSummary(userId),
+    ]);
 
-      logger.info({ traceId, count: history.transactions.length }, 'GET /api/members/[memberId]/ledger - Success');
+    logger.info({ traceId, count: history.transactions.length }, 'GET /api/members/[memberId]/ledger - Success');
 
-      return success(res, {
-        data: { transactions: history.transactions, summary },
-        meta: history.pagination,
-      });
+    return success(res, {
+      data: { transactions: history.transactions, summary },
+      meta: history.pagination,
+    });
   },
 ];

@@ -21,47 +21,46 @@ export const addRole = [
   validate({ body: UpdateUserRoleSchema, params: UpdateUserRoleParamsSchema }),
   async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-      const userId = req.headers['x-user-id'] as string;
-      if (!userId) throw new UnauthorizedError('Unauthorized');
+    const userId = req.headers['x-user-id'] as string;
+    if (!userId) throw new UnauthorizedError('Unauthorized');
 
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        include: { association: true },
-      });
-      if (!user || !user.associationId) throw new ForbiddenError('User association not found');
-      const association = { id: user.association.id, slug: user.association.slug, name: user.association.name };
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { association: true },
+    });
+    if (!user || !user.associationId) throw new ForbiddenError('User association not found');
+    const association = { id: user.association.id, slug: user.association.slug, name: user.association.name };
 
-      logger.info({ traceId, associationId: association.id }, 'POST /api/members/[memberId]/role - Request started');
+    logger.info({ traceId, associationId: association.id }, 'POST /api/members/[memberId]/role - Request started');
 
-      if (!user.role.includes(UserRole.PRESIDENT)) throw new ForbiddenError('Insufficient permissions');
+    if (!user.role.includes(UserRole.PRESIDENT)) throw new ForbiddenError('Insufficient permissions');
 
-      logger.info({ traceId, userId: user.id }, 'POST /api/members/[memberId]/role - User authorized');
+    logger.info({ traceId, userId: user.id }, 'POST /api/members/[memberId]/role - User authorized');
 
-      const params = req.params as z.infer<typeof UpdateUserRoleParamsSchema>;
+    const params = req.params as z.infer<typeof UpdateUserRoleParamsSchema>;
 
-      const target = await findFirstMember({
-        where: { id: params?.memberId, associationId: association.id },
-      });
+    const target = await findFirstMember({
+      where: { id: params?.memberId, associationId: association.id },
+    });
 
-      if (!target) throw new NotFoundError('User does not exist in the association');
+    if (!target) throw new NotFoundError('User does not exist in the association');
 
-      const userRole = target.role;
-      const body = req.body as z.infer<typeof UpdateUserRoleSchema>;
-      const newRole = body?.role as UserRole;
+    const userRole = target.role;
+    const body = req.body as z.infer<typeof UpdateUserRoleSchema>;
+    const newRole = body?.role as UserRole;
 
-      if (userRole.includes(newRole)) {
-        throw new ConflictError('User already has the role');
-      }
+    if (userRole.includes(newRole)) {
+      throw new ConflictError('User already has the role');
+    }
 
-      const updatedUser = await updateMember({
-        where: { id: params?.memberId },
-        data: { role: [...userRole, newRole] },
-      });
+    const updatedUser = await updateMember({
+      where: { id: params?.memberId },
+      data: { role: [...userRole, newRole] },
+    });
 
-      logger.info({ traceId, memberId: params?.memberId, newRole }, 'POST /api/members/[memberId]/role - Success');
+    logger.info({ traceId, memberId: params?.memberId, newRole }, 'POST /api/members/[memberId]/role - Success');
 
-      return success(res, { data: updatedUser, message: 'User role updated successfully' });
-    } catch (e) { next(e); }
+    return success(res, { data: updatedUser, message: 'User role updated successfully' });
   },
 ];
 
@@ -69,46 +68,45 @@ export const removeRole = [
   validate({ body: UpdateUserRoleSchema, params: UpdateUserRoleParamsSchema }),
   async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-      const userId = req.headers['x-user-id'] as string;
-      if (!userId) throw new UnauthorizedError('Unauthorized');
+    const userId = req.headers['x-user-id'] as string;
+    if (!userId) throw new UnauthorizedError('Unauthorized');
 
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        include: { association: true },
-      });
-      if (!user || !user.associationId) throw new ForbiddenError('User association not found');
-      const association = { id: user.association.id, slug: user.association.slug, name: user.association.name };
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { association: true },
+    });
+    if (!user || !user.associationId) throw new ForbiddenError('User association not found');
+    const association = { id: user.association.id, slug: user.association.slug, name: user.association.name };
 
-      logger.info({ traceId, associationId: association.id }, 'PUT /api/members/[memberId]/role - Request started');
+    logger.info({ traceId, associationId: association.id }, 'PUT /api/members/[memberId]/role - Request started');
 
-      if (!user.role.includes(UserRole.PRESIDENT)) throw new ForbiddenError('Insufficient permissions');
+    if (!user.role.includes(UserRole.PRESIDENT)) throw new ForbiddenError('Insufficient permissions');
 
-      logger.info({ traceId, userId: user.id }, 'PUT /api/members/[memberId]/role - User authorized');
+    logger.info({ traceId, userId: user.id }, 'PUT /api/members/[memberId]/role - User authorized');
 
-      const params = req.params as z.infer<typeof UpdateUserRoleParamsSchema>;
+    const params = req.params as z.infer<typeof UpdateUserRoleParamsSchema>;
 
-      const target = await findFirstMember({
-        where: { id: params?.memberId, associationId: association.id },
-      });
+    const target = await findFirstMember({
+      where: { id: params?.memberId, associationId: association.id },
+    });
 
-      if (!target) throw new NotFoundError('User does not exist in the association');
+    if (!target) throw new NotFoundError('User does not exist in the association');
 
-      const userRole = target.role;
-      const body = req.body as z.infer<typeof UpdateUserRoleSchema>;
-      const removeRoleVal = body?.role as UserRole;
+    const userRole = target.role;
+    const body = req.body as z.infer<typeof UpdateUserRoleSchema>;
+    const removeRoleVal = body?.role as UserRole;
 
-      if (!userRole.includes(removeRoleVal)) {
-        throw new ConflictError('User does not have the role');
-      }
+    if (!userRole.includes(removeRoleVal)) {
+      throw new ConflictError('User does not have the role');
+    }
 
-      const updatedUser = await updateMember({
-        where: { id: params?.memberId },
-        data: { role: userRole.filter((role) => role !== removeRoleVal) },
-      });
+    const updatedUser = await updateMember({
+      where: { id: params?.memberId },
+      data: { role: userRole.filter((role) => role !== removeRoleVal) },
+    });
 
-      logger.info({ traceId, memberId: params?.memberId, removeRole: removeRoleVal }, 'PUT /api/members/[memberId]/role - Success');
+    logger.info({ traceId, memberId: params?.memberId, removeRole: removeRoleVal }, 'PUT /api/members/[memberId]/role - Success');
 
-      return success(res, { data: updatedUser, message: 'User role updated successfully' });
-    } catch (e) { next(e); }
+    return success(res, { data: updatedUser, message: 'User role updated successfully' });
   },
 ];

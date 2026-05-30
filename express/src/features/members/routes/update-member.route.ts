@@ -29,55 +29,55 @@ export const updateMemberRoute = [
   validate({ body: AdminOnboardingSchema, params: ParamSchema }),
   async (req: Request, res: Response) => {
     const traceId = (req.headers['x-trace-id'] as string) || '';
-      const userId = req.headers['x-user-id'] as string;
-      if (!userId) throw new UnauthorizedError('Unauthorized');
+    const userId = req.headers['x-user-id'] as string;
+    if (!userId) throw new UnauthorizedError('Unauthorized');
 
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        include: { association: true },
-      });
-      if (!user || !user.associationId) throw new ForbiddenError('User association not found');
-      const association = { id: user.association.id, slug: user.association.slug, name: user.association.name };
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { association: true },
+    });
+    if (!user || !user.associationId) throw new ForbiddenError('User association not found');
+    const association = { id: user.association.id, slug: user.association.slug, name: user.association.name };
 
-      logger.info({ traceId, associationId: association.id }, 'PATCH /api/members/[memberId] - Request started');
+    logger.info({ traceId, associationId: association.id }, 'PATCH /api/members/[memberId] - Request started');
 
-      if (!user.role.includes(UserRole.SECRETARY)) throw new ForbiddenError('Insufficient permissions');
+    if (!user.role.includes(UserRole.SECRETARY)) throw new ForbiddenError('Insufficient permissions');
 
-      logger.info({ traceId, userId: user.id }, 'PATCH /api/members/[memberId] - User authorized');
+    logger.info({ traceId, userId: user.id }, 'PATCH /api/members/[memberId] - User authorized');
 
-      const body = req.body as z.infer<typeof AdminOnboardingSchema>;
-      if (!body) {
-        throw new ValidationError('Invalid request body');
-      }
+    const body = req.body as z.infer<typeof AdminOnboardingSchema>;
+    if (!body) {
+      throw new ValidationError('Invalid request body');
+    }
 
-      const params = req.params as z.infer<typeof ParamSchema>;
-      const memberId = params.memberId;
+    const params = req.params as z.infer<typeof ParamSchema>;
+    const memberId = params.memberId;
 
-      const updatedUser = await updateMember({
-        where: { id: memberId },
-        data: {
-          ...(body.name && { name: body.name }),
-          ...(body.mobile && { mobile: body.mobile }),
-          ...(body.designation && { designation: body.designation }),
-          ...(body.dateOfJoiningGovt && { dateOfJoiningGovt: body.dateOfJoiningGovt }),
-          ...(body.dateOfJoiningAssociation && { dateOfJoiningAssociation: body.dateOfJoiningAssociation }),
-          ...(body.membershipNumber && { membershipNumber: body.membershipNumber }),
-          ...(body.associationId && { associationId: body.associationId }),
-        },
-      });
+    const updatedUser = await updateMember({
+      where: { id: memberId },
+      data: {
+        ...(body.name && { name: body.name }),
+        ...(body.mobile && { mobile: body.mobile }),
+        ...(body.designation && { designation: body.designation }),
+        ...(body.dateOfJoiningGovt && { dateOfJoiningGovt: body.dateOfJoiningGovt }),
+        ...(body.dateOfJoiningAssociation && { dateOfJoiningAssociation: body.dateOfJoiningAssociation }),
+        ...(body.membershipNumber && { membershipNumber: body.membershipNumber }),
+        ...(body.associationId && { associationId: body.associationId }),
+      },
+    });
 
-      logger.info({ traceId, memberId }, 'PATCH /api/members/[memberId] - Success');
+    logger.info({ traceId, memberId }, 'PATCH /api/members/[memberId] - Success');
 
-      return success(res, {
-        data: {
-          id: updatedUser.id,
-          email: updatedUser.email,
-          name: updatedUser.name,
-          designation: updatedUser.designation,
-          membershipNumber: updatedUser.membershipNumber,
-          dateOfJoiningGovt: updatedUser.dateOfJoiningGovt,
-          dateOfJoiningAssociation: updatedUser.dateOfJoiningAssociation,
-        },
-      });
+    return success(res, {
+      data: {
+        id: updatedUser.id,
+        email: updatedUser.email,
+        name: updatedUser.name,
+        designation: updatedUser.designation,
+        membershipNumber: updatedUser.membershipNumber,
+        dateOfJoiningGovt: updatedUser.dateOfJoiningGovt,
+        dateOfJoiningAssociation: updatedUser.dateOfJoiningAssociation,
+      },
+    });
   },
 ];
