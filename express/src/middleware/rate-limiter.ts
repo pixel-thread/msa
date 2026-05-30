@@ -7,15 +7,37 @@ import { logger } from '@src/shared/logger';
 
 let ratelimit: Ratelimit | null = null;
 
-export function createRateLimiter(_limit: number, _window: any): any {
+export function createRateLimiter(limit: number, window: any) {
+  const redis = new Redis({
+    url: env.UPSTASH_REDIS_REST_URL,
+    token: env.UPSTASH_REDIS_REST_TOKEN,
+  });
+
   return new Ratelimit({
-    redis: {} as any,
-    limiter: {} as any,
+    redis,
+    limiter: Ratelimit.slidingWindow(limit, window),
+    analytics: true,
   });
 }
 
-export function routeRateLimiter(_limit: number, _window: any): any {
-  return (_req: Request, _res: Response, next: NextFunction) => next();
+export function routeRateLimiter(limit: number, window: any): any {
+  const limiter = createRateLimiter(limit, window);
+
+  return async (req: Request, _res: Response, next: NextFunction) => {
+    try {
+      const identifier = req.ip || (req.headers['x-forwarded-for'] as string) || 'anonymous';
+      const result = await limiter.limit(identifier);
+
+      if (!result.success) {
+        return next(new TooManyRequestsError('Too many requests. Please try again later.'));
+      }
+
+      next();
+    } catch (error) {
+      logger.error('Route rate limiter error', { error });
+      next();
+    }
+  };
 }
 
 export function _resetRatelimiter() {
