@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { pageNumberValidation } from '../common';
 
 export const LogIngestSchema = z.object({
   level: z.enum(['info', 'warn', 'error', 'debug']),
@@ -20,28 +19,3 @@ export const LogBatchSchema = z.object({
 });
 
 export type LogBatchInput = z.infer<typeof LogBatchSchema>;
-
-export const LogQuerySchema = z.object({
-  page: pageNumberValidation,
-  level: z
-    .union([
-      z.enum(['info', 'warn', 'error', 'debug']),
-      z.string().transform((v) => v.split(',').map((s) => s.trim())),
-    ])
-    .optional(),
-  search: z.string().optional(),
-  messageExact: z.string().optional(),
-  contentSearch: z.string().optional(),
-  startDate: z.coerce.date().optional(),
-  endDate: z.coerce.date().optional(),
-  isBackend: z
-    .enum(['true', 'false'])
-    .transform((v) => v === 'true')
-    .optional(),
-  ids: z.string().optional(),
-  sortBy: z.enum(['createdAt', 'type', 'message']).optional(),
-  sortOrder: z.enum(['asc', 'desc']).optional(),
-  limit: pageNumberValidation.optional(),
-});
-
-export type LogQueryInput = z.infer<typeof LogQuerySchema>;
