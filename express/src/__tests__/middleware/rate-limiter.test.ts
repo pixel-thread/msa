@@ -86,14 +86,20 @@ describe('Rate Limiter Middleware', () => {
   });
 
   describe('routeRateLimiter', () => {
-    it('should return a middleware that currently calls next() by default (stub)', async () => {
+    it('should return a functional rate limiter middleware', async () => {
       const specificLimiter = routeRateLimiter(5, '1 m');
+      
+      mockLimit.mockResolvedValue({
+        success: false,
+        limit: 5,
+        remaining: 0,
+        reset: Date.now()
+      });
+
       await specificLimiter(req as Request, res as Response, next);
 
-      expect(next).toHaveBeenCalledWith();
-      // In Task 1 TDD, this test might need to fail if we want to enforce implementation,
-      // but user said "routeRateLimiter ... return (_req: Request, _res: Response, next: NextFunction) => next();"
-      // so this is the expected behavior for Task 1 stub.
+      expect(mockLimit).toHaveBeenCalled();
+      expect(next).toHaveBeenCalledWith(expect.any(TooManyRequestsError));
     });
   });
 });

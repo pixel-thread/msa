@@ -6,7 +6,7 @@
 
 **Architecture:** Consolidate rate-limiting logic into `src/middleware/rate-limiter.ts`. Use a factory function to instantiate `@upstash/ratelimit` clients and provide both a global middleware and a higher-order function for route-specific limits.
 
-**Tech Stack:** Express, @upstash/ratelimit, @upstash/redis, TypeScript, Vitest.
+**Tech Stack:** Express, @upstash/ratelimit, @upstash/redis, TypeScript, Jest.
 
 ---
 
@@ -15,29 +15,29 @@
 **Files:**
 - Create: `src/__tests__/middleware/rate-limiter.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 Write tests for the factory function, global middleware, and route-specific middleware. Mock `@upstash/ratelimit` to return success/failure on demand.
 
 ```typescript
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import { Request, Response } from 'express';
 import { rateLimiter, routeRateLimiter, createRateLimiter } from '@src/middleware/rate-limiter';
 import { TooManyRequestsError } from '@src/shared/errors';
 import { Ratelimit } from '@upstash/ratelimit';
 
-vi.mock('@upstash/ratelimit');
-vi.mock('@upstash/redis');
+jest.mock('@upstash/ratelimit');
+jest.mock('@upstash/redis');
 
 describe('Rate Limiter Middleware', () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
-  let next: vi.Mock;
+  let next: jest.Mock;
 
   beforeEach(() => {
     req = { ip: '127.0.0.1', headers: {} };
     res = {};
-    next = vi.fn();
-    vi.clearAllMocks();
+    next = jest.fn();
+    jest.clearAllMocks();
   });
 
   describe('createRateLimiter', () => {
@@ -50,16 +50,18 @@ describe('Rate Limiter Middleware', () => {
 
   describe('rateLimiter (global)', () => {
     it('should call next() if rate limit is not exceeded', async () => {
-      const mockLimit = vi.fn().mockResolvedValue({ success: true });
-      vi.mocked(Ratelimit).prototype.limit.mockImplementation(mockLimit);
+      const mockLimit = jest.fn().mockResolvedValue({ success: true });
+      // @ts-ignore
+      Ratelimit.prototype.limit = mockLimit;
 
       await rateLimiter(req as Request, res as Response, next);
       expect(next).toHaveBeenCalledWith();
     });
 
     it('should call next(TooManyRequestsError) if rate limit is exceeded', async () => {
-      const mockLimit = vi.fn().mockResolvedValue({ success: false });
-      vi.mocked(Ratelimit).prototype.limit.mockImplementation(mockLimit);
+      const mockLimit = jest.fn().mockResolvedValue({ success: false });
+      // @ts-ignore
+      Ratelimit.prototype.limit = mockLimit;
 
       await rateLimiter(req as Request, res as Response, next);
       expect(next).toHaveBeenCalledWith(expect.any(TooManyRequestsError));
@@ -68,24 +70,25 @@ describe('Rate Limiter Middleware', () => {
 
   describe('routeRateLimiter', () => {
     it('should return a middleware that limits specific routes', async () => {
-      const mockLimit = vi.fn().mockResolvedValue({ success: false });
-      vi.mocked(Ratelimit).prototype.limit.mockImplementation(mockLimit);
+      const mockLimit = jest.fn().mockResolvedValue({ success: false });
+      // @ts-ignore
+      Ratelimit.prototype.limit = mockLimit;
 
       const specificLimiter = routeRateLimiter(5, '1 m');
       await specificLimiter(req as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(expect.any(TooManyRequestsError));
-      expect(vi.mocked(Ratelimit).slidingWindow).toHaveBeenCalledWith(5, '1 m');
+      expect(Ratelimit.slidingWindow).toHaveBeenCalledWith(5, '1 m');
     });
   });
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 Run: `npm test src/__tests__/middleware/rate-limiter.test.ts`
 Expected: FAIL (functions not exported yet or failing assertions)
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 ```bash
 git add src/__tests__/middleware/rate-limiter.test.ts
 git commit -m "test: add rate limiter middleware unit tests"
@@ -96,7 +99,7 @@ git commit -m "test: add rate limiter middleware unit tests"
 **Files:**
 - Modify: `src/middleware/rate-limiter.ts`
 
-- [ ] **Step 1: Implement createRateLimiter**
+- [x] **Step 1: Implement createRateLimiter**
 ```typescript
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
@@ -116,11 +119,11 @@ export function createRateLimiter(limit: number, window: any) {
 }
 ```
 
-- [ ] **Step 2: Run tests**
+- [x] **Step 2: Run tests**
 Run: `npm test src/__tests__/middleware/rate-limiter.test.ts`
 Expected: `createRateLimiter` tests PASS.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 ```bash
 git add src/middleware/rate-limiter.ts
 git commit -m "feat: implement createRateLimiter factory"
