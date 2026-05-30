@@ -42,7 +42,7 @@ const formatMessage = (level: LogLevel, message: string, context?: LogContext): 
 
 const flushClient = async (batch: QueuedLog[]) => {
   const csrfToken = cookies.load('csrf-token');
-  await axios.post(`${env.NEXT_PUBLIC_API_BASE_URL}/logs/batch`, batch, {
+  await axios.post(`${env.NEXT_PUBLIC_API_BASE_URL}/logs/batch`, { logs: batch }, {
     headers: {
       'Content-Type': 'application/json',
       'X-CSRF-Token': csrfToken,
