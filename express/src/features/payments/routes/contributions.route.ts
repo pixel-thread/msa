@@ -5,7 +5,7 @@
 //            waive individual periods, and view a single period by ID.
 // ---------------------------------------------------------------------------
 
-import { Request, NextFunction, Response } from 'express';
+import { type Request, NextFunction, Response } from 'express';
 import type { RequestHandler } from 'express';
 
 import { prisma } from '@src/shared/lib/prisma';
@@ -14,12 +14,7 @@ import { success } from '@src/shared/utils/responses';
 import { buildPagination } from '@src/shared/utils/build-pagination';
 import { logger } from '@src/shared/logger';
 import { withRole } from '@src/shared/utils/with-role';
-import {
-  UnauthorizedError,
-  ForbiddenError,
-  NotFoundError,
-  ValidationError,
-} from '@src/shared/errors';
+import { UnauthorizedError, ForbiddenError, NotFoundError } from '@src/shared/errors';
 import { UserRole, ContributionStatus } from '@prisma/client';
 import { z } from 'zod';
 import {
@@ -48,7 +43,7 @@ const ContributionsQuerySchema = z.object({
 });
 
 const ContributionIdParamsSchema = z.object({
-  contributionId: z.string().uuid('Invalid contribution ID'),
+  contributionId: z.uuid('Invalid contribution ID'),
 });
 
 // ---- Helpers ----
@@ -91,22 +86,14 @@ export const listContributions: RequestHandler[] = [
     // --- Auth: enforce FINANCE role ---
     // Only finance officers can view the full contributions list
     await withRole(req, UserRole.FINANCE);
+
     logger.info({ traceId }, 'GET /api/payments/contributions - User authorized');
 
     // --- Business logic: build filters and fetch ---
     const page = (req.query as any)?.page || 1;
-    const {
-      status,
-      userId: filterUserId,
-      year,
-      month,
-    } = req.query as {
-      page: number;
-      status?: ContributionStatus;
-      userId?: string;
-      year?: number;
-      month?: number;
-    };
+
+    const { status, userId: filterUserId, year, month } = req.query;
+
     const where: Record<string, unknown> = { associationId: association.id };
     if (status) where.status = status;
     if (filterUserId) where.userId = filterUserId;
@@ -261,7 +248,7 @@ export const getContribution: RequestHandler[] = [
 
     // --- Business logic: fetch single contribution period ---
     const contribution = await findUniqueContributionPeriod({
-      where: { id: req.params.contributionId, associationId: association.id },
+      where: { id: req.params.contributionId as string, associationId: association.id },
       include: {
         user: { select: { id: true, name: true, email: true, membershipNumber: true } },
         allocations: {

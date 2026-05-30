@@ -38,17 +38,17 @@ import { z } from 'zod';
 
 /** Schema for module ID path parameter. */
 const ParamsSchema = z.object({
-  moduleId: z.string().uuid('Invalid module ID'),
+  moduleId: z.uuid('Invalid module ID'),
 });
 
 /** Schema for removing a single user assignment. */
 const RemoveAssignSchema = z.object({
-  userId: z.string().uuid('Invalid user ID'),
+  userId: z.uuid('Invalid user ID'),
 });
 
 /** Schema for bulk removing user assignments. */
 const BulkRemoveAssignSchema = z.object({
-  userIds: z.array(z.string().uuid('Invalid user ID')).min(1, 'At least one user is required'),
+  userIds: z.array(z.uuid('Invalid user ID')).min(1, 'At least one user is required'),
 });
 
 // ---------------------------------------------------------------------------
@@ -79,7 +79,7 @@ export const getAssignments: RequestHandler[] = [
     const page = parseInt(req.query.page as string) || 1;
     const result = await getTrainingAssignments({
       associationId: association.id,
-      moduleId: req.params.moduleId,
+      moduleId: req.params.moduleId as string,
       page,
     });
 
@@ -119,7 +119,7 @@ export const postAssign: RequestHandler[] = [
     try {
       const assignment = await assignTraining({
         associationId: association.id,
-        moduleId: req.params.moduleId,
+        moduleId: req.params.moduleId as string,
         userId: req.body.userId,
         assignedById: user.id,
       });
@@ -167,7 +167,7 @@ export const putBulkAssign: RequestHandler[] = [
     try {
       const result = await bulkAssignTraining({
         associationId: association.id,
-        moduleId: req.params.moduleId,
+        moduleId: req.params.moduleId as string,
         userIds: req.body.userIds,
         assignedById: user.id,
       });
@@ -215,7 +215,7 @@ export const deleteAssignment: RequestHandler[] = [
     try {
       const result = await removeTrainingAssignment({
         associationId: association.id,
-        moduleId: req.params.moduleId,
+        moduleId: req.params.moduleId as string,
         userId: req.body.userId,
         removedById: user.id,
       });
@@ -263,7 +263,7 @@ export const patchBulkRemove: RequestHandler[] = [
     try {
       const result = await bulkRemoveTrainingAssignment({
         associationId: association.id,
-        moduleId: req.params.moduleId,
+        moduleId: req.params.moduleId as string,
         userIds: req.body.userIds,
         removedById: user.id,
       });
@@ -308,7 +308,7 @@ export const getAssignedUsersHandler: RequestHandler[] = [
     const page = parseInt(req.query.page as string) || 1;
     const result = await getAssignedUsers({
       associationId: association.id,
-      moduleId: req.params.moduleId,
+      moduleId: req.params.moduleId as string,
       page,
     });
 

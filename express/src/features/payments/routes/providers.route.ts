@@ -184,14 +184,15 @@ export const getProvider: RequestHandler[] = [
     const association = await getAssociation(req);
 
     // --- Auth: enforce PRESIDENT role ---
-    const user = await withRole(req, UserRole.PRESIDENT);
+    await withRole(req, UserRole.PRESIDENT);
+
     logger.info(
       { traceId, providerId: req.params.providerId },
       'GET /api/payments/providers/[providerId] - User authorized',
     );
 
     // --- Business logic: fetch provider ---
-    const provider = await getProviderById(req.params.providerId, association.id);
+    const provider = await getProviderById(req.params.providerId as string, association.id);
     if (!provider) throw new NotFoundError('Provider not found');
 
     // --- Log: success ---
@@ -227,7 +228,7 @@ export const updateProviderHandler: RequestHandler[] = [
     const association = await getAssociation(req);
 
     // --- Auth: enforce PRESIDENT role ---
-    const user = await withRole(req, UserRole.PRESIDENT);
+    await withRole(req, UserRole.PRESIDENT);
     logger.info(
       { traceId, providerId: req.params.providerId },
       'PATCH /api/payments/providers/[providerId] - User authorized',
@@ -238,7 +239,8 @@ export const updateProviderHandler: RequestHandler[] = [
       { traceId, providerId: req.params.providerId },
       'PATCH /api/payments/providers/[providerId] - Updating provider',
     );
-    const result = await updateProvider(req.params.providerId, association.id, {
+
+    const result = await updateProvider(req.params.providerId as string, association.id, {
       keyId: req.body?.keyId,
       keySecret: req.body?.keySecret,
       webhookSecret: req.body?.webhookSecret,
@@ -278,14 +280,14 @@ export const deleteProviderHandler: RequestHandler[] = [
     const association = await getAssociation(req);
 
     // --- Auth: enforce PRESIDENT role ---
-    const user = await withRole(req, UserRole.PRESIDENT);
+    await withRole(req, UserRole.PRESIDENT);
     logger.info(
       { traceId, providerId: req.params.providerId },
       'DELETE /api/payments/providers/[providerId] - User authorized',
     );
 
     // --- Business logic: delete provider ---
-    await deleteProvider(req.params.providerId, association.id);
+    await deleteProvider(req.params.providerId as string, association.id);
 
     // --- Log: success ---
     logger.info(
@@ -329,7 +331,7 @@ export const activateProvider: RequestHandler[] = [
     // --- Business logic: toggle provider activation ---
     const providerId = req.params?.providerId;
     if (!providerId) throw new BadRequestError('Invalid provider ID');
-    const provderExist = await getProviderById(providerId, association.id);
+    const provderExist = await getProviderById(providerId as string, association.id);
     if (!provderExist) throw new NotFoundError('Provider not found');
 
     logger.info(
@@ -383,7 +385,7 @@ export const testProvider: RequestHandler[] = [
     );
 
     // --- Business logic: create test payment order ---
-    const provider = await getProviderById(req.params.providerId, association.id);
+    const provider = await getProviderById(req.params.providerId as string, association.id);
     if (!provider) throw new NotFoundError('Provider not found');
     // Test payments require Razorpay — no other providers support checkout tests
     if (provider.provider !== 'RAZORPAY') {
@@ -397,7 +399,7 @@ export const testProvider: RequestHandler[] = [
     const options = await createTestPaymentOrder({
       associationId: association.id,
       userId: user.id,
-      providerId: req.params.providerId,
+      providerId: req.params.providerId as string,
     });
 
     // --- Log: success ---

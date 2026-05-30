@@ -62,7 +62,7 @@ export const getSubscriptionPaymentsHandler: RequestHandler[] = [
 
     // Fetch payments; service enforces that only the subscription owner or high-role users may view
     const result = await getSubscriptionPayments({
-      subscriptionId,
+      subscriptionId: subscriptionId as string,
       userId: user.id,
       role: user.role,
       associationId: association.id,

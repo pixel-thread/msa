@@ -23,9 +23,10 @@
       "@lib/*": ["./src/shared/lib/*"],
       "@middleware/*": ["./src/middleware/*"],
       "@utils/*": ["./src/shared/utils/*"],
-      "@errors/*": ["./src/shared/errors/*"]
+      "@errors/*": ["./src/shared/errors/*"],
+      "@sharedType/*": ["./src/shared/types/*"]
     }
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist", "src/__tests__", "src/__mocks__"]
 }

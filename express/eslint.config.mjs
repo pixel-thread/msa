@@ -4,7 +4,7 @@ import globals from 'globals';
 
 export default tseslint.config(
   {
-    ignores: ['dist', 'node_modules', '.pnpm-store'],
+    ignores: ['dist', 'node_modules', '.pnpm-store', 'src/__tests__', 'src/__mocks__'],
   },
 
   js.configs.recommended,

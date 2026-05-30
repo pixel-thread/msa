@@ -11,10 +11,10 @@ interface ValidationSchemas<TBody, TQuery, TParams> {
 }
 
 /** Defines a non-configurable, enumerable property on an object. */
-function defineProp<T extends Record<string, unknown>>(
-  obj: Record<string, unknown>,
+function defineProp(
+  obj: any,
   key: string,
-  value: T[keyof T & string],
+  value: any,
 ): void {
   Object.defineProperty(obj, key, {
     value,
@@ -26,11 +26,11 @@ function defineProp<T extends Record<string, unknown>>(
 
 /** Express middleware that validates req.body / req.query / req.params against Zod schemas. */
 export function validate<
-  TBody = never,
-  TQuery = never,
-  TParams extends Record<string, string> = Record<string, string>,
->(schemas: ValidationSchemas<TBody, TQuery, TParams>): RequestHandler {
-  return (req: Request<TParams, any, TBody, TQuery>, _res: Response, next: NextFunction) => {
+  TBody = any,
+  TQuery = any,
+  TParams = any,
+>(schemas: ValidationSchemas<TBody, TQuery, TParams>): RequestHandler<any, any, any, any> {
+  return (req: Request, _res: Response, next: NextFunction) => {
     try {
       if (schemas.body) {
         const result = schemas.body.safeParse(req.body);

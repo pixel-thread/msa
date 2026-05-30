@@ -1,18 +1,13 @@
 // ---------------------------------------------------------------------------
 // External libs
 // ---------------------------------------------------------------------------
-import { Prisma } from '@prisma/client';
+import { Association, Prisma } from '@prisma/client';
 
 // ---------------------------------------------------------------------------
 // Shared utilities
 // ---------------------------------------------------------------------------
 import { prisma } from '@src/shared/lib/prisma';
 import { buildPagination } from '@src/shared/utils/build-pagination';
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-import type { AssociationDetails } from '@src/shared/api';
 
 // ---------------------------------------------------------------------------
 // Types — Props
@@ -84,7 +79,7 @@ export async function getMembers({ where, page = 1, search }: Props) {
 // Business intent: thin convenience wrapper used when every member of an
 //   association is needed without search or pagination.
 // ---------------------------------------------------------------------------
-export async function getMembersByAssociation(association: AssociationDetails) {
+export async function getMembersByAssociation(association: Association) {
   return getMembers({ where: { associationId: association.id } });
 }
 

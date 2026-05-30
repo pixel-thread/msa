@@ -40,13 +40,13 @@ import { z } from 'zod';
 
 /** Schema for module ID path parameter. */
 const ModuleParamsSchema = z.object({
-  moduleId: z.string().uuid('Invalid module ID'),
+  moduleId: z.uuid('Invalid module ID'),
 });
 
 /** Schema for module + certificate ID path parameters. */
 const CertificateParamsSchema = z.object({
-  moduleId: z.string().uuid('Invalid module ID'),
-  certificateId: z.string().uuid('Invalid certificate ID'),
+  moduleId: z.uuid('Invalid module ID'),
+  certificateId: z.uuid('Invalid certificate ID'),
 });
 
 // ---------------------------------------------------------------------------
@@ -78,7 +78,7 @@ export const getCertificates: RequestHandler[] = [
       // Fetch certificates
       const certificates = await findManyCertificates({
         associationId: association.id,
-        moduleId: req.params.moduleId,
+        moduleId: req.params.moduleId as string,
       });
 
       logger.info({ traceId }, 'GET /training/modules/{moduleId}/certificates - Success');
@@ -120,6 +120,7 @@ export const postCertificate: RequestHandler[] = [
 
       // Parse request: file + metadata JSON
       const { moduleId } = req.params;
+
       const file = (req as any).file as Express.Multer.File | undefined;
       const metadataRaw = req.body.metadata as string | undefined;
 
@@ -167,7 +168,7 @@ export const postCertificate: RequestHandler[] = [
       // Create the certificate record
       const certificate = await createCertificate({
         associationId: association.id,
-        moduleId,
+        moduleId: moduleId as string,
         actorId: user.id,
         data: metadata,
         certificateUrl: uploadResult.url,
@@ -216,7 +217,11 @@ export const getCertificate: RequestHandler[] = [
 
       // Find certificate by filtering the module's certificate list
       const { moduleId, certificateId } = req.params;
-      const certificates = await findManyCertificates({ associationId: association.id, moduleId });
+      const certificates = await findManyCertificates({
+        associationId: association.id,
+        moduleId: moduleId as string,
+      });
+
       const certificate = certificates.find((c) => c.id === certificateId);
 
       if (!certificate) throw new NotFoundError('Training certificate not found');
@@ -317,8 +322,8 @@ export const patchCertificate: RequestHandler[] = [
       // Apply the update (old file cleanup happens in service)
       const { certificate, oldStorageKey } = await updateCertificate({
         associationId: association.id,
-        moduleId,
-        certificateId,
+        moduleId: moduleId as string,
+        certificateId: certificateId as string,
         actorId: user.id,
         data: metadata,
         certificateUrl,
@@ -378,8 +383,8 @@ export const deleteCertificateHandler: RequestHandler[] = [
       const { moduleId, certificateId } = req.params;
       const result = await deleteCertificate({
         associationId: association.id,
-        moduleId,
-        certificateId,
+        moduleId: moduleId as string,
+        certificateId: certificateId as string,
         actorId: user.id,
       });
 
@@ -469,7 +474,7 @@ export const postCertificateTemplate: RequestHandler[] = [
       // Create/replace the certificate template
       const template = await createCertificateTemplate({
         associationId: association.id,
-        moduleId,
+        moduleId: moduleId as string,
         actorId: user.id,
         name,
         certificateUrl: uploadResult.url,
@@ -519,7 +524,7 @@ export const deleteCertificateTemplateRoute: RequestHandler[] = [
       // Delete the template (old file cleanup happens in service)
       await deleteCertificateTemplate({
         associationId: association.id,
-        moduleId: req.params.moduleId,
+        moduleId: req.params.moduleId as string,
         actorId: user.id,
       });
 

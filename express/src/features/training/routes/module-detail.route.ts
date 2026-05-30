@@ -27,7 +27,7 @@ import { z } from 'zod';
 
 /** Schema for training module ID path parameter. */
 const TrainingParamsSchema = z.object({
-  moduleId: z.string().uuid('Invalid module ID'),
+  moduleId: z.uuid('Invalid module ID'),
 });
 
 // ---------------------------------------------------------------------------
@@ -57,7 +57,7 @@ export const getModule: RequestHandler[] = [
     // Fetch the module (includes certificate template)
     const trainingModule = await findUniqueModule({
       associationId: association.id,
-      moduleId: req.params.moduleId,
+      moduleId: req.params.moduleId as string,
     });
 
     if (!trainingModule) throw new NotFoundError('Training module not found');
@@ -100,7 +100,7 @@ export const updateModuleHandler: RequestHandler[] = [
     // Apply the update
     const trainingModule = await updateModule({
       associationId: association.id,
-      moduleId: req.params.moduleId,
+      moduleId: req.params.moduleId as string,
       actorId: user.id,
       data: req.body,
     });
@@ -143,7 +143,7 @@ export const deleteModuleHandler: RequestHandler[] = [
     // Perform the deletion
     await deleteModule({
       associationId: association.id,
-      moduleId: req.params.moduleId,
+      moduleId: req.params.moduleId as string,
       actorId: user.id,
     });
 

@@ -38,13 +38,13 @@ import { z } from 'zod';
 
 /** Schema for module ID path parameter. */
 const ModuleParamsSchema = z.object({
-  moduleId: z.string().uuid('Invalid module ID'),
+  moduleId: z.uuid('Invalid module ID'),
 });
 
 /** Schema for module + supplement ID path parameters. */
 const SupplementParamsSchema = z.object({
-  moduleId: z.string().uuid('Invalid module ID'),
-  supplementId: z.string().uuid('Invalid supplement ID'),
+  moduleId: z.uuid('Invalid module ID'),
+  supplementId: z.uuid('Invalid supplement ID'),
 });
 
 // ---------------------------------------------------------------------------
@@ -76,7 +76,7 @@ export const getSupplements: RequestHandler[] = [
       // Fetch supplements
       const supplements = await findManySupplements({
         associationId: association.id,
-        moduleId: req.params.moduleId,
+        moduleId: req.params.moduleId as string,
       });
 
       logger.info({ traceId }, 'GET /training/modules/{moduleId}/supplements - Success');
@@ -165,7 +165,7 @@ export const postSupplement: RequestHandler[] = [
       // Create the supplement record
       const supplement = await createSupplement({
         associationId: association.id,
-        moduleId,
+        moduleId: moduleId as string,
         actorId: user.id,
         data: metadata,
         downloadUrl: uploadResult.url,
@@ -214,7 +214,10 @@ export const getSupplement: RequestHandler[] = [
 
       // Find supplement by filtering the module's supplement list
       const { moduleId, supplementId } = req.params;
-      const supplements = await findManySupplements({ associationId: association.id, moduleId });
+      const supplements = await findManySupplements({
+        associationId: association.id,
+        moduleId: moduleId as string,
+      });
       const supplement = supplements.find((s) => s.id === supplementId);
 
       if (!supplement) throw new NotFoundError('Training supplement not found');
@@ -315,8 +318,8 @@ export const updateSupplementHandler: RequestHandler[] = [
       // Apply the update (old file cleanup happens in service)
       const { supplement, oldStorageKey } = await updateSupplement({
         associationId: association.id,
-        moduleId,
-        supplementId,
+        moduleId: moduleId as string,
+        supplementId: supplementId as string,
         actorId: user.id,
         data: metadata,
         downloadUrl,
@@ -376,8 +379,8 @@ export const deleteSupplementHandler: RequestHandler[] = [
       const { moduleId, supplementId } = req.params;
       const result = await deleteSupplement({
         associationId: association.id,
-        moduleId,
-        supplementId,
+        moduleId: moduleId as string,
+        supplementId: supplementId as string,
         actorId: user.id,
       });
 

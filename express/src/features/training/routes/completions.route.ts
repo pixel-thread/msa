@@ -34,13 +34,13 @@ import { z } from 'zod';
 
 /** Schema for module ID path parameter. */
 const ModuleParamsSchema = z.object({
-  moduleId: z.string().uuid('Invalid module ID'),
+  moduleId: z.uuid('Invalid module ID'),
 });
 
 /** Schema for module + user assignment path parameters. */
 const AssignmentParamsSchema = z.object({
-  moduleId: z.string().uuid('Invalid module ID'),
-  userId: z.string().uuid('Invalid user ID'),
+  moduleId: z.uuid('Invalid module ID'),
+  userId: z.uuid('Invalid user ID'),
 });
 
 /** Schema for completion metadata (score, certificate options). */
@@ -79,7 +79,7 @@ export const getModuleCompletions: RequestHandler[] = [
       // Fetch completions for this module
       const data = await findManyCompletions({
         associationId: association.id,
-        moduleId: req.params.moduleId,
+        moduleId: req.params.moduleId as string,
       });
 
       logger.info({ traceId }, 'GET /training/modules/{moduleId}/complete - Success');
@@ -123,7 +123,7 @@ export const postModuleComplete: RequestHandler[] = [
       const completion = await recordCompletion({
         associationId: association.id,
         userId: user.id,
-        moduleId: req.params.moduleId,
+        moduleId: req.params.moduleId as string,
         data: req.body,
       });
 
@@ -239,8 +239,8 @@ export const postAdminComplete: RequestHandler[] = [
 
         const result = await completeAssignment({
           associationId: association.id,
-          moduleId,
-          userId,
+          moduleId: moduleId as string,
+          userId: userId as string,
           actorId: actor.id,
           scorePercent,
           certificateOption,

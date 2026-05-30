@@ -22,7 +22,7 @@ import { asyncHandler } from '@src/shared/utils/async-handler';
 
 // ---- Validation schemas ----
 
-const PaymentIdParamSchema = z.object({ paymentId: z.string().uuid() });
+const PaymentIdParamSchema = z.object({ paymentId: z.uuid() });
 
 // ---- Helpers ----
 
@@ -69,7 +69,7 @@ export const getPayment: RequestHandler[] = [
     );
 
     // --- Business logic: fetch transaction ---
-    const transaction = await getTransactionById(paymentId, association.id);
+    const transaction = await getTransactionById(paymentId as string, association.id);
     if (!transaction) throw new NotFoundError('Transaction');
 
     // --- Authorization check: is the user allowed to see this transaction? ---

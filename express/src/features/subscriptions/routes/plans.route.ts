@@ -57,7 +57,7 @@ const SetDefaultPlanSchema = z.object({
 });
 
 /** Schema for plan ID path parameter. */
-const PlanParamsSchema = z.object({ planId: z.string().uuid() });
+const PlanParamsSchema = z.object({ planId: z.uuid() });
 
 // ---- GET /api/subscriptions/plans -------------------------------------------
 /** @desc  List subscription plans for the association
@@ -152,7 +152,7 @@ export const updatePlanHandler: RequestHandler[] = [
     const { planId } = req.params;
 
     // Apply partial update; price changes trigger a new version
-    const updatedPlan = await updatePlan(association.id, planId, req.body);
+    const updatedPlan = await updatePlan(association.id, planId as string, req.body);
 
     logger.info({ traceId, planId }, 'Plan updated successfully');
 
@@ -180,7 +180,7 @@ export const deletePlanHandler: RequestHandler[] = [
 
     const { planId } = req.params;
 
-    const plan = await softDeletePlan(association.id, planId);
+    const plan = await softDeletePlan(association.id, planId as string);
 
     logger.info({ traceId, planId }, 'Plan deleted successfully');
 

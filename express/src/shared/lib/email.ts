@@ -6,7 +6,7 @@ import { logger } from '@src/shared/logger';
 const resend = env.RESEND_API_KEY ? new Resend(env.RESEND_API_KEY) : null;
 
 const APP_NAME = 'MFSA';
-const APP_URL = env.NEXT_PUBLIC_APP_URL?.toString() || 'http://localhost:3000';
+const APP_URL = env.BASE_URL?.toString() || 'http://localhost:3000';
 
 /** Properties required to send an email. */
 interface EmailProps {

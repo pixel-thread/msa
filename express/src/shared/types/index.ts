@@ -4,3 +4,4 @@ export * from './enums';
 export * from './filters';
 export * from './global.d';
 export * from './notification';
+export * from './storage';
